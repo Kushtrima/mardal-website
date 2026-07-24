@@ -404,6 +404,7 @@ video {
   gap: 0.75rem;
   align-items: center;
   min-height: clamp(3.5rem, 4.75vw, 5.25rem);
+  transition: opacity var(--duration-base) var(--ease-standard);
 }
 
 .mega-menu__number {
@@ -411,6 +412,7 @@ video {
   font-size: 0.68rem;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.08em;
+  transition: color var(--duration-fast) var(--ease-standard);
 }
 
 .mega-menu__label {
@@ -419,9 +421,7 @@ video {
   font-weight: 430;
   letter-spacing: -0.045em;
   line-height: 1;
-  transition:
-    color var(--duration-fast) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
+  transition: color var(--duration-fast) var(--ease-standard);
 }
 
 .mega-menu__arrow {
@@ -434,24 +434,28 @@ video {
   color: var(--accent);
   font-size: 0.95rem;
   opacity: 0;
-  transform: translate(-0.3rem, 0.3rem);
   transition:
     color var(--duration-fast) var(--ease-standard),
     background-color var(--duration-fast) var(--ease-standard),
-    opacity var(--duration-fast) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
+    opacity var(--duration-fast) var(--ease-standard);
 }
 
-.mega-menu__link:hover .mega-menu__label {
+.mega-menu__links:hover .mega-menu__link {
+  opacity: 0.34;
+}
+
+.mega-menu__links .mega-menu__link:hover {
+  opacity: 1;
+}
+
+.mega-menu__link:hover .mega-menu__number {
   color: var(--accent);
-  transform: translateX(0.35rem);
 }
 
 .mega-menu__link:hover .mega-menu__arrow {
   background: var(--accent);
   color: var(--accent-contrast);
   opacity: 1;
-  transform: translate(0, 0);
 }
 
 .mobile-menu {
