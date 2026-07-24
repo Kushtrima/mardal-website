@@ -22,16 +22,18 @@ async function render() {
   );
 }
 
-test("server-renders the Mardal foundation page", async () => {
+test("server-renders the Mardal hero", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>Mardal — UX Designer<\/title>/i);
-  assert.match(html, /The foundation is ready/);
-  assert.match(html, /Next\.js/);
-  assert.match(html, /Tailwind CSS/);
-  assert.match(html, /GSAP/);
+  assert.match(html, /<title>Mardal — Innovation lives here<\/title>/i);
+  assert.match(html, /Innovation/);
+  assert.match(html, /lives here/);
+  assert.match(html, /technology behind/);
+  assert.match(html, /class="hero-line"/);
+  assert.match(html, /fill="currentColor"/);
+  assert.match(html, /Hire us/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 });

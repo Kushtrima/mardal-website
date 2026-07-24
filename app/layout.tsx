@@ -10,11 +10,10 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: {
-    default: "Mardal — UX Designer",
+    default: "Mardal — Innovation lives here",
     template: "%s — Mardal",
   },
-  description:
-    "Selected product and experience design work by Mardal, UX designer.",
+  description: "We build the technology behind your growth.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
