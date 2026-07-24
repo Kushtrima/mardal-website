@@ -39,6 +39,16 @@ test("server-renders the Mardal hero", async () => {
   assert.match(html, /Recurring Investment/);
   assert.match(html, /24\/7 Support/);
   assert.match(html, /Recommendations/);
+  assert.match(html, /Mardal Services/);
+  assert.match(html, /AI &amp; Automation/);
+  assert.match(html, /Solutions by Industry/);
+  assert.match(html, /Financial Services/);
+  assert.match(html, /Mardal Products/);
+  assert.match(html, /Arvena AI/);
+  assert.match(html, /Mardal Projects/);
+  assert.match(html, /Inside Mardal/);
+  assert.match(html, /Careers/);
+  assert.match(html, /Start a project/);
   assert.match(html, /Animated investment columns/);
   assert.match(html, /class="ipo-column ipo-column--phase-1"/);
   assert.match(html, /Animated recurring investment orbit/);

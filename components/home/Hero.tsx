@@ -3,17 +3,8 @@
 import { useLayoutEffect, useRef } from "react";
 import type { PointerEvent } from "react";
 import gsap from "gsap";
-import Link from "next/link";
 import { Container } from "../layout/Container";
-import { Button } from "../ui/Button";
-
-const navigation = [
-  { label: "Services", href: "#services" },
-  { label: "Solutions", href: "#solutions" },
-  { label: "Products", href: "#products" },
-  { label: "Case study", href: "#case-study" },
-  { label: "Company", href: "#company" },
-] as const;
+import { SiteHeader } from "../layout/SiteHeader";
 
 const heroLines = [
   { x: 0, y: 17.19, width: 799.96, height: 12703.57 },
@@ -109,6 +100,14 @@ export function Hero() {
       duration: 0.32,
       ease: "power2.out",
     });
+    const setBlurBoundary = gsap.quickTo(
+      linesBlurRef.current,
+      "--hero-lines-blur-start",
+      {
+        duration: 0.28,
+        ease: "power2.out",
+      },
+    );
 
     const updateScrollBlur = () => {
       if (!heroRef.current) return;
@@ -120,9 +119,14 @@ export function Hero() {
         1,
         Math.max(0, (window.scrollY - start) / (end - start)),
       );
+      const movementProgress = Math.min(
+        1,
+        Math.max(0, (window.scrollY - start) / (heroHeight - start)),
+      );
 
       setBlurOpacity(progress);
       setFadeOpacity(progress);
+      setBlurBoundary(34 - movementProgress * 79);
     };
 
     const context = gsap.context(() => {
@@ -224,37 +228,7 @@ export function Hero() {
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
     >
-      <header className="site-header">
-        <Container wide>
-          <nav className="site-nav" aria-label="Main navigation" ref={navigationRef}>
-            <Link className="brand" href="/" aria-label="Mardal home">
-              {/* Supplied vector wordmark is already optimized and self-contained. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                className="brand-logo"
-                src="/SVG/logo.svg"
-                alt="Mardal"
-                width="694"
-                height="164"
-              />
-            </Link>
-
-            <ul className="nav-list">
-              {navigation.map((item) => (
-                <li key={item.label}>
-                  <a className="nav-link" href={item.href}>
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-
-            <Button className="hero-nav-cta" href="#contact">
-              Hire us
-            </Button>
-          </nav>
-        </Container>
-      </header>
+      <SiteHeader ref={navigationRef} />
 
       <Container className="hero-content" wide>
         <h1 className="hero-title" id="hero-title">
