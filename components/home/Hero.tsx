@@ -72,9 +72,17 @@ export function Hero() {
   const navigationRef = useRef<HTMLElement>(null);
   const copyRef = useRef<HTMLParagraphElement>(null);
   const linesRef = useRef<SVGSVGElement>(null);
+  const linesBlurRef = useRef<HTMLDivElement>(null);
+  const linesFadeRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    if (!heroRef.current) return;
+    if (
+      !heroRef.current ||
+      !linesBlurRef.current ||
+      !linesFadeRef.current
+    ) {
+      return;
+    }
 
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -92,6 +100,30 @@ export function Hero() {
       );
       return;
     }
+
+    const setBlurOpacity = gsap.quickTo(linesBlurRef.current, "opacity", {
+      duration: 0.28,
+      ease: "power2.out",
+    });
+    const setFadeOpacity = gsap.quickTo(linesFadeRef.current, "opacity", {
+      duration: 0.32,
+      ease: "power2.out",
+    });
+
+    const updateScrollBlur = () => {
+      if (!heroRef.current) return;
+
+      const heroHeight = heroRef.current.offsetHeight;
+      const start = heroHeight * 0.12;
+      const end = heroHeight * 0.62;
+      const progress = Math.min(
+        1,
+        Math.max(0, (window.scrollY - start) / (end - start)),
+      );
+
+      setBlurOpacity(progress);
+      setFadeOpacity(progress);
+    };
 
     const context = gsap.context(() => {
       gsap
@@ -131,7 +163,13 @@ export function Hero() {
         );
     }, heroRef);
 
-    return () => context.revert();
+    updateScrollBlur();
+    window.addEventListener("scroll", updateScrollBlur, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", updateScrollBlur);
+      context.revert();
+    };
   }, []);
 
   function handlePointerMove(event: PointerEvent<HTMLElement>) {
@@ -256,6 +294,8 @@ export function Hero() {
             />
           ))}
         </svg>
+        <div className="hero-lines-blur" ref={linesBlurRef} />
+        <div className="hero-lines-fade" ref={linesFadeRef} />
       </div>
     </section>
   );
