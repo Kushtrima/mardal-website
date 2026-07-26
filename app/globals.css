@@ -12,8 +12,11 @@
   --ink: #08080a;
   --ink-muted: #5e5a69;
   --line: rgb(8 8 10 / 72%);
+  --line-soft: rgb(8 8 10 / 16%);
   --accent: #8362b8;
   --accent-soft: #c7b5e3;
+  /* Darker accent for small text: --accent is only 4.12:1 on --canvas. */
+  --accent-strong: #6f4fa7;
   --accent-contrast: #ffffff;
   --focus: #6e4fa5;
 
@@ -37,16 +40,19 @@
   --container-wide: 112rem;
   --container-default: 80rem;
   --section-space: clamp(5rem, 12vw, 10rem);
+  --section-space-lg: clamp(8rem, 12vw, 12rem);
 
   /* Shape and effects */
   --shape-sm: 0.375rem;
   --shape-md: 0.875rem;
+  --shape-card: clamp(0.45rem, 0.7vw, 0.7rem);
   --radius-full: 999px;
   --shadow-soft: 0 1rem 3rem rgb(21 21 21 / 8%);
 
   /* Motion */
   --duration-fast: 180ms;
   --duration-base: 420ms;
+  --duration-slow: 620ms;
   --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -164,6 +170,38 @@ video {
   font-weight: 600;
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
+}
+
+/* Shared by every section below the hero. */
+.section-title {
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: clamp(3rem, 4.2vw, 4rem);
+  font-weight: 430;
+  letter-spacing: -0.055em;
+  line-height: 0.94;
+}
+
+.section-lede {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: clamp(1rem, 1.35vw, 1.25rem);
+  font-weight: 430;
+  letter-spacing: -0.025em;
+  line-height: 1.28;
+}
+
+/* Zero-size marker so one section can answer to a second menu anchor. */
+.anchor-target {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+}
+
+[id] {
+  scroll-margin-top: clamp(2rem, 6vh, 5rem);
 }
 
 /* ----------------------------- Button system ------------------------------ */
@@ -340,7 +378,7 @@ video {
   max-width: 21rem;
   flex-direction: column;
   padding-right: clamp(1.5rem, 3vw, 3.5rem);
-  border-right: 1px solid rgb(8 8 10 / 16%);
+  border-right: 1px solid var(--line-soft);
 }
 
 .mega-menu__eyebrow,
@@ -391,7 +429,7 @@ video {
 }
 
 .mega-menu__links li {
-  border-bottom: 1px solid rgb(8 8 10 / 16%);
+  border-bottom: 1px solid var(--line-soft);
 }
 
 .mega-menu__links li:last-child {
@@ -404,7 +442,7 @@ video {
   gap: 0.75rem;
   align-items: center;
   min-height: clamp(3.5rem, 4.75vw, 5.25rem);
-  transition: opacity var(--duration-base) var(--ease-standard);
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .mega-menu__number {
@@ -412,7 +450,7 @@ video {
   font-size: 0.68rem;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.08em;
-  transition: color var(--duration-fast) var(--ease-standard);
+  transition: color var(--duration-base) var(--ease-standard);
 }
 
 .mega-menu__label {
@@ -435,13 +473,13 @@ video {
   font-size: 0.95rem;
   opacity: 0;
   transition:
-    color var(--duration-fast) var(--ease-standard),
-    background-color var(--duration-fast) var(--ease-standard),
-    opacity var(--duration-fast) var(--ease-standard);
+    color var(--duration-base) var(--ease-standard),
+    background-color var(--duration-base) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard);
 }
 
 .mega-menu__links:hover .mega-menu__link {
-  opacity: 0.34;
+  opacity: 0.42;
 }
 
 .mega-menu__links .mega-menu__link:hover {
@@ -472,7 +510,7 @@ video {
 }
 
 .hero-nav-cta:hover {
-  background: #6f4fa7;
+  background: var(--accent-strong);
   box-shadow: 0 0.75rem 2rem rgb(83 55 124 / 22%);
 }
 
@@ -505,10 +543,12 @@ video {
 }
 
 .hero-copy {
+  position: relative;
+  left: 40px;
   grid-column: 10 / -1;
   align-self: start;
-  margin: clamp(7rem, 19vh, 15.5rem) 0 0;
-  font-size: clamp(2rem, 2.85vw, 3.45rem);
+  margin: calc(clamp(7rem, 19vh, 15.5rem) - 15px) 0 0;
+  font-size: clamp(1.75rem, 2.45vw, 3rem);
   font-weight: 410;
   letter-spacing: -0.045em;
   line-height: 1.06;
@@ -575,7 +615,7 @@ video {
 .why-section {
   position: relative;
   background: var(--canvas);
-  padding-block: clamp(8rem, 12vw, 12rem);
+  padding-block: var(--section-space-lg);
 }
 
 .why-intro {
@@ -585,13 +625,19 @@ video {
   align-items: start;
 }
 
-.why-label {
+/* `.section-label` is the same treatment for every section added below. */
+.why-label,
+.section-label {
   margin: 0;
   font-size: clamp(0.85rem, 1.25vw, 1.2rem);
   font-weight: 540;
   letter-spacing: -0.025em;
   line-height: 1;
   text-transform: uppercase;
+}
+
+.why-title__line {
+  display: block;
 }
 
 .why-title {
@@ -608,9 +654,11 @@ video {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(0.65rem, 0.9vw, 0.85rem);
-  margin-top: clamp(10rem, 17vw, 16rem);
+  margin-top: calc(clamp(10rem, 17vw, 16rem) - 30px);
 }
 
+/* Leading is looser than the display copy elsewhere: this now runs to nine
+   lines, where the tighter setting read as a block rather than a paragraph. */
 .why-copy {
   grid-column: 1;
   grid-row: 1;
@@ -619,37 +667,39 @@ video {
   font-size: clamp(1rem, 1.35vw, 1.25rem);
   font-weight: 430;
   letter-spacing: -0.025em;
-  line-height: 1.08;
+  line-height: 1.28;
 }
 
 .why-card {
   position: relative;
   display: flex;
   min-width: 0;
+  /* Sized by its own copy — the row stretches every card to match the tallest,
+     so a title that wraps can never be clipped. */
+  min-height: clamp(17rem, 25vw, 25rem);
   flex-direction: column;
-  aspect-ratio: 0.84;
   padding: clamp(1.25rem, 1.75vw, 2rem);
   overflow: hidden;
-  border-radius: clamp(0.45rem, 0.7vw, 0.7rem);
+  border-radius: var(--shape-card);
   background: var(--surface);
 }
 
-.why-card__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
+/* The label sits in the top-right corner, opposite the drawing. */
 .why-card__label {
+  position: absolute;
+  top: clamp(1.25rem, 1.75vw, 2rem);
+  right: clamp(1.25rem, 1.75vw, 2rem);
+  max-width: 45%;
   margin: 0;
   font-size: clamp(0.75rem, 0.82vw, 0.95rem);
   font-weight: 450;
   letter-spacing: -0.02em;
   line-height: 1.2;
+  text-align: right;
 }
 
-.why-card__plus {
+/* The product cards' corner marker. */
+.card-plus {
   position: relative;
   width: clamp(1.65rem, 1.8vw, 2.05rem);
   aspect-ratio: 1;
@@ -661,8 +711,8 @@ video {
     border-color var(--duration-fast) var(--ease-standard);
 }
 
-.why-card__plus::before,
-.why-card__plus::after {
+.card-plus::before,
+.card-plus::after {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -674,56 +724,72 @@ video {
   transition: background-color var(--duration-fast) var(--ease-standard);
 }
 
-.why-card__plus::after {
+.card-plus::after {
   transform: translate(-50%, -50%) rotate(90deg);
 }
 
 @media (hover: hover) {
-  .why-card:hover .why-card__plus {
+  .product-card:hover .card-plus {
     border-color: var(--accent);
     background: var(--accent);
   }
 
-  .why-card:hover .why-card__plus::before,
-  .why-card:hover .why-card__plus::after {
+  .product-card:hover .card-plus::before,
+  .product-card:hover .card-plus::after {
     background: var(--accent-contrast);
   }
 }
 
+/* Balanced rather than greedy, so each title breaks at its own sentence
+   instead of at the box edge, with two lines' height always reserved so the
+   copy underneath starts on the same line across a row. */
 .why-card__title {
-  max-width: 11ch;
-  margin: clamp(1rem, 1.6vw, 1.65rem) 0 0;
+  max-width: 16ch;
+  min-height: 2.24em;
+  margin: clamp(1.5rem, 2.4vw, 2.25rem) 0 0;
   font-family: var(--type-display);
   font-size: clamp(1.55rem, 2.15vw, 2.5rem);
   font-weight: 430;
   letter-spacing: -0.045em;
   line-height: 1.12;
+  text-wrap: balance;
 }
 
+.why-card__copy {
+  max-width: 30ch;
+  margin: clamp(0.65rem, 0.9vw, 0.9rem) 0 0;
+  color: var(--ink-muted);
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  letter-spacing: -0.015em;
+  line-height: 1.38;
+}
+
+/* The drawing opens the card, held to the left edge. */
 .why-card__art {
   display: flex;
-  min-height: 0;
-  flex: 1;
-  align-items: flex-end;
-  justify-content: center;
-  padding: clamp(0.75rem, 1.2vw, 1.25rem) 0 0;
+  height: clamp(11rem, 19vw, 19.5rem);
+  align-items: center;
+  justify-content: flex-start;
 }
 
+/* One height for all four, so the drawings sit on a common line however wide
+   each one happens to be. Each carries its own margin inside its viewBox, so
+   what gets pulled to the card's left edge is the drawing, not its box. */
 .why-card__image {
-  width: min(108%, 28rem);
+  width: auto;
   max-width: none;
-  height: auto;
+  height: 100%;
+  transform: translateX(calc(var(--art-ink-inset, 0%) * -1));
   object-fit: contain;
-  transform: translateY(13%);
 }
 
-.why-card--one .why-card__image {
-  width: min(56%, 14.5rem);
-}
-
+/* Its columns fill the viewBox edge to edge, where the other three leave a
+   margin, so it is held back a little to match them optically. */
 .why-card__image--ipo {
+  --art-ink-inset: 6%;
+
+  height: 85%;
   overflow: visible;
-  transform: translateY(calc(13% - 20px));
 }
 
 .ipo-column {
@@ -774,7 +840,11 @@ video {
   }
 }
 
+/* Same case as the handoff drawing: room inside the viewBox to make up for. */
 .why-card__image--recurring {
+  --art-ink-inset: 25.5%;
+
+  height: 118%;
   overflow: visible;
 }
 
@@ -952,6 +1022,8 @@ video {
 }
 
 .why-card__image--support {
+  --art-ink-inset: 18%;
+
   overflow: visible;
 }
 
@@ -997,7 +1069,12 @@ video {
   }
 }
 
+/* The opposite case to the columns: its drawing sits well inside its viewBox,
+   so it is pushed past the shared height to match the others optically. */
 .why-card__image--recommendations {
+  --art-ink-inset: 26%;
+
+  height: 118%;
   overflow: visible;
 }
 
@@ -1056,6 +1133,764 @@ video {
 .why-card--four {
   grid-column: 2;
   grid-row: 2;
+}
+
+/* ----------------------------- Isometric art ------------------------------ */
+
+/* Same drawing language as the Why Mardal illustrations: opaque fill so the
+   edges behind are hidden, ink hairline, and a slow tint cycle. */
+.iso-art {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.iso-block {
+  --iso-delay: -1s;
+
+  color: var(--surface);
+  animation: iso-block-tint 15s ease-in-out infinite;
+  animation-delay: var(--iso-delay);
+}
+
+.iso-block--phase-2 {
+  --iso-delay: -13s;
+}
+
+.iso-block--phase-3 {
+  --iso-delay: -10s;
+}
+
+.iso-block--phase-4 {
+  --iso-delay: -7s;
+}
+
+.iso-block--phase-5 {
+  --iso-delay: -4s;
+}
+
+.iso-block__face {
+  fill: currentColor;
+  stroke: var(--ink);
+  stroke-width: 0.55;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+@keyframes iso-block-tint {
+  0% {
+    color: var(--surface);
+  }
+
+  5%,
+  18% {
+    color: var(--accent-soft);
+  }
+
+  25%,
+  100% {
+    color: var(--surface);
+  }
+}
+
+/* -------------------------------- Services -------------------------------- */
+
+.services-section {
+  position: relative;
+  background: var(--canvas);
+  padding-block: var(--section-space-lg);
+}
+
+.services-intro {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(0.75rem, 1vw, 1rem);
+  align-items: start;
+}
+
+.services-intro .section-label {
+  grid-column: 1 / span 3;
+  padding-top: 0.55rem;
+}
+
+.services-title {
+  grid-column: 4 / -1;
+  max-width: 24ch;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.65rem, 0.9vw, 0.85rem);
+  margin-top: clamp(3.5rem, 7vw, 6rem);
+}
+
+.service-tile {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  aspect-ratio: 1;
+  padding: clamp(1.25rem, 1.75vw, 2rem);
+  overflow: hidden;
+  border-radius: var(--shape-card);
+  background: var(--surface);
+}
+
+.service-tile__title {
+  max-width: 12ch;
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: clamp(1.35rem, 1.85vw, 1.95rem);
+  font-weight: 430;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+.service-tile__copy {
+  max-width: 28ch;
+  margin: 0.75rem 0 0;
+  color: var(--ink-muted);
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  letter-spacing: -0.015em;
+  line-height: 1.38;
+}
+
+.service-tile__art {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: center;
+  padding-top: clamp(0.75rem, 1.2vw, 1.25rem);
+}
+
+.service-tile__art .iso-art {
+  width: min(80%, 15rem);
+  transform: translateY(6%);
+}
+
+/* The lede takes the sixth cell, mirroring the Why Mardal grid. */
+.services-lede {
+  align-self: end;
+  padding: clamp(1.25rem, 1.75vw, 2rem);
+}
+
+/* ------------------------------- Solutions -------------------------------- */
+
+.solutions-section {
+  position: relative;
+  background: var(--canvas);
+  padding-block: var(--section-space-lg);
+}
+
+.solutions-intro {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(0.75rem, 1vw, 1rem);
+  align-items: start;
+}
+
+.solutions-intro .section-label {
+  grid-column: 1 / span 3;
+  padding-top: 0.55rem;
+}
+
+.solutions-title {
+  max-width: 22ch;
+  grid-column: 4 / -1;
+}
+
+/* One band held between two rules, with the columns set by the grid alone —
+   no cell walls, so the five sectors read as one line of the page. */
+.solutions-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2.2vw, 2.75rem);
+  /* Only ever the gap between wrapped bands: the three rows inside a sector
+     are spaced by their own margins, below. */
+  row-gap: clamp(2.5rem, 5vw, 3.5rem);
+  margin: clamp(3rem, 6vw, 5rem) 0 0;
+  padding: clamp(2.5rem, 4vw, 3.5rem) 0;
+  border-block: 1px solid var(--line-soft);
+  list-style: none;
+}
+
+/* Mark, name and descriptor take a shared row each, so a name that wraps moves
+   every descriptor in the band rather than only its own. */
+.solution-cell {
+  display: grid;
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+}
+
+.solution-cell__mark {
+  display: block;
+  width: clamp(1.9rem, 2.4vw, 2.6rem);
+}
+
+.solution-cell__name {
+  margin: clamp(1.1rem, 1.6vw, 1.5rem) 0 0;
+  font-family: var(--type-display);
+  font-size: clamp(1.15rem, 1.7vw, 1.7rem);
+  font-weight: 430;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.solution-cell__descriptor {
+  margin: clamp(0.65rem, 0.9vw, 0.9rem) 0 0;
+  color: var(--ink-muted);
+  font-size: clamp(0.9rem, 0.95vw, 1rem);
+  letter-spacing: -0.015em;
+  line-height: 1.4;
+}
+
+/* The header menu links straight to a sector, so the one it lands on is named
+   in accent rather than leaving the visitor to find it. */
+.solution-cell:target .solution-cell__name {
+  color: var(--accent-strong);
+}
+
+@media (hover: hover) {
+  .solution-cell:hover .solution-cell__name {
+    color: var(--accent-strong);
+  }
+}
+
+/* ------------------------------- Industries ------------------------------- */
+
+/* The drawing is wider than the page on purpose: it runs off the right edge,
+   and the section is what cuts it. */
+.industries-section {
+  position: relative;
+  overflow: hidden;
+  background: var(--canvas);
+  padding-block: var(--section-space-lg);
+}
+
+.industries-intro {
+  position: relative;
+  z-index: 1;
+}
+
+/* Set as the page's section label. It runs to two lines where those are one
+   word, so it needs leading the shared rule does not. */
+.industries-title {
+  max-width: 44ch;
+  line-height: 1.3;
+}
+
+/* Wider than the names themselves: this is the band that answers to the
+   pointer, and it stops short of where the ring starts. */
+.industries-list {
+  display: grid;
+  width: min(52rem, 66%);
+  gap: clamp(1.75rem, 3.6vw, 4.25rem);
+  margin: clamp(3rem, 9vw, 9rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The film holds the whole list back and brings one name forward, so the ring
+   keeps the attention rather than the type. */
+/* The target runs the width of the column, not just the letters, so pointing
+   at the space beside a short name still picks it. */
+.industries-item {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--type-display);
+  font-size: clamp(2rem, 4.4vw, 4rem);
+  font-weight: 430;
+  letter-spacing: -0.05em;
+  line-height: 1.02;
+  opacity: 0.2;
+  text-align: left;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.industries-item[aria-pressed="true"] {
+  opacity: 1;
+}
+
+/* The film's stage, held against the right edge of the page. Its viewBox is
+   anchored right too, so the ring keeps hanging off the edge and the section
+   cuts it — the drawing is never measured against the text column. */
+/* The film frames this against the page, and its ring meets the frame's own
+   right edge, so the stage stays flush right and is only pulled in from the
+   left to size the drawing. */
+.industries-art {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 81%;
+  pointer-events: none;
+  transform: translateY(120px);
+}
+
+.industry-art {
+  width: 100%;
+  height: 100%;
+}
+
+.industry-art__ring,
+.industry-art__lanes {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+
+/* The posts the ring indexes between in the Manufacturing scene. */
+.industry-art__gate {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.industry-art__rails {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+
+/* The pulse rings that leave each dot in the Healthcare scene. */
+.industry-art__pulses {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+
+.industry-art__movers,
+.industry-art__extras {
+  fill: var(--accent-strong);
+}
+
+/* Sits under each dot, so a dot that goes hollow shows the page rather than
+   the ring passing behind it. */
+.industry-art__masks {
+  fill: var(--canvas);
+}
+
+.industry-art__dots {
+  fill: var(--accent-strong);
+  stroke: var(--accent-strong);
+  stroke-width: 2.5;
+}
+
+/* -------------------------------- Products -------------------------------- */
+
+.products-section {
+  position: relative;
+  background: var(--canvas);
+  padding-block: var(--section-space-lg);
+}
+
+.products-intro {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(0.75rem, 1vw, 1rem);
+  align-items: start;
+}
+
+.products-intro .section-label {
+  grid-column: 1 / span 3;
+  padding-top: 0.55rem;
+}
+
+.products-title {
+  grid-column: 4 / span 6;
+}
+
+.products-lede {
+  grid-column: 10 / -1;
+  align-self: end;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.65rem, 0.9vw, 0.85rem);
+  margin-top: clamp(3.5rem, 7vw, 6rem);
+}
+
+.product-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  aspect-ratio: 1.05;
+  padding: clamp(1.25rem, 1.75vw, 2rem);
+  border-radius: var(--shape-card);
+  background: var(--surface);
+}
+
+.product-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.product-card__status {
+  margin: 0;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-full);
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.product-card__art {
+  display: grid;
+  min-height: 0;
+  flex: 1;
+  align-items: end;
+  padding-block: clamp(1.25rem, 2vw, 2rem);
+}
+
+.product-card__art .iso-art {
+  width: min(72%, 12.5rem);
+  justify-self: center;
+  transform: translateY(6%);
+}
+
+.product-card__name {
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: clamp(1.5rem, 2vw, 2.25rem);
+  font-weight: 430;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+}
+
+.product-card__copy {
+  max-width: 30ch;
+  margin: clamp(0.6rem, 1vw, 0.9rem) 0 0;
+  color: var(--ink-muted);
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  letter-spacing: -0.015em;
+  line-height: 1.4;
+}
+
+/* ------------------------------- Case study ------------------------------- */
+
+.case-section {
+  position: relative;
+  background: var(--canvas);
+  padding-block: var(--section-space-lg);
+}
+
+.case-layout {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(2rem, 4vw, 4rem);
+  align-items: center;
+}
+
+.case-intro {
+  display: grid;
+  gap: clamp(1rem, 1.8vw, 1.75rem);
+  grid-column: 1 / span 5;
+  justify-items: start;
+}
+
+.case-lede {
+  max-width: 34ch;
+}
+
+.case-status {
+  margin: 0;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-full);
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.case-visual {
+  display: grid;
+  grid-column: 7 / -1;
+  aspect-ratio: 3 / 2;
+  padding: clamp(1.5rem, 3vw, 3rem);
+  place-items: center;
+  overflow: hidden;
+  border-radius: var(--shape-card);
+  background: var(--surface);
+}
+
+.case-visual .iso-art {
+  width: min(88%, 26rem);
+}
+
+/* --------------------------------- Process -------------------------------- */
+
+.process-section {
+  position: relative;
+  background: var(--canvas);
+  padding-block: var(--section-space-lg);
+}
+
+.process-intro {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(0.75rem, 1vw, 1rem);
+  align-items: start;
+}
+
+.process-intro .section-label {
+  grid-column: 1 / span 3;
+  padding-top: 0.55rem;
+}
+
+.process-title {
+  grid-column: 4 / span 6;
+}
+
+.process-lede {
+  grid-column: 10 / -1;
+  align-self: end;
+}
+
+.process-track {
+  position: relative;
+  margin-top: clamp(3.5rem, 7vw, 6rem);
+  padding-top: clamp(2rem, 3vw, 3rem);
+}
+
+.process-track__line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--accent);
+}
+
+.process-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 3rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.process-step {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.process-step__index {
+  color: var(--accent-strong);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.process-step__title {
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: clamp(1.5rem, 2.2vw, 2.25rem);
+  font-weight: 430;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.process-step__copy {
+  max-width: 32ch;
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: clamp(0.95rem, 1.05vw, 1.05rem);
+  letter-spacing: -0.015em;
+  line-height: 1.4;
+}
+
+/* --------------------------------- Contact -------------------------------- */
+
+.contact-section {
+  position: relative;
+  background: var(--canvas);
+  padding-block: var(--section-space-lg);
+}
+
+.contact-inner {
+  display: grid;
+  gap: clamp(1.25rem, 2vw, 2rem);
+  justify-items: start;
+}
+
+.contact-title {
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: clamp(3rem, 6.4vw, 6.25rem);
+  font-weight: 430;
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.contact-title__mask {
+  display: block;
+  overflow: hidden;
+}
+
+.contact-title__mask > span {
+  display: block;
+}
+
+.contact-lede {
+  max-width: 40ch;
+}
+
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1rem, 2vw, 2rem);
+  align-items: center;
+  margin-top: clamp(0.5rem, 1vw, 1rem);
+}
+
+.contact-email {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .contact-email:hover {
+    color: var(--accent-strong);
+  }
+}
+
+/* --------------------------------- Footer --------------------------------- */
+
+.site-footer {
+  position: relative;
+  padding-top: clamp(4rem, 8vw, 7rem);
+  padding-bottom: clamp(1.25rem, 2.5vw, 2rem);
+  border-top: 1px solid var(--line-soft);
+  background: var(--canvas);
+}
+
+.site-footer__top {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 2fr);
+  gap: clamp(2.5rem, 5vw, 5rem);
+  align-items: start;
+}
+
+.site-footer__brand img {
+  width: clamp(7.5rem, 8.5vw, 9rem);
+  height: auto;
+}
+
+.site-footer__statement {
+  max-width: 26ch;
+  margin: clamp(1.5rem, 2.5vw, 2rem) 0 0;
+  color: var(--ink-muted);
+  font-size: clamp(0.95rem, 1.05vw, 1.05rem);
+  letter-spacing: -0.015em;
+  line-height: 1.45;
+}
+
+.site-footer__email {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  margin-top: clamp(1.25rem, 2vw, 1.6rem);
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+
+.site-footer__email span {
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.site-footer__nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(1.5rem, 2.5vw, 2.5rem);
+}
+
+.site-footer__column-title {
+  margin-bottom: 1.1rem;
+}
+
+.site-footer__column ul {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer__link {
+  font-size: var(--text-sm);
+  letter-spacing: -0.02em;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.site-footer__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: clamp(3.5rem, 6vw, 5rem);
+  padding-top: clamp(1.25rem, 2vw, 1.75rem);
+  border-top: 1px solid var(--line-soft);
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.site-footer__top-link {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-full);
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+
+.site-footer__top-link span {
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .site-footer__link:hover {
+    color: var(--accent-strong);
+  }
+
+  .site-footer__email:hover,
+  .site-footer__top-link:hover {
+    border-color: var(--accent-strong);
+    color: var(--accent-strong);
+  }
+
+  .site-footer__email:hover span {
+    transform: translateX(3px);
+  }
+
+  .site-footer__top-link:hover span {
+    transform: translateY(-2px);
+  }
 }
 
 @media (max-width: 70rem) {
@@ -1218,6 +2053,71 @@ video {
     grid-column: auto;
     grid-row: auto;
   }
+
+  .services-intro,
+  .solutions-intro,
+  .products-intro,
+  .process-intro {
+    grid-template-columns: minmax(10rem, 0.7fr) minmax(0, 2fr);
+  }
+
+  .services-intro .section-label,
+  .solutions-intro .section-label,
+  .products-intro .section-label,
+  .process-intro .section-label {
+    grid-column: 1;
+  }
+
+  .services-title,
+  .solutions-title,
+  .products-title,
+  .products-lede,
+  .process-title,
+  .process-lede {
+    grid-column: 2;
+  }
+
+  .products-lede,
+  .process-lede {
+    margin-top: 1.5rem;
+  }
+
+  .services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .solutions-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* The list keeps the page; the drawing drops below it and still runs off the
+     right edge. */
+  .industries-list {
+    width: auto;
+  }
+
+  .industries-art {
+    position: relative;
+    inset: auto;
+    width: auto;
+    height: 62vw;
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+    transform: none;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .case-intro,
+  .case-visual {
+    grid-column: 1 / -1;
+  }
+
+  .site-footer__top {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+  }
 }
 
 @media (max-width: 48rem) {
@@ -1269,9 +2169,9 @@ video {
   }
 
   .hero-copy {
-    margin-top: 2.75rem;
+    margin-top: calc(2.75rem - 15px);
     margin-left: 30%;
-    font-size: clamp(1.55rem, 7vw, 2.25rem);
+    font-size: clamp(1.4rem, 6vw, 2rem);
   }
 
   .hero-lines {
@@ -1317,8 +2217,116 @@ video {
   }
 
   .why-card__title {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     font-size: clamp(1.75rem, 7vw, 2.4rem);
+  }
+
+  .services-section,
+  .solutions-section,
+  .industries-section,
+  .products-section,
+  .case-section,
+  .process-section,
+  .contact-section {
+    padding-block: 7rem;
+  }
+
+  .industries-list {
+    margin-top: 2.5rem;
+  }
+
+  .industries-item {
+    font-size: clamp(1.9rem, 9vw, 2.75rem);
+  }
+
+  .services-intro,
+  .solutions-intro,
+  .products-intro,
+  .process-intro {
+    display: block;
+  }
+
+  .services-title,
+  .solutions-title,
+  .products-title,
+  .case-title,
+  .process-title {
+    margin-top: 2rem;
+    font-size: clamp(2.4rem, 10vw, 3.4rem);
+  }
+
+  .case-title {
+    margin-top: 0;
+  }
+
+  .products-lede,
+  .process-lede {
+    margin-top: 1.25rem;
+  }
+
+  .solutions-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.25rem;
+    row-gap: 2.25rem;
+    margin-top: 2.5rem;
+    padding-block: 2.25rem;
+  }
+
+  .solution-cell__name {
+    font-size: clamp(1.05rem, 4.5vw, 1.35rem);
+  }
+
+  .services-grid,
+  .products-grid {
+    display: block;
+    margin-top: 3rem;
+  }
+
+  .service-tile,
+  .product-card {
+    aspect-ratio: auto;
+    min-height: 17rem;
+    margin-top: 0.75rem;
+    padding: 1.25rem;
+  }
+
+  .services-lede {
+    margin-top: 2rem;
+    padding: 0;
+  }
+
+  .case-visual {
+    aspect-ratio: 4 / 5;
+  }
+
+  .process-track {
+    padding-top: 0;
+    padding-left: 1.5rem;
+  }
+
+  .process-track__line {
+    width: 1px;
+    height: 100%;
+  }
+
+  .process-steps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+
+  /* The lines are explicit and sit in overflow:hidden masks, so they cannot
+     wrap out of trouble — keep them inside the gutter at 390px. */
+  .contact-title {
+    font-size: clamp(2rem, 9vw, 3.25rem);
+  }
+
+  .site-footer {
+    padding-top: 4rem;
+  }
+
+  .site-footer__nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1rem;
   }
 }
 

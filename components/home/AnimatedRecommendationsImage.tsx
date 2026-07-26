@@ -4,7 +4,7 @@ export function AnimatedRecommendationsImage() {
       className="why-card__image why-card__image--recommendations"
       viewBox="0 0 1254 1254"
       role="img"
-      aria-label="Animated recommendation handoff"
+      aria-label="Animated system handoff"
     >
       <defs>
         <mask

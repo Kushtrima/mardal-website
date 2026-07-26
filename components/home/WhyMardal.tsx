@@ -3,33 +3,18 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { Container } from "../layout/Container";
+import { whyMardal } from "../../content/home";
 import { AnimatedIpoImage } from "./AnimatedIpoImage";
 import { AnimatedRecommendationsImage } from "./AnimatedRecommendationsImage";
 import { AnimatedRecurringImage } from "./AnimatedRecurringImage";
 import { AnimatedSupportImage } from "./AnimatedSupportImage";
 
-const cards = [
-  {
-    position: "one",
-    label: "IPO Access",
-    title: "Be one of the first public investors",
-  },
-  {
-    position: "two",
-    label: "Recurring Investment",
-    title: "Invest automatically",
-  },
-  {
-    position: "three",
-    label: "24/7 Support",
-    title: "Here for you any time",
-  },
-  {
-    position: "four",
-    label: "Recommendations",
-    title: "Get help with your first trade",
-  },
-] as const;
+const artwork = {
+  columns: AnimatedIpoImage,
+  cycle: AnimatedRecurringImage,
+  handoff: AnimatedRecommendationsImage,
+  orbit: AnimatedSupportImage,
+} as const;
 
 export function WhyMardal() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -163,48 +148,44 @@ export function WhyMardal() {
       <Container wide>
         <div className="why-intro">
           <p className="why-label" data-why-label>
-            Why Mardal?
+            {whyMardal.label}
           </p>
           <h2 className="why-title" id="why-title" data-why-title>
-            Ship smarter software
-            <br />
-            with enterprise AI
+            {whyMardal.titleLines.map((line) => (
+              <span className="why-title__line" key={line}>
+                {line}
+              </span>
+            ))}
           </h2>
         </div>
 
         <div className="why-grid" data-why-grid>
           <p className="why-copy" data-why-copy>
-            We build intelligent solutions that combine AI and automation, CRM
-            systems, custom software, and scalable web platforms to streamline
-            operations and support business growth.
+            {whyMardal.copy}
           </p>
 
-          {cards.map((card) => (
-            <article
-              className={`why-card why-card--${card.position}`}
-              key={card.position}
-              data-why-card
-            >
-              <div className="why-card__header">
+          {whyMardal.cards.map((card) => {
+            const Art = artwork[card.art];
+
+            return (
+              <article
+                className={`why-card why-card--${card.position}`}
+                key={card.position}
+                data-why-card
+              >
+                <div className="why-card__art">
+                  <Art />
+                </div>
+
+                {/* Held in the corner rather than in the flow, so the drawing
+                    can take the card's full width. */}
                 <p className="why-card__label">{card.label}</p>
-                <span className="why-card__plus" aria-hidden="true" />
-              </div>
 
-              <h3 className="why-card__title">{card.title}</h3>
-
-              <div className="why-card__art">
-                {card.position === "one" ? (
-                  <AnimatedIpoImage />
-                ) : card.position === "two" ? (
-                  <AnimatedRecurringImage />
-                ) : card.position === "three" ? (
-                  <AnimatedSupportImage />
-                ) : (
-                  <AnimatedRecommendationsImage />
-                )}
-              </div>
-            </article>
-          ))}
+                <h3 className="why-card__title">{card.title}</h3>
+                <p className="why-card__copy">{card.copy}</p>
+              </article>
+            );
+          })}
         </div>
       </Container>
     </section>

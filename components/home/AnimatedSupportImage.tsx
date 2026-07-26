@@ -6,7 +6,7 @@ export function AnimatedSupportImage() {
       className="why-card__image why-card__image--support"
       viewBox="0 0 1416 1111"
       role="img"
-      aria-label="Animated support orbit"
+      aria-label="Animated orbiting support"
     >
       <defs>
         {parts.map((part) => (

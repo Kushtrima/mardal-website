@@ -47,7 +47,7 @@ export function AnimatedIpoImage() {
       className="why-card__image why-card__image--ipo"
       viewBox="300 150 670 900"
       role="img"
-      aria-label="Animated investment columns"
+      aria-label="Animated rising columns"
     >
       {columns.map((column, index) => (
         <Pillar {...column} key={`${column.x}-${column.top}-${index}`} />

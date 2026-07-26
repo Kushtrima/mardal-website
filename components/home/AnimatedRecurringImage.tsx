@@ -44,7 +44,7 @@ export function AnimatedRecurringImage() {
       className="why-card__image why-card__image--recurring"
       viewBox="0 0 1417 1110"
       role="img"
-      aria-label="Animated recurring investment orbit"
+      aria-label="Animated repeating cycle"
     >
       <defs>
         {spheres.map((sphere) => (

@@ -86,6 +86,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
   const headerRef = useRef<HTMLElement>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<number | undefined>(undefined);
+  const megaMenuWasOpenRef = useRef(false);
   const [activeMenu, setActiveMenu] = useState<NavigationKey>("services");
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -121,6 +122,8 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    const menuWasOpen = megaMenuWasOpenRef.current;
+    megaMenuWasOpenRef.current = megaMenuOpen;
 
     gsap.killTweensOf([menu, entries]);
 
@@ -135,27 +138,37 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
 
     if (megaMenuOpen) {
       gsap.set(menu, { pointerEvents: "auto", visibility: "visible" });
-      gsap.fromTo(
-        menu,
-        { autoAlpha: 0, scaleY: 0.985, y: -12 },
-        {
+
+      if (menuWasOpen) {
+        gsap.set(menu, {
           autoAlpha: 1,
-          duration: 0.3,
-          ease: "power3.out",
           scaleY: 1,
-          transformOrigin: "top center",
           y: 0,
-        },
-      );
+        });
+      } else {
+        gsap.fromTo(
+          menu,
+          { autoAlpha: 0, scaleY: 0.985, y: -12 },
+          {
+            autoAlpha: 1,
+            duration: 0.42,
+            ease: "power3.out",
+            scaleY: 1,
+            transformOrigin: "top center",
+            y: 0,
+          },
+        );
+      }
+
       gsap.fromTo(
         entries,
-        { autoAlpha: 0, y: 12 },
+        { autoAlpha: 0, y: menuWasOpen ? 8 : 12 },
         {
           autoAlpha: 1,
-          delay: 0.05,
-          duration: 0.38,
-          ease: "power3.out",
-          stagger: 0.035,
+          delay: menuWasOpen ? 0 : 0.06,
+          duration: menuWasOpen ? 0.52 : 0.44,
+          ease: "power2.out",
+          stagger: menuWasOpen ? 0.045 : 0.035,
           y: 0,
         },
       );
@@ -164,7 +177,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
 
     gsap.to(menu, {
       autoAlpha: 0,
-      duration: 0.2,
+      duration: 0.28,
       ease: "power2.out",
       onComplete: () => {
         gsap.set(menu, { pointerEvents: "none", y: -8 });
