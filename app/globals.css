@@ -1370,9 +1370,12 @@ video {
   padding-block: var(--section-space-lg);
 }
 
+/* The film puts the ring on the left and the words on the right. */
 .industries-intro {
   position: relative;
   z-index: 1;
+  width: min(52rem, 58%);
+  margin-left: auto;
 }
 
 /* Set as the page's section label. It runs to two lines where those are one
@@ -1383,14 +1386,27 @@ video {
 }
 
 /* Wider than the names themselves: this is the band that answers to the
-   pointer, and it stops short of where the ring starts. */
+   pointer, and it runs the width of the column. */
+/* Two columns the whole list shares: the names set the width of the first, so
+   every description starts on the same line 40px after the longest name. */
 .industries-list {
   display: grid;
-  width: min(52rem, 66%);
-  gap: clamp(1.75rem, 3.6vw, 4.25rem);
-  margin: clamp(3rem, 9vw, 9rem) 0 0;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 100px;
+  row-gap: clamp(0.9rem, 1.7vw, 1.65rem);
+  margin: clamp(2.5rem, 6vw, 5.5rem) 0 0;
   padding: 0;
   list-style: none;
+}
+
+/* Centred rather than sat on the name's baseline: the name is twice the size,
+   so a baseline would drop the description below the row it belongs to. */
+.industries-list > li,
+.industries-item {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: center;
 }
 
 /* The film holds the whole list back and brings one name forward, so the ring
@@ -1398,51 +1414,57 @@ video {
 /* The target runs the width of the column, not just the letters, so pointing
    at the space beside a short name still picks it. */
 .industries-item {
-  display: block;
-  width: 100%;
   padding: 0;
   border: 0;
   background: none;
   cursor: pointer;
-  font-family: var(--type-display);
-  font-size: clamp(2rem, 4.4vw, 4rem);
-  font-weight: 430;
-  letter-spacing: -0.05em;
-  line-height: 1.02;
   opacity: 0.2;
   text-align: left;
   transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.industries-item__name {
+  font-family: var(--type-display);
+  font-size: clamp(1.75rem, 2.5vw, 2.9rem);
+  font-weight: 430;
+  letter-spacing: -0.045em;
+  line-height: 1.12;
+}
+
+/* Sits in the column beside the name, centred against it. */
+.industries-item__note {
+  color: var(--ink-muted);
+  font-family: var(--type-body);
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.26;
 }
 
 .industries-item[aria-pressed="true"] {
   opacity: 1;
 }
 
-/* The film's stage, held against the right edge of the page. Its viewBox is
-   anchored right too, so the ring keeps hanging off the edge and the section
-   cuts it — the drawing is never measured against the text column. */
-/* The film frames this against the page, and its ring meets the frame's own
-   right edge, so the stage stays flush right and is only pulled in from the
-   left to size the drawing. */
+/* The film frames the drawing against the page, with the ring held to the
+   left and its arc fading out before it reaches the words. */
 .industries-art {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 81%;
+  inset: 0;
   pointer-events: none;
-  transform: translateY(120px);
 }
 
+.industries-art__stage,
 .industry-art {
   width: 100%;
   height: 100%;
 }
 
+/* Both are the same arc, drawn as segments so it can fade toward the words. */
 .industry-art__ring,
 .industry-art__lanes {
   fill: none;
   stroke: var(--accent);
+  stroke-linecap: round;
   stroke-width: 2.5;
 }
 
@@ -1452,12 +1474,6 @@ video {
   stroke-width: 3;
 }
 
-.industry-art__rails {
-  stroke: var(--accent);
-  stroke-linecap: round;
-  stroke-width: 2.5;
-}
-
 /* The pulse rings that leave each dot in the Healthcare scene. */
 .industry-art__pulses {
   fill: none;
@@ -1465,8 +1481,8 @@ video {
   stroke-width: 2.5;
 }
 
-.industry-art__movers,
-.industry-art__extras {
+/* The shipment tracked down the line in the Logistics scene. */
+.industry-art__movers {
   fill: var(--accent-strong);
 }
 
@@ -2092,17 +2108,16 @@ video {
 
   /* The list keeps the page; the drawing drops below it and still runs off the
      right edge. */
-  .industries-list {
+  .industries-intro {
     width: auto;
+    margin-left: 0;
   }
 
   .industries-art {
     position: relative;
     inset: auto;
-    width: auto;
     height: 62vw;
     margin-top: clamp(2.5rem, 6vw, 4rem);
-    transform: none;
   }
 
   .products-grid {
@@ -2235,8 +2250,23 @@ video {
     margin-top: 2.5rem;
   }
 
+  /* Not enough width for two columns: the description drops under its name. */
+  .industries-list {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2rem;
+  }
+
+  .industries-list > li,
   .industries-item {
-    font-size: clamp(1.9rem, 9vw, 2.75rem);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .industries-item__name {
+    font-size: clamp(1.6rem, 7vw, 2.25rem);
+  }
+
+  .industries-item__note {
+    margin-top: 0.75rem;
   }
 
   .services-intro,

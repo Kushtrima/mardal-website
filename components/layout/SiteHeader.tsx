@@ -34,10 +34,12 @@ const navigation = [
     description: "Technology shaped around the realities of your sector.",
     href: "#solutions",
     items: [
-      { label: "Financial Services", href: "#financial-services" },
+      { label: "Finance", href: "#finance" },
       { label: "Healthcare", href: "#healthcare" },
       { label: "Manufacturing", href: "#manufacturing" },
       { label: "Automotive", href: "#automotive" },
+      { label: "Retail", href: "#retail" },
+      { label: "Logistics", href: "#logistics" },
       { label: "Public Sector", href: "#public-sector" },
     ],
   },

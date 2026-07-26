@@ -26,10 +26,12 @@ async function render() {
  *  do not exist yet (#about, #team, #blog, #careers). */
 const menuAnchors = [
   "solutions",
-  "financial-services",
+  "finance",
   "healthcare",
   "manufacturing",
   "automotive",
+  "retail",
+  "logistics",
   "public-sector",
   "products",
   "arvena-ai",

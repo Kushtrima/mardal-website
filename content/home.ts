@@ -88,29 +88,46 @@ export const solutions = {
   lede: "Our experience across different industries shapes how we approach every project.",
   items: [
     {
-      id: "financial-services",
-      title: "Financial Services",
-      descriptor: "Compliance-aware systems",
+      id: "finance",
+      title: "Finance",
+      descriptor:
+        "Banks, insurance companies, fintech platforms and financial service providers.",
     },
     {
       id: "healthcare",
       title: "Healthcare",
-      descriptor: "Care that stays private",
+      descriptor:
+        "Hospitals, clinics, pharmacies and organizations delivering health services.",
     },
     {
       id: "manufacturing",
       title: "Manufacturing",
-      descriptor: "Visibility on the floor",
+      descriptor:
+        "Factories, production companies and businesses managing industrial operations.",
     },
     {
       id: "automotive",
       title: "Automotive",
-      descriptor: "Workshops that run on time",
+      descriptor:
+        "Dealerships, repair services, vehicle platforms and mobility companies.",
+    },
+    {
+      id: "retail",
+      title: "Retail",
+      descriptor:
+        "Physical stores, e-commerce businesses and consumer-focused brands.",
+    },
+    {
+      id: "logistics",
+      title: "Logistics",
+      descriptor:
+        "Transport companies, warehouses, distributors and delivery service providers.",
     },
     {
       id: "public-sector",
       title: "Public Sector",
-      descriptor: "Services people can use",
+      descriptor:
+        "Government institutions, municipalities and organizations providing public services.",
     },
   ],
 } as const;

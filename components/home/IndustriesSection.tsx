@@ -68,7 +68,12 @@ export function IndustriesSection() {
                     if (event.pointerType === "mouse") hold(index);
                   }}
                 >
-                  {industry.title}
+                  <span className="industries-item__name">
+                    {industry.title}
+                  </span>
+                  <span className="industries-item__note">
+                    {industry.descriptor}
+                  </span>
                 </button>
               </li>
             ))}
@@ -77,11 +82,13 @@ export function IndustriesSection() {
       </Container>
 
       {/* Outside the container, so the drawing is measured against the page and
-          keeps running off the right edge at every width. Last in the DOM so it
-          falls under the list once the layout stacks. */}
-      <div className="industries-art" aria-hidden="true">
-        <IndustryArt industry={active.id} onCycleEnd={handleCycleEnd} />
-      </div>
+          not the text column. Last in the DOM so it falls under the list once
+          the layout stacks. */}
+      <RevealGroup className="industries-art" preset="fade" aria-hidden="true">
+        <div className="industries-art__stage" data-reveal-item>
+          <IndustryArt industry={active.id} onCycleEnd={handleCycleEnd} />
+        </div>
+      </RevealGroup>
     </section>
   );
 }
