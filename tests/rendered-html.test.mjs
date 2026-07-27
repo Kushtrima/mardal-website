@@ -96,7 +96,7 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /What Makes Us/);
   assert.match(html, /Shaped Around You/);
   assert.match(html, /Beyond Handover/);
-  assert.match(html, /Our experience across different industries/);
+  assert.match(html, /Built across industries/);
   assert.match(html, /class="industry-art__ring"/);
   assert.match(html, /Physical stores, e-commerce businesses/);
   assert.match(html, /Products are how we test our thinking/);

@@ -108,7 +108,7 @@ export const solutions = {
   id: "solutions",
   eyebrow: "Who we build for",
   title: "Technology shaped around the realities of your sector.",
-  lede: "Our experience across different industries shapes how we approach every project.",
+  lede: "Built across industries",
   items: [
     {
       id: "finance",
