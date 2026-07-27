@@ -1,17 +1,16 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
-import type { PointerEvent } from "react";
 import gsap from "gsap";
 import { Container } from "../layout/Container";
 import { SiteHeader } from "../layout/SiteHeader";
-import { HERO_VIEWBOX, heroBandLines } from "../../lib/lines";
+import { HeroField } from "./HeroField";
 
 export function Hero() {
   const heroRef = useRef<HTMLElement>(null);
   const navigationRef = useRef<HTMLElement>(null);
   const copyRef = useRef<HTMLParagraphElement>(null);
-  const linesRef = useRef<SVGSVGElement>(null);
+  const linesRef = useRef<HTMLDivElement>(null);
   const linesBlurRef = useRef<HTMLDivElement>(null);
   const linesFadeRef = useRef<HTMLDivElement>(null);
 
@@ -104,13 +103,13 @@ export function Hero() {
           },
           "-=0.7",
         )
+        /* The field has its own opening — it draws itself out of the marks it
+           rests on — so it only needs fading in. */
         .from(
           linesRef.current,
           {
             autoAlpha: 0,
             duration: 1.25,
-            scaleY: 0.45,
-            transformOrigin: "bottom center",
           },
           "-=0.65",
         );
@@ -125,59 +124,11 @@ export function Hero() {
     };
   }, []);
 
-  function handlePointerMove(event: PointerEvent<HTMLElement>) {
-    if (
-      event.pointerType !== "mouse" ||
-      !heroRef.current ||
-      !linesRef.current
-    ) {
-      return;
-    }
-
-    const bounds = heroRef.current.getBoundingClientRect();
-    const x = event.clientX - bounds.left;
-    const lineImages =
-      linesRef.current.querySelectorAll<SVGRectElement>(".hero-line");
-
-    lineImages.forEach((line) => {
-      const linePosition =
-        ((line.x.baseVal.value + line.width.baseVal.value / 2) /
-          HERO_VIEWBOX.width) *
-        bounds.width;
-      const distance = Math.abs(x - linePosition);
-      const influence = Math.max(0, 1 - distance / (bounds.width * 0.14));
-      const red = Math.round(131 + (8 - 131) * influence);
-      const green = Math.round(98 + (8 - 98) * influence);
-      const blue = Math.round(184 + (10 - 184) * influence);
-
-      gsap.to(line, {
-        duration: 0.32,
-        ease: "power2.out",
-        fill: `rgb(${red} ${green} ${blue})`,
-        overwrite: "auto",
-      });
-    });
-  }
-
-  function handlePointerLeave() {
-    if (!linesRef.current) return;
-
-    gsap.to(linesRef.current.querySelectorAll(".hero-line"), {
-      duration: 0.7,
-      ease: "power2.out",
-      fill: "#8362b8",
-      overwrite: "auto",
-    });
-  }
+  /* No pointer colouring on the field any more: the film runs its own colour
+     from pose to pose, and a hover tint would fight it. */
 
   return (
-    <section
-      className="hero"
-      aria-labelledby="hero-title"
-      ref={heroRef}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
-    >
+    <section className="hero" aria-labelledby="hero-title" ref={heroRef}>
       <SiteHeader ref={navigationRef} />
 
       <Container className="hero-content" wide>
@@ -199,25 +150,8 @@ export function Hero() {
         </p>
       </Container>
 
-      <div className="hero-lines" aria-hidden="true">
-        <svg
-          className="hero-lines-art"
-          viewBox={`0 0 ${HERO_VIEWBOX.width} ${HERO_VIEWBOX.height}`}
-          preserveAspectRatio="none"
-          ref={linesRef}
-        >
-          {heroBandLines.map((line, index) => (
-            <rect
-              className="hero-line"
-              x={line.x}
-              y={line.y}
-              width={line.width}
-              height={line.height}
-              fill="currentColor"
-              key={`${line.x}-${index}`}
-            />
-          ))}
-        </svg>
+      <div className="hero-lines" aria-hidden="true" ref={linesRef}>
+        <HeroField />
         <div className="hero-lines-blur" ref={linesBlurRef} />
         <div className="hero-lines-fade" ref={linesFadeRef} />
       </div>

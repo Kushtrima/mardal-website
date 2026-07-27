@@ -52,8 +52,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /Innovation/);
   assert.match(html, /lives here/);
   assert.match(html, /technology behind/);
-  assert.match(html, /class="hero-line"/);
-  assert.match(html, /fill="currentColor"/);
+  assert.match(html, /class="hero-field__box"/);
+  // The field is server-rendered in its settled pose, in the brand colour.
+  assert.match(html, /class="hero-field"[^>]*viewBox="0 0 1920 1400"/);
+  assert.match(html, /fill="#8362b8"/);
 
   // Why Mardal
   assert.match(html, /Why Mardal/);
