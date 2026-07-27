@@ -3,8 +3,12 @@ import { RevealGroup } from "../motion/RevealGroup";
 import { RedactedLines } from "./RedactedLines";
 import { difference } from "../../content/home";
 
-/** One tint per card, in the order the cards are read. */
-const TINTS = ["one", "two", "three", "four"] as const;
+/**
+ * Four tints across five boxes. The second row starts one colour further on,
+ * so no box touches another of its own colour, beside it or above it. The
+ * sixth cell of the grid is left empty.
+ */
+const TINTS = ["one", "two", "three", "four", "one"] as const;
 
 export function DifferenceSection() {
   return (
@@ -29,6 +33,20 @@ export function DifferenceSection() {
           </h2>
         </RevealGroup>
 
+        {/* The first column is left empty so the two paragraphs sit over the
+            second and third box. */}
+        <RevealGroup
+          className="difference-intro"
+          preset="upSmall"
+          stagger={0.1}
+        >
+          {difference.intro.map((paragraph) => (
+            <p className="difference-intro__text" key={paragraph} data-reveal-item>
+              {paragraph}
+            </p>
+          ))}
+        </RevealGroup>
+
         <RevealGroup
           as="ul"
           className="difference-grid"
@@ -38,16 +56,24 @@ export function DifferenceSection() {
           {difference.items.map((item, index) => (
             <li
               className={`difference-card difference-card--${TINTS[index % TINTS.length]}`}
-              key={item.title}
+              id={item.id}
+              key={item.id}
               data-reveal-item
             >
-              {/* The title sits on the colour, over the bars. */}
+              {/* The title sits on the colour, over the bars, set on the two
+                  lines the content gives it rather than wherever it wraps. */}
               <div className="difference-card__panel">
                 <RedactedLines />
-                <h3 className="difference-card__title">{item.title}</h3>
+                {/* A dash in the corner that closes into a cross on hover. */}
+                <span className="difference-card__toggle" aria-hidden="true" />
+                <h3 className="difference-card__title">
+                  {item.lines.map((line) => (
+                    <span className="difference-card__title-line" key={line}>
+                      {line}
+                    </span>
+                  ))}
+                </h3>
               </div>
-
-              <p className="difference-card__copy">{item.copy}</p>
             </li>
           ))}
         </RevealGroup>

@@ -1,27 +1,68 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Container } from "../layout/Container";
 import { RevealGroup } from "../motion/RevealGroup";
-import { IndustryArt } from "./IndustryArt";
 import { solutions } from "../../content/home";
+
+/** The rule beside each industry takes the next of the four brand colours. */
+const TINTS = ["one", "two", "three", "four"] as const;
+
+/** How long each industry holds before the next one takes over. */
+const HOLD_MS = 3000;
 
 export function IndustriesSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   /* Held while the visitor is pointing at the list: their choice outranks the
      run through the industries, and the run picks up again when they leave. */
   const heldRef = useRef(false);
-  const active = solutions.items[activeIndex] ?? solutions.items[0];
+  const listRef = useRef<HTMLUListElement>(null);
 
-  const handleCycleEnd = useCallback(() => {
-    if (heldRef.current) return;
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    setActiveIndex((index) => (index + 1) % solutions.items.length);
+    let timer: number | undefined;
+
+    function start() {
+      if (timer) return;
+
+      timer = window.setInterval(() => {
+        if (heldRef.current) return;
+
+        setActiveIndex((index) => (index + 1) % solutions.items.length);
+      }, HOLD_MS);
+    }
+
+    function stop() {
+      if (!timer) return;
+
+      window.clearInterval(timer);
+      timer = undefined;
+    }
+
+    /* The run belongs to the section: it starts when the list comes into view
+       and stops when it leaves, rather than ticking away out of sight. */
+    const observer = new IntersectionObserver(
+      ([entry]) => (entry.isIntersecting ? start() : stop()),
+      { rootMargin: "-20% 0px -20% 0px" },
+    );
+    observer.observe(list);
+
+    return () => {
+      observer.disconnect();
+      stop();
+    };
   }, []);
 
   function hold(index: number) {
     heldRef.current = true;
     setActiveIndex(index);
+  }
+
+  function release() {
+    heldRef.current = false;
   }
 
   return (
@@ -64,22 +105,21 @@ export function IndustriesSection() {
           >
             <ul
               className="industries-list"
+              ref={listRef}
               onPointerLeave={(event) => {
-                if (event.pointerType === "mouse") heldRef.current = false;
+                if (event.pointerType === "mouse") release();
               }}
               onBlur={(event) => {
-                if (!event.currentTarget.contains(event.relatedTarget)) {
-                  heldRef.current = false;
-                }
+                if (!event.currentTarget.contains(event.relatedTarget)) release();
               }}
             >
               {solutions.items.map((industry, index) => (
                 <li key={industry.id} data-reveal-item>
                   {/* A button rather than plain text: pointing at an industry
-                      is what swaps the drawing, and it has to work from the
+                      is what brings it forward, and it has to work from the
                       keyboard too. */}
                   <button
-                    className="industries-item"
+                    className={`industries-item industries-item--${TINTS[index % TINTS.length]}`}
                     id={industry.id}
                     type="button"
                     aria-pressed={index === activeIndex}
@@ -90,6 +130,14 @@ export function IndustriesSection() {
                     }}
                   >
                     <span className="industries-item__name">
+                      {/* A rule out to the left of the name, shown only on the
+                          industry the run is on. A second copy of it turns
+                          upright a moment later and the two make a cross. */}
+                      <span className="industries-item__mark" aria-hidden="true" />
+                      <span
+                        className="industries-item__mark industries-item__mark--cross"
+                        aria-hidden="true"
+                      />
                       {industry.title}
                     </span>
                     <span className="industries-item__note">
@@ -101,15 +149,6 @@ export function IndustriesSection() {
             </ul>
           </RevealGroup>
         </Container>
-
-        {/* Outside the container, so the drawing is measured against the page
-            and not the text column. Last in the DOM so it falls under the list
-            once the layout stacks. */}
-        <RevealGroup className="industries-art" preset="fade" aria-hidden="true">
-          <div className="industries-art__stage" data-reveal-item>
-            <IndustryArt industry={active.id} onCycleEnd={handleCycleEnd} />
-          </div>
-        </RevealGroup>
       </div>
     </section>
   );

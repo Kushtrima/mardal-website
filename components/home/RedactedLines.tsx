@@ -85,10 +85,14 @@ const BARS: ReadonlyArray<readonly [number, number, number, number]> = [
 const WIDTH = 716;
 const HEIGHT = 336;
 
-export function RedactedLines() {
+export function RedactedLines({
+  className = "difference-card__lines",
+}: {
+  className?: string;
+}) {
   return (
     <svg
-      className="difference-card__lines"
+      className={className}
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
       preserveAspectRatio="none"
       aria-hidden="true"

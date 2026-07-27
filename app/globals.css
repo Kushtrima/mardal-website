@@ -6,9 +6,11 @@
 
 :root {
   /* Brand and semantic colors */
-  --canvas: #efedf8;
-  --surface: #f8f7fd;
-  --menu-surface: #f8f7fd;
+  /* The page is white; the things that sit on it — the header, the mega menu
+     and the cards — carry the tint. */
+  --canvas: #ffffff;
+  --surface: #efedf8;
+  --menu-surface: #efedf8;
   --ink: #08080a;
   --ink-muted: #5e5a69;
   --line: rgb(8 8 10 / 72%);
@@ -20,9 +22,10 @@
   --accent-contrast: #ffffff;
   --focus: #6e4fa5;
   /* The canvas at partial strength, for the veil and the fade over the hero
-     bars, and the white the card drawings sit at before they take a tint. */
-  --canvas-veil: rgb(239 237 248 / 4%);
-  --canvas-fade: rgb(239 237 248 / 48%);
+     bars — both follow the page, so both are white with the canvas.
+     --art-surface is the fill a card drawing sits at before it takes a tint. */
+  --canvas-veil: rgb(255 255 255 / 4%);
+  --canvas-fade: rgb(255 255 255 / 48%);
   --art-surface: #ffffff;
 
   /* Card tints. Each is a flat panel colour and the deeper shade of itself the
@@ -74,8 +77,10 @@
   --page-gutter: clamp(1.25rem, 4vw, 4.5rem);
   --container-wide: 112rem;
   --container-default: 80rem;
-  --section-space: clamp(5rem, 12vw, 10rem);
-  --section-space-lg: clamp(8rem, 12vw, 12rem);
+  /* Every section pads top and bottom, so the space between two of them is
+     twice these numbers — read them that way when changing them. */
+  --section-space: clamp(3.5rem, 7vw, 6.5rem);
+  --section-space-lg: clamp(4.5rem, 8vw, 7.5rem);
 
   /* Shape and effects */
   --shape-sm: 0.375rem;
@@ -93,6 +98,12 @@
   --duration-base: 420ms;
   --duration-slow: 620ms;
   --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  /* For a change that happens on its own rather than under the hand: long
+     enough to be watched, and eased at both ends so neither is abrupt. */
+  --duration-handover: 900ms;
+  --ease-handover: cubic-bezier(0.4, 0, 0.2, 1);
+  /* How long the upright copy of the rule waits before it turns. */
+  --delay-cross: 800ms;
 }
 
 @theme inline {
@@ -1431,38 +1442,68 @@ video {
 
 /* Four cards held to the foot of the section, the way the heading sits at
    its head. */
-/* A narrow gap on purpose: the cards are held to the page's own column, so the
-   only width they can gain is the space between them. */
+/* The same three columns the boxes use, so each paragraph sits exactly over
+   the box beneath it. The first column stays empty, under the heading. */
+/* The paragraphs and the boxes below them move together: this margin is what
+   sets the whole block under the heading, less the 40px it was moved up by. */
+.difference-intro {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.65rem, 0.9vw, 0.85rem);
+  margin-top: calc(clamp(3rem, 7vw, 6.5rem) - 40px);
+}
+
+.difference-intro__text:first-child {
+  grid-column: 2;
+}
+
+.difference-intro__text:last-child {
+  grid-column: 3;
+}
+
+.difference-intro__text {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-body);
+  letter-spacing: -0.015em;
+  line-height: 1.45;
+}
+
+/* Three across, two rows, with the sixth cell left empty. A narrow gap on
+   purpose: the boxes are held to the page's own column, so the only width they
+   can gain is the space between them. */
 .difference-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(0.9rem, 1.4vw, 1.5rem);
-  margin: clamp(6rem, 14vw, 13rem) 0 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.65rem, 0.9vw, 0.85rem);
+  margin: clamp(2.5rem, 5vw, 4.5rem) 0 0;
   padding: 0;
   list-style: none;
 }
 
+/* No card behind the copy: only the tint panel is a surface, and the words
+   below it sit straight on the page. */
 .difference-card {
   display: flex;
   container-type: inline-size;
   flex-direction: column;
-  overflow: hidden;
-  border-radius: var(--shape-card);
-  background: var(--surface);
 }
 
 /* The colour, the bars and the title, in that order front to back. The title
    sits at the foot of the panel with the bars running under it. */
-/* The shape the bars were traced from, plus the 60px the panel was asked to
-   grow by. Reading the card's own width keeps that 60 exact at every size. */
+/* The shape the bars were traced from, plus the 110px the panel has been asked
+   to grow by in two goes. Reading the card's own width keeps that exact at
+   every size. */
 .difference-card__panel {
   position: relative;
   display: flex;
-  height: calc(100cqw * 336 / 716 + 60px);
+  height: calc(100cqw * 336 / 716 + 110px);
   flex-direction: column;
   justify-content: flex-end;
   padding: clamp(1.1rem, 1.6vw, 1.5rem);
   padding-bottom: clamp(1.25rem, 2.2vw, 1.85rem);
+  overflow: hidden;
+  border-radius: var(--shape-card);
   background: var(--card-tint);
 }
 
@@ -1484,53 +1525,76 @@ video {
   line-height: var(--leading-heading);
 }
 
-/* The 20px on each end is the 40px the card was asked to grow by, split so the
-   copy keeps its place between the panel and the foot. */
-.difference-card__copy {
-  margin: 0;
-  padding: calc(clamp(2.5rem, 6vw, 5.5rem) + 20px) clamp(1.1rem, 1.6vw, 1.5rem)
-    calc(clamp(1.75rem, 3vw, 2.75rem) + 20px);
-  color: var(--ink-muted);
-  font-size: var(--text-body);
-  letter-spacing: -0.015em;
-  line-height: 1.45;
+/* The break is set in the content, so it falls in the same place on every box
+   however wide the box gets. */
+.difference-card__title-line {
+  display: block;
 }
 
-/* One tint per card, and a small step off the grid line — the first and third
-   to the right, the second and fourth to the left, so the row reads as placed
-   by hand rather than ruled. The margins cancel, so a card keeps its width and
-   the row keeps both its edges on the page's column. */
+/* A dash in the corner of every box, at the size of the type rather than the
+   size of the rule beside the industries. The upright stroke grows out of the
+   middle on hover, so the dash closes into a cross. */
+.difference-card__toggle {
+  position: absolute;
+  top: clamp(1.1rem, 1.6vw, 1.5rem);
+  right: clamp(1.1rem, 1.6vw, 1.5rem);
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.difference-card__toggle::before,
+.difference-card__toggle::after {
+  position: absolute;
+  background: var(--ink);
+  content: "";
+}
+
+.difference-card__toggle::before {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.difference-card__toggle::after {
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%) scaleY(0);
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.difference-card:hover .difference-card__toggle::after {
+  transform: translateX(-50%) scaleY(1);
+}
+
+/* The white below the panel is only this padding: the copy sets its own
+   height, so the card is as tall as its longest paragraph and no taller. */
+/* One tint per card. */
 .difference-card--one {
   --card-tint: var(--tint-lilac);
   --card-tint-bar: var(--tint-lilac-bar);
-
-  margin-left: 5px;
-  margin-right: -5px;
 }
 
 .difference-card--two {
   --card-tint: var(--tint-butter);
   --card-tint-bar: var(--tint-butter-bar);
-
-  margin-left: -5px;
-  margin-right: 5px;
 }
 
 .difference-card--three {
   --card-tint: var(--tint-mint);
   --card-tint-bar: var(--tint-mint-bar);
-
-  margin-left: 5px;
-  margin-right: -5px;
 }
 
 .difference-card--four {
   --card-tint: var(--tint-sky);
   --card-tint-bar: var(--tint-sky-bar);
-
-  margin-left: -5px;
-  margin-right: 5px;
 }
+
+/* No step off the grid line here: with three columns it left one gap wider
+   than the other, so every box sits square and the gaps are equal. */
 
 /* ------------------------------- Industries ------------------------------- */
 
@@ -1660,15 +1724,75 @@ video {
   cursor: pointer;
   opacity: 0.2;
   text-align: left;
-  transition: opacity var(--duration-base) var(--ease-standard);
+  /* Slow and even: one industry hands over to the next while the run is
+     watched, so the change should read as a fade rather than a switch. */
+  transition: opacity var(--duration-handover) var(--ease-handover);
 }
 
 .industries-item__name {
+  position: relative;
   font-family: var(--type-display);
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
   line-height: var(--leading-heading);
+}
+
+/* The rule that appears beside the industry the pointer is on. It hangs out to
+   the left of the name rather than sitting in the row, so no name moves when
+   it appears. */
+.industries-item__mark {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 15px);
+  width: 60px;
+  height: 2px;
+  background: var(--mark-tint);
+  opacity: 0;
+  transform: translateY(-50%);
+  transition:
+    opacity var(--duration-handover) var(--ease-handover),
+    transform var(--duration-handover) var(--ease-handover);
+}
+
+/* The second copy lies exactly under the first and turns upright, so the two
+   read as one line becoming a cross.
+   Going out it only fades: the turn is not run backwards. The transform is
+   reset with no duration once the fade has finished, so the copy is already
+   lying flat again by the time it is next needed, and nothing is seen to
+   unwind. */
+.industries-item__mark--cross {
+  transition:
+    opacity var(--duration-handover) var(--ease-handover),
+    transform 0s linear var(--duration-handover);
+}
+
+.industries-item[aria-pressed="true"] .industries-item__mark--cross {
+  transform: translateY(-50%) rotate(90deg);
+  transition:
+    opacity var(--duration-handover) var(--ease-handover) var(--delay-cross),
+    transform var(--duration-handover) var(--ease-handover) var(--delay-cross);
+}
+
+/* The four brand colours in their deepest shade, taken in turn down the list. */
+.industries-item--one {
+  --mark-tint: var(--tint-lilac-bar);
+}
+
+.industries-item--two {
+  --mark-tint: var(--tint-butter-bar);
+}
+
+.industries-item--three {
+  --mark-tint: var(--tint-mint-bar);
+}
+
+.industries-item--four {
+  --mark-tint: var(--tint-sky-bar);
+}
+
+.industries-item[aria-pressed="true"] .industries-item__mark {
+  opacity: 1;
 }
 
 /* Sits in the column beside the name, centred against it. Its own column ends
@@ -2355,7 +2479,22 @@ video {
   .difference-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: clamp(2.5rem, 5vw, 3.5rem);
-    margin-top: clamp(4rem, 9vw, 7rem);
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  /* Two boxes across, so the paragraphs take a column each and the empty one
+     under the heading goes. */
+  .difference-intro {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2.5rem, 5vw, 3.5rem);
+  }
+
+  .difference-intro__text:first-child {
+    grid-column: 1;
+  }
+
+  .difference-intro__text:last-child {
+    grid-column: 2;
   }
 
   /* The list keeps the page; the drawing drops below it and still runs off the
@@ -2470,7 +2609,7 @@ video {
   }
 
   .why-section {
-    padding-block: 7rem;
+    padding-block: 4rem;
   }
 
   .why-intro {
@@ -2508,7 +2647,17 @@ video {
   .difference-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 2.5rem;
-    margin-top: 3.5rem;
+    margin-top: 2.5rem;
+  }
+
+  .difference-intro {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+
+  .difference-intro__text:first-child,
+  .difference-intro__text:last-child {
+    grid-column: 1;
   }
 
   .services-section,
@@ -2519,7 +2668,7 @@ video {
   .case-section,
   .process-section,
   .contact-section {
-    padding-block: 7rem;
+    padding-block: 4rem;
   }
 
   .industries-list {

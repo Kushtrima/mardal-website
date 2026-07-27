@@ -22,8 +22,8 @@ async function render() {
   );
 }
 
-/** Every anchor the header menu links to, except the four Company pages that
- *  do not exist yet (#about, #team, #blog, #careers). */
+/** The anchors that are still on the page. The menu also links to Services,
+ *  Case Studies, Company and Products, whose sections are not on the page. */
 const menuAnchors = [
   "solutions",
   "finance",
@@ -33,11 +33,6 @@ const menuAnchors = [
   "retail",
   "logistics",
   "public-sector",
-  "products",
-  "arvena-ai",
-  "ftesa",
-  "ihrauto",
-  "contact",
 ];
 
 test("server-renders the Mardal homepage", async () => {
@@ -96,23 +91,36 @@ test("server-renders the Mardal homepage", async () => {
   // The sections below the fold. These strings are deliberately ones the
   // header menu does not already satisfy, so they prove the section rendered.
   assert.match(html, /What Makes Us/);
-  assert.match(html, /Shaped Around You/);
-  assert.match(html, /Beyond Handover/);
+  // Five coloured boxes carrying the service names and the ids the menu wants,
+  // in four tints — the second row starts one colour further on.
+  assert.match(html, /Five connected services\. One team\./);
+  assert.match(html, /one partner that makes everything work together/);
+  assert.doesNotMatch(html, /Shaped Around You|Beyond Handover/);
+  assert.equal((html.match(/class="difference-card /g) ?? []).length, 5);
+  assert.doesNotMatch(html, /difference-card--(five|six)/);
+  // The markup is followed by the RSC payload, which repeats every class name,
+  // so the boxes are the first five matches.
+  assert.deepEqual(
+    [...html.matchAll(/difference-card--(\w+)/g)].map((m) => m[1]).slice(0, 5),
+    ["one", "two", "three", "four", "one"],
+  );
   assert.match(html, /Built across industries/);
-  assert.match(html, /class="industry-art__ring"/);
   assert.match(html, /Physical stores, e-commerce businesses/);
-  assert.match(html, /Products are how we test our thinking/);
-  assert.match(html, /In development/);
-  assert.match(html, /moves you forward/);
-  assert.match(html, /Start a conversation/);
+  // The ring that ran through the industries is gone; the words stay.
+  assert.doesNotMatch(html, /industry-art/);
+  // The footer carries the address now that the contact section is gone.
   assert.match(html, /hello@mardal\.com/);
 
-  // The services, solutions, case study and process sections are gone: these
-  // strings live in the sections themselves, not in the menu that links to them.
+  // Services, solutions, case study, process, products and contact are all off
+  // the page: these strings live in the sections, not in the menu that links to
+  // them, so the menu is unaffected.
   assert.doesNotMatch(html, /Services built around the way you work/);
   assert.doesNotMatch(html, /Compliance-aware systems/);
   assert.doesNotMatch(html, /shaped into a product|Case study in progress/);
   assert.doesNotMatch(html, /A simple path from idea to working software/);
+  assert.doesNotMatch(html, /Products are how we test our thinking/);
+  assert.doesNotMatch(html, /In development/);
+  assert.doesNotMatch(html, /moves you forward|Start a conversation/);
 
   // Footer — closes on the oversized wordmark.
   assert.match(html, /<footer class="site-footer"/);
@@ -127,11 +135,8 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /data-route-section/);
   assert.match(html, /data-reveal-item/);
 
-  // The isometric drawings, one per product.
-  assert.match(html, /class="iso-art"/);
-  assert.match(html, /class="iso-block iso-block--phase-/);
-  assert.match(html, /Animated isometric cards fanned out/);
-  assert.equal((html.match(/class="iso-art"/g) ?? []).length, 3);
+  // The isometric drawings belonged to the products section and went with it.
+  assert.doesNotMatch(html, /class="iso-art"/);
 
   // The bars belong to the hero alone, and the scroll route line is gone.
   assert.doesNotMatch(html, /line-band|scroll-side/);

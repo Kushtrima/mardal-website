@@ -81,26 +81,27 @@ export const services = {
   ],
 } as const;
 
+/**
+ * The six coloured boxes: the five services the menu names, and the way of
+ * working the site claims alongside them.
+ *
+ * Each carries the id its menu entry links to, so the Services menu lands on
+ * the box for that service instead of nowhere.
+ */
 export const difference = {
   id: "difference",
   titleLines: ["What Makes Us", "Different."],
+  /** Two columns under the heading, set against the second and third box. */
+  intro: [
+    "Five connected services. One team. Our designers, engineers and AI specialists work together across automation, CRM, custom software, web platforms and system integration, from strategy to delivery.",
+    "Instead of managing separate teams and disconnected tools, you get one partner that makes everything work together—helping your business move faster, adapt more easily and grow with less complexity.",
+  ],
   items: [
-    {
-      title: "Shaped Around You",
-      copy: "We start from how your team already works, then build around it. Your processes lead and the software follows, never the other way round.",
-    },
-    {
-      title: "AI Where It Earns Its Place",
-      copy: "We put AI and automation into the work that repeats, so decisions get clearer and your team spends its time where it actually counts.",
-    },
-    {
-      title: "Systems That Connect",
-      copy: "Your CRM, data, software and platforms are joined up, so information moves between them without anyone entering it twice.",
-    },
-    {
-      title: "Beyond Handover",
-      copy: "We stay involved once it is live, adapting and improving the technology as the business changes around it.",
-    },
+    { id: "ai-automation", lines: ["AI &", "Automation"] },
+    { id: "system-integration", lines: ["System", "Integration"] },
+    { id: "crm-solutions", lines: ["CRM", "Solutions"] },
+    { id: "custom-software", lines: ["Custom", "Software"] },
+    { id: "web-platforms", lines: ["Web", "Platforms"] },
   ],
 } as const;
 
