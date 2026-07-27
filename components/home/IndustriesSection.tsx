@@ -121,6 +121,7 @@ export function IndustriesSection() {
                   <button
                     className={`industries-item industries-item--${TINTS[index % TINTS.length]}`}
                     id={industry.id}
+                    data-cursor={TINTS[index % TINTS.length]}
                     type="button"
                     aria-pressed={index === activeIndex}
                     onClick={() => hold(index)}

@@ -178,6 +178,20 @@ video {
   outline-offset: 4px;
 }
 
+/* ------------------------------ Hover mark -------------------------------- */
+
+/* Anything hoverable takes the finger. */
+[data-cursor] {
+  cursor: pointer;
+}
+
+/* The bars are redrawn on hover, each growing from its own left edge, so the
+   origin has to be the rectangle rather than the whole drawing. */
+.difference-card__lines rect {
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
 /* ---------------------------- Layout primitives --------------------------- */
 
 .container {

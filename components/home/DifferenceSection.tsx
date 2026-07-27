@@ -58,6 +58,7 @@ export function DifferenceSection() {
               className={`difference-card difference-card--${TINTS[index % TINTS.length]}`}
               id={item.id}
               key={item.id}
+              data-cursor={TINTS[index % TINTS.length]}
               data-reveal-item
             >
               {/* The title sits on the colour, over the bars, set on the two
