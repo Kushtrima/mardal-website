@@ -81,6 +81,29 @@ export const services = {
   ],
 } as const;
 
+export const difference = {
+  id: "difference",
+  titleLines: ["What Makes Us", "Different."],
+  items: [
+    {
+      title: "Shaped Around You",
+      copy: "We start from how your team already works, then build around it. Your processes lead and the software follows, never the other way round.",
+    },
+    {
+      title: "AI Where It Earns Its Place",
+      copy: "We put AI and automation into the work that repeats, so decisions get clearer and your team spends its time where it actually counts.",
+    },
+    {
+      title: "Systems That Connect",
+      copy: "Your CRM, data, software and platforms are joined up, so information moves between them without anyone entering it twice.",
+    },
+    {
+      title: "Beyond Handover",
+      copy: "We stay involved once it is live, adapting and improving the technology as the business changes around it.",
+    },
+  ],
+} as const;
+
 export const solutions = {
   id: "solutions",
   eyebrow: "Who we build for",

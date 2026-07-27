@@ -15,7 +15,7 @@ export const STAGE = { width: 1920, height: 1080 };
 const CX = 700;
 const CY = 540;
 const R = 470;
-const DOT = 42;
+const DOT = 24;
 /** A full ring of 20 dots, 18° apart; only the left half is ever drawn. */
 const RING_COUNT = 20;
 const RING_STEP = 18;
@@ -377,16 +377,16 @@ function automotive(progress: number): ArtFrame {
 
 /** Half-width, half-height and corner for each piece of stock. */
 const GOODS: [number, number, number][] = [
-  [30, 46, 8],
-  [46, 28, 6],
-  [36, 36, 5],
-  [34, 34, 34],
-  [22, 50, 9],
-  [50, 22, 11],
-  [34, 44, 16],
-  [42, 32, 4],
-  [26, 40, 7],
-  [44, 26, 9],
+  [20, 31, 5],
+  [31, 19, 4],
+  [24, 24, 3],
+  [23, 23, 23],
+  [15, 34, 6],
+  [34, 15, 7],
+  [23, 30, 11],
+  [28, 21, 3],
+  [17, 27, 5],
+  [30, 17, 6],
 ];
 
 function retail(progress: number): ArtFrame {

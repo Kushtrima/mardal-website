@@ -13,7 +13,7 @@ import {
 import type { ArtDot } from "../../lib/industry-motion";
 import type { IndustryId } from "../../lib/industries";
 
-const MOVER_RADIUS = 13;
+const MOVER_RADIUS = 8;
 const RING_CENTER = { x: 700, y: 540 };
 const slots = (count: number) => Array.from({ length: count }, (_, i) => i);
 

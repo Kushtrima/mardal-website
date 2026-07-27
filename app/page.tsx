@@ -1,4 +1,5 @@
 import { ContactSection } from "../components/home/ContactSection";
+import { DifferenceSection } from "../components/home/DifferenceSection";
 import { Hero } from "../components/home/Hero";
 import { IndustriesSection } from "../components/home/IndustriesSection";
 import { ProductsSection } from "../components/home/ProductsSection";
@@ -11,6 +12,7 @@ export default function Home() {
       <main id="main-content">
         <Hero />
         <WhyMardal />
+        <DifferenceSection />
         <IndustriesSection />
         <ProductsSection />
         <ContactSection />
