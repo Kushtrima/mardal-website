@@ -2140,17 +2140,18 @@ video {
   color: var(--accent-contrast);
 }
 
-/* The right 58.4% of the panel, cut off by its edge, at the field's own
-   636 x 198 — so the bars keep the exact proportions the reference draws them
-   at. Tying the height to the panel's height instead would stretch them: this
-   panel holds content and is nothing like as wide-to-tall as the reference. */
+/* The footprint the reference gives the field: the right 58.4% of the panel
+   and the bottom 34.6% of it, cut off by the panel's edge on both sides.
+   Both measured off the reference — its field is 636 x 198 in a 1084 x 572
+   panel — and both taken, so the picture matches when the two panels are laid
+   over one another. Sizing by the field's own aspect instead held the bars'
+   shape but put them at 31.8% of this panel's height rather than 34.6%. */
 .site-footer__bars {
   position: absolute;
   right: 0;
   bottom: 0;
   width: 58.4%;
-  height: auto;
-  aspect-ratio: 636 / 198;
+  height: 34.6%;
   fill: var(--accent-contrast);
   pointer-events: none;
 }
