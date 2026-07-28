@@ -2812,9 +2812,10 @@ video {
   padding-top: clamp(2rem, 4vw, 3.5rem);
 }
 
+/* Level with the top of the picture, not the foot of the block. */
 .product__facts {
   display: grid;
-  align-content: end;
+  align-content: start;
   gap: 1.5rem;
   padding-left: clamp(1.25rem, 2.5vw, 2.5rem);
   border-right: 1px solid var(--line-soft);
@@ -2826,11 +2827,6 @@ video {
   padding-right: clamp(1rem, 2vw, 2rem);
 }
 
-/* Lifts the pair clear of the words under the picture, so they finish level
-   with the foot of the picture rather than the foot of the block. */
-.product-fact:last-child {
-  margin-bottom: 7rem;
-}
 
 /* Uppercase and letterspaced, the way the reference sets its labels — but at
    the paragraph size, because this site has three type sizes and no fourth. */
