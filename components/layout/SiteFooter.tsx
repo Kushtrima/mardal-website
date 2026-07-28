@@ -10,10 +10,30 @@ import {
   solutions,
 } from "../../content/home";
 
-const columns = [
-  { title: "Services", links: services.items },
-  { title: "Solutions", links: solutions.items },
-  { title: "Products", links: products.items },
+/** Every group in the same shape, so one row renders them all. */
+const groups = [
+  {
+    title: "Services",
+    links: services.items.map((item) => ({
+      label: item.title,
+      href: `#${item.id}`,
+    })),
+  },
+  {
+    title: "Solutions",
+    links: solutions.items.map((item) => ({
+      label: item.title,
+      href: `#${item.id}`,
+    })),
+  },
+  {
+    title: "Products",
+    links: products.items.map((item) => ({
+      label: item.title,
+      href: `#${item.id}`,
+    })),
+  },
+  { title: "Company", links: footer.sections },
 ] as const;
 
 /**
@@ -25,8 +45,9 @@ const columns = [
  * way in. That section's words were written and approved and have been sitting
  * unused in the content file since; they close the page here.
  *
- * Under that, the links: laid out on space rather than ruled into columns,
- * because the ruled version read as four boxes of links dressed up.
+ * Under that, the links as rows rather than columns. In columns they came out
+ * 5, 7, 3 and 3 long, which left a ragged hole under the short two; along a
+ * row they set their own length and there is no hole to leave.
  */
 export function SiteFooter() {
   return (
@@ -65,35 +86,23 @@ export function SiteFooter() {
         </div>
 
         <nav className="site-footer__nav" aria-label="Footer">
-          {columns.map((column) => (
-            <div className="site-footer__column" key={column.title}>
-              <h3 className="eyebrow site-footer__column-title">
-                {column.title}
+          {groups.map((group) => (
+            <div className="site-footer__group" key={group.title}>
+              <h3 className="eyebrow site-footer__group-title">
+                {group.title}
               </h3>
-              <ul>
-                {column.links.map((link) => (
-                  <li key={link.id}>
-                    <a className="site-footer__link" href={`#${link.id}`}>
-                      {link.title}
+
+              <ul className="site-footer__links">
+                {group.links.map((link) => (
+                  <li key={link.href}>
+                    <a className="site-footer__link" href={link.href}>
+                      {link.label}
                     </a>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
-
-          <div className="site-footer__column">
-            <h3 className="eyebrow site-footer__column-title">Company</h3>
-            <ul>
-              {footer.sections.map((link) => (
-                <li key={link.href}>
-                  <a className="site-footer__link" href={link.href}>
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
         </nav>
 
         <div className="site-footer__meta">

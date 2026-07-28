@@ -193,9 +193,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /class="site-footer__title-line">moves you forward\.</);
   assert.match(html, /Tell us where you are/);
   assert.match(html, /class="site-footer__email"[^>]*href="mailto:hello@mardal\.com"/);
-  // Four groups of links, and the header's own anchors still resolve.
-  assert.equal((html.match(/class="site-footer__column"/g) ?? []).length, 4);
+  // Four groups of links, set as rows so no group leaves a hole beside it.
+  assert.equal((html.match(/class="site-footer__group"/g) ?? []).length, 4);
   assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 18);
+  assert.doesNotMatch(html, /site-footer__column/);
 
   // Shared machinery
   assert.match(html, /data-route-section/);
