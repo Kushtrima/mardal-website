@@ -26,6 +26,10 @@ async function render() {
  *  Case Studies, Company and Products, whose sections are not on the page. */
 const menuAnchors = [
   "solutions",
+  "products",
+  "arvena-ai",
+  "ftesa",
+  "ihrauto",
   "finance",
   "healthcare",
   "manufacturing",
@@ -106,6 +110,14 @@ test("server-renders the Mardal homepage", async () => {
   );
   assert.match(html, /Built across industries/);
   assert.match(html, /Physical stores, e-commerce businesses/);
+
+  // Products: the three, and nothing else claiming to be finished work.
+  assert.match(html, /Products are how we test our thinking/);
+  assert.match(html, /Arvena AI/);
+  assert.match(html, /Ftesa\.co/);
+  assert.match(html, /Ihrauto/);
+  assert.match(html, /In development/);
+  assert.doesNotMatch(html, /cases-record|Selected/);
   // The ring that ran through the industries is gone; the words stay.
   assert.doesNotMatch(html, /industry-art/);
   // The footer carries the address now that the contact section is gone.
@@ -118,8 +130,6 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /Compliance-aware systems/);
   assert.doesNotMatch(html, /shaped into a product|Case study in progress/);
   assert.doesNotMatch(html, /A simple path from idea to working software/);
-  assert.doesNotMatch(html, /Products are how we test our thinking/);
-  assert.doesNotMatch(html, /In development/);
   assert.doesNotMatch(html, /moves you forward|Start a conversation/);
 
   // Footer — closes on the oversized wordmark.
@@ -135,8 +145,9 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /data-route-section/);
   assert.match(html, /data-reveal-item/);
 
-  // The isometric drawings belonged to the products section and went with it.
-  assert.doesNotMatch(html, /class="iso-art"/);
+  // The isometric drawings, one per product.
+  assert.match(html, /class="iso-art"/);
+  assert.equal((html.match(/class="iso-art"/g) ?? []).length, 3);
 
   // The bars belong to the hero alone, and the scroll route line is gone.
   assert.doesNotMatch(html, /line-band|scroll-side/);

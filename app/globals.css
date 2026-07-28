@@ -715,7 +715,10 @@ video {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(0.65rem, 0.9vw, 0.85rem);
-  margin-top: calc(clamp(10rem, 17vw, 16rem) - 30px);
+  /* The lede sits in this grid's first column, so this one margin carries the
+     whole block — the copy and the four cards move together. Less the 120px it
+     has been pulled up by. */
+  margin-top: calc(clamp(10rem, 17vw, 16rem) - 120px);
 }
 
 /* Leading is looser than the display copy elsewhere: this now runs to nine

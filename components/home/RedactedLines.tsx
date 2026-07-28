@@ -87,13 +87,17 @@ const HEIGHT = 336;
 
 export function RedactedLines({
   className = "difference-card__lines",
+  offset = 0,
 }: {
   className?: string;
+  /** Slides the window down the drawing, so one set of bars gives several
+   *  different-looking panels. */
+  offset?: number;
 }) {
   return (
     <svg
       className={className}
-      viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+      viewBox={`0 ${offset} ${WIDTH} ${HEIGHT}`}
       preserveAspectRatio="none"
       aria-hidden="true"
       focusable="false"

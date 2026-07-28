@@ -186,41 +186,6 @@ export const products = {
   ],
 } as const;
 
-export const caseStudy = {
-  id: "case-studies",
-  anchor: "arvena-ai-case-study",
-  eyebrow: "Mardal Projects",
-  title: "Intelligence, shaped into a product.",
-  body:
-    "Arvena AI brings Mardal’s product thinking, interface design, and applied intelligence into one focused digital experience.",
-  chip: "Case study in progress",
-} as const;
-
-export const workProcess = {
-  id: "process",
-  eyebrow: "How we work",
-  title: "A simple path from idea to working software.",
-  summary:
-    "No unnecessary complexity. Just clear decisions, close collaboration, and useful progress.",
-  steps: [
-    {
-      title: "Understand",
-      description:
-        "We learn how your team works, where friction lives, and what needs to change.",
-    },
-    {
-      title: "Shape",
-      description:
-        "We turn the problem into a clear product direction, prototype, and practical plan.",
-    },
-    {
-      title: "Build",
-      description:
-        "We deliver in focused stages, test what matters, and improve it with you.",
-    },
-  ],
-} as const;
-
 export const contact = {
   id: "contact",
   eyebrow: "Have something in mind?",
