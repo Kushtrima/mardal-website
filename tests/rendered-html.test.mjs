@@ -177,21 +177,25 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /Compliance-aware systems/);
   assert.doesNotMatch(html, /shaped into a product|Case study in progress/);
   assert.doesNotMatch(html, /A simple path from idea to working software/);
-  assert.doesNotMatch(html, /moves you forward|Start a conversation/);
+  // The contact section is still off the page — but its words now close the
+  // footer, which is where the page's one call to action lives.
+  assert.doesNotMatch(html, /Start a conversation/);
 
-  // Footer — two lines and a rule.
-  assert.match(html, /<footer class="site-footer"/);
+  // Footer — it closes the page rather than ending it.
+  assert.match(html, /<footer class="site-footer" id="contact"/);
   assert.match(html, /© \d{4} Mardal/);
   assert.match(html, /class="site-footer__nav"/);
   assert.match(html, /Back to top/);
   // No oversized wordmark: the footer logo stays at brand size.
   assert.doesNotMatch(html, /site-footer__wordmark/);
-  // The address is the one thing set large down here.
+  // The closing line, set as two explicit lines at the display size.
+  assert.match(html, /class="site-footer__title-line">Let’s build what</);
+  assert.match(html, /class="site-footer__title-line">moves you forward\.</);
+  assert.match(html, /Tell us where you are/);
   assert.match(html, /class="site-footer__email"[^>]*href="mailto:hello@mardal\.com"/);
-  // Four destinations, not the header menu repeated: the sub-links the old
-  // footer carried are in the menu above and nowhere else.
-  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 4);
-  assert.doesNotMatch(html, /site-footer__column|site-footer__statement/);
+  // Four groups of links, and the header's own anchors still resolve.
+  assert.equal((html.match(/class="site-footer__column"/g) ?? []).length, 4);
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 18);
 
   // Shared machinery
   assert.match(html, /data-route-section/);

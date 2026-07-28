@@ -2114,21 +2114,77 @@ video {
   background: var(--canvas);
 }
 
-/* One line: the way to reach us at one end, the way onward at the other. */
-.site-footer__lead {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem clamp(2rem, 5vw, 4rem);
-  align-items: baseline;
-  justify-content: space-between;
-  padding-bottom: clamp(2.5rem, 5vw, 4rem);
+/* The page closes here, so this reads at the size the page opens at — the
+   words on the left, and the bars filling the half beside them that was
+   otherwise empty white. */
+.site-footer__close {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: end;
+  padding-bottom: clamp(3.5rem, 7vw, 6rem);
 }
 
-/* The only route in that works, so it is the one thing set large down here. */
+.site-footer__words {
+  display: grid;
+  justify-items: start;
+  gap: 1rem;
+}
+
+/* The site's own drawing, in the four brand colours rather than in ink: the
+   bars cycle through the set so no colour touches itself, the same rule the
+   coloured boxes follow. */
+.site-footer__bars {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.site-footer__bars rect:nth-child(4n + 1) {
+  fill: var(--tint-lilac-bar);
+}
+
+.site-footer__bars rect:nth-child(4n + 2) {
+  fill: var(--tint-butter-bar);
+}
+
+.site-footer__bars rect:nth-child(4n + 3) {
+  fill: var(--tint-mint-bar);
+}
+
+.site-footer__bars rect:nth-child(4n) {
+  fill: var(--tint-sky-bar);
+}
+
+.site-footer__title {
+  max-width: none;
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: var(--text-heading-xl);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-heading-xl);
+}
+
+/* Set as two lines, so the break falls in the same place at every width. */
+.site-footer__title-line {
+  display: block;
+}
+
+.site-footer__body {
+  max-width: 42ch;
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: var(--text-body);
+  line-height: 1.45;
+}
+
+/* The one thing to do down here. */
 .site-footer__email {
   display: inline-flex;
-  gap: 0.4em;
+  gap: 0.45em;
   align-items: center;
+  margin-top: clamp(1rem, 2vw, 1.75rem);
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
@@ -2137,8 +2193,8 @@ video {
 }
 
 .site-footer__arrow {
-  width: 0.85em;
-  height: 0.85em;
+  width: 0.8em;
+  height: 0.8em;
   flex: 0 0 auto;
   fill: none;
   stroke: currentColor;
@@ -2148,11 +2204,26 @@ video {
   transition: transform var(--duration-fast) var(--ease-standard);
 }
 
+/* Laid out on space, not ruled into columns: the ruled version read as four
+   boxes of links rather than as a list of where to go. */
 .site-footer__nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem clamp(1.5rem, 3vw, 2.75rem);
-  align-items: baseline;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(2rem, 4vw, 3.5rem);
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+  border-top: 1px solid var(--line-soft);
+}
+
+.site-footer__column-title {
+  margin-bottom: 1.25rem;
+}
+
+.site-footer__column ul {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .site-footer__link {
@@ -2161,12 +2232,12 @@ video {
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
-/* One rule on the whole footer, and everything small sits under it. */
 .site-footer__meta {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem clamp(1.5rem, 3vw, 2.5rem);
   align-items: center;
+  margin-top: clamp(3rem, 6vw, 5rem);
   padding-top: clamp(1.25rem, 2vw, 1.75rem);
   border-top: 1px solid var(--line-soft);
   color: var(--ink-muted);
@@ -2208,6 +2279,18 @@ video {
 
   .site-footer__top-link:hover .site-footer__arrow {
     transform: translateY(-0.25em);
+  }
+}
+
+@media (max-width: 60rem) {
+  /* The bars go under the words rather than beside them. */
+  .site-footer__close {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-footer__nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2rem, 6vw, 3rem);
   }
 }
 

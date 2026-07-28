@@ -235,9 +235,8 @@ export const footer = {
    * footer would say something about Mardal that is not true.
    */
   sections: [
-    { label: "Services", href: "#services" },
-    { label: "Solutions", href: "#solutions" },
-    { label: "Products", href: "#products" },
-    { label: "Company", href: "#company" },
+    { label: "About", href: "#company" },
+    { label: "Case study", href: "#case-studies" },
+    { label: "Process", href: "#process" },
   ],
 } as const;
