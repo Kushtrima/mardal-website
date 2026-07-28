@@ -131,9 +131,16 @@ test("server-renders the Mardal homepage", async () => {
   );
   // Each product states the two things actually known about it, against a
   // rule, the way the reference sets its facts.
-  assert.equal((html.match(/class="product-fact"/g) ?? []).length, 6);
+  assert.equal((html.match(/class="product-fact"/g) ?? []).length, 9);
   assert.match(html, /<p class="product-fact__label">Status<\/p>/);
   assert.match(html, /<p class="product-fact__label">Field<\/p>/);
+  assert.match(html, /<p class="product-fact__label">Year<\/p>/);
+  // The year is not known for any of them, so it ships as a bracket rather
+  // than as a number somebody made up.
+  assert.equal(
+    (html.match(/<p class="product-fact__value">\[Year\]<\/p>/g) ?? []).length,
+    3,
+  );
   assert.match(html, /Mental health/);
   assert.match(html, /Automotive/);
   assert.match(html, /Events/);

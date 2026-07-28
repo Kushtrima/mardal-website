@@ -178,6 +178,7 @@ export const products = {
         "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A footbridge running into woodland.",
       field: "Mental health",
+      year: "[Year]",
     },
     {
       id: "ihrauto",
@@ -188,6 +189,7 @@ export const products = {
         "https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A workshop wall hung with tools.",
       field: "Automotive",
+      year: "[Year]",
     },
     {
       id: "ftesa",
@@ -199,12 +201,13 @@ export const products = {
         "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A long table laid for guests.",
       field: "Events",
+      year: "[Year]",
     },
   ],
-  /** The two things that are actually known about each. There is no launch
-   *  date, no version and no user count to put here, and inventing one would
-   *  be worse than the gap. */
-  factLabels: { status: "Status", field: "Field" },
+  /** Status and Field are known. Year is not: nobody has said when each of
+   *  these started or is due, so it ships as a bracket to be filled rather
+   *  than as a plausible-looking number. */
+  factLabels: { status: "Status", field: "Field", year: "Year" },
   cta: "Get in touch",
   ctaHref: "mailto:hello@mardal.com",
 } as const;

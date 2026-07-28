@@ -17,7 +17,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /** Where the heading comes to rest: clear of the top of the screen, not
  *  jammed against it. */
-const HEADER_CLEARANCE = 148;
+const HEADER_CLEARANCE = 118;
 
 /** Below this the two columns stack, and the heading just sits above them. */
 const MIN_WIDTH = "(min-width: 60rem)";

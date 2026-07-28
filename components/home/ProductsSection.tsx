@@ -61,6 +61,12 @@ export function ProductsSection() {
                     </p>
                     <p className="product-fact__value">{product.field}</p>
                   </div>
+                  <div className="product-fact">
+                    <p className="product-fact__label">
+                      {products.factLabels.year}
+                    </p>
+                    <p className="product-fact__value">{product.year}</p>
+                  </div>
                 </div>
 
                 <div className="product__main">
