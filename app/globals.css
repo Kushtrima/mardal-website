@@ -2774,26 +2774,14 @@ video {
   padding-top: clamp(1.5rem, 3.5vw, 3rem);
 }
 
-/* Each line steps in from the one above it. The section is already built on
-   ruled columns; the step is the same idea in the type, and it is what stops
-   three flush-left lines reading as a paragraph that happens to be large. */
+/* The lines are explicit in the content so the break falls in the same place
+   at every width, and every one of them starts on the same margin. */
 .products-title__line {
   display: block;
 }
 
-.products-title__line:nth-child(2) {
-  padding-left: clamp(0.75rem, 1.6vw, 1.5rem);
-}
-
-.products-title__line:nth-child(3) {
-  padding-left: clamp(1.5rem, 3.2vw, 3rem);
-}
-
-/* Hung off the deepest line rather than the margin, so the step carries on
-   through to the end of the block. */
 .products-lede {
   padding-top: clamp(1.25rem, 2.5vw, 2rem);
-  padding-left: clamp(1.5rem, 3.2vw, 3rem);
 }
 
 /* One column now: the products are a list you move down, not a row you scan
@@ -2913,10 +2901,8 @@ video {
     gap: clamp(2.5rem, 8vw, 3.5rem);
   }
 
-  .products-title__line:nth-child(2),
-  .products-title__line:nth-child(3),
   .products-lede {
-    padding-left: 0;
+    max-width: none;
   }
 
   /* The facts go above the picture and the dividing rules go with them:
