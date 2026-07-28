@@ -126,15 +126,17 @@ test("server-renders the Mardal homepage", async () => {
     3,
   );
   assert.doesNotMatch(html, /cases-record|Selected/);
-  // Read off the reference: 24 bars a drawing, three drawings, no grey panel.
+  // Three different drawings on the reference's grid, thinned out: 14 bars
+  // each rather than its 24, and no grey panel.
   assert.equal((html.match(/class="product-mark"/g) ?? []).length, 3);
   const productMarks = [
     ...html.matchAll(/<svg class="product-mark"[^>]*>([\s\S]*?)<\/svg>/g),
   ];
   assert.equal(productMarks.length, 3);
   for (const mark of productMarks) {
-    assert.equal((mark[1].match(/<rect /g) ?? []).length, 24);
+    assert.equal((mark[1].match(/<rect /g) ?? []).length, 14);
   }
+  assert.equal(new Set(productMarks.map((mark) => mark[1])).size, 3);
   assert.doesNotMatch(html, /product-mark[^>]*fill="#/);
   // The ring that ran through the industries is gone; the words stay.
   assert.doesNotMatch(html, /industry-art/);
