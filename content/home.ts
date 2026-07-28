@@ -175,6 +175,7 @@ export const products = {
       image:
         "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A footbridge running into woodland.",
+      field: "Mental health",
     },
     {
       id: "ihrauto",
@@ -184,6 +185,7 @@ export const products = {
       image:
         "https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A workshop wall hung with tools.",
+      field: "Automotive",
     },
     {
       id: "ftesa",
@@ -194,8 +196,13 @@ export const products = {
       image:
         "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A long table laid for guests.",
+      field: "Events",
     },
   ],
+  /** The two things that are actually known about each. There is no launch
+   *  date, no version and no user count to put here, and inventing one would
+   *  be worse than the gap. */
+  factLabels: { status: "Status", field: "Field" },
   cta: "Get in touch",
   ctaHref: "mailto:hello@mardal.com",
 } as const;

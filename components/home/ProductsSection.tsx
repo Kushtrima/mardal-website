@@ -36,26 +36,44 @@ export function ProductsSection() {
           <ul className="products-row">
             {products.items.map((product) => (
               <li className="product" id={product.id} key={product.id}>
-                <img
-                  className="product__image"
-                  src={product.image}
-                  alt={product.imageAlt}
-                  width="1600"
-                  height="1000"
-                  loading="lazy"
-                  decoding="async"
-                />
+                {/* The facts sit low against the rule, level with the foot of
+                    the picture, as they do in the reference. */}
+                <div className="product__facts">
+                  <div className="product-fact">
+                    <p className="product-fact__label">
+                      {products.factLabels.status}
+                    </p>
+                    <p className="product-fact__value">{product.status}</p>
+                  </div>
+                  <div className="product-fact">
+                    <p className="product-fact__label">
+                      {products.factLabels.field}
+                    </p>
+                    <p className="product-fact__value">{product.field}</p>
+                  </div>
+                </div>
 
-                <p className="product__status">{product.status}</p>
-                <h3 className="product__name">{product.title}</h3>
-                <p className="product__copy">{product.description}</p>
+                <div className="product__main">
+                  <img
+                    className="product__image"
+                    src={product.image}
+                    alt={product.imageAlt}
+                    width="1600"
+                    height="1000"
+                    loading="lazy"
+                    decoding="async"
+                  />
 
-                <a
-                  className="button button--secondary product__cta"
-                  href={products.ctaHref}
-                >
-                  {products.cta}
-                </a>
+                  <h3 className="product__name">{product.title}</h3>
+                  <p className="product__copy">{product.description}</p>
+
+                  <a
+                    className="button button--flat product__cta"
+                    href={products.ctaHref}
+                  >
+                    {products.cta}
+                  </a>
+                </div>
               </li>
             ))}
           </ul>
