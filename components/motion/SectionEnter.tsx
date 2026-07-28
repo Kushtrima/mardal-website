@@ -69,11 +69,8 @@ export function SectionEnter() {
     ScrollTrigger.config({ ignoreMobileResize: true });
 
     const context = gsap.context(() => {
-      /* A section that holds something in place cannot also be moving: a pin
-         inside a section that carries its own lag is measured while that lag
-         is applied, and rests exactly that far out — it did, by 131px. */
       const sections = gsap.utils.toArray<HTMLElement>(
-        "main > section[data-route-section]:not([data-section-enter='off'])",
+        "main > section[data-route-section]",
       );
 
       sections.forEach((section) => {
@@ -82,9 +79,17 @@ export function SectionEnter() {
         const headingId = section.getAttribute("aria-labelledby");
         const heading = headingId ? document.getElementById(headingId) : null;
 
+        /* A section that holds something in place cannot itself be moving: a
+           pin is measured while its ancestor's lag is applied, and then rests
+           exactly that far out — it did, by 131px. Those sections nominate an
+           inner block to carry the movement instead, one that does not contain
+           the pinned element. */
+        const inner = section.querySelector<HTMLElement>("[data-enter]");
+        const target = inner ?? section;
+
         const timeline = gsap.timeline({
           scrollTrigger: {
-            trigger: heading ?? section,
+            trigger: inner ?? heading ?? section,
             start: START,
             end: END,
             /* Enough to turn a wheel's steps into movement, and to leave the
@@ -101,7 +106,7 @@ export function SectionEnter() {
           /* Linear on purpose. An ease would vary the rate it catches up at,
              and it is the steady difference in rate that the eye picks out. */
           .fromTo(
-            section,
+            target,
             {
               y: () =>
                 gsap.utils.clamp(
@@ -117,7 +122,7 @@ export function SectionEnter() {
              reaches zero: a section can be faint for a moment, but it can
              never be blank. */
           .fromTo(
-            section,
+            target,
             { opacity: FADE_FROM },
             { opacity: 1, duration: FADE_SHARE, ease: "none" },
             0,

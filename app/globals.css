@@ -77,10 +77,14 @@
   --page-gutter: clamp(1.25rem, 4vw, 4.5rem);
   --container-wide: 112rem;
   --container-default: 80rem;
-  /* Every section pads top and bottom, so the space between two of them is
-     twice these numbers — read them that way when changing them. */
-  --section-space: clamp(3.5rem, 7vw, 6.5rem);
-  --section-space-lg: clamp(4.5rem, 8vw, 7.5rem);
+  /* The space between any two sections, top to bottom. Each section pays half
+     of it either side, so this is the number you actually see — not twice it.
+     The one exception is the section under the hero, which pays the whole
+     thing itself, because the hero's art runs to its own edge and leaves
+     nothing below it. */
+  --section-gap: 150px;
+  --section-space: calc(var(--section-gap) / 2);
+  --section-space-lg: calc(var(--section-gap) / 2);
 
   /* Shape and effects */
   --shape-sm: 0.375rem;
@@ -129,6 +133,12 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+@media (max-width: 48rem) {
+  :root {
+    --section-gap: 96px;
+  }
 }
 
 html {
@@ -675,6 +685,13 @@ video {
 }
 
 /* ----------------------------- Why Mardal ----------------------------- */
+
+/* The hero pays nothing: its bar field runs to the section's own edge, so the
+   section beneath it carries the whole gap rather than half, and the join
+   under the hero measures the same as every other join. */
+.hero + section {
+  padding-top: var(--section-gap);
+}
 
 .why-section {
   position: relative;
@@ -2089,9 +2106,9 @@ video {
 
 .site-footer {
   position: relative;
-  /* The same measure the sections use, so the space above the footer matches
-     the space between any two of them. */
-  padding-top: var(--section-space-lg);
+  /* Half the gap, the same as every section pays, so the space above the
+     footer matches the space between any two of them. */
+  padding-top: var(--section-space);
   padding-bottom: clamp(1.25rem, 2.5vw, 2rem);
   border-top: 1px solid var(--line-soft);
   background: var(--canvas);
@@ -2970,7 +2987,13 @@ video {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
+  @media (max-width: 48rem) {
+  :root {
+    --section-gap: 96px;
+  }
+}
+
+html {
     scroll-behavior: auto;
   }
 

@@ -20,7 +20,6 @@ export function ProductsSection() {
       id={products.id}
       aria-labelledby="products-title"
       data-route-section
-      data-section-enter="off"
     >
       <ProductsPin />
 
@@ -43,7 +42,10 @@ export function ProductsSection() {
             </div>
           </div>
 
-          <ul className="products-row">
+          {/* The products carry the section's arrival, not the section: the
+              heading beside them is pinned, and a pin inside something that
+              moves is measured wrong. */}
+          <ul className="products-row" data-enter>
             {products.items.map((product) => (
               <li className="product" id={product.id} key={product.id}>
                 {/* The facts sit low against the rule, level with the foot of
