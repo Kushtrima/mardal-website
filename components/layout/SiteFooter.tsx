@@ -10,11 +10,6 @@ import {
   solutions,
 } from "../../content/home";
 
-/**
- * Paired into two stacks rather than laid in four columns of their own: the
- * groups are 5, 7, 3 and 3 long, and side by side the short two leave a hole.
- * Stacked in pairs the two stacks come out level.
- */
 const groups = [
   {
     title: "Services",
@@ -40,11 +35,6 @@ const groups = [
   { title: "Company", links: footer.sections },
 ] as const;
 
-const stacks = [
-  [groups[0], groups[2]],
-  [groups[1], groups[3]],
-] as const;
-
 /**
  * The footer closes the page rather than just ending it.
  *
@@ -56,8 +46,12 @@ const stacks = [
  *
  * All of it sits on one panel traced from the reference: the accent colour,
  * the ring alone in the top corner, and the white bar field standing off the
- * bottom-right edge. The words take the left of the panel and the links the
- * right, which is where the reference leaves room for them.
+ * bottom-right edge.
+ *
+ * The reference's panel is half as tall as it is wide and almost entirely
+ * empty. To keep that shape while carrying this much, the bars and the words
+ * share the bottom of the panel rather than queueing: the field owns the right
+ * 58.4%, and the year and the way back up are held to the left of it.
  */
 export function SiteFooter() {
   return (
@@ -101,25 +95,21 @@ export function SiteFooter() {
           </div>
 
           <nav className="site-footer__nav" aria-label="Footer">
-            {stacks.map((stack) => (
-              <div className="site-footer__stack" key={stack[0].title}>
-                {stack.map((group) => (
-                  <div className="site-footer__group" key={group.title}>
-                    <h3 className="eyebrow site-footer__group-title">
-                      {group.title}
-                    </h3>
+            {groups.map((group) => (
+              <div className="site-footer__group" key={group.title}>
+                <h3 className="eyebrow site-footer__group-title">
+                  {group.title}
+                </h3>
 
-                    <ul className="site-footer__links">
-                      {group.links.map((link) => (
-                        <li key={link.href}>
-                          <a className="site-footer__link" href={link.href}>
-                            {link.label}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                <ul className="site-footer__links">
+                  {group.links.map((link) => (
+                    <li key={link.href}>
+                      <a className="site-footer__link" href={link.href}>
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
           </nav>
