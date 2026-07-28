@@ -1,5 +1,4 @@
 import { Container } from "../layout/Container";
-import { RevealGroup } from "../motion/RevealGroup";
 import { RedactedLines } from "./RedactedLines";
 import { difference } from "../../content/home";
 
@@ -19,11 +18,10 @@ export function DifferenceSection() {
       data-route-section
     >
       <Container wide>
-        <RevealGroup stagger={0.12}>
+        <div>
           <h2
             className="display-heading difference-title"
             id="difference-title"
-            data-reveal-item
           >
             {difference.titleLines.map((line) => (
               <span className="difference-title__line" key={line}>
@@ -31,35 +29,25 @@ export function DifferenceSection() {
               </span>
             ))}
           </h2>
-        </RevealGroup>
+        </div>
 
         {/* The first column is left empty so the two paragraphs sit over the
             second and third box. */}
-        <RevealGroup
-          className="difference-intro"
-          preset="upSmall"
-          stagger={0.1}
-        >
+        <div className="difference-intro">
           {difference.intro.map((paragraph) => (
-            <p className="difference-intro__text" key={paragraph} data-reveal-item>
+            <p className="difference-intro__text" key={paragraph}>
               {paragraph}
             </p>
           ))}
-        </RevealGroup>
+        </div>
 
-        <RevealGroup
-          as="ul"
-          className="difference-grid"
-          preset="upSmall"
-          stagger={0.09}
-        >
+        <ul className="difference-grid">
           {difference.items.map((item, index) => (
             <li
               className={`difference-card difference-card--${TINTS[index % TINTS.length]}`}
               id={item.id}
               key={item.id}
               data-cursor={TINTS[index % TINTS.length]}
-              data-reveal-item
             >
               {/* The title sits on the colour, over the bars, set on the two
                   lines the content gives it rather than wherever it wraps. */}
@@ -77,7 +65,7 @@ export function DifferenceSection() {
               </div>
             </li>
           ))}
-        </RevealGroup>
+        </ul>
       </Container>
     </section>
   );

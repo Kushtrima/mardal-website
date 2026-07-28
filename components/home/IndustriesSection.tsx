@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Container } from "../layout/Container";
-import { RevealGroup } from "../motion/RevealGroup";
 import { solutions } from "../../content/home";
 
 /** The rule beside each industry takes the next of the four brand colours. */
@@ -77,16 +76,15 @@ export function IndustriesSection() {
           right. */}
       <div className="industries-body">
         <Container className="industries-layout" wide>
-          <RevealGroup className="industries-header" stagger={0.12}>
+          <div className="industries-header">
             <h2
               className="industries-title"
               id="industries-title"
-              data-reveal-item
             >
               {solutions.lede}
             </h2>
 
-            <a className="industries-explore" href="#contact" data-reveal-item>
+            <a className="industries-explore" href="#contact">
               Explore
               <svg
                 className="industries-explore__arrow"
@@ -96,13 +94,9 @@ export function IndustriesSection() {
                 <path d="M3.5 12h16.5M13.5 5.5 20 12l-6.5 6.5" />
               </svg>
             </a>
-          </RevealGroup>
+          </div>
 
-          <RevealGroup
-            className="industries-intro"
-            preset="upSmall"
-            stagger={0.08}
-          >
+          <div className="industries-intro">
             <ul
               className="industries-list"
               ref={listRef}
@@ -114,7 +108,7 @@ export function IndustriesSection() {
               }}
             >
               {solutions.items.map((industry, index) => (
-                <li key={industry.id} data-reveal-item>
+                <li key={industry.id}>
                   {/* A button rather than plain text: pointing at an industry
                       is what brings it forward, and it has to work from the
                       keyboard too. */}
@@ -148,7 +142,7 @@ export function IndustriesSection() {
                 </li>
               ))}
             </ul>
-          </RevealGroup>
+          </div>
         </Container>
       </div>
     </section>

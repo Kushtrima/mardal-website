@@ -143,7 +143,11 @@ test("server-renders the Mardal homepage", async () => {
 
   // Shared machinery
   assert.match(html, /data-route-section/);
-  assert.match(html, /data-reveal-item/);
+  // One arrival per section: the section moves as a whole, so no element
+  // inside it carries its own reveal.
+  assert.doesNotMatch(html, /data-reveal-item/);
+  // Every section on the page is one, including Why Mardal.
+  assert.match(html, /class="why-section"[^>]*data-route-section/);
 
   // The isometric drawings, one per product.
   assert.match(html, /class="iso-art"/);

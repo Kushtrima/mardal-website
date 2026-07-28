@@ -1,5 +1,4 @@
 import { Container } from "../layout/Container";
-import { RevealGroup } from "../motion/RevealGroup";
 import { IsometricArt } from "../ui/IsometricArt";
 import { products } from "../../content/home";
 
@@ -12,29 +11,27 @@ export function ProductsSection() {
       data-route-section
     >
       <Container wide>
-        <RevealGroup className="products-intro" stagger={0.12}>
-          <p className="section-label" data-reveal-item>
+        <div className="products-intro">
+          <p className="section-label">
             {products.eyebrow}
           </p>
           <h2
             className="section-title products-title"
             id="products-title"
-            data-reveal-item
           >
             {products.title}
           </h2>
-          <p className="section-lede products-lede" data-reveal-item>
+          <p className="section-lede products-lede">
             {products.summary}
           </p>
-        </RevealGroup>
+        </div>
 
-        <RevealGroup className="products-grid" preset="card" stagger={0.1}>
+        <div className="products-grid">
           {products.items.map((product) => (
             <article
               className="product-card"
               id={product.id}
               key={product.id}
-              data-reveal-item
             >
               <div className="product-card__header">
                 <p className="product-card__status">{product.status}</p>
@@ -49,7 +46,7 @@ export function ProductsSection() {
               <p className="product-card__copy">{product.description}</p>
             </article>
           ))}
-        </RevealGroup>
+        </div>
       </Container>
     </section>
   );
