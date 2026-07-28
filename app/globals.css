@@ -2734,12 +2734,9 @@ video {
    Products — three names, each over its own drawing in bars.
    --------------------------------------------------------------------------- */
 
-/* The one section that sits on the surface colour rather than the page. The
-   reference sets its whole frame on a field of grey, and the ruled columns only
-   read as a grid when they have a field to sit on. */
 .products-section {
   position: relative;
-  background: var(--surface);
+  background: var(--canvas);
   padding-block: var(--section-space-lg);
 }
 
@@ -2756,7 +2753,11 @@ video {
   border-left: 1px solid var(--line-soft);
 }
 
-.products-intro {
+/* The column carries the rule and stretches; the block inside keeps its own
+   height, which is the height the heading is held in place by. Stretching the
+   block itself leaves nothing to pin — it did, and the heading stopped
+   staying put. */
+.products-intro-col {
   padding-right: clamp(1.5rem, 3vw, 3rem);
   padding-left: clamp(1.25rem, 2.5vw, 2.5rem);
 }
@@ -2908,7 +2909,7 @@ video {
     border-left: 0;
   }
 
-  .products-intro {
+  .products-intro-col {
     padding-inline: 0;
   }
 

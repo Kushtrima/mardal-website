@@ -25,12 +25,17 @@ export function ProductsSection() {
 
       <Container wide>
         <div className="products-layout">
-          <div className="products-intro">
-            <p className="section-label">{products.eyebrow}</p>
-            <h2 className="section-title products-title" id="products-title">
-              {products.title}
-            </h2>
-            <p className="section-lede products-lede">{products.summary}</p>
+          {/* The column stretches so the rule beside it runs the full height;
+              the block inside it stays its own height so there is something
+              left to hold in place. */}
+          <div className="products-intro-col">
+            <div className="products-intro">
+              <p className="section-label">{products.eyebrow}</p>
+              <h2 className="section-title products-title" id="products-title">
+                {products.title}
+              </h2>
+              <p className="section-lede products-lede">{products.summary}</p>
+            </div>
           </div>
 
           <ul className="products-row">
