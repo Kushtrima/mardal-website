@@ -193,8 +193,16 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /class="site-footer__title-line">moves you forward\.</);
   assert.match(html, /Tell us where you are/);
   assert.match(html, /class="site-footer__email"[^>]*href="mailto:hello@mardal\.com"/);
-  // Four groups of links, set as rows so no group leaves a hole beside it.
+  // Four groups, paired into two stacks so neither leaves a hole beside it.
   assert.equal((html.match(/class="site-footer__group"/g) ?? []).length, 4);
+  assert.equal((html.match(/class="site-footer__stack"/g) ?? []).length, 2);
+  // The ring alone, cropped from the wordmark rather than a second asset.
+  assert.match(html, /class="site-footer__mark"/);
+  // The bar field, traced: 22 bars, every one of them 10 wide.
+  const footerBars = html.match(/<svg class="site-footer__bars"[\s\S]*?<\/svg>/);
+  assert.ok(footerBars, "footer bar field missing");
+  assert.equal((footerBars[0].match(/<rect /g) ?? []).length, 22);
+  assert.equal((footerBars[0].match(/width="10"/g) ?? []).length, 22);
   assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 18);
   assert.doesNotMatch(html, /site-footer__column/);
 

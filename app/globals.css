@@ -92,8 +92,9 @@
   --shape-card: clamp(0.45rem, 0.7vw, 0.7rem);
   /* The rounding on things you click: a control, and a round icon button. */
   --shape-control: 0.55rem;
-  /* The one panel on the page: the footer. */
-  --shape-panel: clamp(1rem, 1.6vw, 1.5rem);
+  /* The one panel on the page: the footer. Barely softened — the reference
+     rounds its 1084-wide panel by 6px. */
+  --shape-panel: 0.5rem;
   /* Hairlines drawn on the accent rather than on the page. */
   --panel-line: rgb(255 255 255 / 26%);
   --radius-full: 999px;
@@ -2117,27 +2118,36 @@ video {
   background: var(--canvas);
 }
 
-/* The page is white the whole way down and then closes on the brand. */
+/* Traced from the reference: the accent colour, a corner barely softened —
+   6px on its 1084-wide panel — and everything set inside it.
+
+   The reference reads #7b64ab off the screenshot, which is what --accent
+   becomes when a Display P3 capture is read as sRGB. It is the same purple,
+   so the token stands rather than a second one being added beside it. */
 .site-footer__panel {
   position: relative;
   overflow: hidden;
-  padding: clamp(2rem, 4vw, 3.5rem);
-  /* A clear band at the foot of the panel for the bars to stand in. Without
-     it they run up behind the last row and the words sit on white. */
-  padding-bottom: clamp(6.5rem, 11vw, 10rem);
+  padding: clamp(2rem, 4.5%, 3.25rem);
+  /* Clear of the bar field, whose height is 18.2% of the panel's width — see
+     below. Percentage padding resolves against width, so this is the same
+     measure the field uses and the two cannot drift apart. */
+  padding-bottom: calc(18.2% + 2.5rem);
   border-radius: var(--shape-panel);
   background: var(--accent);
   color: var(--accent-contrast);
 }
 
-/* Standing up off the bottom edge in the corner, cropped by the panel's own
-   radius — the hero's bars, in white on the accent. */
+/* The right 58.4% of the panel, cut off by its edge, at the field's own
+   636 x 198 — so the bars keep the exact proportions the reference draws them
+   at. Tying the height to the panel's height instead would stretch them: this
+   panel holds content and is nothing like as wide-to-tall as the reference. */
 .site-footer__bars {
   position: absolute;
   right: 0;
   bottom: 0;
-  width: min(52%, 34rem);
-  height: clamp(5rem, 8vw, 7.5rem);
+  width: 58.4%;
+  height: auto;
+  aspect-ratio: 636 / 198;
   fill: var(--accent-contrast);
   pointer-events: none;
 }
@@ -2147,28 +2157,38 @@ video {
   z-index: 1;
 }
 
-/* White, because the wordmark is drawn in ink and the panel is not. */
-.site-footer__brand {
-  display: inline-block;
+/* The ring alone: the leftmost square of the wordmark, 163.92 of its 694.25
+   units, cropped to rather than shipped as a second asset. */
+.site-footer__mark {
+  display: block;
+  overflow: hidden;
+  width: clamp(3.25rem, 7.9%, 5.5rem);
+  aspect-ratio: 163.92 / 163.54;
 }
 
-.site-footer__brand img {
+.site-footer__mark img {
   display: block;
-  width: clamp(6rem, 7vw, 7.5rem);
+  width: calc(100% * 694.25 / 163.92);
   height: auto;
   filter: brightness(0) invert(1);
 }
 
-.site-footer__close {
+/* The words on the left, the links on the right — the two places the
+   reference leaves room. */
+.site-footer__body-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2.5rem, 5vw, 5rem);
   padding-top: clamp(3.5rem, 8vw, 7rem);
   padding-bottom: clamp(3rem, 6vw, 5rem);
 }
 
 .site-footer__words {
   display: grid;
+  align-content: start;
   justify-items: start;
   gap: 1rem;
-  max-width: 34rem;
+  max-width: 32rem;
 }
 
 /* On the panel the label is white like everything else: the muted ink it uses
@@ -2224,36 +2244,30 @@ video {
   transition: transform var(--duration-fast) var(--ease-standard);
 }
 
-/* Rows, not columns. In columns the four groups came out 5, 7, 3 and 3 long
-   and left a ragged hole under the short two; along a row each group sets its
-   own length and there is no hole to leave. */
+/* Two stacks of two groups. Four columns of their own would be 5, 7, 3 and 3
+   long and the short two would leave a hole; paired, the stacks come out
+   level. */
 .site-footer__nav {
   display: grid;
-  gap: 0;
-  border-top: 1px solid var(--panel-line);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2rem, 4vw, 3rem);
+  align-content: start;
 }
 
-.site-footer__group {
+.site-footer__stack {
   display: grid;
-  grid-template-columns: minmax(7rem, 10rem) minmax(0, 1fr);
-  gap: 1rem clamp(1.5rem, 3vw, 3rem);
-  align-items: baseline;
-  padding-block: clamp(1rem, 1.8vw, 1.4rem);
-}
-
-.site-footer__group + .site-footer__group {
-  border-top: 1px solid var(--panel-line);
+  align-content: start;
+  gap: clamp(2rem, 3.5vw, 2.75rem);
 }
 
 .site-footer__group-title {
-  margin: 0;
+  margin: 0 0 1rem;
   color: var(--accent-contrast);
 }
 
 .site-footer__links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem clamp(1.25rem, 2.5vw, 2.25rem);
+  display: grid;
+  gap: 0.6rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -2265,23 +2279,16 @@ video {
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
+/* Kept to the left half, clear of the bars standing in the corner. */
 .site-footer__meta {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem clamp(1.5rem, 3vw, 2.5rem);
   align-items: center;
-  margin-top: clamp(2.5rem, 5vw, 4rem);
+  width: min(100%, 41.6%);
   padding-top: clamp(1.25rem, 2vw, 1.75rem);
   border-top: 1px solid var(--panel-line);
   font-size: var(--text-body);
-}
-
-/* Below 48rem the bars would be taller than the band and reach the words. */
-@media (max-width: 48rem) {
-  .site-footer__bars {
-    width: 70%;
-    height: 4rem;
-  }
 }
 
 .site-footer__top-link {
@@ -2319,10 +2326,12 @@ video {
 }
 
 @media (max-width: 60rem) {
-  /* The label goes above its row rather than beside it. */
-  .site-footer__group {
+  .site-footer__body-grid {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0.75rem;
+  }
+
+  .site-footer__meta {
+    width: 100%;
   }
 }
 

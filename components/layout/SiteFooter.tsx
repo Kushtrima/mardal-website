@@ -10,7 +10,11 @@ import {
   solutions,
 } from "../../content/home";
 
-/** Every group in the same shape, so one row renders them all. */
+/**
+ * Paired into two stacks rather than laid in four columns of their own: the
+ * groups are 5, 7, 3 and 3 long, and side by side the short two leave a hole.
+ * Stacked in pairs the two stacks come out level.
+ */
 const groups = [
   {
     title: "Services",
@@ -36,6 +40,11 @@ const groups = [
   { title: "Company", links: footer.sections },
 ] as const;
 
+const stacks = [
+  [groups[0], groups[2]],
+  [groups[1], groups[3]],
+] as const;
+
 /**
  * The footer closes the page rather than just ending it.
  *
@@ -45,27 +54,27 @@ const groups = [
  * way in. That section's words were written and approved and have been sitting
  * unused in the content file since; they close the page here.
  *
- * Under that, the links as rows rather than columns. In columns they came out
- * 5, 7, 3 and 3 long, which left a ragged hole under the short two; along a
- * row they set their own length and there is no hole to leave.
- *
- * All of it sits on one panel in the accent colour, with the bar field white
- * in its corner — the page is white throughout and then closes on the brand.
+ * All of it sits on one panel traced from the reference: the accent colour,
+ * the ring alone in the top corner, and the white bar field standing off the
+ * bottom-right edge. The words take the left of the panel and the links the
+ * right, which is where the reference leaves room for them.
  */
 export function SiteFooter() {
   return (
     <footer className="site-footer" id={contact.id}>
       <Container wide>
         <div className="site-footer__panel">
-        <FooterBars />
+          <FooterBars />
 
-        <Link className="site-footer__brand" href="/" aria-label="Mardal home">
-          {/* Supplied vector wordmark is already optimized and self-contained. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/SVG/logo.svg" alt="Mardal" width="694" height="164" />
-        </Link>
+          {/* The reference shows the ring alone. It is the leftmost square of
+              the supplied wordmark — 163.92 of its 694.25 units — so the box
+              crops to that rather than carrying a second asset. */}
+          <Link className="site-footer__mark" href="/" aria-label="Mardal home">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/SVG/logo.svg" alt="Mardal" width="694" height="164" />
+          </Link>
 
-        <div className="site-footer__close">
+          <div className="site-footer__body-grid">
           <div className="site-footer__words">
             <p className="section-label">{contact.eyebrow}</p>
 
@@ -90,29 +99,33 @@ export function SiteFooter() {
               </svg>
             </a>
           </div>
+
+          <nav className="site-footer__nav" aria-label="Footer">
+            {stacks.map((stack) => (
+              <div className="site-footer__stack" key={stack[0].title}>
+                {stack.map((group) => (
+                  <div className="site-footer__group" key={group.title}>
+                    <h3 className="eyebrow site-footer__group-title">
+                      {group.title}
+                    </h3>
+
+                    <ul className="site-footer__links">
+                      {group.links.map((link) => (
+                        <li key={link.href}>
+                          <a className="site-footer__link" href={link.href}>
+                            {link.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </nav>
         </div>
 
-        <nav className="site-footer__nav" aria-label="Footer">
-          {groups.map((group) => (
-            <div className="site-footer__group" key={group.title}>
-              <h3 className="eyebrow site-footer__group-title">
-                {group.title}
-              </h3>
-
-              <ul className="site-footer__links">
-                {group.links.map((link) => (
-                  <li key={link.href}>
-                    <a className="site-footer__link" href={link.href}>
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </nav>
-
-        <div className="site-footer__meta">
+          <div className="site-footer__meta">
           <span className="site-footer__copy">
             {`© ${new Date().getFullYear()} Mardal`}
           </span>
@@ -127,7 +140,7 @@ export function SiteFooter() {
               <path d="M12 20.5V4M5.5 10.5 12 4l6.5 6.5" />
             </svg>
           </a>
-        </div>
+          </div>
         </div>
       </Container>
     </footer>

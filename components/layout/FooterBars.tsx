@@ -1,31 +1,31 @@
 /**
- * The bar field in the corner of the footer panel.
+ * The bar field in the corner of the footer panel, traced from the reference.
  *
- * The hero's bars stand up off the bottom edge; these do the same in white on
- * the accent, which is what the reference shows. Fixed geometry rather than
- * anything rolled at runtime, so the server and the browser draw the same
- * thing and React has nothing to complain about.
+ * Read straight off its pixels rather than drawn by eye: 22 bars, every one of
+ * them 10 units wide, standing on two tiers — a tall one the full height of the
+ * field and a short one exactly half of it. The gaps between them are irregular
+ * and are the reference's own, not a rhythm of mine.
  *
- * The field is cropped by the panel rather than sitting inside it.
+ * In the reference the field is 636 x 198 in a 1084 x 572 panel, so it covers
+ * the right 58.4% and the bottom 34.6%, and the last bar is cut off by the
+ * panel's edge. Those proportions are kept in the CSS.
+ *
+ * Fixed geometry rather than anything rolled at runtime, so the server and the
+ * browser draw the same thing.
  */
-const VIEW_WIDTH = 640;
-const VIEW_HEIGHT = 240;
+const VIEW_WIDTH = 636;
+const VIEW_HEIGHT = 198;
+const BAR_WIDTH = 10;
 
-/**
- * [x, y, width] — each bar runs from y to the bottom edge.
- *
- * The widths and the gaps vary on purpose. Set on a regular pitch they read as
- * a comb rather than as the hero's field, which is what the first pass did.
- */
-const BARS: ReadonlyArray<readonly [number, number, number]> = [
-  [0, 96, 9], [18, 22, 14], [44, 132, 8], [60, 108, 18],
-  [88, 34, 10], [106, 146, 22], [138, 118, 9], [156, 28, 16],
-  [182, 140, 11], [202, 100, 8], [218, 44, 20], [248, 126, 10],
-  [266, 16, 12], [288, 150, 26], [322, 112, 9], [340, 38, 15],
-  [364, 134, 8], [380, 104, 21], [410, 26, 11], [430, 144, 9],
-  [448, 120, 17], [474, 48, 10], [492, 138, 24], [524, 108, 9],
-  [542, 20, 13], [564, 148, 8], [580, 124, 19], [608, 32, 12],
-  [628, 142, 12],
+/** Half height, the reference's second tier. */
+const SHORT = VIEW_HEIGHT / 2;
+
+/** [x, y] — each bar runs from y to the foot of the field. */
+const BARS: ReadonlyArray<readonly [number, number]> = [
+  [0, 0], [39, SHORT], [76, 0], [94, SHORT], [112, 0], [130, SHORT],
+  [147, 0], [197, 0], [225, SHORT], [261, 0], [296, 0], [332, SHORT],
+  [350, 0], [395, SHORT], [439, SHORT], [479, 0], [518, SHORT],
+  [555, 0], [573, SHORT], [590, 0], [608, SHORT], [626, 0],
 ];
 
 export function FooterBars() {
@@ -33,16 +33,16 @@ export function FooterBars() {
     <svg
       className="site-footer__bars"
       viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
-      preserveAspectRatio="xMaxYMax slice"
+      preserveAspectRatio="none"
       aria-hidden="true"
       focusable="false"
     >
-      {BARS.map(([x, y, width]) => (
+      {BARS.map(([x, y]) => (
         <rect
           key={`${x}-${y}`}
           x={x}
           y={y}
-          width={width}
+          width={BAR_WIDTH}
           height={VIEW_HEIGHT - y}
         />
       ))}
