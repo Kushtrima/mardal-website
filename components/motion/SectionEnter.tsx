@@ -16,8 +16,18 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
  */
 
 /** How far it rises, and how long it takes to settle. */
-const RISE = 36;
-const DURATION = 1;
+const RISE = 64;
+const DURATION = 0.9;
+
+/**
+ * How far down the viewport the section's top has to reach before it starts.
+ *
+ * Sections open with a band of space, so their heading sits 110–240px below
+ * their top edge. Starting this late means the heading is already on screen
+ * when the movement runs — start it any earlier and the whole thing plays out
+ * below the fold, which is exactly what it did at 88%.
+ */
+const START = "top 62%";
 
 export function SectionEnter() {
   useEffect(() => {
@@ -31,8 +41,8 @@ export function SectionEnter() {
       );
 
       sections.forEach((section) => {
-        /* Already in view: nothing to enter. */
-        if (section.getBoundingClientRect().top < window.innerHeight * 0.9) {
+        /* Already in view, or scrolled past: nothing to enter. */
+        if (section.getBoundingClientRect().top < window.innerHeight * 0.62) {
           return;
         }
 
@@ -41,15 +51,15 @@ export function SectionEnter() {
           { y: RISE, autoAlpha: 0 },
           {
             duration: DURATION,
-            /* expo.out arrives quickly and settles slowly — the section is in
-               place before the movement finishes, so it reads as smooth rather
-               than as something being animated. */
-            ease: "expo.out",
+            /* power2.out spends its second half still visibly moving. expo.out
+               was tried first and is 75% done inside 200ms — real, measurable,
+               and far too quick to read as anything. */
+            ease: "power2.out",
             y: 0,
             autoAlpha: 1,
             scrollTrigger: {
               trigger: section,
-              start: "top 88%",
+              start: START,
               once: true,
             },
           },
