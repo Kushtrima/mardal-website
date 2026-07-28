@@ -19,13 +19,15 @@ const RISE = 80;
 const DURATION = 1.1;
 
 /**
- * Where the section's top has to reach before the entry runs.
+ * Where the section's HEADING has to reach before the entry runs.
  *
- * Sections open with a band of space, so their heading sits 110-240px lower
- * than their top edge. At 65% that puts the heading between 78% and 93% of the
- * way down the screen — on screen, with room to be watched arriving.
+ * Measured against the heading rather than the section's top edge, because the
+ * band of space each section opens with is not the same size: 111px for Why
+ * Mardal, Different and Products, but 235px for Industries. Triggering off the
+ * top edge fires all four at different visual moments and makes Industries the
+ * odd one out. Off the heading they all arrive alike.
  */
-const START = "top 65%";
+const START = "top 92%";
 
 export function SectionEnter() {
   useEffect(() => {
@@ -39,17 +41,26 @@ export function SectionEnter() {
       );
 
       sections.forEach((section) => {
-        gsap.set(section, { autoAlpha: 0, y: RISE });
+        /* Every section names its own heading for screen readers already, so
+           there is nothing new to add to the markup to find it. */
+        const headingId = section.getAttribute("aria-labelledby");
+        const heading = headingId ? document.getElementById(headingId) : null;
+
+        /* Plain opacity, not autoAlpha: autoAlpha also writes
+           `visibility: hidden`, so anything that stopped the tween finishing
+           would leave a whole section unreadable. Opacity alone can only ever
+           leave it faint. */
+        gsap.set(section, { opacity: 0, y: RISE });
 
         ScrollTrigger.create({
-          trigger: section,
+          trigger: heading ?? section,
           start: START,
           once: true,
           onEnter: () => {
             gsap.to(section, {
               duration: DURATION,
               ease: "power3.out",
-              autoAlpha: 1,
+              opacity: 1,
               y: 0,
               overwrite: "auto",
             });
