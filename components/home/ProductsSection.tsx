@@ -83,11 +83,15 @@ export function ProductsSection() {
                   <h3 className="product__name">{product.title}</h3>
                   <p className="product__copy">{product.description}</p>
 
-                  <a
-                    className="button button--flat product__cta"
-                    href={products.ctaHref}
-                  >
+                  <a className="product__cta" href={products.ctaHref}>
                     {products.cta}
+                    <svg
+                      className="product__arrow"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path d="M3.5 12h16.5M13.5 5.5 20 12l-6.5 6.5" />
+                    </svg>
                   </a>
                 </div>
               </li>

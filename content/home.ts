@@ -173,7 +173,7 @@ export const products = {
       title: "Arvena AI",
       status: "In development",
       description:
-        "Applied AI for mental-health support, built around safety and consent.",
+        "Applied AI for mental-health support, built around safety and consent. The hard part was never the conversation — it is knowing what not to say, when to step back, and how to hand someone on to real help.",
       image:
         "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A footbridge running into woodland.",
@@ -184,7 +184,8 @@ export const products = {
       id: "ihrauto",
       title: "Ihrauto",
       status: "In development",
-      description: "Workshop operations, from first call to final invoice.",
+      description:
+        "Workshop operations, from first call to final invoice. One record follows the car through booking, parts, labour and payment, so the same details are not typed again at every stage.",
       image:
         "https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A workshop wall hung with tools.",
@@ -196,7 +197,7 @@ export const products = {
       title: "Ftesa.co",
       status: "In development",
       description:
-        "Self-service digital invitations, personalised for every guest.",
+        "Self-service digital invitations, personalised for every guest. Everyone invited gets their own invitation and their own link, and the replies come back to one place instead of scattered across a dozen chats.",
       image:
         "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A long table laid for guests.",

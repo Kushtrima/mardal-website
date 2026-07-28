@@ -125,10 +125,10 @@ test("server-renders the Mardal homepage", async () => {
       .length,
     3,
   );
-  assert.equal(
-    (html.match(/class="button button--flat product__cta"/g) ?? []).length,
-    3,
-  );
+  // A quiet link, not a filled box: the same one the industries use.
+  assert.equal((html.match(/class="product__cta"/g) ?? []).length, 3);
+  assert.equal((html.match(/class="product__arrow"/g) ?? []).length, 3);
+  assert.doesNotMatch(html, /button--flat|shape-flat/);
   // Each product states the two things actually known about it, against a
   // rule, the way the reference sets its facts.
   assert.equal((html.match(/class="product-fact"/g) ?? []).length, 9);
