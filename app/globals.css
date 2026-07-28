@@ -2140,18 +2140,23 @@ video {
   color: var(--accent-contrast);
 }
 
-/* The footprint the reference gives the field: the right 58.4% of the panel
-   and the bottom 34.6% of it, cut off by the panel's edge on both sides.
-   Both measured off the reference — its field is 636 x 198 in a 1084 x 572
-   panel — and both taken, so the picture matches when the two panels are laid
-   over one another. Sizing by the field's own aspect instead held the bars'
-   shape but put them at 31.8% of this panel's height rather than 34.6%. */
+/* The right 58.4% of the panel, cut off by its edge, at the field's own
+   636 x 198.
+
+   The height comes from that aspect and not from a share of the panel's
+   height. It was tried the other way — 34.6%, the share the reference's field
+   takes of its panel — and because this panel is 1.75 wide to tall against the
+   reference's 1.90, that stretched every bar 9% and took them from 1:19.8, the
+   reference's own slenderness, to 1:21.6. The footprint was three points
+   closer and the bars were visibly wrong, which is the wrong trade: the bars
+   are the thing being looked at. */
 .site-footer__bars {
   position: absolute;
   right: 0;
   bottom: 0;
   width: 58.4%;
-  height: 34.6%;
+  height: auto;
+  aspect-ratio: 636 / 198;
   fill: var(--accent-contrast);
   pointer-events: none;
 }
