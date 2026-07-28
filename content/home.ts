@@ -162,6 +162,8 @@ export const products = {
   title: "Products are how we test our thinking.",
   summary:
     "We turn focused ideas into useful digital experiences, then carry what we learn into every client partnership.",
+  /** Ordered as the reference sets them out, so the turned drawing sits in
+   *  the middle and no two neighbours read the same way. */
   items: [
     {
       id: "arvena-ai",
@@ -169,6 +171,14 @@ export const products = {
       status: "In development",
       description:
         "Applied AI for mental-health support, built around safety and consent.",
+      mark: "first",
+    },
+    {
+      id: "ihrauto",
+      title: "Ihrauto",
+      status: "In development",
+      description: "Workshop operations, from first call to final invoice.",
+      mark: "second",
     },
     {
       id: "ftesa",
@@ -176,14 +186,11 @@ export const products = {
       status: "In development",
       description:
         "Self-service digital invitations, personalised for every guest.",
-    },
-    {
-      id: "ihrauto",
-      title: "Ihrauto",
-      status: "In development",
-      description: "Workshop operations, from first call to final invoice.",
+      mark: "third",
     },
   ],
+  cta: "Get in touch",
+  ctaHref: "mailto:hello@mardal.com",
 } as const;
 
 export const contact = {

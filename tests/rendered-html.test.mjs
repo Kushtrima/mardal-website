@@ -26,6 +26,10 @@ async function render() {
  *  Case Studies, Company and Products, whose sections are not on the page. */
 const menuAnchors = [
   "solutions",
+  "products",
+  "arvena-ai",
+  "ftesa",
+  "ihrauto",
   "finance",
   "healthcare",
   "manufacturing",
@@ -107,16 +111,31 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /Built across industries/);
   assert.match(html, /Physical stores, e-commerce businesses/);
 
-  // The products section is off the page. Its three names stay in the menu,
-  // so the strings tested here are ones only the section carried.
-  assert.doesNotMatch(html, /Products are how we test our thinking/);
-  assert.doesNotMatch(html, /product-card|products-section|products-grid/);
-  assert.doesNotMatch(html, /In development/);
-  assert.doesNotMatch(html, /cases-record|Selected/);
-  // The menu still offers them.
+  // Products: three names, each over its own drawing in bars.
+  assert.match(html, /Products are how we test our thinking/);
   assert.match(html, /Arvena AI/);
   assert.match(html, /Ftesa\.co/);
   assert.match(html, /Ihrauto/);
+  assert.equal((html.match(/class="product"/g) ?? []).length, 3);
+  assert.equal(
+    (html.match(/<p class="product__status">In development<\/p>/g) ?? []).length,
+    3,
+  );
+  assert.equal(
+    (html.match(/class="button button--secondary product__cta"/g) ?? []).length,
+    3,
+  );
+  assert.doesNotMatch(html, /cases-record|Selected/);
+  // Read off the reference: 24 bars a drawing, three drawings, no grey panel.
+  assert.equal((html.match(/class="product-mark"/g) ?? []).length, 3);
+  const productMarks = [
+    ...html.matchAll(/<svg class="product-mark"[^>]*>([\s\S]*?)<\/svg>/g),
+  ];
+  assert.equal(productMarks.length, 3);
+  for (const mark of productMarks) {
+    assert.equal((mark[1].match(/<rect /g) ?? []).length, 24);
+  }
+  assert.doesNotMatch(html, /product-mark[^>]*fill="#/);
   // The ring that ran through the industries is gone; the words stay.
   assert.doesNotMatch(html, /industry-art/);
   // The footer carries the address now that the contact section is gone.
@@ -147,9 +166,9 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /data-reveal-item/);
   // Every section on the page is one, including Why Mardal.
   assert.match(html, /class="why-section"[^>]*data-route-section/);
-  assert.equal((html.match(/<section class="[^"]*"[^>]*data-route-section/g) ?? []).length, 3);
+  assert.equal((html.match(/<section class="[^"]*"[^>]*data-route-section/g) ?? []).length, 4);
 
-  // The isometric drawings belonged to the product cards and left with them.
+  // The isometric drawings did not come back with the section.
   assert.doesNotMatch(html, /class="iso-art"/);
 
   // The bars belong to the hero alone, and the scroll route line is gone.

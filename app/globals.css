@@ -1918,73 +1918,6 @@ video {
   align-self: end;
 }
 
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(0.65rem, 0.9vw, 0.85rem);
-  margin-top: clamp(3.5rem, 7vw, 6rem);
-}
-
-.product-card {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  aspect-ratio: 1.05;
-  padding: clamp(1.25rem, 1.75vw, 2rem);
-  border-radius: var(--shape-card);
-  background: var(--surface);
-}
-
-.product-card__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.product-card__status {
-  margin: 0;
-  padding: 0.3rem 0.65rem;
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius-full);
-  color: var(--ink-muted);
-  font-size: var(--text-body);
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-}
-
-.product-card__art {
-  display: grid;
-  min-height: 0;
-  flex: 1;
-  align-items: end;
-  padding-block: clamp(1.25rem, 2vw, 2rem);
-}
-
-.product-card__art .iso-art {
-  width: min(72%, 12.5rem);
-  justify-self: center;
-  transform: translateY(6%);
-}
-
-.product-card__name {
-  margin: 0;
-  font-family: var(--type-display);
-  font-size: var(--text-heading);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: var(--leading-heading);
-}
-
-.product-card__copy {
-  max-width: 30ch;
-  margin: clamp(0.6rem, 1vw, 0.9rem) 0 0;
-  color: var(--ink-muted);
-  font-size: var(--text-body);
-  letter-spacing: -0.015em;
-  line-height: 1.4;
-}
-
 /* ------------------------------- Case study ------------------------------- */
 
 .case-section {
@@ -2809,6 +2742,72 @@ video {
   .site-footer__nav {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 2rem 1rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Products — three names, each over its own drawing in bars.
+   --------------------------------------------------------------------------- */
+
+/* Three equal columns, on the same gap as the boxes above them so the two
+   grids read as one system. */
+.products-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(2rem, 3.4vw, 3.25rem);
+  margin: 0;
+  margin-top: clamp(3rem, 6vw, 5rem);
+  padding: 0;
+  list-style: none;
+}
+
+.product {
+  display: grid;
+  /* The drawing takes whatever height it needs; everything else sits to its
+     own content, so the three names and the three buttons line up across the
+     row however long the copy runs. */
+  grid-template-rows: auto auto auto 1fr auto;
+  gap: 1rem;
+}
+
+.product__name {
+  margin: 0;
+  font-size: var(--text-heading);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: var(--leading-heading);
+}
+
+/* No panel behind it: the bars sit straight on the page, in ink. */
+.product-mark {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-block: 0.5rem;
+  fill: var(--ink);
+}
+
+.product__status {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: var(--text-body);
+}
+
+.product__copy {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: var(--text-body);
+  line-height: 1.45;
+}
+
+.product__cta {
+  justify-self: start;
+}
+
+@media (max-width: 60rem) {
+  .products-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(3rem, 8vw, 4rem);
   }
 }
 
