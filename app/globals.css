@@ -132,7 +132,10 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Smooth scrolling is ScrollSmoother's job now. Leaving the CSS version on
+     as well gives two things easing the same scroll against each other, which
+     reads as stutter. */
+  scroll-behavior: auto;
   background: var(--canvas);
 }
 

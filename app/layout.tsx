@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
+import { SmoothScroll } from "../components/motion/SmoothScroll";
 
 const geistSans = Geist({
   variable: "--font-geist",
@@ -27,7 +28,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={geistSans.variable}>{children}</body>
+      <body className={geistSans.variable}>
+        {/* ScrollSmoother scrolls this content itself rather than letting the
+            browser do it, so it has to own a wrapper of its own. Without the
+            plugin running these are two ordinary divs and the page scrolls
+            normally. */}
+        <div id="smooth-wrapper">
+          <div id="smooth-content">{children}</div>
+        </div>
+
+        <SmoothScroll />
+      </body>
     </html>
   );
 }
