@@ -1891,33 +1891,6 @@ video {
 
 /* -------------------------------- Products -------------------------------- */
 
-.products-section {
-  position: relative;
-  background: var(--canvas);
-  padding-block: var(--section-space-lg);
-}
-
-.products-intro {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: clamp(0.75rem, 1vw, 1rem);
-  align-items: start;
-}
-
-.products-intro .section-label {
-  grid-column: 1 / span 3;
-  padding-top: 0.55rem;
-}
-
-.products-title {
-  grid-column: 4 / span 6;
-}
-
-.products-lede {
-  grid-column: 10 / -1;
-  align-self: end;
-}
-
 /* ------------------------------- Case study ------------------------------- */
 
 .case-section {
@@ -2749,27 +2722,64 @@ video {
    Products — three names, each over its own drawing in bars.
    --------------------------------------------------------------------------- */
 
-/* Three columns under a hairline each. The rule is the only drawn thing in
-   here: it does the structural work a panel or a mark would otherwise do, and
-   costs nothing in weight. */
+.products-section {
+  position: relative;
+  background: var(--canvas);
+  padding-block: var(--section-space-lg);
+}
+
+/* The words on the left, the products on the right. The left column stays put
+   while the right one is scrolled through, so the heading is still there when
+   you reach the last product. */
+.products-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+  gap: clamp(2.5rem, 6vw, 7rem);
+  align-items: start;
+}
+
+.products-intro {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
+
+.products-title {
+  max-width: 14ch;
+}
+
+.products-lede {
+  max-width: 34ch;
+}
+
+/* One column now: the products are a list you move down, not a row you scan
+   across. */
 .products-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(2.5rem, 5vw, 5rem);
+  gap: clamp(2.5rem, 5vw, 4.5rem);
   margin: 0;
-  margin-top: clamp(3.5rem, 7vw, 6rem);
   padding: 0;
   list-style: none;
 }
 
 .product {
   display: grid;
-  /* The line runs to the copy; the way through is pinned to the bottom, so the
-     three links sit level however long the copy runs. */
-  grid-template-rows: auto auto 1fr auto;
   gap: 0.75rem;
-  padding-top: 1.25rem;
+  padding-top: 1.5rem;
   border-top: 1px solid var(--line);
+}
+
+/* A photograph, not a screenshot. Fixed ratio so the three sit to the same
+   shape and nothing shifts as they load. */
+.product__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 1rem;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--shape-card);
+  background: var(--surface);
+  object-fit: cover;
 }
 
 .product__status {
@@ -2788,56 +2798,30 @@ video {
 }
 
 .product__copy {
-  max-width: 26ch;
+  max-width: 46ch;
   margin: 0;
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
   color: var(--ink-muted);
   font-size: var(--text-body);
   line-height: 1.45;
 }
 
-/* The same link as the one under the industries, arrow and all. */
+/* The site's own secondary control, not a fourth button style. */
 .product__cta {
-  display: inline-flex;
-  align-items: center;
   justify-self: start;
-  gap: 0.55em;
-  font-size: var(--text-body);
-  letter-spacing: -0.02em;
-  line-height: 1;
-  transition: color var(--duration-fast) var(--ease-standard);
+  margin-top: 0.5rem;
 }
 
-.product__arrow {
-  width: 1.15em;
-  height: 1.15em;
-  flex: 0 0 auto;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.6;
-  transition: transform var(--duration-fast) var(--ease-standard);
-}
-
-@media (hover: hover) {
-  .product__cta:hover {
-    color: var(--accent-strong);
-  }
-
-  .product__cta:hover .product__arrow {
-    transform: translateX(0.25em);
-  }
-}
-
+/* Stacked: the heading simply sits above the list and scrolls with it. */
 @media (max-width: 60rem) {
-  .products-row {
+  .products-layout {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0;
+    gap: clamp(2.5rem, 8vw, 3.5rem);
   }
 
-  .product {
-    padding-block: 1.5rem;
+  .products-title,
+  .products-lede {
+    max-width: none;
   }
 }
 

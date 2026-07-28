@@ -1,13 +1,14 @@
 import { Container } from "../layout/Container";
+import { ProductsPin } from "./ProductsPin";
 import { products } from "../../content/home";
 
 /**
- * The three products, set as type and nothing else.
+ * The three products: the words on the left, the products down the right.
  *
- * A drawn mark was tried twice here and was crowded both times. There is not
- * much to say about three products that are still being built, so the section
- * says it plainly: a rule, a name, a line, a way through. The rules do the
- * structural work a panel would otherwise do, which is what keeps it quiet.
+ * The heading column is held in place while the products are scrolled past it,
+ * so it is still there when you reach the last one. Each product leads with a
+ * photograph — none of the three has an interface worth showing yet, so the
+ * image stands for what it is about rather than claiming to be it.
  *
  * It also carries the four ids the header menu and the footer link to —
  * #products and one per product.
@@ -20,35 +21,45 @@ export function ProductsSection() {
       aria-labelledby="products-title"
       data-route-section
     >
+      <ProductsPin />
+
       <Container wide>
-        <div className="products-intro">
-          <p className="section-label">{products.eyebrow}</p>
-          <h2 className="section-title products-title" id="products-title">
-            {products.title}
-          </h2>
-          <p className="section-lede products-lede">{products.summary}</p>
-        </div>
+        <div className="products-layout">
+          <div className="products-intro">
+            <p className="section-label">{products.eyebrow}</p>
+            <h2 className="section-title products-title" id="products-title">
+              {products.title}
+            </h2>
+            <p className="section-lede products-lede">{products.summary}</p>
+          </div>
 
-        <ul className="products-row">
-          {products.items.map((product) => (
-            <li className="product" id={product.id} key={product.id}>
-              <p className="product__status">{product.status}</p>
-              <h3 className="product__name">{product.title}</h3>
-              <p className="product__copy">{product.description}</p>
+          <ul className="products-row">
+            {products.items.map((product) => (
+              <li className="product" id={product.id} key={product.id}>
+                <img
+                  className="product__image"
+                  src={product.image}
+                  alt={product.imageAlt}
+                  width="1600"
+                  height="1000"
+                  loading="lazy"
+                  decoding="async"
+                />
 
-              <a className="product__cta" href={products.ctaHref}>
-                {products.cta}
-                <svg
-                  className="product__arrow"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
+                <p className="product__status">{product.status}</p>
+                <h3 className="product__name">{product.title}</h3>
+                <p className="product__copy">{product.description}</p>
+
+                <a
+                  className="button button--secondary product__cta"
+                  href={products.ctaHref}
                 >
-                  <path d="M3.5 12h16.5M13.5 5.5 20 12l-6.5 6.5" />
-                </svg>
-              </a>
-            </li>
-          ))}
-        </ul>
+                  {products.cta}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </Container>
     </section>
   );

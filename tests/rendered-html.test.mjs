@@ -121,15 +121,31 @@ test("server-renders the Mardal homepage", async () => {
     (html.match(/<p class="product__status">In development<\/p>/g) ?? []).length,
     3,
   );
-  assert.equal((html.match(/class="product__cta"/g) ?? []).length, 3);
+  // The site's own secondary control, not a fourth button style.
+  assert.equal(
+    (html.match(/class="button button--secondary product__cta"/g) ?? []).length,
+    3,
+  );
   assert.doesNotMatch(html, /cases-record|Selected/);
-  // Set as type: no drawn mark of any kind, and no panel behind it. The only
-  // drawn thing left is the arrow on each link.
-  // (The bars on the coloured boxes above are rects too, so this checks the
-  // product classes rather than the shape.)
+  // No drawn mark of any kind, and no panel: each product leads with a
+  // photograph instead.
   assert.doesNotMatch(html, /product-mark|product-card|product__panel/);
-  assert.equal((html.match(/class="product__arrow"/g) ?? []).length, 3);
   assert.equal((html.match(/class="product__name"/g) ?? []).length, 3);
+  assert.equal((html.match(/class="product__image"/g) ?? []).length, 3);
+  // Three different photographs, each with alt text, each sized so the page
+  // does not shift as they load.
+  const productImages = [
+    ...html.matchAll(/<img class="product__image"[^>]*src="([^"]+)"[^>]*>/g),
+  ];
+  assert.equal(productImages.length, 3);
+  assert.equal(new Set(productImages.map((image) => image[1])).size, 3);
+  for (const image of productImages) {
+    assert.match(image[0], /alt="[^"]+"/);
+    assert.match(image[0], /width="1600" height="1000"/);
+    assert.match(image[1], /^https:\/\/images\.unsplash\.com\//);
+  }
+  // The words sit beside the products, not above them.
+  assert.match(html, /class="products-layout"/);
   assert.doesNotMatch(html, /product-mark[^>]*fill="#/);
   // The ring that ran through the industries is gone; the words stay.
   assert.doesNotMatch(html, /industry-art/);

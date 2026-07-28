@@ -162,8 +162,9 @@ export const products = {
   title: "Products are how we test our thinking.",
   summary:
     "We turn focused ideas into useful digital experiences, then carry what we learn into every client partnership.",
-  /** Ordered as the reference sets them out, so the turned drawing sits in
-   *  the middle and no two neighbours read the same way. */
+  /** Photographs, not screenshots: none of the three has an interface worth
+   *  showing yet, so each image stands for what the product is about rather
+   *  than claiming to be the product. */
   items: [
     {
       id: "arvena-ai",
@@ -171,14 +172,18 @@ export const products = {
       status: "In development",
       description:
         "Applied AI for mental-health support, built around safety and consent.",
-      mark: "first",
+      image:
+        "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=1600&q=70",
+      imageAlt: "A footbridge running into woodland.",
     },
     {
       id: "ihrauto",
       title: "Ihrauto",
       status: "In development",
       description: "Workshop operations, from first call to final invoice.",
-      mark: "second",
+      image:
+        "https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?auto=format&fit=crop&w=1600&q=70",
+      imageAlt: "A workshop wall hung with tools.",
     },
     {
       id: "ftesa",
@@ -186,7 +191,9 @@ export const products = {
       status: "In development",
       description:
         "Self-service digital invitations, personalised for every guest.",
-      mark: "third",
+      image:
+        "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=70",
+      imageAlt: "A long table laid for guests.",
     },
   ],
   cta: "Get in touch",
