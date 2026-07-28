@@ -70,8 +70,6 @@ export function SiteFooter() {
 
           <div className="site-footer__body-grid">
           <div className="site-footer__words">
-            <p className="section-label">{contact.eyebrow}</p>
-
             <h2 className="site-footer__title">
               {contact.titleLines.map((line) => (
                 <span className="site-footer__title-line" key={line}>

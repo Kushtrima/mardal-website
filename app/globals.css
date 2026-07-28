@@ -2197,12 +2197,6 @@ video {
   max-width: 32rem;
 }
 
-/* On the panel the label is white like everything else: the muted ink it uses
-   on the page has nothing like enough contrast here. */
-.site-footer__panel .section-label {
-  color: var(--accent-contrast);
-}
-
 /* The header size, not the display size. At 72px this line needs more width
    than the four link columns can spare, and the panel cannot hold both and
    still be twice as wide as it is tall. */
