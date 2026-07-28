@@ -2800,12 +2800,12 @@ video {
 
 .product__facts,
 .product__main {
-  padding-bottom: clamp(2rem, 4vw, 3.5rem);
+  padding-bottom: clamp(3.5rem, 7vw, 6rem);
 }
 
 .product + .product .product__facts,
 .product + .product .product__main {
-  padding-top: clamp(2rem, 4vw, 3.5rem);
+  padding-top: clamp(3.5rem, 7vw, 6rem);
 }
 
 /* Level with the top of the picture, not the foot of the block. */
