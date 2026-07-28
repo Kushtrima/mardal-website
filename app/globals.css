@@ -1688,10 +1688,12 @@ video {
   }
 }
 
-/* The ring is centred on this block, so the header does not pull it up. */
+/* No margin of its own: the section's padding is the only thing that sets the
+   distance to the section above, the same as every other section. This block
+   used to carry an extra clamp(4rem, 9vw, 9rem) to centre the ring animation
+   on it, and the ring has been gone for a while. */
 .industries-body {
   position: relative;
-  margin-top: clamp(4rem, 9vw, 9rem);
 }
 
 /* The film puts the ring on the left and the words on the right. The words run
@@ -2087,7 +2089,9 @@ video {
 
 .site-footer {
   position: relative;
-  padding-top: clamp(4rem, 8vw, 7rem);
+  /* The same measure the sections use, so the space above the footer matches
+     the space between any two of them. */
+  padding-top: var(--section-space-lg);
   padding-bottom: clamp(1.25rem, 2.5vw, 2rem);
   border-top: 1px solid var(--line-soft);
   background: var(--canvas);
@@ -2801,6 +2805,13 @@ video {
 .product__facts,
 .product__main {
   padding-bottom: clamp(3.5rem, 7vw, 6rem);
+}
+
+/* That padding is the space before the next product, so the last one has no
+   use for it — left on, it makes the section's foot deeper than its head. */
+.product:last-child .product__facts,
+.product:last-child .product__main {
+  padding-bottom: 0;
 }
 
 .product + .product .product__facts,
