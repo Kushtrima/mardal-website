@@ -5,29 +5,36 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /**
- * Each section arrives with one small movement.
+ * Each section settles into place as it comes up the screen.
  *
- * Not choreography: the section rises a little and settles, once, as it comes
- * into view. The same distance and the same ease every time, so scrolling the
- * page has a rhythm rather than a series of separate tricks.
+ * Tied to scroll position, not to a clock. That distinction is the whole point:
+ * a timed fade competes with the page's own movement and loses — while you are
+ * scrolling, everything is already travelling hundreds of pixels, so another
+ * 64px over 900ms does not separate from it, and two attempts at that read as
+ * nothing at all.
  *
- * Anything already on screen when the page loads is left alone — a section you
- * are looking at should not animate out from under you.
+ * Anchoring it to scroll gives the section a different rate to the page. It
+ * arrives low and catches up, and that lag is visible for as long as the
+ * section is entering, at any scrolling speed. It also cannot be missed by
+ * scrolling quickly past it, because there is no window to miss.
  */
 
-/** How far it rises, and how long it takes to settle. */
-const RISE = 64;
-const DURATION = 0.9;
+/** How far behind the page the section starts. */
+const LAG = 110;
 
 /**
- * How far down the viewport the section's top has to reach before it starts.
+ * The range it catches up over, as ScrollTrigger positions.
  *
- * Sections open with a band of space, so their heading sits 110–240px below
- * their top edge. Starting this late means the heading is already on screen
- * when the movement runs — start it any earlier and the whole thing plays out
- * below the fold, which is exactly what it did at 88%.
+ * From the section's top touching the bottom of the viewport, to that top
+ * reaching 45% of the way up the screen — a little over half a viewport of
+ * scrolling.
  */
-const START = "top 62%";
+const START = "top bottom";
+const END = "top 45%";
+
+/** Fraction of that range the fade is finished in, so text is never faint by
+ *  the time it is somewhere you would read it. */
+const FADE_SHARE = 0.6;
 
 export function SectionEnter() {
   useEffect(() => {
@@ -41,29 +48,33 @@ export function SectionEnter() {
       );
 
       sections.forEach((section) => {
-        /* Already in view, or scrolled past: nothing to enter. */
-        if (section.getBoundingClientRect().top < window.innerHeight * 0.62) {
-          return;
-        }
-
-        gsap.fromTo(
-          section,
-          { y: RISE, autoAlpha: 0 },
-          {
-            duration: DURATION,
-            /* power2.out spends its second half still visibly moving. expo.out
-               was tried first and is 75% done inside 200ms — real, measurable,
-               and far too quick to read as anything. */
-            ease: "power2.out",
-            y: 0,
-            autoAlpha: 1,
-            scrollTrigger: {
-              trigger: section,
-              start: START,
-              once: true,
-            },
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: START,
+            end: END,
+            /* A little smoothing so a trackpad's jitter does not show up in
+               the movement, but not so much that it lags behind the finger. */
+            scrub: 0.5,
           },
-        );
+        });
+
+        /* Linear against the scroll on purpose. An ease would vary the rate
+           the section catches up at, and it is the steady difference in rate
+           that the eye picks out. */
+        timeline
+          .fromTo(
+            section,
+            { autoAlpha: 0 },
+            { autoAlpha: 1, duration: FADE_SHARE, ease: "none" },
+            0,
+          )
+          .fromTo(
+            section,
+            { y: LAG },
+            { y: 0, duration: 1, ease: "none" },
+            0,
+          );
       });
     });
 
