@@ -2759,16 +2759,16 @@ video {
   display: grid;
   grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
   align-items: stretch;
-  border-left: 1px solid var(--line-soft);
 }
 
 /* The column carries the rule and stretches; the block inside keeps its own
    height, which is the height the heading is held in place by. Stretching the
    block itself leaves nothing to pin — it did, and the heading stopped
    staying put. */
+/* No rule on this edge, so no clearance for one either: the heading starts on
+   the same margin as every other section's does. */
 .products-intro-col {
   padding-right: clamp(1.5rem, 3vw, 3rem);
-  padding-left: clamp(1.25rem, 2.5vw, 2.5rem);
 }
 
 .products-intro {
