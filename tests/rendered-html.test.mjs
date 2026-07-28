@@ -121,22 +121,15 @@ test("server-renders the Mardal homepage", async () => {
     (html.match(/<p class="product__status">In development<\/p>/g) ?? []).length,
     3,
   );
-  assert.equal(
-    (html.match(/class="button button--secondary product__cta"/g) ?? []).length,
-    3,
-  );
+  assert.equal((html.match(/class="product__cta"/g) ?? []).length, 3);
   assert.doesNotMatch(html, /cases-record|Selected/);
-  // Three different drawings on the reference's grid, thinned out: 14 bars
-  // each rather than its 24, and no grey panel.
-  assert.equal((html.match(/class="product-mark"/g) ?? []).length, 3);
-  const productMarks = [
-    ...html.matchAll(/<svg class="product-mark"[^>]*>([\s\S]*?)<\/svg>/g),
-  ];
-  assert.equal(productMarks.length, 3);
-  for (const mark of productMarks) {
-    assert.equal((mark[1].match(/<rect /g) ?? []).length, 14);
-  }
-  assert.equal(new Set(productMarks.map((mark) => mark[1])).size, 3);
+  // Set as type: no drawn mark of any kind, and no panel behind it. The only
+  // drawn thing left is the arrow on each link.
+  // (The bars on the coloured boxes above are rects too, so this checks the
+  // product classes rather than the shape.)
+  assert.doesNotMatch(html, /product-mark|product-card|product__panel/);
+  assert.equal((html.match(/class="product__arrow"/g) ?? []).length, 3);
+  assert.equal((html.match(/class="product__name"/g) ?? []).length, 3);
   assert.doesNotMatch(html, /product-mark[^>]*fill="#/);
   // The ring that ran through the industries is gone; the words stay.
   assert.doesNotMatch(html, /industry-art/);
