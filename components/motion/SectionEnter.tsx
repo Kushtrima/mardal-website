@@ -69,8 +69,11 @@ export function SectionEnter() {
     ScrollTrigger.config({ ignoreMobileResize: true });
 
     const context = gsap.context(() => {
+      /* A section that holds something in place cannot also be moving: a pin
+         inside a section that carries its own lag is measured while that lag
+         is applied, and rests exactly that far out — it did, by 131px. */
       const sections = gsap.utils.toArray<HTMLElement>(
-        "main > section[data-route-section]",
+        "main > section[data-route-section]:not([data-section-enter='off'])",
       );
 
       sections.forEach((section) => {

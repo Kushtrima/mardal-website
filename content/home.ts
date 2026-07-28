@@ -159,7 +159,9 @@ export const solutions = {
 export const products = {
   id: "products",
   eyebrow: "Mardal Products",
-  title: "Products are how we test our thinking.",
+  /** Set as explicit lines, so the break falls in the same place at every
+   *  width and the step below it is a decision rather than a wrap. */
+  titleLines: ["Products are", "how we test", "our thinking."],
   summary:
     "We turn focused ideas into useful digital experiences, then carry what we learn into every client partnership.",
   /** Photographs, not screenshots: none of the three has an interface worth

@@ -20,6 +20,7 @@ export function ProductsSection() {
       id={products.id}
       aria-labelledby="products-title"
       data-route-section
+      data-section-enter="off"
     >
       <ProductsPin />
 
@@ -32,7 +33,11 @@ export function ProductsSection() {
             <div className="products-intro">
               <p className="section-label">{products.eyebrow}</p>
               <h2 className="section-title products-title" id="products-title">
-                {products.title}
+                {products.titleLines.map((line) => (
+                  <span className="products-title__line" key={line}>
+                    {line}
+                  </span>
+                ))}
               </h2>
               <p className="section-lede products-lede">{products.summary}</p>
             </div>

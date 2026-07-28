@@ -15,8 +15,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
  * mechanism that works once the smoother owns the scroll.
  */
 
-/** Clear of the header, which is the same height wherever you are. */
-const HEADER_CLEARANCE = 120;
+/** Where the heading comes to rest: clear of the top of the screen, not
+ *  jammed against it. */
+const HEADER_CLEARANCE = 148;
 
 /** Below this the two columns stack, and the heading just sits above them. */
 const MIN_WIDTH = "(min-width: 60rem)";

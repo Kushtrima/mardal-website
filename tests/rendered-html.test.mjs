@@ -112,7 +112,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /Physical stores, e-commerce businesses/);
 
   // Products: three names, each over its own drawing in bars.
-  assert.match(html, /Products are how we test our thinking/);
+  // Set as explicit lines rather than left to wrap, and stepped in the CSS.
+  assert.match(html, /class="products-title__line">Products are</);
+  assert.match(html, /class="products-title__line">how we test</);
+  assert.match(html, /class="products-title__line">our thinking\.</);
   assert.match(html, /Arvena AI/);
   assert.match(html, /Ftesa\.co/);
   assert.match(html, /Ihrauto/);
