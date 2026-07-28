@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Container } from "./Container";
-import { RedactedLines } from "../home/RedactedLines";
+import { FooterBars } from "./FooterBars";
 import {
   contact,
   contactEmail,
@@ -48,11 +48,23 @@ const groups = [
  * Under that, the links as rows rather than columns. In columns they came out
  * 5, 7, 3 and 3 long, which left a ragged hole under the short two; along a
  * row they set their own length and there is no hole to leave.
+ *
+ * All of it sits on one panel in the accent colour, with the bar field white
+ * in its corner — the page is white throughout and then closes on the brand.
  */
 export function SiteFooter() {
   return (
     <footer className="site-footer" id={contact.id}>
       <Container wide>
+        <div className="site-footer__panel">
+        <FooterBars />
+
+        <Link className="site-footer__brand" href="/" aria-label="Mardal home">
+          {/* Supplied vector wordmark is already optimized and self-contained. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/SVG/logo.svg" alt="Mardal" width="694" height="164" />
+        </Link>
+
         <div className="site-footer__close">
           <div className="site-footer__words">
             <p className="section-label">{contact.eyebrow}</p>
@@ -78,11 +90,6 @@ export function SiteFooter() {
               </svg>
             </a>
           </div>
-
-          {/* The site's own motif, in the four brand colours: the half of the
-              footer beside the closing line was empty white, and the bars are
-              the one drawing this site owns. */}
-          <RedactedLines className="site-footer__bars" />
         </div>
 
         <nav className="site-footer__nav" aria-label="Footer">
@@ -106,16 +113,6 @@ export function SiteFooter() {
         </nav>
 
         <div className="site-footer__meta">
-          <Link
-            className="site-footer__brand"
-            href="/"
-            aria-label="Mardal home"
-          >
-            {/* Supplied vector wordmark is already optimized and self-contained. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/SVG/logo.svg" alt="Mardal" width="694" height="164" />
-          </Link>
-
           <span className="site-footer__copy">
             {`© ${new Date().getFullYear()} Mardal`}
           </span>
@@ -130,6 +127,7 @@ export function SiteFooter() {
               <path d="M12 20.5V4M5.5 10.5 12 4l6.5 6.5" />
             </svg>
           </a>
+        </div>
         </div>
       </Container>
     </footer>

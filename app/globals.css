@@ -92,6 +92,10 @@
   --shape-card: clamp(0.45rem, 0.7vw, 0.7rem);
   /* The rounding on things you click: a control, and a round icon button. */
   --shape-control: 0.55rem;
+  /* The one panel on the page: the footer. */
+  --shape-panel: clamp(1rem, 1.6vw, 1.5rem);
+  /* Hairlines drawn on the accent rather than on the page. */
+  --panel-line: rgb(255 255 255 / 26%);
   --radius-full: 999px;
   --radius-circle: 50%;
   --shadow-soft: 0 1rem 3rem rgb(21 21 21 / 8%);
@@ -2110,50 +2114,67 @@ video {
      footer matches the space between any two of them. */
   padding-top: var(--section-space);
   padding-bottom: clamp(1.25rem, 2.5vw, 2rem);
-  border-top: 1px solid var(--line-soft);
   background: var(--canvas);
 }
 
-/* The page closes here, so this reads at the size the page opens at — the
-   words on the left, and the bars filling the half beside them that was
-   otherwise empty white. */
+/* The page is white the whole way down and then closes on the brand. */
+.site-footer__panel {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(2rem, 4vw, 3.5rem);
+  /* A clear band at the foot of the panel for the bars to stand in. Without
+     it they run up behind the last row and the words sit on white. */
+  padding-bottom: clamp(6.5rem, 11vw, 10rem);
+  border-radius: var(--shape-panel);
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+/* Standing up off the bottom edge in the corner, cropped by the panel's own
+   radius — the hero's bars, in white on the accent. */
+.site-footer__bars {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(52%, 34rem);
+  height: clamp(5rem, 8vw, 7.5rem);
+  fill: var(--accent-contrast);
+  pointer-events: none;
+}
+
+.site-footer__panel > *:not(.site-footer__bars) {
+  position: relative;
+  z-index: 1;
+}
+
+/* White, because the wordmark is drawn in ink and the panel is not. */
+.site-footer__brand {
+  display: inline-block;
+}
+
+.site-footer__brand img {
+  display: block;
+  width: clamp(6rem, 7vw, 7.5rem);
+  height: auto;
+  filter: brightness(0) invert(1);
+}
+
 .site-footer__close {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(2rem, 5vw, 4.5rem);
-  align-items: end;
-  padding-bottom: clamp(3.5rem, 7vw, 6rem);
+  padding-top: clamp(3.5rem, 8vw, 7rem);
+  padding-bottom: clamp(3rem, 6vw, 5rem);
 }
 
 .site-footer__words {
   display: grid;
   justify-items: start;
   gap: 1rem;
+  max-width: 34rem;
 }
 
-/* The site's own drawing, in the four brand colours rather than in ink: the
-   bars cycle through the set so no colour touches itself, the same rule the
-   coloured boxes follow. */
-.site-footer__bars {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.site-footer__bars rect:nth-child(4n + 1) {
-  fill: var(--tint-lilac-bar);
-}
-
-.site-footer__bars rect:nth-child(4n + 2) {
-  fill: var(--tint-butter-bar);
-}
-
-.site-footer__bars rect:nth-child(4n + 3) {
-  fill: var(--tint-mint-bar);
-}
-
-.site-footer__bars rect:nth-child(4n) {
-  fill: var(--tint-sky-bar);
+/* On the panel the label is white like everything else: the muted ink it uses
+   on the page has nothing like enough contrast here. */
+.site-footer__panel .section-label {
+  color: var(--accent-contrast);
 }
 
 .site-footer__title {
@@ -2174,7 +2195,6 @@ video {
 .site-footer__body {
   max-width: 42ch;
   margin: 0;
-  color: var(--ink-muted);
   font-size: var(--text-body);
   line-height: 1.45;
 }
@@ -2189,7 +2209,7 @@ video {
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
   line-height: 1;
-  transition: color var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
 .site-footer__arrow {
@@ -2210,8 +2230,7 @@ video {
 .site-footer__nav {
   display: grid;
   gap: 0;
-  padding-top: clamp(2.5rem, 5vw, 4rem);
-  border-top: 1px solid var(--line-soft);
+  border-top: 1px solid var(--panel-line);
 }
 
 .site-footer__group {
@@ -2222,14 +2241,13 @@ video {
   padding-block: clamp(1rem, 1.8vw, 1.4rem);
 }
 
-/* A hairline between rows and none at the ends, so the group reads as one
-   block rather than as four boxes. */
 .site-footer__group + .site-footer__group {
-  border-top: 1px solid var(--line-soft);
+  border-top: 1px solid var(--panel-line);
 }
 
 .site-footer__group-title {
   margin: 0;
+  color: var(--accent-contrast);
 }
 
 .site-footer__links {
@@ -2244,7 +2262,7 @@ video {
 .site-footer__link {
   font-size: var(--text-body);
   letter-spacing: -0.02em;
-  transition: color var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
 .site-footer__meta {
@@ -2252,17 +2270,18 @@ video {
   flex-wrap: wrap;
   gap: 1rem clamp(1.5rem, 3vw, 2.5rem);
   align-items: center;
-  margin-top: clamp(3rem, 6vw, 5rem);
+  margin-top: clamp(2.5rem, 5vw, 4rem);
   padding-top: clamp(1.25rem, 2vw, 1.75rem);
-  border-top: 1px solid var(--line-soft);
-  color: var(--ink-muted);
+  border-top: 1px solid var(--panel-line);
   font-size: var(--text-body);
 }
 
-.site-footer__brand img {
-  display: block;
-  width: clamp(5rem, 5.5vw, 6rem);
-  height: auto;
+/* Below 48rem the bars would be taller than the band and reach the words. */
+@media (max-width: 48rem) {
+  .site-footer__bars {
+    width: 70%;
+    height: 4rem;
+  }
 }
 
 .site-footer__top-link {
@@ -2273,7 +2292,7 @@ video {
   font-size: var(--text-body);
   letter-spacing: -0.02em;
   line-height: 1;
-  transition: color var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
 .site-footer__top-link .site-footer__arrow {
@@ -2281,11 +2300,13 @@ video {
   height: 1.05em;
 }
 
+/* Everything on the panel is white, so hover dips rather than recolours:
+   there is no second colour up here that would still read. */
 @media (hover: hover) {
   .site-footer__link:hover,
   .site-footer__email:hover,
   .site-footer__top-link:hover {
-    color: var(--accent-strong);
+    opacity: 0.72;
   }
 
   .site-footer__email:hover .site-footer__arrow {
@@ -2298,11 +2319,6 @@ video {
 }
 
 @media (max-width: 60rem) {
-  /* The bars go under the words rather than beside them. */
-  .site-footer__close {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   /* The label goes above its row rather than beside it. */
   .site-footer__group {
     grid-template-columns: minmax(0, 1fr);
