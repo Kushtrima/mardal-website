@@ -1,35 +1,21 @@
 import Link from "next/link";
 import { Container } from "./Container";
-import {
-  contactEmail,
-  footer,
-  products,
-  services,
-  solutions,
-} from "../../content/home";
-
-const columns = [
-  { title: "Services", links: services.items },
-  { title: "Solutions", links: solutions.items },
-  { title: "Products", links: products.items },
-] as const;
+import { contactEmail, footer } from "../../content/home";
 
 /**
- * The last thing the page says, set in the page's own vocabulary: the closing
- * line at the header size rather than buried as small print, the four link
- * groups ruled into columns the way the products are, and one arrow link —
- * the same one the industries and the products use.
+ * Two lines and a rule.
  *
- * The address is given its own line because it is the only route to Mardal
- * that works: every other way in points at a section that is not built yet.
+ * The previous footer repeated nineteen links the header's menu already
+ * carries, in four ruled columns, several of them pointing at sections that do
+ * not exist. None of that is what a footer is for. What is left is the one
+ * thing a visitor might actually want from the bottom of the page — a way to
+ * reach Mardal — and the four places to go next.
  */
 export function SiteFooter() {
   return (
     <footer className="site-footer">
       <Container wide>
         <div className="site-footer__lead">
-          <p className="site-footer__statement">{footer.statement}</p>
-
           <a className="site-footer__email" href={`mailto:${contactEmail}`}>
             {contactEmail}
             <svg
@@ -40,39 +26,19 @@ export function SiteFooter() {
               <path d="M3.5 12h16.5M13.5 5.5 20 12l-6.5 6.5" />
             </svg>
           </a>
+
+          <nav className="site-footer__nav" aria-label="Footer">
+            {footer.sections.map((section) => (
+              <a
+                className="site-footer__link"
+                href={section.href}
+                key={section.href}
+              >
+                {section.label}
+              </a>
+            ))}
+          </nav>
         </div>
-
-        <nav className="site-footer__nav" aria-label="Footer">
-          {columns.map((column) => (
-            <div className="site-footer__column" key={column.title}>
-              <h2 className="eyebrow site-footer__column-title">
-                {column.title}
-              </h2>
-              <ul>
-                {column.links.map((link) => (
-                  <li key={link.id}>
-                    <a className="site-footer__link" href={`#${link.id}`}>
-                      {link.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-
-          <div className="site-footer__column">
-            <h2 className="eyebrow site-footer__column-title">Company</h2>
-            <ul>
-              {footer.company.map((link) => (
-                <li key={link.href}>
-                  <a className="site-footer__link" href={link.href}>
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </nav>
 
         <div className="site-footer__meta">
           <Link

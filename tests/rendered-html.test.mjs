@@ -179,14 +179,19 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /A simple path from idea to working software/);
   assert.doesNotMatch(html, /moves you forward|Start a conversation/);
 
-  // Footer — closes on the oversized wordmark.
+  // Footer — two lines and a rule.
   assert.match(html, /<footer class="site-footer"/);
-  assert.match(html, /Technology that works for people and moves business/);
   assert.match(html, /© \d{4} Mardal/);
   assert.match(html, /class="site-footer__nav"/);
   assert.match(html, /Back to top/);
   // No oversized wordmark: the footer logo stays at brand size.
   assert.doesNotMatch(html, /site-footer__wordmark/);
+  // The address is the one thing set large down here.
+  assert.match(html, /class="site-footer__email"[^>]*href="mailto:hello@mardal\.com"/);
+  // Four destinations, not the header menu repeated: the sub-links the old
+  // footer carried are in the menu above and nowhere else.
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 4);
+  assert.doesNotMatch(html, /site-footer__column|site-footer__statement/);
 
   // Shared machinery
   assert.match(html, /data-route-section/);

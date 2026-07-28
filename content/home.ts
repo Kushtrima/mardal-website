@@ -225,10 +225,19 @@ export const contact = {
 
 export const footer = {
   statement: "Technology that works for people and moves business forward.",
-  /** Only anchors that exist on the page. */
-  company: [
-    { label: "Case study", href: "#case-studies" },
-    { label: "Process", href: "#process" },
-    { label: "Contact", href: "#contact" },
+  /**
+   * The four places to go, and nothing else. The header's menu already carries
+   * every link under them, so repeating nineteen of them at the foot of the
+   * page was duplication rather than navigation.
+   *
+   * Three of these four land on a section of this page. #services does not
+   * have one yet — it is kept because dropping a whole service line from the
+   * footer would say something about Mardal that is not true.
+   */
+  sections: [
+    { label: "Services", href: "#services" },
+    { label: "Solutions", href: "#solutions" },
+    { label: "Products", href: "#products" },
+    { label: "Company", href: "#company" },
   ],
 } as const;
