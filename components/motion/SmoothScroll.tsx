@@ -45,7 +45,37 @@ export function SmoothScroll() {
       ignoreMobileResize: true,
     });
 
+    /**
+     * Anchor links have to go through the smoother.
+     *
+     * normalizeScroll means the browser's own scroll position is no longer the
+     * one the page is drawn at, so letting a `#section` link set it directly
+     * leaves the two disagreeing — the address updates and the page does not
+     * arrive. Every in-page link in the header menu and the footer is one of
+     * these, so they all have to be handed over.
+     */
+    const handleClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      const link = (event.target as Element | null)?.closest?.("a");
+      const href = link?.getAttribute("href");
+      if (!href?.startsWith("#") || href.length < 2) return;
+
+      const target = document.getElementById(href.slice(1));
+      if (!target) return;
+
+      event.preventDefault();
+      smoother.scrollTo(target, true, "top 12%");
+      history.pushState(null, "", href);
+    };
+
+    document.addEventListener("click", handleClick);
+
     return () => {
+      document.removeEventListener("click", handleClick);
       smoother.kill();
     };
   }, []);

@@ -26,10 +26,6 @@ async function render() {
  *  Case Studies, Company and Products, whose sections are not on the page. */
 const menuAnchors = [
   "solutions",
-  "products",
-  "arvena-ai",
-  "ftesa",
-  "ihrauto",
   "finance",
   "healthcare",
   "manufacturing",
@@ -111,13 +107,16 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /Built across industries/);
   assert.match(html, /Physical stores, e-commerce businesses/);
 
-  // Products: the three, and nothing else claiming to be finished work.
-  assert.match(html, /Products are how we test our thinking/);
+  // The products section is off the page. Its three names stay in the menu,
+  // so the strings tested here are ones only the section carried.
+  assert.doesNotMatch(html, /Products are how we test our thinking/);
+  assert.doesNotMatch(html, /product-card|products-section|products-grid/);
+  assert.doesNotMatch(html, /In development/);
+  assert.doesNotMatch(html, /cases-record|Selected/);
+  // The menu still offers them.
   assert.match(html, /Arvena AI/);
   assert.match(html, /Ftesa\.co/);
   assert.match(html, /Ihrauto/);
-  assert.match(html, /In development/);
-  assert.doesNotMatch(html, /cases-record|Selected/);
   // The ring that ran through the industries is gone; the words stay.
   assert.doesNotMatch(html, /industry-art/);
   // The footer carries the address now that the contact section is gone.
@@ -148,10 +147,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /data-reveal-item/);
   // Every section on the page is one, including Why Mardal.
   assert.match(html, /class="why-section"[^>]*data-route-section/);
+  assert.equal((html.match(/<section class="[^"]*"[^>]*data-route-section/g) ?? []).length, 3);
 
-  // The isometric drawings, one per product.
-  assert.match(html, /class="iso-art"/);
-  assert.equal((html.match(/class="iso-art"/g) ?? []).length, 3);
+  // The isometric drawings belonged to the product cards and left with them.
+  assert.doesNotMatch(html, /class="iso-art"/);
 
   // The bars belong to the hero alone, and the scroll route line is gone.
   assert.doesNotMatch(html, /line-band|scroll-side/);
