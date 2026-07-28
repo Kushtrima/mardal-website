@@ -82,7 +82,7 @@
      The one exception is the section under the hero, which pays the whole
      thing itself, because the hero's art runs to its own edge and leaves
      nothing below it. */
-  --section-gap: 150px;
+  --section-gap: 250px;
   --section-space: calc(var(--section-gap) / 2);
   --section-space-lg: calc(var(--section-gap) / 2);
 
@@ -137,7 +137,7 @@
 
 @media (max-width: 48rem) {
   :root {
-    --section-gap: 96px;
+    --section-gap: 150px;
   }
 }
 
@@ -2989,7 +2989,7 @@ video {
 @media (prefers-reduced-motion: reduce) {
   @media (max-width: 48rem) {
   :root {
-    --section-gap: 96px;
+    --section-gap: 150px;
   }
 }
 
