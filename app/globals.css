@@ -2129,10 +2129,12 @@ video {
   overflow: hidden;
   padding: clamp(2rem, 4.5%, 3.25rem);
   /* The last row is held to the left of the bars, so the panel does not have
-     to reserve a full band for the field — but the link columns above do have
-     to clear it. This is a percentage so it scales with the field, which is
-     sized off the panel's width too. */
-  padding-bottom: clamp(3rem, 12%, 10rem);
+     to reserve a full band for the field — but the link columns above have to
+     clear it by enough that the bars read as the field they are in the
+     reference rather than as one more row of lines under the text. A
+     percentage, so it scales with the field, which is sized off the panel's
+     width too. */
+  padding-bottom: clamp(3rem, 17%, 14rem);
   border-radius: var(--shape-panel);
   background: var(--accent);
   color: var(--accent-contrast);
@@ -2163,7 +2165,7 @@ video {
 .site-footer__mark {
   display: block;
   overflow: hidden;
-  width: clamp(3.25rem, 7.9%, 5.5rem);
+  width: clamp(2.25rem, 5%, 3.5rem);
   aspect-ratio: 163.92 / 163.54;
 }
 
