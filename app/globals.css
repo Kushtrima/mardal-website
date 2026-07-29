@@ -2140,7 +2140,7 @@ video {
      percentage, so it scales with the field, which is sized off the panel's
      width too. The 62px this used to carry on top went with the mark: the way
      back up has that row to itself now and clears the field without it. */
-  padding-bottom: clamp(3rem, 17%, 14rem);
+  padding-bottom: clamp(3rem, 22.5%, 16rem);
   border-radius: var(--shape-panel);
   background: var(--accent);
   color: var(--accent-contrast);
@@ -2345,17 +2345,28 @@ video {
 }
 
 /* How to reach Mardal, in the same label-over-value form the products use.
-   It sits directly under the rule, and stops short of the bar field with a
-   gutter so its second column cannot end flush against the first bar. */
-.site-footer__details {
+
+   It starts on the line the bars start on. The field is 58.4% of the panel
+   wide at 636:198, so its height is 18.18% of the panel's width — and a
+   percentage margin resolves against width, which is what lets this be said in
+   CSS at all. bottom:0 with that margin puts the block's foot on the field's
+   top edge; translating it down by its own height puts its head there
+   instead.
+
+   Out of the flow, so it costs the panel no height.
+
+   Selected through the panel so it outranks the rule that gives every other
+   child `position: relative`. */
+.site-footer__panel > .site-footer__details {
+  position: absolute;
+  right: calc(58.4% + clamp(1rem, 2vw, 2rem));
+  bottom: 0;
+  left: clamp(2rem, 4.5%, 3.25rem);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.5rem, 3vw, 2.5rem);
-  width: min(
-    100%,
-    calc(41.6% - clamp(2rem, 4.5%, 3.25rem) - clamp(1rem, 2vw, 2rem))
-  );
-  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+  margin: 0 0 18.18%;
+  transform: translateY(100%);
 }
 
 .site-footer__detail {
