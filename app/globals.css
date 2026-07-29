@@ -3688,16 +3688,17 @@ video {
     border-right: 0;
   }
 
-  /* Each group set the way it sits: the middle one centred on itself, the last
-     one closed on the right edge. Left alone they would all be ranged left
-     inside their own column, and the last column's right edge would wander
-     with whichever of its two lines happened to be wider. */
-  .product-fact:nth-child(2) {
-    text-align: center;
-  }
-
-  .product-fact:last-child {
-    text-align: right;
+  /* Every label ranged left on the value under it.
+   *
+   * The groups are spread across the card, but each one is still a label over
+   * a value and the two should start on the same line — FIELD over the F of
+   * Automotive, YEAR over the 2 of 2024. Centring the middle group and
+   * ranging the last one right set each label against its column instead of
+   * against its own value, which left both of them adrift over the words they
+   * name. Column three's right edge now moves with its widest line, which is
+   * the price of it and the smaller of the two faults. */
+  .product-fact {
+    text-align: left;
   }
 
   /* The gap between the columns does the spacing now. This padding was doing
