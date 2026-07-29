@@ -2355,8 +2355,18 @@ video {
   flex-wrap: nowrap;
   gap: clamp(0.65rem, 1.3vw, 1.25rem);
   align-items: baseline;
-  font-size: var(--text-fine);
+  /* The links in this row carry the menu's link class and its size, so the
+     year is set to match rather than sitting a size under them. */
+  font-size: var(--text-small);
   white-space: nowrap;
+}
+
+/* A rule between one item and the next. Drawn rather than typed as a pipe:
+   the same mark on screen, and nothing for a screen reader to read out
+   between every link. */
+.site-footer__legal > * + * {
+  padding-left: clamp(0.65rem, 1.3vw, 1.25rem);
+  border-left: 1px solid var(--panel-line);
 }
 
 /* Narrow enough that the line no longer fits between the panel's edge and the
