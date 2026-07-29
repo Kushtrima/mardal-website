@@ -243,9 +243,9 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /site-footer__detail-label">Address</);
   assert.match(html, /site-footer__detail-label">Follow</);
   assert.match(html, /href="tel:\+38349210999"[^>]*>\+383 49 210 999</);
-  // Hard spaces inside the street name, so a narrow column cannot break
-  // it after the opening quote.
-  assert.match(html, /Gjilan, Rr\.\u00a0\u201cIsa\u00a0Boletini\u201d 6000/);
+  // Street first, then postcode and city — the order it is written in,
+  // and the one that breaks into two lines a phone can hold.
+  assert.match(html, /Rr\.\u00a0\u201cIsa\u00a0Boletini\u201d, 6000 Gjilan/);
   assert.doesNotMatch(html, /\[Phone number\]|\[Street\]|\[City\]/);
   // Three marks, drawn at the icon weight the rest of the site uses, and not
   // links: the accounts exist but their addresses have not been given, and a
@@ -256,9 +256,11 @@ test("server-renders the Mardal homepage", async () => {
     assert.doesNotMatch(html, new RegExp(`<a[^>]*>${name}<`));
   }
   assert.match(html, /class="social-icon"[^>]*viewBox="0 0 24 24"/);
-  assert.match(html, /Privacy Policy/);
-  assert.match(html, /Terms of Service/);
-  assert.match(html, /Cookies/);
+  // Short labels: the three of them fit one line on a 320 screen this way.
+  assert.match(html, />Privacy</);
+  assert.match(html, />Terms</);
+  assert.match(html, />Cookies</);
+  assert.doesNotMatch(html, /Privacy Policy|Terms of Service/);
 
   // Shared machinery
   assert.match(html, /data-route-section/);
