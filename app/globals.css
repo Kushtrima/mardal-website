@@ -2772,9 +2772,29 @@ video {
   }
 
   /* The marks are their own group, so they get the space that says so rather
-     than sitting a row's distance under the address. */
+     than sitting a row's distance under the address.
+   *
+   * This is the one row that keeps its word. An envelope means email and a
+   * handset means phone, but three logos in a line do not say what they are
+   * for — whether they are where Mardal is, or where to send something, or
+   * links at all. FOLLOW answers that in one word, and the marks name the
+   * three services themselves. */
   .site-footer__detail:has(.site-footer__social) {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
     margin-top: 1.4rem;
+  }
+
+  /* Back out of the hiding the other three labels are under. Higher up the
+     block, so it outranks that rule by weight and not by order. */
+  .site-footer__detail:has(.site-footer__social) .site-footer__detail-label {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
   }
 
   /* The small print, set away from the block above it and a size down from
