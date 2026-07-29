@@ -1,14 +1,16 @@
 /**
  * The bar field in the corner of the footer panel, traced from the reference.
  *
- * Read straight off its pixels rather than drawn by eye: 22 bars, every one of
- * them 10 units wide, standing on two tiers — a tall one the full height of the
- * field and a short one exactly half of it. The gaps between them are irregular
- * and are the reference's own, not a rhythm of mine.
+ * There are three kinds of bar, not two. Nine hang from the top of the field
+ * and stop at its halfway line without ever reaching the bottom; ten stand on
+ * the bottom half; three run the full height. Reading only where each bar
+ * begins and assuming it ran to the foot of the field — which is what an
+ * earlier pass did — turns the nine into full-height bars and draws a
+ * different picture entirely.
  *
- * In the reference the field is 636 x 198 in a 1084 x 572 panel, so it covers
- * the right 58.4% and the bottom 34.6%, and the last bar is cut off by the
- * panel's edge. Those proportions are kept in the CSS.
+ * The field is 636 x 198 in the reference's 1084 x 572 panel, so it takes the
+ * right 58.4% and is cut off by the panel's edge. Every bar is 10 wide and the
+ * halfway line falls at 99.
  *
  * Fixed geometry rather than anything rolled at runtime, so the server and the
  * browser draw the same thing.
@@ -16,17 +18,42 @@
 const VIEW_WIDTH = 636;
 const VIEW_HEIGHT = 198;
 const BAR_WIDTH = 10;
+const HALF = VIEW_HEIGHT / 2;
 
-/** Half height, the reference's second tier. */
-const SHORT = VIEW_HEIGHT / 2;
+type Bar = readonly [x: number, kind: "top" | "foot" | "full"];
 
-/** [x, y] — each bar runs from y to the foot of the field. */
-const BARS: ReadonlyArray<readonly [number, number]> = [
-  [0, 0], [39, SHORT], [76, 0], [94, SHORT], [112, 0], [130, SHORT],
-  [147, 0], [197, 0], [225, SHORT], [261, 0], [296, 0], [332, SHORT],
-  [350, 0], [395, SHORT], [439, SHORT], [479, 0], [518, SHORT],
-  [555, 0], [573, SHORT], [590, 0], [608, SHORT], [626, 0],
+/** In the reference's own order, left to right. */
+const BARS: readonly Bar[] = [
+  [0, "full"],
+  [39, "foot"],
+  [76, "top"],
+  [94, "foot"],
+  [112, "top"],
+  [130, "foot"],
+  [147, "top"],
+  [197, "top"],
+  [225, "foot"],
+  [261, "top"],
+  [296, "top"],
+  [332, "foot"],
+  [350, "full"],
+  [395, "foot"],
+  [439, "foot"],
+  [479, "full"],
+  [518, "foot"],
+  [555, "top"],
+  [573, "foot"],
+  [590, "top"],
+  [608, "foot"],
+  [626, "top"],
 ];
+
+/** Where each kind starts and how far it runs. */
+const SPAN = {
+  top: [0, HALF],
+  foot: [HALF, HALF],
+  full: [0, VIEW_HEIGHT],
+} as const;
 
 export function FooterBars() {
   return (
@@ -37,15 +64,13 @@ export function FooterBars() {
       aria-hidden="true"
       focusable="false"
     >
-      {BARS.map(([x, y]) => (
-        <rect
-          key={`${x}-${y}`}
-          x={x}
-          y={y}
-          width={BAR_WIDTH}
-          height={VIEW_HEIGHT - y}
-        />
-      ))}
+      {BARS.map(([x, kind]) => {
+        const [y, height] = SPAN[kind];
+
+        return (
+          <rect key={x} x={x} y={y} width={BAR_WIDTH} height={height} />
+        );
+      })}
     </svg>
   );
 }

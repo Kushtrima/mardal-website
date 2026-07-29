@@ -197,11 +197,16 @@ test("server-renders the Mardal homepage", async () => {
   assert.equal((html.match(/class="site-footer__group"/g) ?? []).length, 4);
   // The ring alone, cropped from the wordmark rather than a second asset.
   assert.match(html, /class="site-footer__mark"/);
-  // The bar field, traced: 22 bars, every one of them 10 wide.
+  // The bar field, traced: 22 bars, every one 10 wide, on three spans — nine
+  // hanging from the top and stopping halfway, ten standing on the bottom
+  // half, three running the full height.
   const footerBars = html.match(/<svg class="site-footer__bars"[\s\S]*?<\/svg>/);
   assert.ok(footerBars, "footer bar field missing");
   assert.equal((footerBars[0].match(/<rect /g) ?? []).length, 22);
   assert.equal((footerBars[0].match(/width="10"/g) ?? []).length, 22);
+  assert.equal((footerBars[0].match(/y="0" width="10" height="99"/g) ?? []).length, 9);
+  assert.equal((footerBars[0].match(/y="99" width="10" height="99"/g) ?? []).length, 10);
+  assert.equal((footerBars[0].match(/y="0" width="10" height="198"/g) ?? []).length, 3);
   assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 18);
   assert.doesNotMatch(html, /site-footer__column/);
 
