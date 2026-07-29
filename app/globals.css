@@ -2129,7 +2129,14 @@ video {
    The reference reads #7b64ab off the screenshot, which is what --accent
    becomes when a Display P3 capture is read as sRGB. It is the same purple,
    so the token stands rather than a second one being added beside it. */
+/* The panel asks about itself, not about the window. It caps at 1280 and is
+   still 1280 at a 2560 viewport, so a viewport query judges it wrong at both
+   ends — which is what put the legal line through the bars and cut the contact
+   block off the bottom. `container-type: inline-size` lets the rules below
+   read the panel's own width. */
 .site-footer__panel {
+  container-type: inline-size;
+  container-name: footer-panel;
   position: relative;
   overflow: hidden;
   padding: clamp(2rem, 4.5%, 3.25rem);
@@ -2432,11 +2439,54 @@ video {
 
 /* Narrow enough that the line no longer fits between the panel's edge and the
    first bar, so it is allowed to break rather than run under them. */
-@media (max-width: 75rem) {
+/* Narrow panel: nothing is measured against the 41.6/58.4 split any more.
+
+   In the wide layout the field, the contact block and the legal line are each
+   positioned against that split, computed separately. Below the width where it
+   leaves usable room, the contact block and the legal line come back into the
+   flow and the field becomes a shallow band across the foot — the one
+   arrangement that cannot overlap or be clipped.
+
+   Everything here styles a descendant. A container query cannot style its own
+   container, so the panel's own display and padding are not settable from
+   inside this block; the field is kept absolute against the foot instead of
+   reordered into the flow, which needs neither. */
+@container footer-panel (max-width: 58rem) {
+  .site-footer__body-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(2rem, 6cqi, 3rem);
+  }
+
+  .site-footer__nav {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    justify-content: start;
+    gap: clamp(1.5rem, 4cqi, 2.25rem);
+  }
+
+  .site-footer__panel > .site-footer__details {
+    position: static;
+    width: 100%;
+    margin: clamp(1.75rem, 4cqi, 2.5rem) 0 0;
+    transform: none;
+  }
+
   .site-footer__panel > .site-footer__legal {
-    right: auto;
+    position: static;
+    width: 100%;
+    margin-top: clamp(1.25rem, 3cqi, 1.75rem);
     flex-wrap: wrap;
     white-space: normal;
+  }
+
+  /* A shallow band across the foot rather than a corner of it, so it reads as
+     a rule under the content instead of a fence beside it. */
+  .site-footer__panel > .site-footer__bars {
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: clamp(2.5rem, 9cqi, 4.5rem);
+    aspect-ratio: auto;
   }
 }
 
@@ -2477,29 +2527,16 @@ video {
   }
 }
 
-@media (max-width: 75rem) {
-  /* Five columns of content no longer fit beside the closing line, so they
-     wrap into rows of their own. */
-  .site-footer__nav {
-    grid-auto-flow: row;
-    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-    justify-content: start;
-    gap: clamp(1.5rem, 3vw, 2rem);
-  }
-}
 
-@media (max-width: 60rem) {
-  .site-footer__body-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
+/* The menu button belongs to phones and tablets, and to any window too narrow
+   to hold the bar — not to a width alone.
 
-  .site-footer__meta {
-    width: 100%;
-  }
-}
-
-
-@media (max-width: 70rem) {
+   `hover: none` asks the device what kind of pointer it has rather than how
+   wide it is, which is the only way to tell an iPad in landscape at 1194px
+   from a laptop at 1194px. The width clause still catches a narrow window on a
+   machine with a mouse. Between them: every phone, every tablet in either
+   orientation, and no desktop that has room for the bar. */
+@media (max-width: 64rem), (hover: none) {
   .site-nav {
     grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 0.65rem;
