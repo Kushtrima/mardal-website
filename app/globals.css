@@ -2493,27 +2493,11 @@ video {
   stroke: none;
 }
 
-/* The mark beside each way of reaching Mardal.
- *
- * Not drawn by default: on the wide panel these rows are named in words, and
- * an envelope beside the word EMAIL is the same thing said twice. The phone
- * footer takes the words off and turns these on in their place. Set a little
- * under the size of the line so the mark sits inside the text rather than
- * over it. */
-.contact-icon {
+/* Each row is named twice and shows one of them: the word on the wide panel,
+   the abbreviation on a phone, where a 90px column of EMAIL / PHONE / ADDRESS
+   is more room than the address can spare. */
+.site-footer__detail-short {
   display: none;
-  width: 1.15em;
-  height: 1.15em;
-  flex: 0 0 auto;
-  /* Down onto the middle of the FIRST line, not the middle of the block: an
-     address that runs to two lines keeps its pin beside the street rather
-     than floating between the two. */
-  margin-top: 0.18em;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.6;
 }
 
 /* Pinned to the foot of the panel, and stopping where the bar field starts —
@@ -2737,17 +2721,31 @@ video {
    * to follow us, the small print — with real space between them instead of
    * six rows of the same thing. */
   .site-footer__panel > .site-footer__details {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.25rem;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.25rem 0.6rem;
   }
 
+  /* One column for the abbreviations, sized to the longest of them, and the
+     values all starting after it. Subgrid is what makes that one column
+     rather than three: each row opts into the list's own tracks instead of
+     measuring its own label, so EMAIL: TEL: and STR: do not each set their
+     own margin. */
   .site-footer__detail {
-    display: block;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: baseline;
+    column-gap: 0.6rem;
+    row-gap: 0;
   }
 
-  /* Kept for anything that is listening rather than looking: a screen reader
-     still hears "Address" before the street. Only the eye loses them. */
-  .site-footer__detail-label {
+  /* The abbreviation shows and the word goes — to the eye. A screen reader
+     still hears "Address" before the street, and hears it once: the visible
+     one is marked hidden from it. */
+  .site-footer__detail-short {
+    display: inline;
+  }
+
+  .site-footer__detail-full {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -2759,16 +2757,18 @@ video {
     white-space: nowrap;
   }
 
-  .site-footer__detail-value {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.7rem;
+  /* At the size of the line it names rather than the small tracked caps of
+     the wide panel: these sit in the row, not over it. */
+  .site-footer__detail-label {
     font-size: var(--text-body);
+    font-weight: var(--weight-strong);
+    letter-spacing: normal;
     line-height: 1.5;
   }
 
-  .contact-icon {
-    display: block;
+  .site-footer__detail-value {
+    font-size: var(--text-body);
+    line-height: 1.5;
   }
 
   /* The marks are their own group, so they get the space that says so rather
@@ -2776,6 +2776,11 @@ video {
      them: they carry their own names, and the row reads as marks rather than
      as a labelled field. */
   .site-footer__detail:has(.site-footer__social) {
+    /* Out of the two columns the rows above it keep: this row has no
+       abbreviation, so subgridded it would hold an empty label column and
+       start the marks under the values. Across the whole width instead, so
+       they begin on the margin the bold words begin on. */
+    display: block;
     margin-top: 1.4rem;
   }
 

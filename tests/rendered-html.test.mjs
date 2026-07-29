@@ -238,16 +238,21 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /class="site-footer__legal">[\s\S]*?© \d{4} Mardal/);
   // How to reach Mardal — all of it real now, and the phone dialable.
   assert.equal((html.match(/class="site-footer__detail"/g) ?? []).length, 4);
-  assert.match(html, /site-footer__detail-label">Email</);
-  assert.match(html, /site-footer__detail-label">Phone</);
-  assert.match(html, /site-footer__detail-label">Address</);
-  assert.match(html, /site-footer__detail-label">Follow</);
+  assert.match(html, /site-footer__detail-full">Email</);
+  assert.match(html, /site-footer__detail-full">Phone</);
+  assert.match(html, /site-footer__detail-full">Address</);
+  assert.match(html, /site-footer__detail-full">Follow</);
   assert.match(html, /href="tel:\+38349210999"[^>]*>\+383 49 210 999</);
   // Street first, then postcode and city — the order it is written in,
   // and the one that breaks into two lines a phone can hold.
   assert.match(html, /Rr\.\u00a0\u201cIsa\u00a0Boletini\u201d, 6000\u00a0Gjilan/);
-  // A mark for each row now that the words naming them are off on a phone.
-  assert.equal((html.match(/class="contact-icon"/g) ?? []).length, 3);
+  // Each row named twice: the word for the wide panel and for anything
+  // listening, the abbreviation for a phone.
+  assert.equal((html.match(/class="site-footer__detail-short"/g) ?? []).length, 3);
+  for (const short of ["EMAIL", "TEL", "STR"]) {
+    assert.match(html, new RegExp(`detail-short" aria-hidden="true">${short}:`));
+  }
+  assert.doesNotMatch(html, /contact-icon/);
   assert.doesNotMatch(html, /\[Phone number\]|\[Street\]|\[City\]/);
   // Three marks, drawn at the icon weight the rest of the site uses, and not
   // links: the accounts exist but their addresses have not been given, and a

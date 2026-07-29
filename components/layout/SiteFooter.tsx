@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Container } from "./Container";
-import { ContactIcon } from "./ContactIcon";
 import { FooterBars } from "./FooterBars";
 import { SocialIcon } from "./SocialIcon";
 import { contact, contactEmail, footer, menu } from "../../content/home";
@@ -107,10 +106,22 @@ export function SiteFooter() {
           <dl className="site-footer__details">
             {footer.details.map((detail) => (
               <div className="site-footer__detail" key={detail.label}>
-                <dt className="site-footer__detail-label">{detail.label}</dt>
+                <dt className="site-footer__detail-label">
+                  {/* The word on the wide panel, the abbreviation on a phone.
+                      One of the two is always hidden, and the hidden one is
+                      hidden from the eye only — a screen reader reads the
+                      full word either way and never both. */}
+                  <span className="site-footer__detail-full">
+                    {detail.label}
+                  </span>
+                  {/* One string rather than an expression next to a colon:
+                      React separates those with a comment node, and the
+                      colon ends up detached from the word in the markup. */}
+                  <span className="site-footer__detail-short" aria-hidden="true">
+                    {`${detail.short}:`}
+                  </span>
+                </dt>
                 <dd className="site-footer__detail-value">
-                  {/* Stands in for the label where the label has come off. */}
-                  <ContactIcon name={detail.icon} />
                   {detail.href ? (
                     <a className="site-footer__link" href={detail.href}>
                       {detail.value}
@@ -123,8 +134,13 @@ export function SiteFooter() {
             ))}
 
             <div className="site-footer__detail">
+              {/* Wrapped the same way the others are, so the same rule takes
+                  it off a phone. This row has no abbreviation standing in for
+                  it: the marks name the three services themselves. */}
               <dt className="site-footer__detail-label">
-                {footer.socialLabel}
+                <span className="site-footer__detail-full">
+                  {footer.socialLabel}
+                </span>
               </dt>
               {/* Marks, not links: the accounts exist but their addresses have
                   not been given, and a guessed profile URL is worse than a

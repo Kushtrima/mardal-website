@@ -312,13 +312,13 @@ export const footer = {
       label: "Email",
       value: contactEmail,
       href: `mailto:${contactEmail}`,
-      icon: "email",
+      short: "EMAIL",
     },
     {
       label: "Phone",
       value: "+383 49 210 999",
       href: "tel:+38349210999",
-      icon: "phone",
+      short: "TEL",
     },
     /* Street, then postcode and city — the order an address is written in,
        and the order that survives a phone.
@@ -335,7 +335,7 @@ export const footer = {
       label: "Address",
       value: "Rr. “Isa Boletini”, 6000 Gjilan",
       href: "",
-      icon: "address",
+      short: "STR",
     },
   ],
   /**
