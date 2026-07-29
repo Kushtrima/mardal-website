@@ -2438,6 +2438,14 @@ video {
 
 .site-footer__detail {
   display: grid;
+  /* Held to the top of its cell.
+   *
+   * Left to itself a grid stretches its auto rows to fill a box taller than
+   * they are, and these boxes are as tall as the tallest thing in their row.
+   * Beside Follow, which carries two names, Address was stretched and the
+   * space went into the label — one word 30px tall, with its value sitting a
+   * line and a half below it while Phone's sat right under the label. */
+  align-content: start;
   gap: 0.2rem;
 }
 
@@ -2590,6 +2598,41 @@ video {
     width: 100%;
     height: clamp(2.5rem, 9cqi, 4.5rem);
     aspect-ratio: auto;
+  }
+
+  /* The rule above the way back up runs the width it is given.
+   *
+   * It is drawn to the 41.6% the bar field used to leave it, which on a phone
+   * is 90px — a stub against the left edge rather than a rule under a row.
+   * The field is a band across the foot down here and leaves the whole
+   * width. */
+  .site-footer__meta::before {
+    width: 100%;
+  }
+
+  /* No dividers once the line is allowed to break.
+   *
+   * They are drawn on the left of every item but the first, which is right
+   * for one line and wrong for two: the item that starts the second line
+   * keeps its divider and it hangs off the left margin with nothing before
+   * it. Both of these rows wrap at this width — the legal line onto two, the
+   * two social names onto two — so the space between items carries the
+   * separation instead. */
+  .site-footer__legal > * + *,
+  .site-footer__social > * + * {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .site-footer__legal > * + *::before {
+    content: none;
+  }
+
+  /* Wide enough to read as a separation now that it is the only one. Set on
+     the same selector the gap is set on, which is two classes deep — a
+     container query adds no weight of its own to win with. */
+  .site-footer__panel > .site-footer__legal {
+    column-gap: 1.375rem;
   }
 }
 
