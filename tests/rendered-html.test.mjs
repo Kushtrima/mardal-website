@@ -243,7 +243,9 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /site-footer__detail-label">Address</);
   assert.match(html, /site-footer__detail-label">Follow</);
   assert.match(html, /href="tel:\+38349210999"[^>]*>\+383 49 210 999</);
-  assert.match(html, /Gjilan, Rr\. \u201cIsa Boletini\u201d 6000/);
+  // Hard spaces inside the street name, so a narrow column cannot break
+  // it after the opening quote.
+  assert.match(html, /Gjilan, Rr\.\u00a0\u201cIsa\u00a0Boletini\u201d 6000/);
   assert.doesNotMatch(html, /\[Phone number\]|\[Street\]|\[City\]/);
   // Three marks, drawn at the icon weight the rest of the site uses, and not
   // links: the accounts exist but their addresses have not been given, and a

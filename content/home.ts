@@ -310,7 +310,17 @@ export const footer = {
   details: [
     { label: "Email", value: contactEmail, href: `mailto:${contactEmail}` },
     { label: "Phone", value: "+383 49 210 999", href: "tel:+38349210999" },
-    { label: "Address", value: "Gjilan, Rr. “Isa Boletini” 6000", href: "" },
+    /* Hard spaces inside the street name. The value column is 134px wide on a
+       320 screen and the address is thirty characters, so it wraps — and left
+       to itself it wrapped straight after the opening quote, `“Isa` on one
+       line and `Boletini”` on the next, which reads as a fault rather than as
+       a long address. It can break after the city or before the number; it
+       cannot break inside the name. */
+    {
+      label: "Address",
+      value: "Gjilan, Rr. “Isa Boletini” 6000",
+      href: "",
+    },
   ],
   /**
    * Drawn rather than named, and not yet links: the accounts exist but their
