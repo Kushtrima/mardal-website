@@ -2474,10 +2474,12 @@ video {
 }
 
 /* Sized off the text beside them rather than set in pixels, so the row keeps
-   its proportion to the details it sits among at every width. */
+   its proportion to the details it sits among at every width — and sized to
+   the line those details set, so the row of marks is the same height as a row
+   of words and the four of them keep one rhythm. */
 .social-icon {
-  width: 1.5em;
-  height: 1.5em;
+  width: 1.4em;
+  height: 1.4em;
   flex: 0 0 auto;
   fill: none;
   stroke: currentColor;
@@ -2719,6 +2721,17 @@ video {
     align-items: baseline;
     column-gap: 1.5rem;
     row-gap: 0;
+  }
+
+  /* Except the row of marks, which is centred instead.
+   *
+   * An SVG's baseline is the bottom edge of its box, so sitting them on the
+   * label's baseline hangs the whole row above the line — three icons floating
+   * a third of their height clear of the word beside them, while the three
+   * rows above them sat straight. Centred, the row reads level with its
+   * label like the rest. */
+  .site-footer__detail:has(.site-footer__social) {
+    align-items: center;
   }
 
   /* The three links across, the year on its own line under them.
