@@ -2772,33 +2772,20 @@ video {
   }
 
   /* The marks are their own group, so they get the space that says so rather
-     than sitting a row's distance under the address.
-   *
-   * This is the one row that keeps its word. An envelope means email and a
-   * handset means phone, but three logos in a line do not say what they are
-   * for — whether they are where Mardal is, or where to send something, or
-   * links at all. FOLLOW answers that in one word, and the marks name the
-   * three services themselves. */
+     than sitting a row's distance under the address. No word in front of
+     them: they carry their own names, and the row reads as marks rather than
+     as a labelled field. */
   .site-footer__detail:has(.site-footer__social) {
-    display: flex;
-    align-items: center;
-    gap: 0.9rem;
     margin-top: 1.4rem;
   }
 
-  /* Back out of the hiding the other three labels are under. Higher up the
-     block, so it outranks that rule by weight and not by order. */
-  .site-footer__detail:has(.site-footer__social) .site-footer__detail-label {
-    position: static;
-    width: auto;
-    height: auto;
-    margin: 0;
-    overflow: visible;
-    clip-path: none;
-  }
-
-  /* The small print, set away from the block above it and a size down from
-     it: the last thing on the panel, and the least of it. */
+  /* The small print, all of it on one line: set away from the block above it
+     and a size down from it, the last thing on the panel and the least of it.
+   *
+   * The four of them come to 219px and a 390 screen gives the row 294, so
+   * they fit with room over. A 320 screen gives 224 and they cannot, so the
+   * year drops to a second line there — a wrap it finds itself rather than
+   * one held open for it at every width. */
   .site-footer__panel > .site-footer__legal {
     display: flex;
     flex-wrap: wrap;
@@ -2807,9 +2794,11 @@ video {
     font-size: var(--text-small);
   }
 
+  /* Last, after the three links. It is the only one of the four that is not a
+     link, and in the markup it comes first because that is the order the wide
+     footer sets. */
   .site-footer__copy {
     order: 1;
-    flex-basis: 100%;
   }
 }
 
