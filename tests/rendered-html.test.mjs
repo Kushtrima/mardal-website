@@ -135,12 +135,15 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /<p class="product-fact__label">Status<\/p>/);
   assert.match(html, /<p class="product-fact__label">Field<\/p>/);
   assert.match(html, /<p class="product-fact__label">Year<\/p>/);
-  // The year is not known for any of them, so it ships as a bracket rather
-  // than as a number somebody made up.
-  assert.equal(
-    (html.match(/<p class="product-fact__value">\[Year\]<\/p>/g) ?? []).length,
-    3,
-  );
+  // Three years, supplied by the owner, one apiece.
+  for (const year of ["2025", "2024", "2026"]) {
+    assert.match(
+      html,
+      new RegExp(`<p class="product-fact__value">${year}</p>`),
+      `missing ${year}`,
+    );
+  }
+  assert.doesNotMatch(html, /\[Year\]/);
   assert.match(html, /Mental health/);
   assert.match(html, /Automotive/);
   assert.match(html, /Events/);

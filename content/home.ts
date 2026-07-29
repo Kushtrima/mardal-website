@@ -252,7 +252,7 @@ export const products = {
         "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A footbridge running into woodland.",
       field: "Mental health",
-      year: "[Year]",
+      year: "2025",
     },
     {
       id: "ihrauto",
@@ -264,7 +264,7 @@ export const products = {
         "https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A workshop wall hung with tools.",
       field: "Automotive",
-      year: "[Year]",
+      year: "2024",
     },
     {
       id: "ftesa",
@@ -276,12 +276,12 @@ export const products = {
         "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A long table laid for guests.",
       field: "Events",
-      year: "[Year]",
+      year: "2026",
     },
   ],
-  /** Status and Field are known. Year is not: nobody has said when each of
-   *  these started or is due, so it ships as a bracket to be filled rather
-   *  than as a plausible-looking number. */
+  /** All three known, and the years supplied by the owner. Which year it is
+   *  — started, or due — has not been said, so the label stays the neutral
+   *  one it was. */
   factLabels: { status: "Status", field: "Field", year: "Year" },
   cta: "Get in touch",
   ctaHref: "mailto:info@mardal.co",
