@@ -292,11 +292,7 @@ export const contact = {
   eyebrow: "Have something in mind?",
   /** Set as explicit lines, so the break falls in the same place at every
    *  width rather than wherever the column happens to run out. */
-  titleLines: [
-    "Let’s build the right",
-    "solution for your",
-    "business.",
-  ],
+  titleLines: ["Let’s build", "smarter"],
   body:
     "Tell us what you want to improve, automate, or create. We’ll help turn it into a practical digital solution.",
   cta: "Start a conversation",

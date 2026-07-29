@@ -189,12 +189,18 @@ test("server-renders the Mardal homepage", async () => {
   // No oversized wordmark: the footer logo stays at brand size.
   assert.doesNotMatch(html, /site-footer__wordmark/);
   // The closing line, set as two explicit lines at the display size.
-  assert.match(html, /class="site-footer__title-line">Let’s build the right</);
-  assert.match(html, /class="site-footer__title-line">solution for your</);
-  assert.match(html, /class="site-footer__title-line">business\.</);
+  assert.match(html, /class="site-footer__title-line">Let’s build</);
+  assert.match(html, /class="site-footer__title-line">smarter</);
+  assert.equal(
+    (html.match(/class="site-footer__title-line"/g) ?? []).length,
+    2,
+  );
   assert.match(html, /Tell us what you want to improve, automate, or create/);
   assert.match(html, /practical digital solution/);
-  assert.doesNotMatch(html, /moves you forward|what better could look like/);
+  assert.doesNotMatch(
+    html,
+    /moves you forward|what better could look like|build the right/,
+  );
   assert.match(html, /class="site-footer__email"[^>]*href="mailto:hello@mardal\.com"/);
   // The footer renders the site's menu, so it has a group for every one the
   // header has and the same links under each.
