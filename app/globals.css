@@ -2568,9 +2568,16 @@ video {
     gap: clamp(2rem, 6cqi, 3rem);
   }
 
+  /* All four menus across, the way they are on the wide page.
+   *
+   * This used to ask for as many 8.5rem columns as would fit, which is a
+   * count that can be lost to a rounding error — and was: a phone gives the
+   * menus 294px and two 8.5rem columns want 296, so all four dropped into a
+   * single column and the footer became twenty stacked links, 706px to scroll
+   * past. Counted rather than fitted now. */
   .site-footer__nav {
     grid-auto-flow: row;
-    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     justify-content: start;
     gap: clamp(1.5rem, 4cqi, 2.25rem);
   }
@@ -2633,6 +2640,19 @@ video {
      container query adds no weight of its own to win with. */
   .site-footer__panel > .site-footer__legal {
     column-gap: 1.375rem;
+  }
+}
+
+/* Two menus to a row.
+ *
+ * Four across stops being four menus and starts being four narrow gutters:
+ * below this the columns are under 118px, which is where the longest link
+ * there is — System Integration, at 116 — starts breaking in half. Two to a
+ * row gives each of them 135 on a 390 screen and 100 on a 320, and halves the
+ * footer: 706px of stacked links became 391. */
+@container footer-panel (max-width: 34rem) {
+  .site-footer__nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
