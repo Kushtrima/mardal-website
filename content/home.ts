@@ -216,10 +216,15 @@ export const products = {
 export const contact = {
   id: "contact",
   eyebrow: "Have something in mind?",
-  /** Rendered one masked line at a time, like the hero headline. */
-  titleLines: ["Let’s build what", "moves you forward."],
+  /** Set as explicit lines, so the break falls in the same place at every
+   *  width rather than wherever the column happens to run out. */
+  titleLines: [
+    "Let’s build the right",
+    "solution for your",
+    "business.",
+  ],
   body:
-    "Tell us where you are, what’s getting in the way, and what better could look like.",
+    "Tell us what you want to improve, automate, or create. We’ll help turn it into a practical digital solution.",
   cta: "Start a conversation",
 } as const;
 
