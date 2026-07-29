@@ -56,6 +56,8 @@
   /* A fourth size, for the legal line at the foot of the footer panel only.
      Asked for directly; nothing else on the site uses it. */
   --text-fine: 0.75rem;
+  /* The footer's menu links, a step under the paragraph size. */
+  --text-small: 0.875rem;
   /* The footer's closing line, between the header and the display sizes. */
   --text-footer-title: clamp(1.875rem, 3vw, 2.5rem);
 
@@ -2282,9 +2284,12 @@ video {
   align-content: start;
 }
 
+/* A step under the links, which are themselves a step under the paragraph:
+   labels, then what they label. */
 .site-footer__group-title {
   margin: 0 0 1rem;
   color: var(--accent-contrast);
+  font-size: var(--text-fine);
 }
 
 .site-footer__links {
@@ -2296,7 +2301,7 @@ video {
 }
 
 .site-footer__link {
-  font-size: var(--text-body);
+  font-size: var(--text-small);
   letter-spacing: -0.02em;
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
