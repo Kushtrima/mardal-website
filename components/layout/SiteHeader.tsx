@@ -11,75 +11,11 @@ import gsap from "gsap";
 import Link from "next/link";
 import { Button } from "../ui/Button";
 import { Container } from "./Container";
+import { menu } from "../../content/home";
 
-const navigation = [
-  {
-    key: "services",
-    label: "Services",
-    eyebrow: "Mardal Services",
-    description: "Build, connect, and automate the systems behind your growth.",
-    href: "#services",
-    items: [
-      { label: "AI & Automation", href: "#ai-automation" },
-      { label: "System Integration", href: "#system-integration" },
-      { label: "CRM Solutions", href: "#crm-solutions" },
-      { label: "Custom Software", href: "#custom-software" },
-      { label: "Web Platforms", href: "#web-platforms" },
-    ],
-  },
-  {
-    key: "solutions",
-    label: "Solutions",
-    eyebrow: "Solutions by Industry",
-    description: "Technology shaped around the realities of your sector.",
-    href: "#solutions",
-    items: [
-      { label: "Finance", href: "#finance" },
-      { label: "Healthcare", href: "#healthcare" },
-      { label: "Manufacturing", href: "#manufacturing" },
-      { label: "Automotive", href: "#automotive" },
-      { label: "Retail", href: "#retail" },
-      { label: "Logistics", href: "#logistics" },
-      { label: "Public Sector", href: "#public-sector" },
-    ],
-  },
-  {
-    key: "products",
-    label: "Products",
-    eyebrow: "Mardal Products",
-    description: "Focused digital products designed and built by Mardal.",
-    href: "#products",
-    items: [
-      { label: "Arvena AI", href: "#arvena-ai" },
-      { label: "Ftesa.co", href: "#ftesa" },
-      { label: "Ihrauto", href: "#ihrauto" },
-    ],
-  },
-  {
-    key: "case-studies",
-    label: "Case Studies",
-    eyebrow: "Mardal Projects",
-    description: "See how our ideas become useful, working products.",
-    href: "#case-studies",
-    items: [{ label: "ArvenaAI", href: "#arvena-ai-case-study" }],
-  },
-  {
-    key: "company",
-    label: "Company",
-    eyebrow: "Inside Mardal",
-    description: "Meet the people, thinking, and culture behind our work.",
-    href: "#company",
-    items: [
-      { label: "About", href: "#about" },
-      { label: "Team", href: "#team" },
-      { label: "Blog", href: "#blog" },
-      { label: "Careers", href: "#careers" },
-      { label: "Contact", href: "#contact" },
-    ],
-  },
-] as const;
 
-type NavigationKey = (typeof navigation)[number]["key"];
+
+type NavigationKey = (typeof menu)[number]["key"];
 
 export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
   _props,
@@ -95,7 +31,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
   const [mobileActiveMenu, setMobileActiveMenu] =
     useState<NavigationKey | null>("services");
   const activeItem =
-    navigation.find((item) => item.key === activeMenu) ?? navigation[0];
+    menu.find((item) => item.key === activeMenu) ?? menu[0];
 
   function clearCloseTimer() {
     if (closeTimerRef.current === undefined) return;
@@ -276,7 +212,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
           </Link>
 
           <ul className="nav-list">
-            {navigation.map((item) => (
+            {menu.map((item) => (
               <li key={item.key}>
                 <button
                   className="nav-link nav-trigger"
@@ -378,7 +314,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
       >
         <Container className="mobile-menu__content" wide>
           <div className="mobile-menu__categories">
-            {navigation.map((item) => {
+            {menu.map((item) => {
               const isOpen = mobileActiveMenu === item.key;
 
               return (

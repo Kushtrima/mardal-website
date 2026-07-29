@@ -1,39 +1,10 @@
 import Link from "next/link";
 import { Container } from "./Container";
 import { FooterBars } from "./FooterBars";
-import {
-  contact,
-  contactEmail,
-  footer,
-  products,
-  services,
-  solutions,
-} from "../../content/home";
+import { contact, contactEmail, footer, menu } from "../../content/home";
 
-const groups = [
-  {
-    title: "Services",
-    links: services.items.map((item) => ({
-      label: item.title,
-      href: `#${item.id}`,
-    })),
-  },
-  {
-    title: "Solutions",
-    links: solutions.items.map((item) => ({
-      label: item.title,
-      href: `#${item.id}`,
-    })),
-  },
-  {
-    title: "Products",
-    links: products.items.map((item) => ({
-      label: item.title,
-      href: `#${item.id}`,
-    })),
-  },
-  { title: "Company", links: footer.sections },
-] as const;
+/** The site's menu, exactly as the header shows it. */
+const groups = menu;
 
 /**
  * The footer closes the page rather than just ending it.
@@ -86,13 +57,13 @@ export function SiteFooter() {
 
           <nav className="site-footer__nav" aria-label="Footer">
             {groups.map((group) => (
-              <div className="site-footer__group" key={group.title}>
+              <div className="site-footer__group" key={group.key}>
                 <h3 className="eyebrow site-footer__group-title">
-                  {group.title}
+                  {group.label}
                 </h3>
 
                 <ul className="site-footer__links">
-                  {group.links.map((link) => (
+                  {group.items.map((link) => (
                     <li key={link.href}>
                       <a className="site-footer__link" href={link.href}>
                         {link.label}

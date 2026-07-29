@@ -6,6 +6,80 @@
  * components: it is data only.
  */
 
+/**
+ * The site's menu, and the only copy of it.
+ *
+ * The header renders it as the mega menu and the footer renders it as its link
+ * columns, so the two cannot say different things — which they did while this
+ * lived inside the header component.
+ */
+export const menu = [
+  {
+    key: "services",
+    label: "Services",
+    eyebrow: "Mardal Services",
+    description: "Build, connect, and automate the systems behind your growth.",
+    href: "#services",
+    items: [
+      { label: "AI & Automation", href: "#ai-automation" },
+      { label: "System Integration", href: "#system-integration" },
+      { label: "CRM Solutions", href: "#crm-solutions" },
+      { label: "Custom Software", href: "#custom-software" },
+      { label: "Web Platforms", href: "#web-platforms" },
+    ],
+  },
+  {
+    key: "solutions",
+    label: "Solutions",
+    eyebrow: "Solutions by Industry",
+    description: "Technology shaped around the realities of your sector.",
+    href: "#solutions",
+    items: [
+      { label: "Finance", href: "#finance" },
+      { label: "Healthcare", href: "#healthcare" },
+      { label: "Manufacturing", href: "#manufacturing" },
+      { label: "Automotive", href: "#automotive" },
+      { label: "Retail", href: "#retail" },
+      { label: "Logistics", href: "#logistics" },
+      { label: "Public Sector", href: "#public-sector" },
+    ],
+  },
+  {
+    key: "products",
+    label: "Products",
+    eyebrow: "Mardal Products",
+    description: "Focused digital products designed and built by Mardal.",
+    href: "#products",
+    items: [
+      { label: "Arvena AI", href: "#arvena-ai" },
+      { label: "Ftesa.co", href: "#ftesa" },
+      { label: "Ihrauto", href: "#ihrauto" },
+    ],
+  },
+  {
+    key: "case-studies",
+    label: "Case Studies",
+    eyebrow: "Mardal Projects",
+    description: "See how our ideas become useful, working products.",
+    href: "#case-studies",
+    items: [{ label: "ArvenaAI", href: "#arvena-ai-case-study" }],
+  },
+  {
+    key: "company",
+    label: "Company",
+    eyebrow: "Inside Mardal",
+    description: "Meet the people, thinking, and culture behind our work.",
+    href: "#company",
+    items: [
+      { label: "About", href: "#about" },
+      { label: "Team", href: "#team" },
+      { label: "Blog", href: "#blog" },
+      { label: "Careers", href: "#careers" },
+      { label: "Contact", href: "#contact" },
+    ],
+  },
+] as const;
+
 export const contactEmail = "hello@mardal.com";
 
 export const whyMardal = {
@@ -239,11 +313,6 @@ export const footer = {
    * have one yet — it is kept because dropping a whole service line from the
    * footer would say something about Mardal that is not true.
    */
-  sections: [
-    { label: "About", href: "#company" },
-    { label: "Case study", href: "#case-studies" },
-    { label: "Process", href: "#process" },
-  ],
   /**
    * The three a company site is expected to carry. None of them exists yet —
    * they are written here as the anchors they will be, so the footer is not
