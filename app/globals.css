@@ -2667,8 +2667,17 @@ video {
  * row gives each of them 135 on a 390 screen and 100 on a 320, and halves the
  * footer: 706px of stacked links became 391. */
 @container footer-panel (max-width: 34rem) {
+  /* Two menus to a row, the second of them against the right edge.
+   *
+   * Two equal halves put it a third of the way across, which is neither one
+   * side nor the other. The second track is sized to its own widest line
+   * instead and the first takes everything left over, so Solutions and
+   * Company close on the edge the panel closes on — and share a left edge
+   * with each other, which they would not if each were pushed right on its
+   * own: Company is the shorter word and would have sat further over than
+   * Solutions. */
   .site-footer__nav {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   /* Each way of reaching Mardal on its own line, label first.
@@ -2747,6 +2756,32 @@ video {
 
   .site-footer__top-link:hover .site-footer__arrow {
     transform: translateY(-0.25em);
+  }
+}
+
+/* No way back up on a phone.
+ *
+ * The rule it sat on stays: that is what separates the menus from the contact
+ * block, and it was carrying the link rather than belonging to it.
+ *
+ * Written twice because the two cases cannot be said in one breath — a
+ * phone-width panel, and a touch screen of any width, where the scroll
+ * gesture and the browser's own tap-the-clock already get you there. A narrow
+ * window on a desktop has neither and keeps the link.
+ *
+ * Below the rule that lays the link out rather than above it. Both of these
+ * are a single class, the same as that one, so the only thing that decides
+ * between them is which comes last — a container query brings no weight of
+ * its own, and put first these lost. */
+@container footer-panel (max-width: 34rem) {
+  .site-footer__top-link {
+    display: none;
+  }
+}
+
+@media (hover: none) {
+  .site-footer__top-link {
+    display: none;
   }
 }
 
