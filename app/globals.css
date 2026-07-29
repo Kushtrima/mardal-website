@@ -2229,12 +2229,12 @@ video {
   line-height: 1.45;
 }
 
-/* The one thing to do down here. */
+/* The one thing to do down here, set 40px clear of the line above it. */
 .site-footer__email {
   display: inline-flex;
   gap: 0.45em;
   align-items: center;
-  margin-top: clamp(1rem, 2vw, 1.75rem);
+  margin-top: calc(clamp(1rem, 2vw, 1.75rem) + 40px);
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
