@@ -301,14 +301,22 @@ export const contact = {
 export const footer = {
   statement: "Technology that works for people and moves business forward.",
   /**
-   * The four places to go, and nothing else. The header's menu already carries
-   * every link under them, so repeating nineteen of them at the foot of the
-   * page was duplication rather than navigation.
+   * Where and how to reach Mardal.
    *
-   * Three of these four land on a section of this page. #services does not
-   * have one yet — it is kept because dropping a whole service line from the
-   * footer would say something about Mardal that is not true.
+   * Only the email is real. The street, the city, the phone number and the
+   * social accounts are not published anywhere I can check, and a plausible
+   * one would be worse than a visible gap — so they ship as brackets to be
+   * filled in. The test asserts they are still brackets, so a guess cannot
+   * quietly become fact.
    */
+  details: [
+    { label: "Email", value: contactEmail, href: `mailto:${contactEmail}` },
+    { label: "Phone", value: "[Phone number]", href: "" },
+    { label: "Address", value: "[Street], [City]", href: "" },
+  ],
+  /** Rendered as names until there are accounts to link to. */
+  socialLabel: "Follow",
+  social: ["LinkedIn", "Instagram"],
   /**
    * The three a company site is expected to carry. None of them exists yet —
    * they are written here as the anchors they will be, so the footer is not

@@ -106,6 +106,38 @@ export function SiteFooter() {
             </a>
           </div>
 
+          {/* Fills the space under the mark, and stays left of the bar field
+              the same way the row below it does. */}
+          <dl className="site-footer__details">
+            {footer.details.map((detail) => (
+              <div className="site-footer__detail" key={detail.label}>
+                <dt className="site-footer__detail-label">{detail.label}</dt>
+                <dd className="site-footer__detail-value">
+                  {detail.href ? (
+                    <a className="site-footer__link" href={detail.href}>
+                      {detail.value}
+                    </a>
+                  ) : (
+                    detail.value
+                  )}
+                </dd>
+              </div>
+            ))}
+
+            <div className="site-footer__detail">
+              <dt className="site-footer__detail-label">
+                {footer.socialLabel}
+              </dt>
+              {/* Names, not links: there are no accounts to point at yet, and a
+                  link that goes nowhere is worse than one that is not there. */}
+              <dd className="site-footer__detail-value site-footer__social">
+                {footer.social.map((name) => (
+                  <span key={name}>{name}</span>
+                ))}
+              </dd>
+            </div>
+          </dl>
+
           {/* The foot of the panel, held to the left of the bar field. */}
           <div className="site-footer__legal">
             <span className="site-footer__copy">

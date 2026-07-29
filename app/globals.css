@@ -2340,6 +2340,48 @@ video {
   border-top: 1px solid var(--panel-line);
 }
 
+/* Under the mark and left of the bar field: how to reach Mardal, in the same
+   label-over-value form the products use. */
+.site-footer__details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.5rem, 3vw, 2.5rem);
+  width: min(100%, calc(41.6% - clamp(2rem, 4.5%, 3.25rem)));
+  margin: clamp(1.75rem, 3.5vw, 2.5rem) 0 0;
+}
+
+.site-footer__detail {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.site-footer__detail-label {
+  color: var(--accent-contrast);
+  font-size: var(--text-fine);
+  letter-spacing: var(--tracking-wide);
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.site-footer__detail-value {
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: 1.35;
+}
+
+/* The two names side by side, with the same rule between them that divides
+   the legal line below. */
+.site-footer__social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.65rem, 1.3vw, 1.25rem);
+}
+
+.site-footer__social > * + * {
+  padding-left: clamp(0.65rem, 1.3vw, 1.25rem);
+  border-left: 1px solid var(--panel-line);
+}
+
 /* Pinned to the foot of the panel, and stopping where the bar field starts —
    the field takes the right 58.4%, so this takes what is left of the bottom
    edge. On one line, which is what the smaller size buys. */
