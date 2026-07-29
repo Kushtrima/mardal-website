@@ -3689,28 +3689,18 @@ video {
    * different kinds of thing — a hairline and the space inside it are enough
    * to say where one ends. */
   .products-row {
-    counter-reset: product;
     gap: clamp(1rem, 3cqi, 1.5rem);
   }
 
   .product {
-    counter-increment: product;
     gap: 1rem;
     padding: clamp(1.25rem, 4cqi, 1.75rem);
     border: 1px solid var(--line-soft);
     border-radius: var(--shape-md);
-  }
-
-  /* Counted rather than bulleted, and drawn by the list rather than written
-     into the markup — the wide page has no use for a number, and the markup
-     is shared. */
-  .product::before {
-    content: "0" counter(product);
-    display: block;
-    color: var(--ink-muted);
-    font-size: var(--text-body);
-    letter-spacing: var(--tracking-wide);
-    line-height: 1;
+    /* Opaque, so a card coming up over another hides it rather than showing
+       through it. On the wide page these sit in a ruled grid with nothing
+       behind them and need no ground of their own. */
+    background: var(--canvas);
   }
 
   /* The space between products is the gap between the cards now, not padding
@@ -3748,6 +3738,57 @@ video {
   .products-title,
   .products-lede {
     grid-column: 1;
+  }
+}
+
+/* The three cards lie on each other as you scroll.
+ *
+ * Each one stops a little below where the one before it stopped and the next
+ * rides up over it, so a band of every card you have passed stays in view and
+ * the deck is countable without numbering it.
+ *
+ * Plain sticky, and no script at all. Sticky cannot work under ScrollSmoother
+ * — the smoother moves the page by transforming its content inside a wrapper
+ * that is fixed and never scrolls, so there is no scrolling ancestor to
+ * measure against — but the smoother only runs from 48rem up. Below it the
+ * browser does this on its own, which is why this is a window query and not a
+ * container one: it is asking about the smoother, not about the section.
+ *
+ * Pinning with ScrollTrigger instead would have measured wrong anyway. The
+ * section's arrival puts a lag on the list these cards are in, and a pin
+ * inside something that is moving when it is measured rests exactly that far
+ * out — which is the bug that took the heading 131px off its mark once
+ * already. */
+/* And only on a screen with the height to hold one.
+ *
+ * A card is about 584px of facts, picture, name, paragraph and link. The
+ * lowest-resting of the three sits 64px down, so it wants 648px of screen —
+ * which a 667 phone has and a 568 one does not. Under that the deck would
+ * cut the foot off the last card, so there is no deck: they go back to being
+ * three cards one after another, which is what the width alone already
+ * gives them. */
+@media (max-width: 47.99rem) and (min-height: 40rem) {
+  .product {
+    position: sticky;
+    /* Clear of the top, and each card 12px lower than the last. Later cards
+       paint over earlier ones by document order, so no z-index is needed. */
+    top: 2.5rem;
+  }
+
+  .product:nth-child(2) {
+    top: calc(2.5rem + 12px);
+  }
+
+  .product:nth-child(3) {
+    top: calc(2.5rem + 24px);
+  }
+}
+
+/* The picture is the only part of a card with any give, so it takes the
+   ceiling that keeps the whole card inside a phone screen. */
+@media (max-width: 47.99rem) {
+  .product__image {
+    max-height: 28vh;
   }
 }
 
