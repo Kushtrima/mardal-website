@@ -207,8 +207,19 @@ test("server-renders the Mardal homepage", async () => {
   assert.equal((footerBars[0].match(/y="0" width="10" height="99"/g) ?? []).length, 9);
   assert.equal((footerBars[0].match(/y="99" width="10" height="99"/g) ?? []).length, 10);
   assert.equal((footerBars[0].match(/y="0" width="10" height="198"/g) ?? []).length, 3);
-  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 18);
+  // 18 in the four groups, plus the three legal links in the foot.
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 21);
   assert.doesNotMatch(html, /site-footer__column/);
+  // The mark sits under the rule now, with the way back up opposite it, and
+  // the year and the legal links below them.
+  assert.match(
+    html,
+    /class="site-footer__meta">[\s\S]*?site-footer__mark[\s\S]*?site-footer__top-link/,
+  );
+  assert.match(html, /class="site-footer__legal">[\s\S]*?© \d{4} Mardal/);
+  assert.match(html, /Privacy Policy/);
+  assert.match(html, /Terms of Service/);
+  assert.match(html, /Cookies/);
 
   // Shared machinery
   assert.match(html, /data-route-section/);

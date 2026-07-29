@@ -239,4 +239,14 @@ export const footer = {
     { label: "Case study", href: "#case-studies" },
     { label: "Process", href: "#process" },
   ],
+  /**
+   * The three a company site is expected to carry. None of them exists yet —
+   * they are written here as the anchors they will be, so the footer is not
+   * holding invented URLs.
+   */
+  legal: [
+    { label: "Privacy Policy", href: "#privacy" },
+    { label: "Terms of Service", href: "#terms" },
+    { label: "Cookies", href: "#cookies" },
+  ],
 } as const;

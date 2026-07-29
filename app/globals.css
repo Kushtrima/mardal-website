@@ -2171,6 +2171,7 @@ video {
 .site-footer__mark {
   display: block;
   overflow: hidden;
+  flex: 0 0 auto;
   width: clamp(2.25rem, 5%, 3.5rem);
   aspect-ratio: 163.92 / 163.54;
 }
@@ -2282,17 +2283,43 @@ video {
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
-/* Held to the left of the field, so the two share the foot of the panel. */
+/* Under the rule: the mark at one end, the way back up at the other. This row
+   runs the full width and sits above the bar field, which is why the way back
+   up lives here rather than in the row below. */
 .site-footer__meta {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 1rem clamp(1.5rem, 3vw, 2.5rem);
   align-items: center;
+  justify-content: space-between;
+  padding-top: clamp(1.25rem, 2vw, 1.75rem);
+  font-size: var(--text-body);
+}
+
+/* The rule keeps the length it had when the row itself was that width — it
+   runs to the bar field and stops, rather than crossing the panel. Drawn
+   rather than bordered because the row above it is now full width. */
+.site-footer__meta::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(41.6% - clamp(2rem, 4.5%, 3.25rem));
+  border-top: 1px solid var(--panel-line);
+}
+
+/* The foot of the panel: the year and the three legal links, held to the left
+   of the field so the bars can stand beside them. */
+.site-footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem clamp(1.25rem, 2.5vw, 2rem);
+  align-items: baseline;
   /* 41.6% of the panel is what the bars leave, less the padding this sits
      inside — otherwise the row runs under the first bar. */
   width: min(100%, calc(41.6% - clamp(2rem, 4.5%, 3.25rem)));
-  padding-top: clamp(1.25rem, 2vw, 1.75rem);
-  border-top: 1px solid var(--panel-line);
+  margin-top: clamp(2rem, 4vw, 3rem);
   font-size: var(--text-body);
 }
 
@@ -2300,7 +2327,6 @@ video {
   display: inline-flex;
   gap: 0.5em;
   align-items: center;
-  margin-left: auto;
   font-size: var(--text-body);
   letter-spacing: -0.02em;
   line-height: 1;

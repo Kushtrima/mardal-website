@@ -60,14 +60,6 @@ export function SiteFooter() {
         <div className="site-footer__panel">
           <FooterBars />
 
-          {/* The reference shows the ring alone. It is the leftmost square of
-              the supplied wordmark — 163.92 of its 694.25 units — so the box
-              crops to that rather than carrying a second asset. */}
-          <Link className="site-footer__mark" href="/" aria-label="Mardal home">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/SVG/logo.svg" alt="Mardal" width="694" height="164" />
-          </Link>
-
           <div className="site-footer__body-grid">
           <div className="site-footer__words">
             <h2 className="site-footer__title">
@@ -114,20 +106,47 @@ export function SiteFooter() {
         </div>
 
           <div className="site-footer__meta">
-          <span className="site-footer__copy">
-            {`© ${new Date().getFullYear()} Mardal`}
-          </span>
-
-          <a className="site-footer__top-link" href="#main-content">
-            Back to top
-            <svg
-              className="site-footer__arrow site-footer__arrow--up"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
+            {/* The reference shows the ring alone. It is the leftmost square of
+                the supplied wordmark — 163.92 of its 694.25 units — so the box
+                crops to it rather than carrying a second asset. */}
+            <Link
+              className="site-footer__mark"
+              href="/"
+              aria-label="Mardal home"
             >
-              <path d="M12 20.5V4M5.5 10.5 12 4l6.5 6.5" />
-            </svg>
-          </a>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/SVG/logo.svg" alt="Mardal" width="694" height="164" />
+            </Link>
+
+            {/* Kept in this row rather than the one below it, so it sits above
+                the bars instead of among them. */}
+            <a className="site-footer__top-link" href="#main-content">
+              Back to top
+              <svg
+                className="site-footer__arrow site-footer__arrow--up"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="M12 20.5V4M5.5 10.5 12 4l6.5 6.5" />
+              </svg>
+            </a>
+          </div>
+
+          {/* The foot of the panel, held to the left of the bar field. */}
+          <div className="site-footer__legal">
+            <span className="site-footer__copy">
+              {`© ${new Date().getFullYear()} Mardal`}
+            </span>
+
+            {footer.legal.map((link) => (
+              <a
+                className="site-footer__link"
+                href={link.href}
+                key={link.href}
+              >
+                {link.label}
+              </a>
+            ))}
           </div>
         </div>
       </Container>
