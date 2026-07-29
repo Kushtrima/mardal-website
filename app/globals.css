@@ -53,6 +53,9 @@
   --text-heading-xl: clamp(2.5rem, 5.6vw, 4.5rem);
   --text-heading: clamp(1.5rem, 2.35vw, 1.875rem);
   --text-body: 1rem;
+  /* A fourth size, for the legal line at the foot of the footer panel only.
+     Asked for directly; nothing else on the site uses it. */
+  --text-fine: 0.75rem;
 
   /* One weight and one leading per size, so a header cannot be heavier in one
      section than in another. Both headers stay light. */
@@ -2133,8 +2136,9 @@ video {
      clear it by enough that the bars read as the field they are in the
      reference rather than as one more row of lines under the text. A
      percentage, so it scales with the field, which is sized off the panel's
-     width too. */
-  padding-bottom: clamp(3rem, 17%, 14rem);
+     width too, plus the 30px the way back up was dropped by: without it that
+     link lands among the bars. */
+  padding-bottom: clamp(3rem, calc(17% + 62px), 16rem);
   border-radius: var(--shape-panel);
   background: var(--accent);
   color: var(--accent-contrast);
@@ -2309,21 +2313,40 @@ video {
   border-top: 1px solid var(--panel-line);
 }
 
-/* The foot of the panel: the year and the three legal links, held to the left
-   of the field so the bars can stand beside them. */
-.site-footer__legal {
+/* Pinned to the foot of the panel, and stopping where the bar field starts —
+   the field takes the right 58.4%, so this takes what is left of the bottom
+   edge. On one line, which is what the smaller size buys. */
+/* Selected through the panel so it outranks the rule that gives every other
+   child `position: relative` to sit above the bars — that rule is two classes
+   deep and would otherwise win. */
+.site-footer__panel > .site-footer__legal {
+  position: absolute;
+  right: 58.4%;
+  bottom: clamp(1.5rem, 3%, 2.5rem);
+  left: clamp(2rem, 4.5%, 3.25rem);
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem clamp(1.25rem, 2.5vw, 2rem);
+  flex-wrap: nowrap;
+  gap: clamp(0.65rem, 1.3vw, 1.25rem);
   align-items: baseline;
-  /* 41.6% of the panel is what the bars leave, less the padding this sits
-     inside — otherwise the row runs under the first bar. */
-  width: min(100%, calc(41.6% - clamp(2rem, 4.5%, 3.25rem)));
-  margin-top: clamp(2rem, 4vw, 3rem);
-  font-size: var(--text-body);
+  font-size: var(--text-fine);
+  white-space: nowrap;
 }
 
+/* Narrow enough that the line no longer fits between the panel's edge and the
+   first bar, so it is allowed to break rather than run under them. */
+@media (max-width: 75rem) {
+  .site-footer__panel > .site-footer__legal {
+    right: auto;
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+}
+
+/* Set 30px below the line it shares with the mark. Relative, so the row's
+   height is unchanged and the rule above it does not move. */
 .site-footer__top-link {
+  position: relative;
+  top: 30px;
   display: inline-flex;
   gap: 0.5em;
   align-items: center;
