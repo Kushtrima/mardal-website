@@ -2670,6 +2670,47 @@ video {
   .site-footer__nav {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  /* Each way of reaching Mardal on its own line, label first.
+   *
+   * Two of these side by side gives each of them half a phone — enough to
+   * break a phone number over two lines and to leave four short values
+   * floating in a lot of white. Read down instead, and the block is four
+   * lines instead of two blocks of two.
+   *
+   * The labels take a column of their own, sized to the longest of them, and
+   * the values all start after it. Subgrid is what makes that one column
+   * rather than four: each pair opts into the list's own tracks instead of
+   * measuring its own label. */
+  .site-footer__panel > .site-footer__details {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.85rem 1.5rem;
+  }
+
+  .site-footer__detail {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    /* On the first line of each, so a label sits with the top line of an
+       address that runs to two rather than floating above it. */
+    align-items: baseline;
+    column-gap: 1.5rem;
+    row-gap: 0;
+  }
+
+  /* One line each, and the year at the foot of them.
+   *
+   * Paired off two to a row they read as a table of something, which they are
+   * not — they are three links and a notice. In the markup the year comes
+   * first because that is the order the wide footer sets them in; here it is
+   * moved to the end rather than restated. */
+  .site-footer__panel > .site-footer__legal {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+
+  .site-footer__copy {
+    order: 1;
+  }
 }
 
 /* The only thing in its row now that the mark has moved up, so it is pushed
