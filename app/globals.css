@@ -3706,11 +3706,17 @@ video {
     padding-right: 0;
   }
 
-  /* Smaller than the thing it names. At the same size the label read as
-     loudly as the value, which on a row of three pairs is six things
-     shouting; a step down and the values lead. */
+  /* Smaller than the thing it names, and smaller than anything else on the
+     page.
+   *
+   * A fourth size, under the three the site otherwise keeps to, and here on
+   * purpose: these three words are the only pure labelling on the card — they
+   * name a value rather than saying anything themselves — and at the value's
+   * size a row of three pairs is six things shouting. Under two thirds of the
+   * value, uppercase and letterspaced, is small enough to read as a caption
+   * and large enough to read at all. */
   .product-fact__label {
-    font-size: var(--text-fine);
+    font-size: 0.625rem;
   }
 
   /* The three lines of the heading block, closer together.
