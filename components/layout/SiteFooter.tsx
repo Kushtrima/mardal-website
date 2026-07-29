@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "./Container";
+import { ContactIcon } from "./ContactIcon";
 import { FooterBars } from "./FooterBars";
 import { SocialIcon } from "./SocialIcon";
 import { contact, contactEmail, footer, menu } from "../../content/home";
@@ -108,6 +109,8 @@ export function SiteFooter() {
               <div className="site-footer__detail" key={detail.label}>
                 <dt className="site-footer__detail-label">{detail.label}</dt>
                 <dd className="site-footer__detail-value">
+                  {/* Stands in for the label where the label has come off. */}
+                  <ContactIcon name={detail.icon} />
                   {detail.href ? (
                     <a className="site-footer__link" href={detail.href}>
                       {detail.value}

@@ -206,7 +206,7 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /site-footer__email/);
   assert.match(
     html,
-    /class="site-footer__detail-value"><a class="site-footer__link" href="mailto:info@mardal\.co"/,
+    /class="site-footer__detail-value">.{0,400}?href="mailto:info@mardal\.co"/s,
   );
   // The footer renders the site's menu less Case Studies, whose one entry did
   // not earn a column.
@@ -245,7 +245,9 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /href="tel:\+38349210999"[^>]*>\+383 49 210 999</);
   // Street first, then postcode and city — the order it is written in,
   // and the one that breaks into two lines a phone can hold.
-  assert.match(html, /Rr\.\u00a0\u201cIsa\u00a0Boletini\u201d, 6000 Gjilan/);
+  assert.match(html, /Rr\.\u00a0\u201cIsa\u00a0Boletini\u201d, 6000\u00a0Gjilan/);
+  // A mark for each row now that the words naming them are off on a phone.
+  assert.equal((html.match(/class="contact-icon"/g) ?? []).length, 3);
   assert.doesNotMatch(html, /\[Phone number\]|\[Street\]|\[City\]/);
   // Three marks, drawn at the icon weight the rest of the site uses, and not
   // links: the accounts exist but their addresses have not been given, and a

@@ -2493,6 +2493,29 @@ video {
   stroke: none;
 }
 
+/* The mark beside each way of reaching Mardal.
+ *
+ * Not drawn by default: on the wide panel these rows are named in words, and
+ * an envelope beside the word EMAIL is the same thing said twice. The phone
+ * footer takes the words off and turns these on in their place. Set a little
+ * under the size of the line so the mark sits inside the text rather than
+ * over it. */
+.contact-icon {
+  display: none;
+  width: 1.15em;
+  height: 1.15em;
+  flex: 0 0 auto;
+  /* Down onto the middle of the FIRST line, not the middle of the block: an
+     address that runs to two lines keeps its pin beside the street rather
+     than floating between the two. */
+  margin-top: 0.18em;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
 /* Pinned to the foot of the panel, and stopping where the bar field starts —
    the field takes the right 58.4%, so this takes what is left of the bottom
    edge. On one line, which is what the smaller size buys. */
@@ -2737,8 +2760,15 @@ video {
   }
 
   .site-footer__detail-value {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
     font-size: var(--text-body);
     line-height: 1.5;
+  }
+
+  .contact-icon {
+    display: block;
   }
 
   /* The marks are their own group, so they get the space that says so rather
