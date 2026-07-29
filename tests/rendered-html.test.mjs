@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-async function render() {
+async function render(path = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("http://localhost/", {
+    new Request(`http://localhost${path}`, {
       headers: { accept: "text/html" },
     }),
     {
@@ -296,4 +296,37 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /<(section|div|p|h[1-6]|article|li|a|span)[^>]* style="/);
 
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
+});
+
+test("server-renders the AI & Automation service page", async () => {
+  const response = await render("/services/ai-automation");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /<title>AI &amp; Automation — Mardal<\/title>/i);
+  assert.match(html, /class="service-head__title"[^>]*>AI &amp; Automation</);
+  assert.match(html, /Turn repetitive work into intelligent, dependable workflows\./);
+
+  // The banner is laid out from a seed rather than from chance, so the server
+  // and the browser draw the same field and it can be asserted at all.
+  const banner = html.match(/<svg class="service-banner__field"[\s\S]*?<\/svg>/);
+  assert.ok(banner, "service banner missing");
+  assert.ok(
+    (banner[0].match(/<rect /g) ?? []).length > 80,
+    "banner field is too sparse to be the pattern",
+  );
+  assert.match(html, /class="service-banner service-banner--two"/);
+
+  // Both blocks are words the site already says elsewhere.
+  assert.match(html, /Solving real business problems with AI/);
+  assert.match(html, /Less repetition\. More progress\./);
+
+  // The page carries the site's own header and footer.
+  assert.match(html, /class="site-nav"/);
+  assert.match(html, /<footer class="site-footer"/);
+});
+
+test("the menu points at the service page that exists", async () => {
+  const html = await (await render()).text();
+  assert.match(html, /href="\/services\/ai-automation"/);
 });

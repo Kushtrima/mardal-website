@@ -21,7 +21,9 @@ export const menu = [
     description: "Build, connect, and automate the systems behind your growth.",
     href: "#services",
     items: [
-      { label: "AI & Automation", href: "#ai-automation" },
+      /* The one service with a page of its own so far. The rest still point
+         at the boxes on the homepage that name them. */
+      { label: "AI & Automation", href: "/services/ai-automation" },
       { label: "System Integration", href: "#system-integration" },
       { label: "CRM Solutions", href: "#crm-solutions" },
       { label: "Custom Software", href: "#custom-software" },
