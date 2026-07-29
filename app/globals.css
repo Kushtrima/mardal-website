@@ -2236,11 +2236,13 @@ video {
   display: block;
 }
 
+/* The same step down the links took, so the two read as one register on the
+   panel rather than the paragraph sitting a size above them. */
 .site-footer__body {
   max-width: 42ch;
   margin: 0;
-  font-size: var(--text-body);
-  line-height: 1.45;
+  font-size: var(--text-small);
+  line-height: 1.5;
 }
 
 /* The one thing to do down here, set 40px clear of the line above it. */
