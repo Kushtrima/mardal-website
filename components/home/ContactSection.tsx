@@ -13,7 +13,7 @@ export function ContactSection() {
       aria-labelledby="contact-title"
       data-route-section
     >
-      <Container wide>
+      <Container>
         <RevealGroup className="contact-inner" stagger={0.1}>
           <p className="section-label" data-reveal-item>
             {contact.eyebrow}

@@ -23,7 +23,7 @@ export function ProductsSection() {
     >
       <ProductsPin />
 
-      <Container wide>
+      <Container>
         <div className="products-layout">
           {/* The column stretches so the rule beside it runs the full height;
               the block inside it stays its own height so there is something

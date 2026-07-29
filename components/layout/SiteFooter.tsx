@@ -31,7 +31,7 @@ const groups = menu.filter((group) => group.key !== "case-studies");
 export function SiteFooter() {
   return (
     <footer className="site-footer" id={contact.id}>
-      <Container wide>
+      <Container>
         <div className="site-footer__panel">
           <FooterBars />
 

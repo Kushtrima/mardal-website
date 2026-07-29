@@ -131,7 +131,7 @@ export function Hero() {
     <section className="hero" aria-labelledby="hero-title" ref={heroRef}>
       <SiteHeader ref={navigationRef} />
 
-      <Container className="hero-content" wide>
+      <Container className="hero-content">
         <h1 className="hero-title" id="hero-title">
           <span className="hero-title-mask">
             <span data-hero-line>Innovation</span>

@@ -11,7 +11,7 @@ export function SolutionsStrip() {
       aria-labelledby="solutions-title"
       data-route-section
     >
-      <Container wide>
+      <Container>
         <RevealGroup className="solutions-intro" stagger={0.12}>
           <p className="section-label" data-reveal-item>
             {solutions.eyebrow}

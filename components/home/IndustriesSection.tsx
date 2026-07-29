@@ -87,7 +87,7 @@ export function IndustriesSection() {
           it: the line and the way on to the left, the industries to the
           right. */}
       <div className="industries-body">
-        <Container className="industries-layout" wide>
+        <Container className="industries-layout">
           <div className="industries-header">
             <h2
               className="industries-title"

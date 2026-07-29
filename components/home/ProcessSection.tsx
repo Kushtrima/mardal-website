@@ -10,7 +10,7 @@ export function ProcessSection() {
       aria-labelledby="process-title"
       data-route-section
     >
-      <Container wide>
+      <Container>
         <RevealGroup className="process-intro" stagger={0.12}>
           <p className="section-label" data-reveal-item>
             {workProcess.eyebrow}

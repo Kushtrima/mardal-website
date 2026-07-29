@@ -17,7 +17,7 @@ export function DifferenceSection() {
       aria-labelledby="difference-title"
       data-route-section
     >
-      <Container wide>
+      <Container>
         <div>
           <h2
             className="display-heading difference-title"

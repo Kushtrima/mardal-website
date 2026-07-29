@@ -20,7 +20,7 @@ export function WhyMardal() {
       aria-labelledby="why-title"
       data-route-section
     >
-      <Container wide>
+      <Container>
         <div className="why-intro">
           <p className="why-label">
             {whyMardal.label}

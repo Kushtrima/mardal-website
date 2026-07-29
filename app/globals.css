@@ -79,9 +79,10 @@
   --tracking-wide: 0.12em;
 
   /* Layout and spacing */
-  --page-gutter: clamp(1.25rem, 4vw, 4.5rem);
-  --container-wide: 112rem;
-  --container-default: 80rem;
+  /* 16px on a phone, opening to 40px by about a 1000px window and staying
+     there. A flat 40 would cost a 390 screen 48px of content, which is the
+     room the product facts need to hold one line. */
+  --page-gutter: clamp(1rem, 4vw, 2.5rem);
   /* The space between any two sections, top to bottom. Each section pays half
      of it either side, so this is the number you actually see — not twice it.
      The one exception is the section under the hero, which pays the whole
@@ -214,16 +215,26 @@ video {
 
 /* ---------------------------- Layout primitives --------------------------- */
 
+/* The page is as wide as the window, less its margins — no cap.
+ *
+ * It used to stop at 1280, which on a 16" laptop left 224px standing empty
+ * either side and used 74% of the screen. What keeps a page readable is the
+ * measure of its paragraphs, not the width of its container, so the measures
+ * are set on the paragraphs and the layout is free to fill the glass. There
+ * was a `--wide` variant as well, capped at 112rem, but `max-width` can only
+ * reduce a width and the base was already under it — so it never did anything,
+ * and every container on the page was asking for it. */
 .container {
-  width: min(
-    calc(100% - (var(--page-gutter) * 2)),
-    var(--container-default)
-  );
+  width: calc(100% - (var(--page-gutter) * 2));
+  /* Tailwind ships a utility of the same name, and it caps at each of its
+     breakpoints — 80rem, then 96rem. While this rule had a cap of its own that
+     was the smaller of the two and Tailwind's never showed; the moment the cap
+     came off, the page stopped growing at 1280 on a 1512 screen and 1536 above
+     it, from a rule that is not in this file. Answered rather than renamed:
+     the name is used in every section and the collision is worth a line here
+     more than it is worth a rename everywhere. */
+  max-width: none;
   margin-inline: auto;
-}
-
-.container--wide {
-  max-width: var(--container-wide);
 }
 
 .section {
@@ -1553,6 +1564,9 @@ video {
 }
 
 .difference-intro__text {
+  /* The same, for the same reason: a third of an uncapped page is a very long
+     line. */
+  max-width: 58ch;
   margin: 0;
   color: var(--ink);
   font-size: var(--text-body);
@@ -1907,6 +1921,11 @@ video {
 /* Sits in the column beside the name, centred against it. Its own column ends
    on the page's edge, so the lines break there without a measure of their own. */
 .industries-item__note {
+  /* A measure of its own, now that the page has no cap to borrow one from.
+     Without it this line ran to 85 characters on a 16" laptop and 164 on a
+     2560 monitor; 45 to 75 is the band a line can be read in without the eye
+     losing its place on the way back. */
+  max-width: 58ch;
   color: var(--ink-muted);
   font-family: var(--type-body);
   font-size: var(--text-body);
@@ -3154,7 +3173,6 @@ video {
 
 @media (max-width: 48rem) {
   :root {
-    --page-gutter: 1rem;
     --text-display: clamp(4rem, 18vw, 7rem);
   }
 

@@ -11,7 +11,7 @@ export function ServicesSection() {
       aria-labelledby="services-title"
       data-route-section
     >
-      <Container wide>
+      <Container>
         <RevealGroup className="services-intro" stagger={0.12}>
           <p className="section-label" data-reveal-item>
             {services.eyebrow}

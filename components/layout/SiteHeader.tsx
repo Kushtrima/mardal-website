@@ -193,7 +193,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
         }
       }}
     >
-      <Container wide>
+      <Container>
         <nav
           className="site-nav"
           aria-label="Main navigation"
@@ -312,7 +312,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
         aria-hidden={!mobileMenuOpen}
         inert={mobileMenuOpen ? undefined : true}
       >
-        <Container className="mobile-menu__content" wide>
+        <Container className="mobile-menu__content">
           <div className="mobile-menu__categories">
             {menu.map((item) => {
               const isOpen = mobileActiveMenu === item.key;
