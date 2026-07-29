@@ -2340,14 +2340,26 @@ video {
   border-top: 1px solid var(--panel-line);
 }
 
-/* Under the mark and left of the bar field: how to reach Mardal, in the same
-   label-over-value form the products use. */
-.site-footer__details {
+/* How to reach Mardal, in the same label-over-value form the products use.
+
+   Pinned just above the legal line rather than left in the flow under the
+   mark. In the flow it added 143px to the panel and then left 206px of empty
+   purple under itself; out of it, the block sits in that space and the panel
+   is the height it was before this existed.
+
+   Selected through the panel so it outranks the rule that gives every other
+   child `position: relative`. */
+.site-footer__panel > .site-footer__details {
+  position: absolute;
+  /* A gutter on top of the field's own edge, so the second column's longest
+     value cannot end flush against the first bar. */
+  right: calc(58.4% + clamp(1rem, 2vw, 2rem));
+  bottom: calc(clamp(1.5rem, 3%, 2.5rem) + 3.25rem);
+  left: clamp(2rem, 4.5%, 3.25rem);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.5rem, 3vw, 2.5rem);
-  width: min(100%, calc(41.6% - clamp(2rem, 4.5%, 3.25rem)));
-  margin: clamp(1.75rem, 3.5vw, 2.5rem) 0 0;
+  margin: 0;
 }
 
 .site-footer__detail {
