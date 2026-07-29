@@ -46,16 +46,22 @@ export function SiteFooter() {
 
               <p className="site-footer__body">{contact.body}</p>
 
-            <a className="site-footer__email" href={`mailto:${contactEmail}`}>
-              {contactEmail}
-              <svg
-                className="site-footer__arrow"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
+              {/* The reference shows the ring alone. It is the leftmost square
+                  of the supplied wordmark — 163.92 of its 694.25 units — so
+                  the box crops to it rather than carrying a second asset. */}
+              <Link
+                className="site-footer__mark"
+                href="/"
+                aria-label="Mardal home"
               >
-                <path d="M3.5 12h16.5M13.5 5.5 20 12l-6.5 6.5" />
-              </svg>
-            </a>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/SVG/logo.svg"
+                  alt="Mardal"
+                  width="694"
+                  height="164"
+                />
+              </Link>
           </div>
 
           <nav className="site-footer__nav" aria-label="Footer">
@@ -80,18 +86,6 @@ export function SiteFooter() {
         </div>
 
           <div className="site-footer__meta">
-            {/* The reference shows the ring alone. It is the leftmost square of
-                the supplied wordmark — 163.92 of its 694.25 units — so the box
-                crops to it rather than carrying a second asset. */}
-            <Link
-              className="site-footer__mark"
-              href="/"
-              aria-label="Mardal home"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/SVG/logo.svg" alt="Mardal" width="694" height="164" />
-            </Link>
-
             {/* Kept in this row rather than the one below it, so it sits above
                 the bars instead of among them. */}
             <a className="site-footer__top-link" href="#main-content">
@@ -106,8 +100,8 @@ export function SiteFooter() {
             </a>
           </div>
 
-          {/* Fills the space under the mark, and stays left of the bar field
-              the same way the row below it does. */}
+          {/* Directly under the rule, and left of the bar field the same way
+              the row below it is. */}
           <dl className="site-footer__details">
             {footer.details.map((detail) => (
               <div className="site-footer__detail" key={detail.label}>

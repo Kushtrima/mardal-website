@@ -2138,9 +2138,9 @@ video {
      clear it by enough that the bars read as the field they are in the
      reference rather than as one more row of lines under the text. A
      percentage, so it scales with the field, which is sized off the panel's
-     width too, plus the 30px the way back up was dropped by: without it that
-     link lands among the bars. */
-  padding-bottom: clamp(3rem, calc(17% + 62px), 16rem);
+     width too. The 62px this used to carry on top went with the mark: the way
+     back up has that row to itself now and clears the field without it. */
+  padding-bottom: clamp(3rem, 17%, 14rem);
   border-radius: var(--shape-panel);
   background: var(--accent);
   color: var(--accent-contrast);
@@ -2174,10 +2174,12 @@ video {
 
 /* The ring alone: the leftmost square of the wordmark, 163.92 of its 694.25
    units, cropped to rather than shipped as a second asset. */
+/* Closes the words column where the address used to. */
 .site-footer__mark {
   display: block;
   overflow: hidden;
   flex: 0 0 auto;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
   width: clamp(2.25rem, 5%, 3.5rem);
   aspect-ratio: 163.92 / 163.54;
 }
@@ -2341,25 +2343,17 @@ video {
 }
 
 /* How to reach Mardal, in the same label-over-value form the products use.
-
-   Pinned just above the legal line rather than left in the flow under the
-   mark. In the flow it added 143px to the panel and then left 206px of empty
-   purple under itself; out of it, the block sits in that space and the panel
-   is the height it was before this existed.
-
-   Selected through the panel so it outranks the rule that gives every other
-   child `position: relative`. */
-.site-footer__panel > .site-footer__details {
-  position: absolute;
-  /* A gutter on top of the field's own edge, so the second column's longest
-     value cannot end flush against the first bar. */
-  right: calc(58.4% + clamp(1rem, 2vw, 2rem));
-  bottom: calc(clamp(1.5rem, 3%, 2.5rem) + 3.25rem);
-  left: clamp(2rem, 4.5%, 3.25rem);
+   It sits directly under the rule, and stops short of the bar field with a
+   gutter so its second column cannot end flush against the first bar. */
+.site-footer__details {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.5rem, 3vw, 2.5rem);
-  margin: 0;
+  width: min(
+    100%,
+    calc(41.6% - clamp(2rem, 4.5%, 3.25rem) - clamp(1rem, 2vw, 2rem))
+  );
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
 }
 
 .site-footer__detail {
@@ -2433,14 +2427,14 @@ video {
   }
 }
 
-/* Set 30px below the line it shares with the mark. Relative, so the row's
-   height is unchanged and the rule above it does not move. */
+/* The only thing in its row now that the mark has moved up, so it is pushed
+   to the right rather than left to space-between, which has nothing to space
+   a single child against. */
 .site-footer__top-link {
-  position: relative;
-  top: 30px;
   display: inline-flex;
   gap: 0.5em;
   align-items: center;
+  margin-left: auto;
   font-size: var(--text-body);
   letter-spacing: -0.02em;
   line-height: 1;

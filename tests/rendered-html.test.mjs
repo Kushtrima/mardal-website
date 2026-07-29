@@ -201,7 +201,13 @@ test("server-renders the Mardal homepage", async () => {
     html,
     /moves you forward|what better could look like|build the right/,
   );
-  assert.match(html, /class="site-footer__email"[^>]*href="mailto:hello@mardal\.com"/);
+  // The large address link is gone; the mark closes that column instead, and
+  // the address is one of the details under the rule.
+  assert.doesNotMatch(html, /site-footer__email/);
+  assert.match(
+    html,
+    /class="site-footer__detail-value"><a class="site-footer__link" href="mailto:hello@mardal\.com"/,
+  );
   // The footer renders the site's menu less Case Studies, whose one entry did
   // not earn a column.
   assert.equal((html.match(/class="site-footer__group"/g) ?? []).length, 4);
