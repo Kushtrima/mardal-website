@@ -2635,11 +2635,27 @@ video {
     content: none;
   }
 
-  /* Wide enough to read as a separation now that it is the only one. Set on
-     the same selector the gap is set on, which is two classes deep — a
-     container query adds no weight of its own to win with. */
+  /* On the same two columns as the contact block above it.
+   *
+   * Wrapped as a row of four, each item started wherever the one before it
+   * ended: the second column landed at 168 on the first line and 174 on the
+   * second, and the contact block above was on 48 and 207. Three different
+   * left edges inside one block, none of them meant — the foot of the panel
+   * read as something that had come apart rather than as a layout.
+   *
+   * A grid on the contact block's own columns, so all of it lines up: the
+   * year over Terms of Service, Privacy Policy over Cookies, and both of them
+   * under Phone and Follow. Set on the same selector the flex gap is set on,
+   * which is two classes deep — a container query adds no weight of its own
+   * to win with. */
   .site-footer__panel > .site-footer__legal {
-    column-gap: 1.375rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-items: start;
+    /* The column gap is the contact block's own, to the pixel. A gap of its
+       own put the second column on 206 against that block's 207, which is
+       worse than not lining up at all — near enough to look like a mistake. */
+    gap: 1.25rem 1.5rem;
   }
 }
 
