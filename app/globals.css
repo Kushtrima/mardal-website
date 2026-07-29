@@ -628,7 +628,12 @@ video {
 
 .hero-copy {
   position: relative;
-  left: 40px;
+  /* A 40px nudge past the container, but never further than the gutter has to
+     give. The container hugs the gutter until the viewport passes its cap, so
+     a flat 40px walks this line off the right edge on anything under about a
+     1000px window — 7px off at 834, 16px at 606, clipped rather than scrolled
+     because the body hides overflow-x. */
+  left: min(40px, calc(var(--page-gutter) - 0.5rem));
   grid-column: 10 / -1;
   align-self: start;
   margin: calc(clamp(7rem, 19vh, 15.5rem) - 15px) 0 0;
