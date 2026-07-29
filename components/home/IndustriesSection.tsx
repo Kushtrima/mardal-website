@@ -21,11 +21,6 @@ export function IndustriesSection() {
     const list = listRef.current;
     if (!list) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    /* The run only means anything where the list is held back and one industry
-       is brought forward, and that only happens where there is a pointer. On a
-       touch screen every line is set at full strength, so there is nothing for
-       this to move. */
-    if (window.matchMedia("(hover: none)").matches) return;
 
     let timer: number | undefined;
 
@@ -49,7 +44,19 @@ export function IndustriesSection() {
     /* The run belongs to the section: it starts when the list comes into view
        and stops when it leaves, rather than ticking away out of sight. */
     const observer = new IntersectionObserver(
-      ([entry]) => (entry.isIntersecting ? start() : stop()),
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          start();
+          return;
+        }
+
+        stop();
+        /* Letting go is a pointer leaving the list, and a finger never leaves
+           it — so on a touch screen one tap would hold that industry for good
+           and the run would never pick up again. Scrolling the list away is
+           the touch equivalent of leaving it. */
+        heldRef.current = false;
+      },
       { rootMargin: "-20% 0px -20% 0px" },
     );
     observer.observe(list);

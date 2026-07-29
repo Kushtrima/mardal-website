@@ -1850,8 +1850,11 @@ video {
 .industries-item__mark {
   position: absolute;
   top: 50%;
-  right: calc(100% + 15px);
-  width: 60px;
+  /* Set in the name's own size — 60px against the 30px it is on the wide page,
+     which is what it was drawn at — so it comes down with the type instead of
+     staying 60px against a name two thirds the size. */
+  right: calc(100% + 0.5em);
+  width: 2em;
   height: 2px;
   background: var(--mark-tint);
   opacity: 0;
@@ -2869,28 +2872,15 @@ video {
     padding-left: 0;
   }
 
-  /* The rule hangs 75px out to the left of the name. With the list across the
-     whole page there is nothing out there to hang into — it was drawn off the
-     edge, showing as a stub against the margin. */
-  .industries-item__mark {
-    display: none;
-  }
-
-  /* Every industry set the same.
+  /* Room for the rule to hang into.
    *
-   * Holding the list back so that pointing at one brings it forward is a
-   * composition for the wide page, where the names are a column beside the
-   * heading and the eye is meant to be led down them. Stacked, it is a list,
-   * and a list with seven of its eight lines at a fifth of their strength is
-   * one you cannot read — a column of pale grey with a single line of black
-   * moving down it every three seconds.
-   *
-   * Keyed to the stacked layout rather than to the absence of a pointer.
-   * Reaching for `hover: none` alone covered a phone and missed the far more
-   * common way this gets looked at: a window on a desktop pulled narrow, which
-   * has a cursor and so kept every bit of the dimming. */
-  .industries-item {
-    opacity: 1;
+   * It sits out to the left of the name rather than in the row, so that no
+   * name moves when it appears. On the wide page it hangs into the white
+   * between the heading and the list; stacked there is nothing out there but
+   * the edge of the screen, and it was drawn off it — a stub against the
+   * margin. The list starts far enough in to hold it. */
+  .industries-list {
+    padding-left: calc(2.5 * var(--text-heading));
   }
 
   .industries-header {
