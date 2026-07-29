@@ -3676,6 +3676,27 @@ video {
     border-right: 0;
   }
 
+  /* The three lines of the heading block, closer together.
+   *
+   * They were being spaced three times over: the block is a grid with a 20px
+   * gap, the heading carries a padding on top of that, and a rule further up
+   * the sheet adds a margin as well. 76px opened between the eyebrow and the
+   * heading and 60px between the heading and the line under it, which on a
+   * phone reads as three separate things rather than as one block of words.
+   *
+   * The margins go and the paddings come down, leaving the grid's own gap to
+   * do most of it: 40px and 32px, and one mechanism doing the spacing instead
+   * of three. */
+  .products-title {
+    margin-top: 0;
+    padding-top: 1.25rem;
+  }
+
+  .products-lede {
+    margin-top: 0;
+    padding-top: 0.75rem;
+  }
+
   /* Each product a card of its own.
    *
    * The wide page sets these into a ruled grid, and the rules are what divide
