@@ -3,8 +3,11 @@ import { Container } from "./Container";
 import { FooterBars } from "./FooterBars";
 import { contact, contactEmail, footer, menu } from "../../content/home";
 
-/** The site's menu, exactly as the header shows it. */
-const groups = menu;
+/**
+ * The site's menu, less Case Studies — the header still offers it, but its one
+ * entry does not earn a column of its own down here.
+ */
+const groups = menu.filter((group) => group.key !== "case-studies");
 
 /**
  * The footer closes the page rather than just ending it.

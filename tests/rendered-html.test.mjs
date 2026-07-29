@@ -202,9 +202,10 @@ test("server-renders the Mardal homepage", async () => {
     /moves you forward|what better could look like|build the right/,
   );
   assert.match(html, /class="site-footer__email"[^>]*href="mailto:hello@mardal\.com"/);
-  // The footer renders the site's menu, so it has a group for every one the
-  // header has and the same links under each.
-  assert.equal((html.match(/class="site-footer__group"/g) ?? []).length, 5);
+  // The footer renders the site's menu less Case Studies, whose one entry did
+  // not earn a column.
+  assert.equal((html.match(/class="site-footer__group"/g) ?? []).length, 4);
+  assert.doesNotMatch(html, /site-footer__group-title">Case Studies/);
   // The ring alone, cropped from the wordmark rather than a second asset.
   assert.match(html, /class="site-footer__mark"/);
   // The bar field, traced: 22 bars, every one 10 wide, on three spans — nine
@@ -217,8 +218,8 @@ test("server-renders the Mardal homepage", async () => {
   assert.equal((footerBars[0].match(/y="0" width="10" height="99"/g) ?? []).length, 9);
   assert.equal((footerBars[0].match(/y="99" width="10" height="99"/g) ?? []).length, 10);
   assert.equal((footerBars[0].match(/y="0" width="10" height="198"/g) ?? []).length, 3);
-  // 21 in the five menu groups, plus the three legal links in the foot.
-  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 24);
+  // 20 in the four menu groups, plus the three legal links in the foot.
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 23);
   assert.doesNotMatch(html, /site-footer__column/);
   // The mark sits under the rule now, with the way back up opposite it, and
   // the year and the legal links below them.

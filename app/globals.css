@@ -2198,10 +2198,17 @@ video {
    line holds its two lines rather than breaking to three. */
 .site-footer__body-grid {
   display: grid;
-  /* The words take only what they need and the menu takes the rest, so the
-     first link starts on the closing line's own line at the top of the
-     panel. */
-  grid-template-columns: max-content minmax(0, 1fr);
+  /* The menu starts where the bar field starts. The field takes the right
+     58.4% of the panel, so the words take the 41.6% to its left, less the gap
+     between the two columns. */
+  /* 41.6% here is of this row, which is the panel less its padding, while the
+     field's 41.6% is of the panel itself — hence the padding term. Without it
+     the menu starts 9px right of the first bar. */
+  grid-template-columns:
+    calc(
+      41.6% - 0.168 * clamp(2rem, 4.5%, 3.25rem) - clamp(2rem, 4vw, 3.5rem)
+    )
+    minmax(0, 1fr);
   gap: clamp(2rem, 4vw, 3.5rem);
   /* No head of its own: the closing line and the link columns start at the
      top of the panel, on the panel's own padding. */
@@ -2237,10 +2244,8 @@ video {
 
 /* The same step down the links took, so the two read as one register on the
    panel rather than the paragraph sitting a size above them. */
-/* Measured against the closing line above it rather than by itself: the left
-   column is sized to its content, so a wider paragraph would push the menu. */
 .site-footer__body {
-  max-width: 30ch;
+  max-width: 34ch;
   margin: 0;
   font-size: var(--text-small);
   line-height: 1.5;
@@ -2283,7 +2288,7 @@ video {
   grid-auto-flow: column;
   grid-auto-columns: max-content;
   justify-content: space-between;
-  gap: clamp(0.6rem, 1.1vw, 1rem);
+  gap: clamp(0.75rem, 1.6vw, 1.5rem);
   align-content: start;
 }
 
