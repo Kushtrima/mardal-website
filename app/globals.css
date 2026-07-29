@@ -3975,12 +3975,11 @@ video {
   display: block;
   width: 100%;
   height: 100%;
-  /* Deeper than the card artwork's own bar. The cards whisper their pattern
-     from behind a title; a band across the window is the thing being looked
-     at, and at the tint's own two shades it reads as a texture rather than as
-     a field of blocks. Mixed toward the ink rather than given a colour of its
-     own, so it stays inside whichever tint the banner is set to. */
-  fill: color-mix(in srgb, var(--banner-bar) 68%, var(--ink));
+  /* The tint's own two shades, exactly as the homepage cards use them — the
+     pale butter for the ground and the deeper one for the blocks. I had mixed
+     this toward the ink to bring it up to the contrast of the pattern
+     reference; the card is the colour that was wanted. */
+  fill: var(--banner-bar);
 }
 
 .service-blocks {
