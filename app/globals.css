@@ -2757,11 +2757,11 @@ video {
     white-space: nowrap;
   }
 
-  /* At the size of the line it names rather than the small tracked caps of
-     the wide panel: these sit in the row, not over it. */
+  /* At the size and weight of the line it names rather than the small tracked
+     caps of the wide panel: these sit in the row, not over it. The caps and
+     the colon are the whole of the distinction. */
   .site-footer__detail-label {
     font-size: var(--text-body);
-    font-weight: var(--weight-strong);
     letter-spacing: normal;
     line-height: 1.5;
   }
