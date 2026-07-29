@@ -3667,19 +3667,37 @@ video {
     padding-left: 0;
   }
 
-  /* All three facts on one line.
+  /* All three facts on one line, spread the width of the card.
    *
    * Wrapping meant Year dropped to a second row on a phone and the card grew
    * a line for one word. Three columns that cannot wrap instead, sized to
-   * their own contents and pushed together at the left. */
+   * their own contents and set against the card's two edges with the middle
+   * one between them — so the row reads as the head of the card rather than
+   * as three words bunched at the left of it.
+   *
+   * The gap is a floor, not the spacing: what is left over after the three
+   * columns is what opens between them, and the gap only decides how close
+   * they may come when there is nothing left over. */
   .product__facts {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, auto));
-    justify-content: start;
+    justify-content: space-between;
     gap: 0 clamp(0.75rem, 3cqi, 1.75rem);
     padding-bottom: 0;
     padding-left: 0;
     border-right: 0;
+  }
+
+  /* Each group set the way it sits: the middle one centred on itself, the last
+     one closed on the right edge. Left alone they would all be ranged left
+     inside their own column, and the last column's right edge would wander
+     with whichever of its two lines happened to be wider. */
+  .product-fact:nth-child(2) {
+    text-align: center;
+  }
+
+  .product-fact:last-child {
+    text-align: right;
   }
 
   /* The gap between the columns does the spacing now. This padding was doing
