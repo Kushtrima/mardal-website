@@ -31,18 +31,16 @@ export function SiteFooter() {
         <div className="site-footer__panel">
           <FooterBars />
 
-          {/* Its own row: at the h1's size this line runs to about 700px, which
-              is more than it can have beside five columns of links. */}
-          <h2 className="site-footer__title">
-            {contact.titleLines.map((line) => (
-              <span className="site-footer__title-line" key={line}>
-                {line}
-              </span>
-            ))}
-          </h2>
-
           <div className="site-footer__body-grid">
             <div className="site-footer__words">
+              <h2 className="site-footer__title">
+                {contact.titleLines.map((line) => (
+                  <span className="site-footer__title-line" key={line}>
+                    {line}
+                  </span>
+                ))}
+              </h2>
+
               <p className="site-footer__body">{contact.body}</p>
 
             <a className="site-footer__email" href={`mailto:${contactEmail}`}>
