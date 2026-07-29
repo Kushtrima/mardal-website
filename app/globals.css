@@ -2697,54 +2697,64 @@ video {
     grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  /* Each way of reaching Mardal on its own line, label first.
+  /* The details, unlabelled.
    *
-   * Two of these side by side gives each of them half a phone — enough to
-   * break a phone number over two lines and to leave four short values
-   * floating in a lot of white. Read down instead, and the block is four
-   * lines instead of two blocks of two.
+   * EMAIL, PHONE, ADDRESS and FOLLOW in tracked caps beside their values is a
+   * form, not a footer. It cost three things at once. The labels took a
+   * column 90px wide out of the 224 a 320 screen has, which is why the
+   * address had nowhere to go and broke. They carried the same weight as the
+   * information beside them, because white on this purple is 4.77:1 and there
+   * is no room to set them back — anything dimmer fails AA. And four labelled
+   * rows and two legal ones made six evenly spaced lines with nothing to
+   * separate them, so there was nothing for the eye to land on.
    *
-   * The labels take a column of their own, sized to the longest of them, and
-   * the values all start after it. Subgrid is what makes that one column
-   * rather than four: each pair opts into the list's own tracks instead of
-   * measuring its own label. */
+   * An email reads as an email and a phone number reads as a phone number.
+   * Taking the labels out gives the address the whole width, lets the values
+   * come up to reading size, and leaves three groups — how to reach us, where
+   * to follow us, the small print — with real space between them instead of
+   * six rows of the same thing. */
   .site-footer__panel > .site-footer__details {
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 0.85rem 1.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
   }
 
   .site-footer__detail {
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
-    /* On the first line of each, so a label sits with the top line of an
-       address that runs to two rather than floating above it. */
-    align-items: baseline;
-    column-gap: 1.5rem;
-    row-gap: 0;
+    display: block;
   }
 
-  /* Except the row of marks, which is centred instead.
-   *
-   * An SVG's baseline is the bottom edge of its box, so sitting them on the
-   * label's baseline hangs the whole row above the line — three icons floating
-   * a third of their height clear of the word beside them, while the three
-   * rows above them sat straight. Centred, the row reads level with its
-   * label like the rest. */
+  /* Kept for anything that is listening rather than looking: a screen reader
+     still hears "Address" before the street. Only the eye loses them. */
+  .site-footer__detail-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .site-footer__detail-value {
+    font-size: var(--text-body);
+    line-height: 1.5;
+  }
+
+  /* The marks are their own group, so they get the space that says so rather
+     than sitting a row's distance under the address. */
   .site-footer__detail:has(.site-footer__social) {
-    align-items: center;
+    margin-top: 1.4rem;
   }
 
-  /* The three links across, the year on its own line under them.
-   *
-   * They are three links and a notice, not four of anything, so they should
-   * not read as a column of four — and across they fit: 239px of link into
-   * the 294 a phone gives them. The year is the one that is not a link, so it
-   * is the one that comes off the row, and it goes last rather than first by
-   * order, leaving the wide footer's own sequence alone. */
+  /* The small print, set away from the block above it and a size down from
+     it: the last thing on the panel, and the least of it. */
   .site-footer__panel > .site-footer__legal {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.85rem 1.25rem;
+    gap: 0.7rem 1.25rem;
+    margin-top: 2rem;
+    font-size: var(--text-small);
   }
 
   .site-footer__copy {
