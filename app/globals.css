@@ -355,6 +355,24 @@ video {
 /* ---------------------------------- Hero ---------------------------------- */
 
 .hero {
+  /* Where the film's topmost bar lands, measured down from the top of the
+     hero.
+
+     The frame is 1920 x 1400 and nothing in the loop ever rises above y=635 —
+     walked frame by frame through all 22.8 seconds of it, not read off the
+     settled pose — and the field covers the hero from its top edge, so the
+     line sits at 635 x max(width / 1920, height / 1400). The hero's height is
+     its own min-height, so both terms are written out rather than measured:
+     635/1920 is 33.073% of the width, 635/1400 is 45.357% of the height.
+
+     This is what the copy beside the title is held above. Left to itself the
+     copy is placed from the top of the page in vh, and the line is placed by
+     whichever of the two ratios wins, so the two drift apart: between about
+     770 and 1330 wide the width has not yet taken over the scale, the line
+     stops coming down, and the copy walks into the bars. It did, by 39px at
+     1024 — a bar through the middle of the line. */
+  --hero-ink: max(33.073vw, 45.357svh, 21.318rem);
+
   position: relative;
   isolation: isolate;
   min-height: max(47rem, 100svh);
@@ -627,6 +645,19 @@ video {
 }
 
 .hero-copy {
+  /* The three lines of it, and the air it keeps between itself and the first
+     bar. The em is the copy's own size, so the height follows the type. */
+  --hero-copy-lines: calc(3 * var(--leading-heading) * 1em);
+  --hero-copy-clear: 2rem;
+  /* Everything above the copy inside the hero, at its tallest: the header's
+     own padding, the bar it sits on, and the padding at the top of the
+     content grid. Written out rather than measured, and rounded up — an
+     upper bound only ever holds the copy a little higher than it had to be,
+     where a lower one would let it touch. */
+  --hero-copy-above: calc(
+    clamp(1rem, 4.5vh, 4.5rem) + 4.1rem + clamp(5.5rem, 12vh, 10rem)
+  );
+
   position: relative;
   /* A 40px nudge past the container, but never further than the gutter has to
      give. The container hugs the gutter until the viewport passes its cap, so
@@ -636,7 +667,18 @@ video {
   left: min(40px, calc(var(--page-gutter) - 0.5rem));
   grid-column: 10 / -1;
   align-self: start;
-  margin: calc(clamp(7rem, 19vh, 15.5rem) - 15px) 0 0;
+  margin: 0;
+  /* Where it would like to sit, or as low as the bars leave room for —
+     whichever is higher. Above about 1330 wide the first term always wins and
+     nothing is taken away; through the band below it the copy rises with the
+     line rather than crossing it. */
+  margin-top: min(
+    calc(clamp(7rem, 19vh, 15.5rem) - 15px),
+    calc(
+      var(--hero-ink) - var(--hero-copy-above) - var(--hero-copy-lines) -
+        var(--hero-copy-clear)
+    )
+  );
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
@@ -1717,6 +1759,21 @@ video {
   }
 }
 
+/* Held back so that pointing at one brings it forward — which is worth doing
+   only where there is a pointer.
+ *
+ * On a touch screen there is nothing to point with, so seven of the eight
+ * industries sat at a fifth of their strength with no way to read them: a
+ * column of pale grey with one line of black moving down it every three
+ * seconds. The list is a list here, and every line of it is legible. The run
+ * that moved the highlight is stopped in the section itself for the same
+ * reason. */
+@media (hover: none) {
+  .industries-item {
+    opacity: 1;
+  }
+}
+
 /* No margin of its own: the section's padding is the only thing that sets the
    distance to the section above, the same as every other section. This block
    used to carry an extra clamp(4rem, 9vw, 9rem) to centre the ring animation
@@ -1732,9 +1789,21 @@ video {
 /* Sits against the right of the page. The padding walks the whole list in from
    the left, and since the block itself does not move, the descriptions rewrap
    inside what is left rather than running past the edge of the page. */
+/* The band of white between the heading and the list, opened as the page has
+   width to spare for it.
+ *
+ * It used to be a flat 22% of the column, which reads as intended once the
+ * page is wide but is the wrong share of a narrow one: the moment the two
+ * columns appeared at 1024 the band took 164px, the descriptions were pushed
+ * into three lines each, and the heading dropped into a column beside a wide
+ * empty gap. Against the same page one pixel narrower — one line of heading,
+ * a list across the full width, a line to a description — it read as a fault.
+ *
+ * Interpolated instead, from nothing at 1024 to the full 206px by 1408, where
+ * the page stops growing and the composition is the one it was drawn as. */
 .industries-intro {
-  width: min(52rem, 78%);
-  margin-left: auto;
+  width: auto;
+  margin-left: clamp(0rem, calc(53.79vw - 551.3px), 12.875rem);
   padding-left: 80px;
 }
 
@@ -2814,6 +2883,13 @@ video {
     padding-left: 0;
   }
 
+  /* The rule hangs 75px out to the left of the name. With the list across the
+     whole page there is nothing out there to hang into — it was drawn off the
+     edge, showing as a stub against the margin. */
+  .industries-item__mark {
+    display: none;
+  }
+
   .industries-header {
     gap: 1.75rem;
   }
@@ -2850,6 +2926,13 @@ video {
   }
 
   .hero {
+    /* Same line, measured against the field this width gives it: 170% of the
+       page wide, nine tenths of the hero tall, and started a tenth of the way
+       down. */
+    --hero-ink: calc(
+      max(4.5rem, 10svh) + max(56.224vw, 40.821svh, 18.369rem)
+    );
+
     min-height: max(45rem, 100svh);
   }
 
@@ -2893,13 +2976,37 @@ video {
   /* The 40px nudge is a desktop nicety; at this width it walks the line off
      the right edge. */
   .hero-copy {
+    /* Here the copy follows the title down the page instead of sitting beside
+       it, so everything above it is the header, the padding, and two lines of
+       the title. */
+    --hero-copy-above: calc(
+      1rem + 3.45rem + clamp(4.5rem, 11vh, 6.5rem) + 2 * 0.94 *
+        clamp(2.5rem, 5.6vw, 4.5rem)
+    );
+
     left: 0;
-    margin-top: calc(2.75rem - 15px);
+    margin-top: min(
+      calc(2.75rem - 15px),
+      calc(
+        var(--hero-ink) - var(--hero-copy-above) - var(--hero-copy-lines) -
+          var(--hero-copy-clear)
+      )
+    );
     margin-left: 30%;
   }
 
+  /* Wider than the screen so the bars still read at this size, and started a
+     tenth of the way down.
+
+     The drop is what makes room for the copy. Stacked rather than set beside
+     the title, the words need 331px of the hero before the bars begin, and on
+     a 320 x 568 screen a field that filled the hero put the first bar at 327 —
+     the copy sat on the bars by a pixel or three on every phone measured.
+     Nothing moves and nothing shrinks; the field just starts lower, which on a
+     screen this size reads as a little more air above it. */
   .hero-lines {
     right: auto;
+    top: 10%;
     bottom: 0;
     left: -35%;
     width: 170%;
@@ -3334,6 +3441,32 @@ video {
     padding-bottom: 0;
     padding-left: 0;
     border-right: 0;
+  }
+}
+
+/* The label above the heading rather than beside it.
+ *
+ * There is already a rule that says so — `display: block` on this block at
+ * 48rem and under — but it is written above `.products-intro` itself, and this
+ * section was rebuilt after it, so the plain `display: grid` further down the
+ * sheet wins on order. What survived was the tablet's two columns at every
+ * width beneath them: at 320 that left the heading 108px to set a 137px line
+ * in, and the section pushed the whole page 12px wider than the screen.
+ *
+ * Restated here, past the rule that was overriding it, and as a container
+ * query so it answers to the section rather than the window. */
+@container products (max-width: 48rem) {
+  .products-intro {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The same rule sends the heading and the lede to a second column. With one
+     column left they made an implicit one and squeezed the label into nothing;
+     all three belong in the one column now. */
+  .products-intro .section-label,
+  .products-title,
+  .products-lede {
+    grid-column: 1;
   }
 }
 

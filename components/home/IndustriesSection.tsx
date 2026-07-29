@@ -21,6 +21,11 @@ export function IndustriesSection() {
     const list = listRef.current;
     if (!list) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    /* The run only means anything where the list is held back and one industry
+       is brought forward, and that only happens where there is a pointer. On a
+       touch screen every line is set at full strength, so there is nothing for
+       this to move. */
+    if (window.matchMedia("(hover: none)").matches) return;
 
     let timer: number | undefined;
 
