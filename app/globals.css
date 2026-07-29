@@ -2182,7 +2182,7 @@ video {
   margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
   /* Sized against the viewport, not the column: the 5% it used to take was of
      the panel when it sat there, and is of this much narrower column now. */
-  width: clamp(3.5rem, 6vw, 5.5rem);
+  width: clamp(2.75rem, 4.6vw, 4.25rem);
   aspect-ratio: 163.92 / 163.54;
 }
 
