@@ -80,7 +80,7 @@ export const menu = [
   },
 ] as const;
 
-export const contactEmail = "hello@mardal.com";
+export const contactEmail = "info@mardal.co";
 
 export const whyMardal = {
   label: "Why Mardal?",
@@ -284,7 +284,7 @@ export const products = {
    *  than as a plausible-looking number. */
   factLabels: { status: "Status", field: "Field", year: "Year" },
   cta: "Get in touch",
-  ctaHref: "mailto:hello@mardal.com",
+  ctaHref: "mailto:info@mardal.co",
 } as const;
 
 export const contact = {
@@ -301,22 +301,24 @@ export const contact = {
 export const footer = {
   statement: "Technology that works for people and moves business forward.",
   /**
-   * Where and how to reach Mardal.
+   * Where and how to reach Mardal — all of it real, supplied by the owner.
    *
-   * Only the email is real. The street, the city, the phone number and the
-   * social accounts are not published anywhere I can check, and a plausible
-   * one would be worse than a visible gap — so they ship as brackets to be
-   * filled in. The test asserts they are still brackets, so a guess cannot
-   * quietly become fact.
+   * The phone is written with the spaces it is read with and dialled without
+   * them; the address keeps its typographic quotes rather than the typewriter
+   * pair, the way every other apostrophe on the page is set.
    */
   details: [
     { label: "Email", value: contactEmail, href: `mailto:${contactEmail}` },
-    { label: "Phone", value: "[Phone number]", href: "" },
-    { label: "Address", value: "[Street], [City]", href: "" },
+    { label: "Phone", value: "+383 49 210 999", href: "tel:+38349210999" },
+    { label: "Address", value: "Gjilan, Rr. “Isa Boletini” 6000", href: "" },
   ],
-  /** Rendered as names until there are accounts to link to. */
+  /**
+   * Drawn rather than named, and not yet links: the accounts exist but their
+   * addresses have not been given, and a guessed profile URL is worse than a
+   * mark that waits for one.
+   */
   socialLabel: "Follow",
-  social: ["LinkedIn", "Instagram"],
+  social: ["instagram", "facebook", "linkedin"],
   /**
    * The three a company site is expected to carry. None of them exists yet —
    * they are written here as the anchors they will be, so the footer is not

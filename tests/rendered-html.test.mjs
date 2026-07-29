@@ -168,7 +168,7 @@ test("server-renders the Mardal homepage", async () => {
   // The ring that ran through the industries is gone; the words stay.
   assert.doesNotMatch(html, /industry-art/);
   // The footer carries the address now that the contact section is gone.
-  assert.match(html, /hello@mardal\.com/);
+  assert.match(html, /info@mardal\.co/);
 
   // Services, solutions, case study, process, products and contact are all off
   // the page: these strings live in the sections, not in the menu that links to
@@ -206,7 +206,7 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /site-footer__email/);
   assert.match(
     html,
-    /class="site-footer__detail-value"><a class="site-footer__link" href="mailto:hello@mardal\.com"/,
+    /class="site-footer__detail-value"><a class="site-footer__link" href="mailto:info@mardal\.co"/,
   );
   // The footer renders the site's menu less Case Studies, whose one entry did
   // not earn a column.
@@ -224,9 +224,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.equal((footerBars[0].match(/y="0" width="10" height="99"/g) ?? []).length, 9);
   assert.equal((footerBars[0].match(/y="99" width="10" height="99"/g) ?? []).length, 10);
   assert.equal((footerBars[0].match(/y="0" width="10" height="198"/g) ?? []).length, 3);
-  // 20 in the four menu groups, the address in the details block, and the
-  // three legal links in the foot.
-  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 24);
+  // 20 in the four menu groups, the email and the phone in the details block,
+  // and the three legal links in the foot. The address is not a link and the
+  // social marks are not links yet.
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 25);
   assert.doesNotMatch(html, /site-footer__column/);
   // The mark sits under the rule now, with the way back up opposite it, and
   // the year and the legal links below them.
@@ -235,17 +236,24 @@ test("server-renders the Mardal homepage", async () => {
     /class="site-footer__meta">[\s\S]*?site-footer__mark[\s\S]*?site-footer__top-link/,
   );
   assert.match(html, /class="site-footer__legal">[\s\S]*?© \d{4} Mardal/);
-  // How to reach Mardal. Only the email is real; the rest ship as brackets
-  // rather than as plausible-looking details.
+  // How to reach Mardal — all of it real now, and the phone dialable.
   assert.equal((html.match(/class="site-footer__detail"/g) ?? []).length, 4);
   assert.match(html, /site-footer__detail-label">Email</);
   assert.match(html, /site-footer__detail-label">Phone</);
   assert.match(html, /site-footer__detail-label">Address</);
   assert.match(html, /site-footer__detail-label">Follow</);
-  assert.match(html, /\[Phone number\]/);
-  assert.match(html, /\[Street\], \[City\]/);
-  // No account to point at yet, so the names are not links.
-  assert.doesNotMatch(html, /<a[^>]*>LinkedIn</);
+  assert.match(html, /href="tel:\+38349210999"[^>]*>\+383 49 210 999</);
+  assert.match(html, /Gjilan, Rr\. \u201cIsa Boletini\u201d 6000/);
+  assert.doesNotMatch(html, /\[Phone number\]|\[Street\]|\[City\]/);
+  // Three marks, drawn at the icon weight the rest of the site uses, and not
+  // links: the accounts exist but their addresses have not been given, and a
+  // guessed profile URL is worse than a mark that waits for one.
+  assert.equal((html.match(/class="social-icon"/g) ?? []).length, 3);
+  for (const name of ["Instagram", "Facebook", "LinkedIn"]) {
+    assert.match(html, new RegExp(`aria-label="${name}"`), `missing ${name}`);
+    assert.doesNotMatch(html, new RegExp(`<a[^>]*>${name}<`));
+  }
+  assert.match(html, /class="social-icon"[^>]*viewBox="0 0 24 24"/);
   assert.match(html, /Privacy Policy/);
   assert.match(html, /Terms of Service/);
   assert.match(html, /Cookies/);

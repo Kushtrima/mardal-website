@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Container } from "./Container";
 import { FooterBars } from "./FooterBars";
+import { SocialIcon } from "./SocialIcon";
 import { contact, contactEmail, footer, menu } from "../../content/home";
 
 /**
@@ -122,11 +123,12 @@ export function SiteFooter() {
               <dt className="site-footer__detail-label">
                 {footer.socialLabel}
               </dt>
-              {/* Names, not links: there are no accounts to point at yet, and a
-                  link that goes nowhere is worse than one that is not there. */}
+              {/* Marks, not links: the accounts exist but their addresses have
+                  not been given, and a guessed profile URL is worse than a
+                  mark that waits for one. */}
               <dd className="site-footer__detail-value site-footer__social">
                 {footer.social.map((name) => (
-                  <span key={name}>{name}</span>
+                  <SocialIcon key={name} name={name} />
                 ))}
               </dd>
             </div>
