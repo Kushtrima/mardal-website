@@ -36,16 +36,6 @@ export function SiteFooter() {
 
           <div className="site-footer__body-grid">
             <div className="site-footer__words">
-              <h2 className="site-footer__title">
-                {contact.titleLines.map((line) => (
-                  <span className="site-footer__title-line" key={line}>
-                    {line}
-                  </span>
-                ))}
-              </h2>
-
-              <p className="site-footer__body">{contact.body}</p>
-
               {/* The reference shows the ring alone. It is the leftmost square
                   of the supplied wordmark — 163.92 of its 694.25 units — so
                   the box crops to it rather than carrying a second asset. */}
@@ -62,7 +52,17 @@ export function SiteFooter() {
                   height="164"
                 />
               </Link>
-          </div>
+
+              <h2 className="site-footer__title">
+                {contact.titleLines.map((line) => (
+                  <span className="site-footer__title-line" key={line}>
+                    {line}
+                  </span>
+                ))}
+              </h2>
+
+              <p className="site-footer__body">{contact.body}</p>
+            </div>
 
           <nav className="site-footer__nav" aria-label="Footer">
             {groups.map((group) => (

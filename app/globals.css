@@ -2174,12 +2174,12 @@ video {
 
 /* The ring alone: the leftmost square of the wordmark, 163.92 of its 694.25
    units, cropped to rather than shipped as a second asset. */
-/* Closes the words column where the address used to. */
+/* Opens the words column, above the closing line. */
 .site-footer__mark {
   display: block;
   overflow: hidden;
   flex: 0 0 auto;
-  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
   /* Sized against the viewport, not the column: the 5% it used to take was of
      the panel when it sat there, and is of this much narrower column now. */
   width: clamp(3.5rem, 6vw, 5.5rem);
