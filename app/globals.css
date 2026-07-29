@@ -3675,6 +3675,54 @@ video {
     padding-left: 0;
     border-right: 0;
   }
+
+  /* Each product a card of its own.
+   *
+   * The wide page sets these into a ruled grid, and the rules are what divide
+   * one product from the next. Down here there are no columns for a vertical
+   * rule to divide, so the products ran together as one long column of
+   * picture-name-paragraph with nothing but white between them. A card gives
+   * each one an edge instead.
+   *
+   * No fill. The four brand tints belong to the sections that use them to
+   * tell things apart from each other, and three products are not four
+   * different kinds of thing — a hairline and the space inside it are enough
+   * to say where one ends. */
+  .products-row {
+    counter-reset: product;
+    gap: clamp(1rem, 3cqi, 1.5rem);
+  }
+
+  .product {
+    counter-increment: product;
+    gap: 1rem;
+    padding: clamp(1.25rem, 4cqi, 1.75rem);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--shape-md);
+  }
+
+  /* Counted rather than bulleted, and drawn by the list rather than written
+     into the markup — the wide page has no use for a number, and the markup
+     is shared. */
+  .product::before {
+    content: "0" counter(product);
+    display: block;
+    color: var(--ink-muted);
+    font-size: var(--text-body);
+    letter-spacing: var(--tracking-wide);
+    line-height: 1;
+  }
+
+  /* The space between products is the gap between the cards now, not padding
+     inside them — on the wide page that padding is what keeps the rules
+     unbroken, and there are no rules here to keep. */
+  .product__facts,
+  .product__main,
+  .product + .product .product__facts,
+  .product + .product .product__main {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 }
 
 /* The label above the heading rather than beside it.
