@@ -3938,50 +3938,6 @@ video {
   line-height: var(--leading-heading);
 }
 
-/* Edge to edge, and outside the page's own margins: the field is a band across
-   the window rather than a picture set into the column. */
-.service-banner {
-  --banner-ground: var(--tint-butter);
-  --banner-bar: var(--tint-butter-bar);
-
-  height: clamp(12rem, 30vw, 26rem);
-  background: var(--banner-ground);
-}
-
-.service-banner--one {
-  --banner-ground: var(--tint-lilac);
-  --banner-bar: var(--tint-lilac-bar);
-}
-
-.service-banner--two {
-  --banner-ground: var(--tint-butter);
-  --banner-bar: var(--tint-butter-bar);
-}
-
-.service-banner--three {
-  --banner-ground: var(--tint-mint);
-  --banner-bar: var(--tint-mint-bar);
-}
-
-.service-banner--four {
-  --banner-ground: var(--tint-sky);
-  --banner-bar: var(--tint-sky-bar);
-}
-
-/* Stretched rather than fitted. The blocks are laid on a grid of whole cells,
-   so letting them take the shape of the band keeps the field full at any width
-   instead of cropping it or leaving a margin at one end. */
-.service-banner__field {
-  display: block;
-  width: 100%;
-  height: 100%;
-  /* The tint's own two shades, exactly as the homepage cards use them — the
-     pale butter for the ground and the deeper one for the blocks. I had mixed
-     this toward the ink to bring it up to the contrast of the pattern
-     reference; the card is the colour that was wanted. */
-  fill: var(--banner-bar);
-}
-
 .service-blocks {
   padding-block: var(--section-space-lg);
   background: var(--canvas);
@@ -4076,14 +4032,9 @@ video {
   }
 }
 
-/* One column, and a shallower band: the field is a note under the words at
-   this width, not half the screen. */
+/* One column at this width. */
 @media (max-width: 48rem) {
   .service-blocks__grid {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .service-banner {
-    height: clamp(9rem, 40vw, 14rem);
   }
 }

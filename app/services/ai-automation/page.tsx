@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Container } from "../../../components/layout/Container";
-import { ServiceBanner } from "../../../components/services/ServiceBanner";
 import { SiteFooter } from "../../../components/layout/SiteFooter";
 import { SiteHeader } from "../../../components/layout/SiteHeader";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
@@ -15,10 +14,9 @@ export const metadata: Metadata = {
 /**
  * The first of the service pages.
  *
- * It opens the way the homepage does — the words first, the field of bars
- * under them — so the two read as the same site rather than as a landing page
- * bolted on. The bars are the card language from the homepage, generated wide
- * enough to run the width of the window instead of traced to a box.
+ * The words carry it: heading, what the service covers, and the way in. There
+ * was a band of bars under the heading — the card language from the homepage,
+ * generated wide rather than traced — and it is gone at the owner's call.
  */
 export default function AiAutomationPage() {
   return (
@@ -37,8 +35,6 @@ export default function AiAutomationPage() {
             <p className="service-head__lede">{aiAutomation.lede}</p>
           </Container>
         </section>
-
-        <ServiceBanner tint="two" />
 
         <section
           className="service-blocks"

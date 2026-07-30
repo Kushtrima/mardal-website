@@ -307,15 +307,9 @@ test("server-renders the AI & Automation service page", async () => {
   assert.match(html, /class="service-head__title"[^>]*>AI &amp; Automation</);
   assert.match(html, /Turn repetitive work into intelligent, dependable workflows\./);
 
-  // The banner is laid out from a seed rather than from chance, so the server
-  // and the browser draw the same field and it can be asserted at all.
-  const banner = html.match(/<svg class="service-banner__field"[\s\S]*?<\/svg>/);
-  assert.ok(banner, "service banner missing");
-  assert.ok(
-    (banner[0].match(/<rect /g) ?? []).length > 80,
-    "banner field is too sparse to be the pattern",
-  );
-  assert.match(html, /class="service-banner service-banner--two"/);
+  // The band of bars that used to sit under the heading is gone, and nothing
+  // of it is left behind.
+  assert.doesNotMatch(html, /service-banner/);
 
   // Both blocks are words the site already says elsewhere.
   assert.match(html, /Solving real business problems with AI/);
