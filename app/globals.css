@@ -3906,21 +3906,35 @@ video {
   white-space: nowrap;
 }
 
-/* The words, then the field of bars under them — the shape the homepage opens
-   with, so a service page reads as the same site rather than as a landing page
-   bolted on to it. */
-.service-head {
-  padding-block: clamp(3.5rem, 9vh, 7rem) clamp(2.5rem, 6vw, 4.5rem);
+/* Editorial service hero: one proposition, one abstract pattern and a quiet
+   way forward. The pattern has no panel or coloured ground; the page itself is
+   the field. */
+.service-hero {
   background: var(--canvas);
 }
 
-/* `--text-display` is declared only inside the phone query, so reaching for
-   it here left the font-size invalid and the title inherited 16px — the same
-   size as the eyebrow above it. This is the size every other big heading on
-   the site is set at. */
-.service-head__title {
-  max-width: 16ch;
-  margin: clamp(1.25rem, 3vw, 2rem) 0 0;
+.service-hero__inner {
+  --service-header-height: calc(
+    clamp(1rem, 4.5vh, 4.5rem) + clamp(3.45rem, 4.5vw, 3.9rem)
+  );
+
+  display: grid;
+  min-height: calc(100svh - var(--service-header-height));
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: auto minmax(8rem, 1fr) auto;
+  gap: clamp(1rem, 1.35vw, 1.4rem);
+  padding-block: clamp(3rem, 7vh, 5.5rem) clamp(2.5rem, 6vh, 4.5rem);
+}
+
+.service-hero__intro {
+  z-index: 1;
+  grid-column: 1 / span 8;
+  grid-row: 1;
+}
+
+.service-hero__title {
+  max-width: 13.5ch;
+  margin: 0;
   font-family: var(--type-display);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
@@ -3928,14 +3942,71 @@ video {
   line-height: var(--leading-heading-xl);
 }
 
-.service-head__lede {
-  max-width: 46ch;
-  margin: clamp(1.25rem, 2.5vw, 2rem) 0 0;
-  color: var(--ink-muted);
-  font-size: var(--text-heading);
+.service-hero__support {
+  z-index: 1;
+  grid-column: 1 / span 4;
+  grid-row: 3;
+  max-width: 16ch;
+  align-self: end;
+  margin: 0;
+  font-size: clamp(2rem, 2.7vw, 2.5rem);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.05;
+}
+
+.service-hero__cta {
+  z-index: 1;
+  display: inline-flex;
+  grid-column: 9 / -1;
+  grid-row: 3;
+  gap: 0.55em;
+  align-items: center;
+  align-self: end;
+  justify-self: end;
+  padding-block: 0.2rem;
+  font-family: var(--type-display);
+  font-size: clamp(1.125rem, 1.55vw, 1.375rem);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
-  line-height: var(--leading-heading);
+  line-height: 1;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.service-hero__cta-arrow {
+  display: inline-block;
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .service-hero__cta:hover {
+    color: var(--accent-strong);
+  }
+
+  .service-hero__cta:hover .service-hero__cta-arrow {
+    transform: translate(0.2em, -0.2em);
+  }
+}
+
+/* The cleaned alpha channel is used as a mask: the geometry stays byte-for-
+   byte identical while every fragment takes one flat brand purple. */
+.service-hero__pattern {
+  grid-column: 7 / -1;
+  grid-row: 2;
+  width: min(100%, 27rem);
+  aspect-ratio: 1447 / 1087;
+  align-self: center;
+  justify-self: end;
+  background: var(--accent);
+  transform: translateY(-50px);
+  -webkit-mask-image: url("/ai-automation-pattern.png");
+  mask-image: url("/ai-automation-pattern.png");
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 .service-blocks {
@@ -4034,6 +4105,30 @@ video {
 
 /* One column at this width. */
 @media (max-width: 48rem) {
+  .service-hero__inner {
+    display: block;
+    min-height: calc(100svh - 4.45rem);
+    padding-block: 3.5rem 4rem;
+  }
+
+  .service-hero__title {
+    max-width: 12ch;
+  }
+
+  .service-hero__pattern {
+    width: min(78%, 22rem);
+    margin: clamp(3.5rem, 12vw, 5rem) 0 0 auto;
+  }
+
+  .service-hero__support {
+    max-width: 15ch;
+    margin-top: clamp(3.5rem, 12vw, 5rem);
+  }
+
+  .service-hero__cta {
+    margin-top: 2.5rem;
+  }
+
   .service-blocks__grid {
     grid-template-columns: minmax(0, 1fr);
   }

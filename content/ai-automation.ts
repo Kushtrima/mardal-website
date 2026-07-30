@@ -12,8 +12,9 @@ export const aiAutomation = {
   slug: "ai-automation",
   eyebrow: "Mardal Services",
   title: "AI & Automation",
-  /** The menu's own line for this service. */
-  lede: "Turn repetitive work into intelligent, dependable workflows.",
+  lede: "Turn repetitive work into intelligent workflows.",
+  support: "Build smarter operations with AI agents.",
+  heroCta: "Let’s build",
   /** The two homepage cards that belong to this service, at length. */
   blocks: [
     {

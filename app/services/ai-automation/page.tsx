@@ -14,9 +14,9 @@ export const metadata: Metadata = {
 /**
  * The first of the service pages.
  *
- * The words carry it: heading, what the service covers, and the way in. There
- * was a band of bars under the heading — the card language from the homepage,
- * generated wide rather than traced — and it is gone at the owner's call.
+ * An editorial service hero leads with one proposition. Its fragmented field
+ * is drawn from the supplied pattern reference, but sits directly on the
+ * site's white canvas rather than inside a coloured banner.
  */
 export default function AiAutomationPage() {
   return (
@@ -26,13 +26,24 @@ export default function AiAutomationPage() {
       <main id="main-content">
         <SiteHeader />
 
-        <section className="service-head" aria-labelledby="service-title">
-          <Container>
-            <p className="section-label">{aiAutomation.eyebrow}</p>
-            <h1 className="service-head__title" id="service-title">
-              {aiAutomation.title}
-            </h1>
-            <p className="service-head__lede">{aiAutomation.lede}</p>
+        <section className="service-hero" aria-labelledby="service-title">
+          <Container className="service-hero__inner">
+            <div className="service-hero__intro">
+              <h1 className="service-hero__title" id="service-title">
+                {aiAutomation.lede}
+              </h1>
+            </div>
+
+            <div className="service-hero__pattern" aria-hidden="true" />
+
+            <p className="service-hero__support">{aiAutomation.support}</p>
+
+            <a className="service-hero__cta" href={products.ctaHref}>
+              {aiAutomation.heroCta}
+              <span className="service-hero__cta-arrow" aria-hidden="true">
+                ↗
+              </span>
+            </a>
           </Container>
         </section>
 

@@ -304,8 +304,16 @@ test("server-renders the AI & Automation service page", async () => {
 
   const html = await response.text();
   assert.match(html, /<title>AI &amp; Automation — Mardal<\/title>/i);
-  assert.match(html, /class="service-head__title"[^>]*>AI &amp; Automation</);
-  assert.match(html, /Turn repetitive work into intelligent, dependable workflows\./);
+  assert.match(
+    html,
+    /class="service-hero__title"[^>]*>Turn repetitive work into intelligent workflows\.</,
+  );
+  assert.match(html, /Build smarter operations with AI agents\./);
+  assert.match(html, /class="service-hero__pattern"/);
+  assert.doesNotMatch(
+    html,
+    /service-hero__kicker|service-hero__bar|service-hero__pattern-image/,
+  );
 
   // The band of bars that used to sit under the heading is gone, and nothing
   // of it is left behind.
