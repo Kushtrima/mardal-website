@@ -35,12 +35,42 @@ export function AiAutomationOfferingsScroll() {
       section.classList.add("is-scroll-stack");
 
       context = gsap.context(() => {
+        const contentFor = (card: HTMLElement) =>
+          gsap.utils.toArray<HTMLElement>(
+            [
+              ".service-offering__title",
+              ".service-offering__group-title",
+              ".service-offering__copy",
+              ".service-offering__details",
+            ].join(", "),
+            card,
+          );
+
         cards.forEach((card, index) => {
+          const entryOffset = card.classList.contains(
+            "service-offering--group",
+          )
+            ? 50
+            : 78;
+
           gsap.set(card, {
-            autoAlpha: index === 0 ? 1 : 0,
-            yPercent: index === 0 ? 0 : 104,
+            autoAlpha: 1,
+            yPercent: index === 0 ? 0 : entryOffset,
             zIndex: index + 1,
           });
+
+          gsap.set(contentFor(card), {
+            autoAlpha: index === 0 ? 1 : 0,
+            y: 0,
+          });
+
+          const year = card.querySelector<HTMLElement>(
+            ".service-offering__year",
+          );
+
+          if (year) {
+            gsap.set(year, { autoAlpha: index === 0 ? 1 : 0 });
+          }
         });
 
         const timeline = gsap.timeline({
@@ -58,14 +88,22 @@ export function AiAutomationOfferingsScroll() {
 
         cards.slice(1).forEach((card, index) => {
           const coveredCard = cards[index];
+          const coveredContent = contentFor(coveredCard);
+          const incomingContent = contentFor(card);
+          const coveredYear = coveredCard.querySelector<HTMLElement>(
+            ".service-offering__year",
+          );
+          const incomingYear = card.querySelector<HTMLElement>(
+            ".service-offering__year",
+          );
 
           timeline
             .to(
-              coveredCard,
+              coveredContent,
               {
                 autoAlpha: 0,
                 y: -18,
-                duration: 0.72,
+                duration: 0.2,
                 ease: "none",
               },
               index,
@@ -79,7 +117,41 @@ export function AiAutomationOfferingsScroll() {
                 ease: "none",
               },
               index,
+            )
+            .to(
+              incomingContent,
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.45,
+                ease: "none",
+              },
+              index + 0.05,
             );
+
+          if (coveredYear) {
+            timeline.to(
+              coveredYear,
+              {
+                autoAlpha: 0,
+                duration: 0.2,
+                ease: "none",
+              },
+              index,
+            );
+          }
+
+          if (incomingYear) {
+            timeline.to(
+              incomingYear,
+              {
+                autoAlpha: 1,
+                duration: 0.45,
+                ease: "none",
+              },
+              index + 0.05,
+            );
+          }
         });
       }, section);
 

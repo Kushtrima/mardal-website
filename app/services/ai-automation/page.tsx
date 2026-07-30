@@ -98,26 +98,60 @@ export default function AiAutomationPage() {
               AI and automation services
             </h2>
 
-            {aiAutomation.offerings.map((offering) => (
-              <article
-                className="service-offering"
-                id={offering.id}
-                key={offering.id}
-                data-service-offering
-              >
-                <h3 className="service-offering__title">{offering.title}</h3>
+            {aiAutomation.offerings.map((offering) => {
+              const isGroup =
+                "kind" in offering && offering.kind === "group";
+              const isDense =
+                "layout" in offering && offering.layout === "dense";
 
-                <p className="service-offering__copy">{offering.copy}</p>
+              return (
+                <article
+                  className={`service-offering${
+                    isGroup ? " service-offering--group" : ""
+                  }${isDense ? " service-offering--dense" : ""}`}
+                  id={offering.id}
+                  key={offering.id}
+                  data-service-offering
+                >
+                  {isGroup ? (
+                    <h3 className="service-offering__group-title">
+                      {offering.title}
+                    </h3>
+                  ) : (
+                    <>
+                      <h3 className="service-offering__title">
+                        {offering.title}
+                      </h3>
 
-                <div className="service-offering__rule" aria-hidden="true" />
+                      <div className="service-offering__year" aria-hidden="true">
+                        <span className="service-offering__year-label">Year</span>
+                        <span className="service-offering__year-value">
+                          {aiAutomation.year}
+                        </span>
+                      </div>
 
-                <ul className="service-offering__list">
-                  {offering.items.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </article>
-            ))}
+                      <p className="service-offering__copy">{offering.copy}</p>
+
+                      <div className="service-offering__details">
+                        <ul className="service-offering__list">
+                          {offering.items.map((item) => (
+                            <li key={item}>{item}</li>
+                          ))}
+                        </ul>
+
+                        {"example" in offering && (
+                          <div className="service-offering__example-block">
+                            <p className="service-offering__example">
+                              {offering.example}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </article>
+              );
+            })}
           </Container>
         </section>
 
