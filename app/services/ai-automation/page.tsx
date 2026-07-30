@@ -3,6 +3,8 @@ import { Container } from "../../../components/layout/Container";
 import { SiteFooter } from "../../../components/layout/SiteFooter";
 import { SiteHeader } from "../../../components/layout/SiteHeader";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
+import { AiAutomationHeroEntry } from "../../../components/services/AiAutomationHeroEntry";
+import { AiAutomationOfferingsScroll } from "../../../components/services/AiAutomationOfferingsScroll";
 import { aiAutomation } from "../../../content/ai-automation";
 import { products } from "../../../content/home";
 
@@ -14,31 +16,50 @@ export const metadata: Metadata = {
 /**
  * The first of the service pages.
  *
- * An editorial service hero leads with one proposition. Its fragmented field
- * is drawn from the supplied pattern reference, but sits directly on the
- * site's white canvas rather than inside a coloured banner.
+ * An editorial service hero leads into a practical explanation of the work
+ * and the two core service areas.
  */
 export default function AiAutomationPage() {
   return (
     <>
       <SectionEnter />
+      <AiAutomationHeroEntry />
+      <AiAutomationOfferingsScroll />
 
       <main id="main-content">
         <SiteHeader />
 
-        <section className="service-hero" aria-labelledby="service-title">
+        <section
+          className="service-hero"
+          aria-labelledby="service-title"
+          data-service-hero
+        >
           <Container className="service-hero__inner">
             <div className="service-hero__intro">
-              <h1 className="service-hero__title" id="service-title">
+              <h1
+                className="service-hero__title"
+                id="service-title"
+                data-service-hero-title
+              >
                 {aiAutomation.lede}
               </h1>
             </div>
 
-            <div className="service-hero__pattern" aria-hidden="true" />
+            <div
+              className="service-hero__pattern"
+              aria-hidden="true"
+              data-service-hero-pattern
+            />
 
-            <p className="service-hero__support">{aiAutomation.support}</p>
+            <p className="service-hero__support" data-service-hero-support>
+              {aiAutomation.support}
+            </p>
 
-            <a className="service-hero__cta" href={products.ctaHref}>
+            <a
+              className="service-hero__cta"
+              href={products.ctaHref}
+              data-service-hero-cta
+            >
               {aiAutomation.heroCta}
               <span className="service-hero__cta-arrow" aria-hidden="true">
                 ↗
@@ -48,24 +69,55 @@ export default function AiAutomationPage() {
         </section>
 
         <section
-          className="service-blocks"
-          aria-labelledby="service-blocks-title"
+          className="service-overview"
+          aria-labelledby="service-overview-title"
           data-route-section
         >
-          <Container>
-            <h2 className="visually-hidden" id="service-blocks-title">
-              What this covers
+          <Container className="service-overview__inner">
+            <h2 className="service-overview__title" id="service-overview-title">
+              {aiAutomation.overview.title}
             </h2>
 
-            <div className="service-blocks__grid">
-              {aiAutomation.blocks.map((block) => (
-                <article className="service-block" id={block.id} key={block.id}>
-                  <p className="service-block__label">{block.label}</p>
-                  <h3 className="service-block__title">{block.title}</h3>
-                  <p className="service-block__copy">{block.copy}</p>
-                </article>
+            <div className="service-overview__columns">
+              {aiAutomation.overview.columns.map((column) => (
+                <p className="service-overview__copy" key={column}>
+                  {column}
+                </p>
               ))}
             </div>
+          </Container>
+        </section>
+
+        <section
+          className="service-offerings"
+          aria-labelledby="service-offerings-title"
+          data-service-offerings
+        >
+          <Container className="service-offerings__inner">
+            <h2 className="visually-hidden" id="service-offerings-title">
+              AI and automation services
+            </h2>
+
+            {aiAutomation.offerings.map((offering) => (
+              <article
+                className="service-offering"
+                id={offering.id}
+                key={offering.id}
+                data-service-offering
+              >
+                <h3 className="service-offering__title">{offering.title}</h3>
+
+                <p className="service-offering__copy">{offering.copy}</p>
+
+                <div className="service-offering__rule" aria-hidden="true" />
+
+                <ul className="service-offering__list">
+                  {offering.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
           </Container>
         </section>
 

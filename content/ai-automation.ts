@@ -15,19 +15,44 @@ export const aiAutomation = {
   lede: "Turn repetitive work into intelligent workflows.",
   support: "Build smarter operations with AI agents.",
   heroCta: "Let’s build",
-  /** The two homepage cards that belong to this service, at length. */
-  blocks: [
+  overview: {
+    title: "AI designed around real business work",
+    columns: [
+      "We start by understanding how work moves through your business: where information enters, who handles it, what decisions are repeated, and where delays happen. Then we build AI and automation that fit directly into that process.",
+      "The result may be an assistant that answers customers, a workflow that processes documents, a voice agent that manages calls, or an automated system that moves work from one step to the next.",
+      "Our goal is not to add AI everywhere. It is to use it where it saves time, improves consistency, and makes the process easier to manage.",
+    ],
+  },
+  offerings: [
     {
-      id: "applied-ai",
-      label: "Applied AI",
-      title: "Solving real business problems with AI",
-      copy: "We use AI where it can make work faster, decisions clearer, and services more useful.",
+      id: "ai-assistants",
+      title: "AI Assistants",
+      copy: "Custom AI agents that use your business knowledge, documents, and tools to support customers, employees, and everyday operations.",
+      items: [
+        "Customer questions and support",
+        "Internal company knowledge",
+        "Product and service information",
+        "Document and policy search",
+        "Employee assistance",
+        "Personalized email and message preparation",
+        "Multilingual communication",
+        "Approved actions across business tools",
+      ],
     },
     {
-      id: "automation",
-      label: "Automation",
-      title: "Less repetition. More progress.",
-      copy: "We automate routine work so your team can focus on customers, decisions, and growth.",
+      id: "b2b-automation",
+      title: "B2B Automation",
+      copy: "Automated workflows that reduce manual work and move tasks through the business.",
+      items: [
+        "Lead capture and follow-up",
+        "Enquiry to quotation",
+        "Booking to confirmation",
+        "Order to invoice",
+        "Contract approvals",
+        "Task creation and reminders",
+        "Customer request routing",
+        "Scheduled reports and notifications",
+      ],
     },
   ],
   cta: {

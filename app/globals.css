@@ -3918,10 +3918,12 @@ video {
     clamp(1rem, 4.5vh, 4.5rem) + clamp(3.45rem, 4.5vw, 3.9rem)
   );
 
+  position: relative;
   display: grid;
-  min-height: calc(100svh - var(--service-header-height));
+  height: calc(100svh - var(--service-header-height));
+  min-height: 34rem;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-template-rows: auto minmax(8rem, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   gap: clamp(1rem, 1.35vw, 1.4rem);
   padding-block: clamp(3rem, 7vh, 5.5rem) clamp(2.5rem, 6vh, 4.5rem);
 }
@@ -3930,6 +3932,7 @@ video {
   z-index: 1;
   grid-column: 1 / span 8;
   grid-row: 1;
+  transform: translateY(50px);
 }
 
 .service-hero__title {
@@ -3991,14 +3994,13 @@ video {
 /* The cleaned alpha channel is used as a mask: the geometry stays byte-for-
    byte identical while every fragment takes one flat brand purple. */
 .service-hero__pattern {
-  grid-column: 7 / -1;
-  grid-row: 2;
+  position: absolute;
+  top: 50%;
+  right: 0;
   width: min(100%, 27rem);
   aspect-ratio: 1447 / 1087;
-  align-self: center;
-  justify-self: end;
   background: var(--accent);
-  transform: translateY(-50px);
+  transform: translateY(calc(-50% - 50px));
   -webkit-mask-image: url("/ai-automation-pattern.png");
   mask-image: url("/ai-automation-pattern.png");
   -webkit-mask-position: center;
@@ -4009,42 +4011,192 @@ video {
   mask-size: contain;
 }
 
-.service-blocks {
-  padding-block: var(--section-space-lg);
+.service-overview {
   background: var(--canvas);
 }
 
-.service-blocks__grid {
+.service-overview__inner {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(2rem, 5vw, 4.5rem);
+  min-height: max(46rem, 100svh);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.service-block__label {
-  margin: 0;
-  color: var(--ink-muted);
-  font-size: var(--text-body);
-  letter-spacing: var(--tracking-wide);
-  line-height: 1.3;
-  text-transform: uppercase;
-}
-
-.service-block__title {
-  max-width: 18ch;
-  margin: clamp(0.75rem, 1.5vw, 1.25rem) 0 0;
+.service-overview__title {
+  grid-column: 4;
+  grid-row: 1;
+  max-width: 13ch;
+  align-self: end;
+  margin: 0 0 clamp(6rem, 15vh, 8rem);
+  padding-left: clamp(2rem, 4vw, 4.5rem);
   font-family: var(--type-display);
-  font-size: var(--text-heading-xl);
+  font-size: clamp(2.75rem, 3.6vw, 4rem);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
-  line-height: var(--leading-heading-xl);
+  line-height: 1.02;
 }
 
-.service-block__copy {
-  max-width: 46ch;
-  margin: clamp(0.75rem, 1.5vw, 1.25rem) 0 0;
-  color: var(--ink-muted);
+.service-overview__columns {
+  display: contents;
+}
+
+.service-overview__copy {
+  grid-row: 1;
+  max-width: none;
+  align-self: stretch;
+  margin: clamp(2rem, 4vh, 2.5rem) 0 clamp(6rem, 15vh, 8rem);
+  padding: clamp(2.25rem, 5vh, 3rem) clamp(2rem, 4vw, 4.5rem) 0 0;
+  border-right: 1px solid rgb(8 8 10 / 72%);
   font-size: var(--text-body);
-  line-height: 1.35;
+  line-height: 1.3;
+}
+
+.service-overview__copy:nth-child(1) {
+  grid-column: 1;
+}
+
+.service-overview__copy:nth-child(2) {
+  grid-column: 2;
+  padding-left: clamp(2rem, 4vw, 4.5rem);
+}
+
+.service-overview__copy:nth-child(3) {
+  grid-column: 3;
+  padding-left: clamp(2rem, 4vw, 4.5rem);
+}
+
+.service-offerings {
+  position: relative;
+  padding-block: clamp(6rem, 11vw, 10rem);
+  background:
+    radial-gradient(
+      ellipse 112% 54% at 38% -7%,
+      rgb(255 217 244 / 96%) 0%,
+      rgb(239 211 255 / 78%) 36%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 76% 48% at 91% 13%,
+      rgb(189 157 255 / 90%) 0%,
+      rgb(204 180 255 / 58%) 43%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 64% 60% at 54% 43%,
+      rgb(190 170 255 / 74%) 0%,
+      rgb(214 198 255 / 50%) 45%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 72% 54% at -5% 49%,
+      rgb(255 255 255 / 98%) 0%,
+      rgb(255 255 255 / 78%) 42%,
+      transparent 78%
+    ),
+    radial-gradient(
+      ellipse 64% 52% at 12% 105%,
+      rgb(181 194 255 / 92%) 0%,
+      rgb(205 208 255 / 64%) 42%,
+      transparent 78%
+    ),
+    radial-gradient(
+      ellipse 78% 58% at 84% 101%,
+      rgb(255 253 253 / 98%) 0%,
+      rgb(255 232 244 / 72%) 46%,
+      transparent 84%
+    ),
+    linear-gradient(168deg, #f8eaff 0%, #ddd0ff 48%, #fff8fc 100%);
+  background-color: #f5edff;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.service-offerings__inner {
+  display: grid;
+  gap: clamp(8rem, 16vh, 12rem);
+  perspective: 1400px;
+}
+
+.service-offerings.is-scroll-stack {
+  height: 100svh;
+  min-height: 40rem;
+  padding-block: clamp(2.5rem, 6vh, 4.5rem);
+  overflow: hidden;
+}
+
+.service-offerings.is-scroll-stack .service-offerings__inner {
+  position: relative;
+  display: block;
+  height: 100%;
+}
+
+.service-offerings.is-scroll-stack .service-offering {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+}
+
+.service-offering {
+  position: relative;
+  display: grid;
+  min-height: clamp(31rem, 64svh, 43rem);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-content: center;
+  column-gap: clamp(1rem, 1.35vw, 1.4rem);
+  padding-block: clamp(2.5rem, 6vh, 4rem);
+  will-change: transform, opacity;
+}
+
+.service-offering__title {
+  grid-column: 1 / span 5;
+  align-self: end;
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: clamp(2.5rem, 4vw, 3.75rem);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1;
+}
+
+.service-offering__copy {
+  grid-column: 7 / -1;
+  max-width: 45ch;
+  align-self: end;
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.3;
+}
+
+.service-offering__rule {
+  grid-column: 1 / -1;
+  height: 1px;
+  margin-block: clamp(0.8rem, 1.5vw, 1.25rem) clamp(3rem, 5vw, 5rem);
+  background: rgb(111 79 167 / 65%);
+}
+
+.service-offering__list {
+  display: grid;
+  grid-column: 7 / -1;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-body);
+  line-height: 1.3;
+}
+
+.service-offering__list li {
+  position: relative;
+  padding-left: 1.1em;
+}
+
+.service-offering__list li::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--accent-strong);
+  content: "↗";
+  font-size: 0.82em;
+  font-weight: var(--weight-strong);
 }
 
 .service-cta {
@@ -4103,33 +4255,186 @@ video {
   }
 }
 
-/* One column at this width. */
+/* Tablet: preserve the desktop composition, but reduce the title and pattern
+   before their columns become narrow enough to meet. */
+@media (max-width: 64rem) {
+  .service-hero__inner {
+    padding-block: clamp(2.5rem, 6vh, 4rem) clamp(2.25rem, 5vh, 3.5rem);
+  }
+
+  .service-hero__intro {
+    grid-column: 1 / span 7;
+  }
+
+  .service-hero__title {
+    max-width: 11.5ch;
+    font-size: clamp(3rem, 6.2vw, 4rem);
+  }
+
+  .service-hero__pattern {
+    top: 52%;
+    width: min(39vw, 22rem);
+  }
+
+  .service-hero__support {
+    grid-column: 1 / span 5;
+    max-width: 14ch;
+    font-size: clamp(1.75rem, 3.4vw, 2.2rem);
+  }
+
+  .service-overview__title {
+    grid-column: 4;
+    padding-left: clamp(1.5rem, 3vw, 2.5rem);
+    font-size: clamp(2.25rem, 4.8vw, 3.25rem);
+  }
+
+  .service-overview__copy {
+    padding-right: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .service-overview__copy:nth-child(2),
+  .service-overview__copy:nth-child(3) {
+    padding-left: clamp(1.5rem, 3vw, 2.5rem);
+  }
+}
+
+/* Mobile: the same three-part composition in one column. The title owns the
+   top, the bottom copy and CTA share the last row, and the pattern floats
+   between them without contributing height. */
 @media (max-width: 48rem) {
   .service-hero__inner {
-    display: block;
-    min-height: calc(100svh - 4.45rem);
-    padding-block: 3.5rem 4rem;
+    display: grid;
+    height: calc(100svh - 4.45rem);
+    min-height: 30rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 1rem;
+    padding-block: clamp(2rem, 6svh, 3.5rem) clamp(1.5rem, 5svh, 3rem);
+  }
+
+  .service-hero__intro {
+    grid-column: 1 / -1;
+    grid-row: 1;
   }
 
   .service-hero__title {
     max-width: 12ch;
+    font-size: var(--text-heading-xl);
   }
 
   .service-hero__pattern {
-    width: min(78%, 22rem);
-    margin: clamp(3.5rem, 12vw, 5rem) 0 0 auto;
+    position: absolute;
+    top: 52%;
+    right: -2%;
+    width: min(68vw, 19rem);
+    margin: 0;
+    transform: translateY(calc(-50% - 20px));
   }
 
   .service-hero__support {
-    max-width: 15ch;
-    margin-top: clamp(3.5rem, 12vw, 5rem);
+    grid-column: 1;
+    grid-row: 3;
+    max-width: 11ch;
+    margin: 0;
+    font-size: clamp(1.625rem, 7vw, 2rem);
   }
 
   .service-hero__cta {
-    margin-top: 2.5rem;
+    grid-column: 2;
+    grid-row: 3;
+    margin: 0;
   }
 
-  .service-blocks__grid {
+  .service-overview {
+    padding-block: clamp(4.5rem, 18vw, 7rem);
+  }
+
+  .service-overview__inner {
+    display: grid;
+    min-height: 0;
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .service-overview__title {
+    grid-column: 1;
+    grid-row: auto;
+    max-width: 12ch;
+    margin: 0 0 clamp(2.5rem, 10vw, 4rem);
+    padding: 0;
+    font-size: clamp(2.5rem, 11vw, 3.5rem);
+  }
+
+  .service-overview__columns {
+    display: grid;
+    gap: 1.75rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .service-overview__copy {
+    grid-column: 1 !important;
+    grid-row: auto;
+    max-width: 36ch;
+    margin: 0;
+    padding: 1.75rem 0 0 !important;
+    border-top: 1px solid var(--line);
+    border-right: 0;
+  }
+
+  .service-offerings {
+    padding-block: clamp(5rem, 18vw, 7rem);
+  }
+
+  .service-offerings__inner {
+    gap: clamp(6rem, 24vw, 9rem);
+  }
+
+  .service-offering {
+    display: block;
+    min-height: calc(100svh - 6.75rem);
+    padding-block: clamp(1.5rem, 7vw, 2.25rem);
+  }
+
+  .service-offering__title {
+    font-size: clamp(2.4rem, 11vw, 3.25rem);
+  }
+
+  .service-offering__copy {
+    max-width: 34ch;
+    margin-top: 2rem;
+  }
+
+  .service-offering__rule {
+    margin-block: 1rem 2.5rem;
+  }
+
+  .service-offering__list {
+    max-width: 34ch;
+  }
+
+  .service-offerings.is-scroll-stack {
+    min-height: 34rem;
+    padding-block: 1rem;
+  }
+
+  .service-offerings.is-scroll-stack .service-offering {
+    min-height: 0;
+  }
+}
+
+/* Very narrow phones get a little more clear space between the artwork and
+   the bottom row without changing the content order. */
+@media (max-width: 23rem) {
+  .service-hero__pattern {
+    right: -7%;
+    width: 64vw;
+  }
+
+  .service-hero__support {
+    max-width: 10ch;
+    font-size: 1.5rem;
+  }
+
+  .service-hero__cta {
+    font-size: 1rem;
   }
 }
