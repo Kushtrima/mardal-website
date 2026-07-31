@@ -35,11 +35,18 @@ export function AiAutomationOfferingsScroll() {
       section.classList.add("is-scroll-stack");
 
       context = gsap.context(() => {
-        const contentFor = (card: HTMLElement) =>
+        const titleFor = (card: HTMLElement) =>
           gsap.utils.toArray<HTMLElement>(
             [
               ".service-offering__title",
               ".service-offering__group-title",
+            ].join(", "),
+            card,
+          );
+
+        const detailsFor = (card: HTMLElement) =>
+          gsap.utils.toArray<HTMLElement>(
+            [
               ".service-offering__section-label",
               ".service-offering__copy",
               ".service-offering__list",
@@ -47,6 +54,11 @@ export function AiAutomationOfferingsScroll() {
             ].join(", "),
             card,
           );
+
+        const contentFor = (card: HTMLElement) => [
+          ...titleFor(card),
+          ...detailsFor(card),
+        ];
 
         cards.forEach((card, index) => {
           const entryOffset = card.classList.contains(
@@ -61,9 +73,14 @@ export function AiAutomationOfferingsScroll() {
             zIndex: index + 1,
           });
 
-          gsap.set(contentFor(card), {
+          gsap.set(titleFor(card), {
             autoAlpha: index === 0 ? 1 : 0,
             y: 0,
+          });
+
+          gsap.set(detailsFor(card), {
+            autoAlpha: index === 0 ? 1 : 0,
+            y: index === 0 ? 0 : "60vh",
           });
 
           const guides = card.querySelector<HTMLElement>(
@@ -91,7 +108,8 @@ export function AiAutomationOfferingsScroll() {
         cards.slice(1).forEach((card, index) => {
           const coveredCard = cards[index];
           const coveredContent = contentFor(coveredCard);
-          const incomingContent = contentFor(card);
+          const incomingTitle = titleFor(card);
+          const incomingDetails = detailsFor(card);
           const coveredGuides = coveredCard.querySelector<HTMLElement>(
             ".service-offering__guides",
           );
@@ -110,28 +128,43 @@ export function AiAutomationOfferingsScroll() {
               },
               index,
             )
-            .to(
+            .set(
               card,
               {
                 autoAlpha: 1,
                 yPercent: 0,
-                duration: 1,
-                ease: "none",
               },
-              index,
+              index + 0.18,
             )
             .to(
-              incomingContent,
+              incomingTitle,
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.45,
-                ease: "none",
+                duration: 0.36,
+                ease: "power1.out",
               },
-              index + 0.05,
+              index + 0.18,
             );
 
-          if (coveredGuides) {
+          if (incomingDetails.length > 0) {
+            timeline.to(
+              incomingDetails,
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.52,
+                ease: "none",
+              },
+              index + 0.48,
+            );
+          }
+
+          if (coveredGuides && incomingGuides) {
+            timeline
+              .set(incomingGuides, { autoAlpha: 1 }, index + 1)
+              .set(coveredGuides, { autoAlpha: 0 }, index + 1);
+          } else if (coveredGuides) {
             timeline.to(
               coveredGuides,
               {
@@ -139,19 +172,17 @@ export function AiAutomationOfferingsScroll() {
                 duration: 0.2,
                 ease: "none",
               },
-              index,
+              index + 0.18,
             );
-          }
-
-          if (incomingGuides) {
+          } else if (incomingGuides) {
             timeline.to(
               incomingGuides,
               {
                 autoAlpha: 1,
-                duration: 0.45,
+                duration: 0.3,
                 ease: "none",
               },
-              index + 0.05,
+              index + 0.2,
             );
           }
         });

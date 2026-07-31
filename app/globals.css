@@ -3909,6 +3909,17 @@ video {
 /* Editorial service hero: one proposition, one abstract pattern and a quiet
    way forward. The pattern has no panel or coloured ground; the page itself is
    the field. */
+.service-page {
+  background: var(--canvas);
+}
+
+/* ScrollTrigger adds this wrapper around the pinned services section. Keep
+   only that generated space on the service tint, rather than tinting the
+   entire page behind the header and the hero transitions. */
+.service-page > .pin-spacer {
+  background: #efedf8;
+}
+
 .service-hero {
   background: var(--canvas);
 }
@@ -4012,7 +4023,12 @@ video {
 }
 
 .service-overview {
-  background: var(--canvas);
+  background: linear-gradient(
+    180deg,
+    var(--canvas) 0,
+    #efedf8 12rem,
+    #efedf8 100%
+  );
 }
 
 .service-overview__inner {
@@ -4067,47 +4083,7 @@ video {
 .service-offerings {
   position: relative;
   padding-block: clamp(6rem, 11vw, 10rem);
-  background:
-    radial-gradient(
-      ellipse 112% 54% at 38% -7%,
-      rgb(255 217 244 / 35%) 0%,
-      rgb(239 211 255 / 28%) 36%,
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse 76% 48% at 91% 13%,
-      rgb(189 157 255 / 38%) 0%,
-      rgb(204 180 255 / 24%) 43%,
-      transparent 76%
-    ),
-    radial-gradient(
-      ellipse 64% 60% at 54% 43%,
-      rgb(190 170 255 / 28%) 0%,
-      rgb(214 198 255 / 18%) 45%,
-      transparent 76%
-    ),
-    radial-gradient(
-      ellipse 72% 54% at -5% 49%,
-      rgb(255 255 255 / 98%) 0%,
-      rgb(255 255 255 / 78%) 42%,
-      transparent 78%
-    ),
-    radial-gradient(
-      ellipse 64% 52% at 12% 105%,
-      rgb(181 194 255 / 34%) 0%,
-      rgb(205 208 255 / 22%) 42%,
-      transparent 78%
-    ),
-    radial-gradient(
-      ellipse 78% 58% at 84% 101%,
-      rgb(255 253 253 / 98%) 0%,
-      rgb(255 232 244 / 24%) 46%,
-      transparent 84%
-    ),
-    linear-gradient(168deg, #fffafd 0%, #f3efff 48%, #fff 100%);
-  background-color: #fff;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background: #efedf8;
 }
 
 .service-offerings__inner {
@@ -4123,7 +4099,6 @@ video {
   width: 72%;
   justify-self: center;
   border-right: 1px solid #000;
-  border-left: 1px solid #000;
 }
 
 .service-offerings.is-scroll-stack {
@@ -4141,12 +4116,17 @@ video {
 
 .service-offerings.is-scroll-stack .service-offering {
   position: absolute;
-  inset: 0;
+  inset: -50px 0 50px;
   min-height: 0;
 }
 
+.service-offerings.is-scroll-stack .service-offering__guides {
+  height: 100svh;
+  align-self: start;
+}
+
 .service-offering {
-  --service-detail-size: clamp(1rem, 1.15vw, 1.25rem);
+  --service-detail-size: 1rem;
   --service-capabilities-gap: clamp(3rem, 5vw, 5rem);
   --service-example-gap: clamp(3rem, 6vh, 4.5rem);
 
@@ -4162,16 +4142,29 @@ video {
 }
 
 .service-offering__title {
+  position: relative;
   grid-column: 1 / span 5;
   grid-row: 1;
   align-self: start;
   margin: 0;
+  padding-left: 1.5rem;
   font-family: var(--type-display);
-  font-size: clamp(2.5rem, 4vw, 3.75rem);
+  font-size: 1rem;
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
-  line-height: 1;
+  letter-spacing: var(--tracking-wide);
+  line-height: 1.2;
+  text-transform: uppercase;
   white-space: pre-line;
+}
+
+.service-offering__title::before {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  background: #000;
+  content: "";
 }
 
 .service-offering--group {
@@ -4198,7 +4191,7 @@ video {
   align-self: start;
   margin: 0;
   font-size: var(--service-detail-size);
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
 .service-offering__section-label {
@@ -4208,11 +4201,12 @@ video {
   justify-self: center;
   align-self: start;
   margin: 0;
-  padding-inline: clamp(0.75rem, 1.3vw, 1.25rem);
-  color: var(--ink-muted);
-  font-size: clamp(0.75rem, 0.85vw, 0.9rem);
+  padding: 0 clamp(0.75rem, 1.3vw, 1.25rem) 0 0;
+  color: #000;
+  font-size: 12px;
   letter-spacing: var(--tracking-wide);
   line-height: 1.2;
+  text-align: right;
   text-transform: uppercase;
 }
 
@@ -4239,22 +4233,23 @@ video {
   padding: 0;
   list-style: none;
   font-size: var(--service-detail-size);
-  line-height: 1.28;
+  line-height: 1.2;
 }
 
 .service-offering__list li {
   position: relative;
-  padding-left: 1.25em;
+  padding-left: 1em;
 }
 
 .service-offering__list li::before {
   position: absolute;
-  top: -0.03em;
+  top: 0.48em;
   left: 0;
-  color: var(--ink);
-  content: "+";
-  font-size: 1em;
-  font-weight: var(--weight-body);
+  width: 0.28rem;
+  height: 0.28rem;
+  border-radius: 50%;
+  background: var(--ink);
+  content: "";
 }
 
 .service-offering__example-block {
@@ -4267,7 +4262,7 @@ video {
 .service-offering__example {
   margin: 0;
   font-size: var(--service-detail-size);
-  line-height: 1.28;
+  line-height: 1.2;
 }
 
 .service-offering--dense .service-offering__list {
@@ -4284,31 +4279,26 @@ video {
 }
 
 .service-cta {
-  padding-block: 0 var(--section-space-lg);
-  background: var(--canvas);
+  padding-block: 60px;
+  background: linear-gradient(180deg, #efedf8 0, var(--canvas) 12rem);
 }
 
 .service-cta__inner {
-  padding-top: clamp(2.5rem, 6vw, 4rem);
-  border-top: 1px solid var(--line-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .service-cta__title {
   max-width: 20ch;
-  margin: 0;
+  margin: 0 auto;
   font-family: var(--type-display);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
   line-height: var(--leading-heading-xl);
-}
-
-.service-cta__copy {
-  max-width: 46ch;
-  margin: clamp(0.75rem, 1.5vw, 1.25rem) 0 0;
-  color: var(--ink-muted);
-  font-size: var(--text-body);
-  line-height: 1.35;
+  white-space: pre-line;
 }
 
 .service-cta__link {
@@ -4473,15 +4463,13 @@ video {
   }
 
   .service-offering {
-    --service-detail-size: clamp(0.9375rem, 4vw, 1rem);
-
     display: block;
     min-height: calc(100svh - 6.75rem);
     padding-block: clamp(1.5rem, 7vw, 2.25rem);
   }
 
   .service-offering__title {
-    font-size: clamp(2.4rem, 11vw, 3.25rem);
+    font-size: 1rem;
   }
 
   .service-offering__group-title {
@@ -4491,7 +4479,8 @@ video {
   .service-offering__section-label {
     width: auto;
     padding: 0;
-    font-size: 0.75rem;
+    font-size: 12px;
+    text-align: left;
   }
 
   .service-offering__section-label--overview {
@@ -4531,6 +4520,7 @@ video {
   }
 
   .service-offerings.is-scroll-stack .service-offering {
+    inset: 0;
     min-height: 0;
   }
 

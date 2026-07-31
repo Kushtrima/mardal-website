@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   },
   description: "We build the technology behind your growth.",
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: [{ url: "/mardal-mark-white.svg", type: "image/svg+xml" }],
+    shortcut: "/mardal-mark-white.svg",
   },
 };
 

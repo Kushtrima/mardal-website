@@ -26,7 +26,7 @@ export default function AiAutomationPage() {
       <AiAutomationHeroEntry />
       <AiAutomationOfferingsScroll />
 
-      <main id="main-content">
+      <main className="service-page" id="main-content">
         <SiteHeader />
 
         <section
@@ -73,7 +73,7 @@ export default function AiAutomationPage() {
           aria-labelledby="service-overview-title"
           data-route-section
         >
-          <Container className="service-overview__inner">
+          <Container className="service-overview__inner" data-enter>
             <h2 className="service-overview__title" id="service-overview-title">
               {aiAutomation.overview.title}
             </h2>
@@ -171,11 +171,10 @@ export default function AiAutomationPage() {
           data-route-section
         >
           <Container>
-            <div className="service-cta__inner">
+            <div className="service-cta__inner" data-enter>
               <h2 className="service-cta__title" id="service-cta-title">
                 {aiAutomation.cta.title}
               </h2>
-              <p className="service-cta__copy">{aiAutomation.cta.copy}</p>
 
               <a className="service-cta__link" href={products.ctaHref}>
                 {aiAutomation.cta.label}

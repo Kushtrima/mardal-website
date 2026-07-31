@@ -209,8 +209,7 @@ export const aiAutomation = {
     },
   ],
   cta: {
-    title: "Start with the work you already repeat.",
-    copy: "Tell us what you want to improve, automate, or create. We’ll help turn it into a practical digital solution.",
+    title: "Let’s build\nwhat your business\nneeds next.",
     label: "Get in touch",
   },
 } as const;
