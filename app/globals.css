@@ -4465,8 +4465,8 @@ video {
     padding: 0 clamp(1.25rem, 5vw, 2rem) 0 0 !important;
     border: 0;
     border-right: 1px solid rgb(8 8 10 / 72%);
-    font-size: clamp(1.25rem, 5.6vw, 1.5rem);
-    line-height: 1.33;
+    font-size: 1.125rem;
+    line-height: 1.4;
   }
 
   .service-overview__copy:nth-child(even) {
