@@ -145,42 +145,9 @@ export function AiAutomationOfferingsScroll() {
       const numbers = cards.map((card) =>
         card.querySelector<HTMLElement>("[data-service-number]"),
       );
-      const segmentWeights = cards.map((_, index) => {
-        const currentNumber = numbers[index]?.textContent?.trim();
-        const nextNumber = numbers[index + 1]?.textContent?.trim();
-
-        return currentNumber === "03" && nextNumber === "04" ? 1.6 : 1;
-      });
-      const totalJourneyWeight = segmentWeights.reduce(
-        (total, weight) => total + weight,
-        0,
-      );
 
       const distance = () =>
-        Math.max(totalJourneyWeight * window.innerHeight * 0.92, 1);
-
-      const resolveJourneyPosition = (progress: number) => {
-        const weightedPosition = progress * totalJourneyWeight;
-        let currentIndex = 0;
-        let elapsedWeight = 0;
-
-        while (
-          currentIndex < cards.length - 1 &&
-          weightedPosition >= elapsedWeight + segmentWeights[currentIndex]
-        ) {
-          elapsedWeight += segmentWeights[currentIndex];
-          currentIndex += 1;
-        }
-
-        return {
-          currentIndex,
-          localProgress: gsap.utils.clamp(
-            0,
-            1,
-            (weightedPosition - elapsedWeight) / segmentWeights[currentIndex],
-          ),
-        };
-      };
+        Math.max(cards.length * window.innerHeight * 0.92, 1);
 
       const renderWordExit = (words: HTMLElement[], progress: number) => {
         const groupSize = 3;
@@ -214,14 +181,30 @@ export function AiAutomationOfferingsScroll() {
       };
 
       const renderServices = (progress: number) => {
-        const { currentIndex, localProgress } =
-          resolveJourneyPosition(progress);
+        const journeyPosition = progress * cards.length;
+        const currentIndex = Math.min(
+          Math.floor(journeyPosition),
+          cards.length - 1,
+        );
+        const localProgress = gsap.utils.clamp(
+          0,
+          1,
+          journeyPosition - currentIndex,
+        );
         const nextIndex = Math.min(currentIndex + 1, cards.length - 1);
         const followingIndex = Math.min(currentIndex + 2, cards.length - 1);
+        const isSlowArrival =
+          numbers[currentIndex]?.textContent?.trim() === "03" &&
+          numbers[nextIndex]?.textContent?.trim() === "04";
+        const transitionStart = isSlowArrival ? 0.45 : 0.7;
         const transitionProgress =
           nextIndex === currentIndex
             ? 0
-            : gsap.utils.clamp(0, 1, (localProgress - 0.7) / 0.3);
+            : gsap.utils.clamp(
+                0,
+                1,
+                (localProgress - transitionStart) / (1 - transitionStart),
+              );
         const easedTransition =
           transitionProgress *
           transitionProgress *
@@ -331,12 +314,8 @@ export function AiAutomationOfferingsScroll() {
 
       const progressForCard = (card: HTMLElement) => {
         const cardIndex = cards.indexOf(card);
-        const elapsedWeight = segmentWeights
-          .slice(0, Math.max(cardIndex, 0))
-          .reduce((total, weight) => total + weight, 0);
-
-        return totalJourneyWeight > 0
-          ? gsap.utils.clamp(0, 1, elapsedWeight / totalJourneyWeight)
+        return cards.length > 0
+          ? gsap.utils.clamp(0, 1, cardIndex / cards.length)
           : 0;
       };
 
