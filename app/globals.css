@@ -4140,7 +4140,7 @@ video {
 
 .service-journey__nav-link.is-active,
 .service-journey__nav-link[aria-current="true"] {
-  color: var(--service-ink);
+  color: var(--accent);
 }
 
 .service-journey__stage {
