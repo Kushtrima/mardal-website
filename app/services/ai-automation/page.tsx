@@ -158,6 +158,26 @@ export default function AiAutomationPage() {
 
                         <p className="service-card__copy">{service.copy}</p>
 
+                        <div className="service-card__mobile-details">
+                          <div>
+                            <p className="service-detail__label">Key uses</p>
+                            <ul className="service-detail__uses">
+                              {service.items.map((item) => (
+                                <li key={item}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div>
+                            <p className="service-detail__label">
+                              In practice
+                            </p>
+                            <p className="service-detail__example">
+                              {service.example}
+                            </p>
+                          </div>
+                        </div>
+
                         <span
                           className="service-card__number"
                           aria-hidden="true"
@@ -167,6 +187,38 @@ export default function AiAutomationPage() {
                       </article>
                     ))}
                   </div>
+                </div>
+
+                <div
+                  className="service-journey__details"
+                  data-service-details
+                >
+                  {serviceCards.map((service, index) => (
+                    <div
+                      className={`service-journey__detail${
+                        index === 0 ? " is-active" : ""
+                      }`}
+                      key={service.id}
+                      data-service-detail={service.id}
+                      aria-hidden={index === 0 ? undefined : "true"}
+                    >
+                      <div>
+                        <p className="service-detail__label">Key uses</p>
+                        <ul className="service-detail__uses">
+                          {service.items.map((item) => (
+                            <li key={item}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <p className="service-detail__label">In practice</p>
+                        <p className="service-detail__example">
+                          {service.example}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 

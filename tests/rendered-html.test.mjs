@@ -335,6 +335,12 @@ test("server-renders the AI & Automation service page", async () => {
     2,
   );
   assert.match(html, /class="service-card__number"[^>]*>05</);
+  assert.ok((html.match(/Key uses/g) ?? []).length >= 18);
+  assert.ok((html.match(/In practice/g) ?? []).length >= 18);
+  assert.match(
+    html,
+    /The assistant finds the relevant information and responds directly/,
+  );
   assert.doesNotMatch(html, /<details|service-row__action|09 services/);
 
   for (const title of [

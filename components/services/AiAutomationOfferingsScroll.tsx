@@ -46,6 +46,11 @@ export function AiAutomationOfferingsScroll() {
     const currentTitle = section?.querySelector<HTMLElement>(
       "[data-service-current-title]",
     );
+    const detailPanels = section
+      ? Array.from(
+          section.querySelectorAll<HTMLElement>("[data-service-detail]"),
+        )
+      : [];
 
     if (
       !section ||
@@ -100,8 +105,29 @@ export function AiAutomationOfferingsScroll() {
       activeCard = cardIndex;
       updateGroup(Number(card.dataset.serviceGroup ?? 0));
 
+      detailPanels.forEach((panel) => {
+        const isActive = panel.dataset.serviceDetail === card.id;
+        panel.classList.toggle("is-active", isActive);
+
+        if (isActive) {
+          panel.removeAttribute("aria-hidden");
+        } else {
+          panel.setAttribute("aria-hidden", "true");
+        }
+
+        gsap.to(panel, {
+          autoAlpha: isActive ? 1 : 0,
+          y: isActive ? 0 : 8,
+          duration: immediate ? 0 : isActive ? 0.42 : 0.22,
+          ease: isActive ? "power3.out" : "power2.in",
+          overwrite: true,
+        });
+      });
+
       const nextTitle = card.dataset.serviceTitle ?? "";
       titleTween?.kill();
+
+      if (currentTitle.textContent === nextTitle) return;
 
       if (immediate) {
         currentTitle.textContent = nextTitle;
@@ -253,6 +279,9 @@ export function AiAutomationOfferingsScroll() {
         titleTween?.kill();
         gsap.set(track, { clearProps: "transform" });
         gsap.set(currentTitle, { clearProps: "opacity,visibility,transform" });
+        gsap.set(detailPanels, {
+          clearProps: "opacity,visibility,transform",
+        });
       };
     });
 
