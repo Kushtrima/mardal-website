@@ -318,17 +318,20 @@ test("server-renders the AI & Automation service page", async () => {
   // of it is left behind.
   assert.doesNotMatch(html, /service-banner/);
 
-  // Option C presents every service as a progressive row, grouped into two
-  // chapters. The first row is useful even before client-side JavaScript runs.
+  // The service journey renders every card in source order before motion is
+  // enhanced, so the content remains complete without client-side JavaScript.
   assert.match(html, /AI &amp; Automation Services/);
   assert.match(html, /AI Solutions/);
-  assert.match(html, /Automation Solutions/);
-  assert.equal((html.match(/class="service-row"/g) ?? []).length, 9);
-  assert.equal((html.match(/<details[^>]* open=""/g) ?? []).length, 0);
-  assert.doesNotMatch(
-    html,
-    /service-row__number|service-row__action|09 services/,
+  assert.match(html, /data-service-group-link="1"[^>]*>Automation</);
+  assert.equal((html.match(/class="service-card"/g) ?? []).length, 9);
+  assert.equal(
+    (html.match(/data-service-group-link=/g) ?? []).length,
+    2,
   );
+  assert.match(html, /data-service-track/);
+  assert.match(html, /class="service-card__number"[^>]*>01</);
+  assert.match(html, /class="service-card__number"[^>]*>09</);
+  assert.doesNotMatch(html, /<details|service-row__action|09 services/);
 
   for (const title of [
     "AI Assistants",
@@ -344,7 +347,7 @@ test("server-renders the AI & Automation service page", async () => {
     assert.match(html, new RegExp(title));
   }
 
-  assert.doesNotMatch(html, /is-scroll-stack|data-service-track/);
+  assert.doesNotMatch(html, /is-scroll-stack|data-service-row/);
 
   // The page carries the site's own header and footer.
   assert.match(html, /class="site-nav"/);

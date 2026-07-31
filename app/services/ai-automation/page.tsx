@@ -20,6 +20,14 @@ export const metadata: Metadata = {
  * and the two core service areas.
  */
 export default function AiAutomationPage() {
+  const serviceCards = aiAutomation.chapters.flatMap(
+    (chapter, groupIndex) =>
+      chapter.services.map((service) => ({
+        ...service,
+        groupIndex,
+      })),
+  );
+
   return (
     <>
       <SectionEnter />
@@ -98,63 +106,79 @@ export default function AiAutomationPage() {
           aria-labelledby="service-offerings-title"
           data-service-offerings
         >
-          <Container className="service-offerings__inner">
-            <h2 className="visually-hidden" id="service-offerings-title">
-              AI &amp; Automation Services
-            </h2>
+          <div className="service-journey" data-service-viewport>
+            <Container className="service-journey__layout">
+              <h2 className="visually-hidden" id="service-offerings-title">
+                AI &amp; Automation Services
+              </h2>
 
-            {aiAutomation.chapters.map((chapter, chapterIndex) => (
-              <section
-                className={`service-chapter service-chapter--${
-                  chapterIndex === 0 ? "ai" : "automation"
-                }`}
-                key={chapter.id}
-                aria-labelledby={`${chapter.id}-title`}
-                data-service-chapter
+              <nav
+                className="service-journey__nav"
+                aria-label="Service categories"
               >
-                <header className="service-chapter__header">
-                  <h3 id={`${chapter.id}-title`}>{chapter.title}</h3>
-                  {"description" in chapter && <p>{chapter.description}</p>}
-                </header>
+                {aiAutomation.chapters.map((chapter, index) => (
+                  <a
+                    className={`service-journey__nav-link${
+                      index === 0 ? " is-active" : ""
+                    }`}
+                    href={`#${chapter.services[0].id}`}
+                    key={chapter.id}
+                    data-service-group-link={index}
+                    aria-current={index === 0 ? "true" : undefined}
+                  >
+                    {index === 0 ? "AI Solutions" : "Automation"}
+                  </a>
+                ))}
+              </nav>
 
-                <div className="service-chapter__rows">
-                  {chapter.services.map((service) => (
-                    <details
-                      className="service-row"
+              <div className="service-journey__stage" data-service-stage>
+                <div className="service-journey__track" data-service-track>
+                  {serviceCards.map((service, index) => (
+                    <article
+                      className="service-card"
                       id={service.id}
                       key={service.id}
-                      data-service-row
+                      data-service-card
+                      data-service-group={service.groupIndex}
                     >
-                      <summary className="service-row__summary">
-                        <span className="service-row__title">
-                          {service.title}
-                        </span>
-                        <span className="service-row__preview">
-                          {service.copy}
-                        </span>
-                      </summary>
+                      <h3 className="service-card__title">{service.title}</h3>
 
-                      <div className="service-row__panel" data-service-row-panel>
-                        <section className="service-row__detail-block">
-                          <h4>Key Uses</h4>
+                      <div className="service-card__content">
+                        <p className="service-card__copy">{service.copy}</p>
+
+                        <div className="service-card__uses">
+                          <p>Key uses</p>
                           <ul>
                             {service.items.map((item) => (
                               <li key={item}>{item}</li>
                             ))}
                           </ul>
-                        </section>
+                        </div>
 
-                        <section className="service-row__detail-block">
-                          <h4>In Practice</h4>
-                          <p>{service.example}</p>
-                        </section>
+                        <p className="service-card__example">
+                          <span>In practice</span>
+                          {service.example}
+                        </p>
                       </div>
-                    </details>
+
+                      <span className="service-card__number" aria-hidden="true">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                    </article>
                   ))}
                 </div>
-              </section>
-            ))}
-          </Container>
+              </div>
+
+              <a
+                className="service-journey__next"
+                href={`#${aiAutomation.chapters[1].services[0].id}`}
+                data-service-next-link
+              >
+                <span data-service-next-label>Automation</span>
+                <span aria-hidden="true">→</span>
+              </a>
+            </Container>
+          </div>
         </section>
 
         <section

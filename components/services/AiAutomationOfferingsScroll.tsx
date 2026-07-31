@@ -2,233 +2,233 @@
 
 import { useEffect } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+const DESKTOP_QUERY =
+  "(min-width: 64.0625rem) and (prefers-reduced-motion: no-preference)";
+const STACKED_QUERY =
+  "(max-width: 64rem), (prefers-reduced-motion: reduce)";
 
 /**
- * Progressively enhances the native service details rows.
- *
- * The details elements remain accessible without JavaScript. With JavaScript,
- * their height and content animate as one continuous gesture while each
- * chapter keeps a single focused service open.
+ * Maps vertical page progress to a horizontal editorial journey on desktop.
+ * Tablet, mobile, and reduced-motion users keep a native vertical document.
  */
 export function AiAutomationOfferingsScroll() {
   useEffect(() => {
-    const cleanups: Array<() => void> = [];
-    const activeTimelines = new Map<
-      HTMLDetailsElement,
-      gsap.core.Timeline
-    >();
-    const targetStates = new Map<HTMLDetailsElement, boolean>();
-    const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY);
-    const hoverPointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+    gsap.registerPlugin(ScrollTrigger);
 
-    const frame = window.requestAnimationFrame(() => {
-      const section = document.querySelector<HTMLElement>(
-        "[data-service-offerings]",
-      );
-      if (!section) return;
-
-      const chapters = Array.from(
-        section.querySelectorAll<HTMLElement>("[data-service-chapter]"),
-      );
-
-      chapters.forEach((chapter) => {
-        const rows = Array.from(
-          chapter.querySelectorAll<HTMLDetailsElement>(
-            "details[data-service-row]",
+    const section = document.querySelector<HTMLElement>(
+      "[data-service-offerings]",
+    );
+    const viewport = section?.querySelector<HTMLElement>(
+      "[data-service-viewport]",
+    );
+    const stage = section?.querySelector<HTMLElement>("[data-service-stage]");
+    const track = section?.querySelector<HTMLElement>("[data-service-track]");
+    const cards = section
+      ? Array.from(
+          section.querySelectorAll<HTMLElement>("[data-service-card]"),
+        )
+      : [];
+    const groupLinks = section
+      ? Array.from(
+          section.querySelectorAll<HTMLAnchorElement>(
+            "[data-service-group-link]",
           ),
-        );
+        )
+      : [];
+    const nextLink = section?.querySelector<HTMLAnchorElement>(
+      "[data-service-next-link]",
+    );
+    const nextLabel = nextLink?.querySelector<HTMLElement>(
+      "[data-service-next-label]",
+    );
 
-        if (rows.length === 0) return;
+    if (
+      !section ||
+      !viewport ||
+      !stage ||
+      !track ||
+      cards.length === 0 ||
+      !nextLink ||
+      !nextLabel
+    ) {
+      return;
+    }
 
-        rows.forEach((row) => {
-          row.open = false;
-        });
+    const automationCard = cards.find(
+      (card) => card.dataset.serviceGroup === "1",
+    );
+    const media = gsap.matchMedia();
+    let activeGroup = -1;
 
-        rows.forEach((row) => {
-          targetStates.set(row, row.open);
+    const updateGroup = (groupIndex: number) => {
+      if (activeGroup === groupIndex && nextLabel.textContent) return;
+      activeGroup = groupIndex;
 
-          const summary = row.querySelector<HTMLElement>("summary");
-          const panel = row.querySelector<HTMLElement>(
-            "[data-service-row-panel]",
-          );
-          if (!summary || !panel) return;
-
-          const setRowState = (shouldOpen: boolean) => {
-            targetStates.set(row, shouldOpen);
-            activeTimelines.get(row)?.kill();
-
-            if (reducedMotion.matches) {
-              row.open = shouldOpen;
-              gsap.set([row, panel], {
-                clearProps: "height,overflow,opacity,transform",
-              });
-              return;
-            }
-
-            const startHeight = row.offsetHeight;
-            let endHeight: number;
-
-            // A rapid second interaction can interrupt the previous tween.
-            // Remove its temporary height before measuring the new destination.
-            gsap.set(row, { clearProps: "height,overflow" });
-
-            if (shouldOpen) {
-              row.open = true;
-              endHeight = row.offsetHeight;
-            } else {
-              // Measure the native closed height synchronously, then restore
-              // the open state so the content remains visible while it folds.
-              row.open = false;
-              endHeight = row.offsetHeight;
-              row.open = true;
-            }
-
-            gsap.set(row, {
-              height: startHeight,
-              overflow: "clip",
-            });
-
-            if (shouldOpen && !panel.style.opacity) {
-              gsap.set(panel, { opacity: 0, y: 22 });
-            }
-
-            const timeline = gsap.timeline({
-              onComplete: () => {
-                if (!shouldOpen) {
-                  row.open = false;
-                }
-
-                gsap.set([row, panel], {
-                  clearProps: "height,overflow,opacity,transform",
-                });
-                activeTimelines.delete(row);
-              },
-            });
-
-            timeline.to(
-              row,
-              {
-                height: endHeight,
-                duration: shouldOpen ? 0.82 : 0.68,
-                ease: "power3.inOut",
-              },
-              0,
-            );
-
-            timeline.to(
-              panel,
-              shouldOpen
-                ? {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.58,
-                    ease: "power3.out",
-                  }
-                : {
-                    opacity: 0,
-                    y: -12,
-                    duration: 0.32,
-                    ease: "power2.in",
-                  },
-              shouldOpen ? 0.18 : 0,
-            );
-
-            activeTimelines.set(row, timeline);
-          };
-
-          const handleClick = (event: MouseEvent) => {
-            event.preventDefault();
-
-            // Fine pointers use hover. Keep mouse clicks from immediately
-            // reversing the state that mouseenter just established; keyboard
-            // activation still arrives with detail 0 and remains supported.
-            if (hoverPointer.matches && event.detail > 0) return;
-
-            const shouldOpen = !targetStates.get(row);
-
-            if (shouldOpen) {
-              rows.forEach((otherRow) => {
-                if (otherRow !== row && targetStates.get(otherRow)) {
-                  const otherSummary =
-                    otherRow.querySelector<HTMLElement>("summary");
-                  otherSummary?.click();
-                }
-              });
-            }
-
-            setRowState(shouldOpen);
-          };
-
-          const openExclusively = () => {
-            if (targetStates.get(row)) return;
-
-            rows.forEach((otherRow) => {
-              if (otherRow !== row && targetStates.get(otherRow)) {
-                otherRow.querySelector<HTMLElement>("summary")?.click();
-              }
-            });
-
-            setRowState(true);
-          };
-
-          const handleMouseEnter = () => {
-            if (hoverPointer.matches) openExclusively();
-          };
-
-          const handleMouseLeave = () => {
-            if (hoverPointer.matches && targetStates.get(row)) {
-              setRowState(false);
-            }
-          };
-
-          const handleFocusIn = () => {
-            // Touch taps focus a summary before dispatching click. Opening on
-            // every focus would therefore make the following tap close it
-            // immediately. Only keyboard-visible focus opens automatically.
-            if (summary.matches(":focus-visible")) openExclusively();
-          };
-
-          const handleFocusOut = (event: FocusEvent) => {
-            if (
-              !row.contains(event.relatedTarget as Node | null) &&
-              targetStates.get(row)
-            ) {
-              setRowState(false);
-            }
-          };
-
-          summary.addEventListener("click", handleClick);
-          row.addEventListener("mouseenter", handleMouseEnter);
-          row.addEventListener("mouseleave", handleMouseLeave);
-          row.addEventListener("focusin", handleFocusIn);
-          row.addEventListener("focusout", handleFocusOut);
-          cleanups.push(() => {
-            summary.removeEventListener("click", handleClick);
-            row.removeEventListener("mouseenter", handleMouseEnter);
-            row.removeEventListener("mouseleave", handleMouseLeave);
-            row.removeEventListener("focusin", handleFocusIn);
-            row.removeEventListener("focusout", handleFocusOut);
-          });
-        });
+      groupLinks.forEach((link, index) => {
+        const isActive = index === groupIndex;
+        link.classList.toggle("is-active", isActive);
+        if (isActive) {
+          link.setAttribute("aria-current", "true");
+        } else {
+          link.removeAttribute("aria-current");
+        }
       });
+
+      if (groupIndex === 0 && automationCard) {
+        nextLink.href = `#${automationCard.id}`;
+        nextLabel.textContent = "Automation";
+      } else {
+        nextLink.href = "#service-cta-title";
+        nextLabel.textContent = "Let’s build";
+      }
+    };
+
+    updateGroup(0);
+
+    media.add(DESKTOP_QUERY, () => {
+      let jumpTween: gsap.core.Tween | undefined;
+
+      const distance = () =>
+        Math.max(0, track.scrollWidth - stage.clientWidth);
+
+      const horizontalTween = gsap.to(track, {
+        x: () => -distance(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${Math.max(distance() + window.innerWidth * 0.45, 1)}`,
+          pin: viewport,
+          scrub: 0.75,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          snap: {
+            snapTo: (value) => {
+              const maxDistance = distance();
+              if (maxDistance <= 0) return 0;
+
+              const points = cards.map((card) =>
+                gsap.utils.clamp(0, 1, card.offsetLeft / maxDistance),
+              );
+
+              return points.reduce((closest, point) =>
+                Math.abs(point - value) < Math.abs(closest - value)
+                  ? point
+                  : closest,
+              );
+            },
+            duration: { min: 0.18, max: 0.48 },
+            delay: 0.12,
+            ease: "power1.inOut",
+          },
+          onUpdate: (self) => {
+            const automationStart = automationCard
+              ? Math.max(
+                  0,
+                  automationCard.offsetLeft - stage.clientWidth * 0.22,
+                )
+              : Number.POSITIVE_INFINITY;
+            updateGroup(self.progress * distance() >= automationStart ? 1 : 0);
+          },
+        },
+      });
+
+      const trigger = horizontalTween.scrollTrigger;
+
+      const scrollToProgress = (progress: number) => {
+        if (!trigger) return;
+        jumpTween?.kill();
+
+        const scrollState = { value: trigger.scroll() };
+        const destination =
+          trigger.start + (trigger.end - trigger.start) * progress;
+
+        jumpTween = gsap.to(scrollState, {
+          value: destination,
+          duration: 1.05,
+          ease: "power3.inOut",
+          overwrite: true,
+          onUpdate: () => window.scrollTo(0, scrollState.value),
+        });
+      };
+
+      const progressForCard = (card: HTMLElement) => {
+        const maxDistance = distance();
+        return maxDistance > 0
+          ? gsap.utils.clamp(0, 1, card.offsetLeft / maxDistance)
+          : 0;
+      };
+
+      const handleGroupClick = (event: Event) => {
+        const link = event.currentTarget as HTMLAnchorElement;
+        const target = section.querySelector<HTMLElement>(link.hash);
+        if (!target) return;
+        event.preventDefault();
+        scrollToProgress(progressForCard(target));
+      };
+
+      groupLinks.forEach((link) =>
+        link.addEventListener("click", handleGroupClick),
+      );
+
+      const handleNextClick = (event: Event) => {
+        event.preventDefault();
+
+        if (activeGroup === 0 && automationCard) {
+          scrollToProgress(progressForCard(automationCard));
+          return;
+        }
+
+        if (trigger) {
+          scrollToProgress(1);
+          window.setTimeout(() => {
+            window.scrollTo({ top: trigger.end + 2, behavior: "smooth" });
+          }, 1080);
+        }
+      };
+
+      nextLink.addEventListener("click", handleNextClick);
+      void document.fonts.ready.then(() => ScrollTrigger.refresh());
+
+      return () => {
+        jumpTween?.kill();
+        nextLink.removeEventListener("click", handleNextClick);
+        groupLinks.forEach((link) =>
+          link.removeEventListener("click", handleGroupClick),
+        );
+        horizontalTween.kill();
+        gsap.set(track, { clearProps: "transform" });
+      };
     });
 
-    return () => {
-      window.cancelAnimationFrame(frame);
-      cleanups.forEach((cleanup) => cleanup());
-      activeTimelines.forEach((timeline) => timeline.kill());
-      const animatedRows = Array.from(activeTimelines.keys());
-      const animatedPanels = animatedRows
-        .map((row) =>
-          row.querySelector<HTMLElement>("[data-service-row-panel]"),
-        )
-        .filter((panel): panel is HTMLElement => Boolean(panel));
-      gsap.set([...animatedRows, ...animatedPanels], {
-        clearProps: "height,overflow,opacity,transform",
-      });
-    };
+    media.add(STACKED_QUERY, () => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const visibleEntry = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort(
+              (first, second) =>
+                second.intersectionRatio - first.intersectionRatio,
+            )[0];
+
+          if (visibleEntry) {
+            const card = visibleEntry.target as HTMLElement;
+            updateGroup(Number(card.dataset.serviceGroup ?? 0));
+          }
+        },
+        {
+          rootMargin: "-25% 0px -55% 0px",
+          threshold: [0, 0.25, 0.5, 0.75],
+        },
+      );
+
+      cards.forEach((card) => observer.observe(card));
+      return () => observer.disconnect();
+    });
+
+    return () => media.revert();
   }, []);
 
   return null;
