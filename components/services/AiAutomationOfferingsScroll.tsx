@@ -138,46 +138,44 @@ export function AiAutomationOfferingsScroll() {
 
     media.add(DESKTOP_QUERY, () => {
       let jumpTween: gsap.core.Tween | undefined;
+      const journeyState = { progress: 0 };
 
-      const distance = () =>
-        Math.max(0, track.scrollWidth - stage.clientWidth);
+      const scrollDistance = () =>
+        Math.max((cards.length - 1) * window.innerWidth * 0.72, 1);
 
-      const horizontalTween = gsap.to(track, {
-        x: () => -distance(),
+      const renderCards = (progress: number) => {
+        const cardPosition = progress * Math.max(cards.length - 1, 1);
+
+        cards.forEach((card, index) => {
+          const offset = index - cardPosition;
+          const distanceFromActive = Math.abs(offset);
+          const opacity = gsap.utils.clamp(0, 1, 1 - distanceFromActive);
+
+          gsap.set(card, {
+            autoAlpha: opacity,
+            x: offset < 0 ? Math.max(offset, -1) * 32 : Math.min(offset, 1) * 56,
+            zIndex: Math.round((1 - distanceFromActive) * 10),
+          });
+        });
+      };
+
+      renderCards(0);
+
+      const horizontalTween = gsap.to(journeyState, {
+        progress: 1,
         ease: "none",
         scrollTrigger: {
           trigger: section,
           start: "top-=60 top",
-          end: () => `+=${Math.max(distance() + window.innerWidth * 0.45, 1)}`,
+          end: () => `+=${scrollDistance()}`,
           pin: viewport,
           scrub: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            const translatedDistance = self.progress * distance();
-            const exitFadeDistance = Math.min(
-              Math.max(stage.clientWidth * 0.14, 160),
-              260,
-            );
-
-            cards.forEach((card) => {
-              const cardLeft = card.offsetLeft - translatedDistance;
-              const exitOpacity = gsap.utils.clamp(
-                0.16,
-                1,
-                (cardLeft + exitFadeDistance) / exitFadeDistance,
-              );
-
-              gsap.set(card, { opacity: exitOpacity });
-            });
-
-            const nearestCardIndex = cards.reduce(
-              (nearestIndex, card, index) =>
-                Math.abs(card.offsetLeft - translatedDistance) <
-                Math.abs(cards[nearestIndex].offsetLeft - translatedDistance)
-                  ? index
-                  : nearestIndex,
-              0,
+            renderCards(self.progress);
+            const nearestCardIndex = Math.round(
+              self.progress * Math.max(cards.length - 1, 1),
             );
 
             updateCard(nearestCardIndex);
@@ -205,9 +203,9 @@ export function AiAutomationOfferingsScroll() {
       };
 
       const progressForCard = (card: HTMLElement) => {
-        const maxDistance = distance();
-        return maxDistance > 0
-          ? gsap.utils.clamp(0, 1, card.offsetLeft / maxDistance)
+        const cardIndex = cards.indexOf(card);
+        return cards.length > 1
+          ? gsap.utils.clamp(0, 1, cardIndex / (cards.length - 1))
           : 0;
       };
 
@@ -250,8 +248,9 @@ export function AiAutomationOfferingsScroll() {
         );
         horizontalTween.kill();
         titleTween?.kill();
-        gsap.set(track, { clearProps: "transform" });
-        gsap.set(cards, { clearProps: "opacity" });
+        gsap.set(cards, {
+          clearProps: "opacity,visibility,transform,zIndex",
+        });
         gsap.set(currentTitle, { clearProps: "opacity,visibility,transform" });
       };
     });
