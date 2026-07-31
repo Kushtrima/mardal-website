@@ -181,7 +181,6 @@ export function AiAutomationOfferingsScroll() {
       };
 
       const renderServices = (progress: number) => {
-        const incomingOffset = Math.min(stage.clientWidth * 0.52, 640);
         const journeyPosition = progress * cards.length;
         const currentIndex = Math.min(
           Math.floor(journeyPosition),
@@ -193,19 +192,41 @@ export function AiAutomationOfferingsScroll() {
           journeyPosition - currentIndex,
         );
         const nextIndex = Math.min(currentIndex + 1, cards.length - 1);
-        const nextOpacity =
+        const followingIndex = Math.min(currentIndex + 2, cards.length - 1);
+        const transitionProgress =
           nextIndex === currentIndex
             ? 0
             : gsap.utils.clamp(0, 1, (localProgress - 0.7) / 0.3);
-        const easedNextOpacity = 1 - Math.pow(1 - nextOpacity, 3);
+        const easedTransition =
+          transitionProgress *
+          transitionProgress *
+          (3 - 2 * transitionProgress);
+        const cardWidth = cards[0]?.getBoundingClientRect().width ?? 0;
+        const cardGap = Math.max(stage.clientWidth - cardWidth * 2, 0);
+        const columnOffset = cardWidth + cardGap;
 
         cards.forEach((card, index) => {
           const isCurrent = index === currentIndex;
-          const isNext = index === nextIndex && nextOpacity > 0;
+          const isNext = index === nextIndex && nextIndex !== currentIndex;
+          const isFollowing =
+            index === followingIndex && followingIndex !== nextIndex;
+
           gsap.set(card, {
-            autoAlpha: isCurrent ? 1 : isNext ? easedNextOpacity : 0,
-            x: isNext ? (1 - easedNextOpacity) * incomingOffset : 0,
-            zIndex: isNext ? 2 : isCurrent ? 1 : 0,
+            autoAlpha: isCurrent
+              ? 1
+              : isNext
+                ? 1
+                : isFollowing
+                  ? easedTransition
+                  : 0,
+            x: isCurrent
+              ? 0
+              : isNext
+                ? (1 - easedTransition) * columnOffset
+                : isFollowing
+                  ? (2 - easedTransition) * columnOffset
+                  : 0,
+            zIndex: isFollowing ? 3 : isNext ? 2 : isCurrent ? 1 : 0,
           });
         });
 
@@ -213,6 +234,13 @@ export function AiAutomationOfferingsScroll() {
 
         if (nextIndex !== currentIndex) {
           gsap.set(wordGroups[nextIndex], {
+            autoAlpha: 1,
+            x: 0,
+          });
+        }
+
+        if (followingIndex !== nextIndex) {
+          gsap.set(wordGroups[followingIndex], {
             autoAlpha: 1,
             x: 0,
           });
@@ -227,10 +255,15 @@ export function AiAutomationOfferingsScroll() {
 
         const nextNumber = numbers[nextIndex];
         if (nextIndex !== currentIndex && nextNumber) {
-          gsap.set(nextNumber, { opacity: easedNextOpacity });
+          gsap.set(nextNumber, { opacity: 1 });
         }
 
-        updateCard(easedNextOpacity >= 0.5 ? nextIndex : currentIndex);
+        const followingNumber = numbers[followingIndex];
+        if (followingIndex !== nextIndex && followingNumber) {
+          gsap.set(followingNumber, { opacity: easedTransition });
+        }
+
+        updateCard(easedTransition >= 0.5 ? nextIndex : currentIndex);
       };
 
       renderServices(0);
