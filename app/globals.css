@@ -4138,6 +4138,8 @@ video {
 }
 
 .service-row {
+  --service-row-gutter: clamp(1.5rem, 3vw, 3rem);
+
   position: relative;
   overflow: clip;
   border-top: 1px solid var(--ink);
@@ -4189,7 +4191,17 @@ video {
 
 .service-row[open] .service-row__summary {
   min-height: clamp(8rem, 10vw, 10rem);
-  border-bottom: 1px solid rgb(255 255 255 / 62%);
+}
+
+.service-row[open] .service-row__summary::after,
+.service-row[open] .service-row__detail-block:not(:last-child)::after {
+  position: absolute;
+  right: var(--service-row-gutter);
+  bottom: 0;
+  left: 52%;
+  height: 1px;
+  background: rgb(255 255 255 / 62%);
+  content: "";
 }
 
 .service-row[open] .service-row__title {
@@ -4204,17 +4216,13 @@ video {
 }
 
 .service-row__detail-block {
+  position: relative;
   display: grid;
   min-width: 0;
   grid-template-columns: 52% 48%;
   gap: 0;
   align-items: start;
-  padding: clamp(1.5rem, 2.5vw, 2.75rem) clamp(1.5rem, 3vw, 3rem);
-  border-bottom: 1px solid rgb(255 255 255 / 62%);
-}
-
-.service-row__detail-block:last-child {
-  border-bottom: 0;
+  padding: clamp(1.5rem, 2.5vw, 2.75rem) var(--service-row-gutter);
 }
 
 .service-row__detail-block h4 {
@@ -4539,7 +4547,12 @@ video {
     min-height: 0;
     grid-template-columns: minmax(0, 1fr);
     padding: 2rem 1.5rem;
-    border-bottom: 1px solid rgb(255 255 255 / 62%);
+  }
+
+  .service-row[open] .service-row__summary::after,
+  .service-row[open] .service-row__detail-block:not(:last-child)::after {
+    right: 1.5rem;
+    left: 1.5rem;
   }
 
   .service-row[open] .service-row__title {
@@ -4556,10 +4569,6 @@ video {
   .service-row__detail-block {
     display: block;
     padding: 1.5rem;
-  }
-
-  .service-row__detail-block:last-child {
-    border-bottom: 0;
   }
 
   .service-row__detail-block h4 {
