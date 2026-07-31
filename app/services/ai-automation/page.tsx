@@ -26,6 +26,7 @@ export default function AiAutomationPage() {
         ...service,
         groupIndex,
         serviceIndex,
+        capabilities: `${service.items.join(". ")}.`,
       })),
   );
 
@@ -159,11 +160,9 @@ export default function AiAutomationPage() {
                         <div className="service-card__body">
                           <p className="service-card__copy">{service.copy}</p>
 
-                          <ul className="service-card__uses">
-                            {service.items.map((item) => (
-                              <li key={item}>{item}</li>
-                            ))}
-                          </ul>
+                          <p className="service-card__capabilities">
+                            {service.capabilities}
+                          </p>
 
                           <p className="service-card__example">
                             {service.example}

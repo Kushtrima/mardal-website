@@ -336,6 +336,11 @@ test("server-renders the AI & Automation service page", async () => {
   );
   assert.match(html, /class="service-card__number"[^>]*>05</);
   assert.doesNotMatch(html, />Overview<|>Key uses<|>In practice</);
+  assert.doesNotMatch(html, /class="service-card__uses"/);
+  assert.match(
+    html,
+    /Summarize business performance\. Identify trends and important changes\. Analyze customer feedback\. Prepare clear management reports\./,
+  );
   assert.match(
     html,
     /The assistant finds the relevant information and responds directly/,
