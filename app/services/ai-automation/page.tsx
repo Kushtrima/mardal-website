@@ -20,43 +20,13 @@ export const metadata: Metadata = {
  * and the two core service areas.
  */
 export default function AiAutomationPage() {
-  const serviceFrames = aiAutomation.chapters.flatMap(
+  const serviceCards = aiAutomation.chapters.flatMap(
     (chapter, groupIndex) =>
-      chapter.services.flatMap((service) => [
-        {
-          id: service.id,
-          groupIndex,
-          serviceTitle: service.title,
-          frameIndex: 0,
-          label: "Overview",
-          kind: "overview" as const,
-          copy: service.copy,
-          items: service.items,
-          example: service.example,
-        },
-        {
-          id: `${service.id}-key-uses`,
-          groupIndex,
-          serviceTitle: service.title,
-          frameIndex: 1,
-          label: "Key uses",
-          kind: "uses" as const,
-          copy: service.copy,
-          items: service.items,
-          example: service.example,
-        },
-        {
-          id: `${service.id}-in-practice`,
-          groupIndex,
-          serviceTitle: service.title,
-          frameIndex: 2,
-          label: "In practice",
-          kind: "example" as const,
-          copy: service.copy,
-          items: service.items,
-          example: service.example,
-        },
-      ]),
+      chapter.services.map((service, serviceIndex) => ({
+        ...service,
+        groupIndex,
+        serviceIndex,
+      })),
   );
 
   return (
@@ -168,53 +138,43 @@ export default function AiAutomationPage() {
                   data-service-current-title
                   aria-live="polite"
                 >
-                  {serviceFrames[0].serviceTitle}
+                  {serviceCards[0].title}
                 </h3>
 
                 <div className="service-journey__window" data-service-stage>
                   <div className="service-journey__track" data-service-track>
-                    {serviceFrames.map((frame) => (
+                    {serviceCards.map((service) => (
                       <article
                         className="service-card"
-                        id={frame.id}
-                        key={frame.id}
+                        id={service.id}
+                        key={service.id}
                         data-service-card
-                        data-service-group={frame.groupIndex}
-                        data-service-title={frame.serviceTitle}
-                        data-service-frame={frame.frameIndex}
-                        aria-label={`${frame.serviceTitle}: ${frame.label}`}
+                        data-service-group={service.groupIndex}
+                        data-service-title={service.title}
                       >
-                        {frame.frameIndex === 0 && (
-                          <h4 className="service-card__mobile-title">
-                            {frame.serviceTitle}
-                          </h4>
-                        )}
+                        <h4 className="service-card__mobile-title">
+                          {service.title}
+                        </h4>
 
-                        <p className="service-card__label">{frame.label}</p>
+                        <div className="service-card__body">
+                          <p className="service-card__copy">{service.copy}</p>
 
-                        {frame.kind === "overview" && (
-                          <p className="service-card__copy">{frame.copy}</p>
-                        )}
-
-                        {frame.kind === "uses" && (
                           <ul className="service-card__uses">
-                            {frame.items.map((item) => (
+                            {service.items.map((item) => (
                               <li key={item}>{item}</li>
                             ))}
                           </ul>
-                        )}
 
-                        {frame.kind === "example" && (
                           <p className="service-card__example">
-                            {frame.example}
+                            {service.example}
                           </p>
-                        )}
+                        </div>
 
                         <span
                           className="service-card__number"
                           aria-hidden="true"
                         >
-                          {String(frame.frameIndex + 1).padStart(2, "0")}
+                          {String(service.serviceIndex + 1).padStart(2, "0")}
                         </span>
                       </article>
                     ))}

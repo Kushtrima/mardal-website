@@ -323,7 +323,7 @@ test("server-renders the AI & Automation service page", async () => {
   assert.match(html, /AI &amp; Automation Services/);
   assert.match(html, /AI Solutions/);
   assert.match(html, /data-service-group-link="1"[^>]*>Automation</);
-  assert.equal((html.match(/class="service-card"/g) ?? []).length, 27);
+  assert.equal((html.match(/class="service-card"/g) ?? []).length, 9);
   assert.equal(
     (html.match(/data-service-group-link=/g) ?? []).length,
     2,
@@ -332,14 +332,10 @@ test("server-renders the AI & Automation service page", async () => {
   assert.match(html, /class="service-card__number"[^>]*>01</);
   assert.equal(
     (html.match(/class="service-card__number"[^>]*>01</g) ?? []).length,
-    9,
+    2,
   );
-  assert.equal(
-    (html.match(/class="service-card__number"[^>]*>03</g) ?? []).length,
-    9,
-  );
-  assert.ok((html.match(/Key uses/g) ?? []).length >= 9);
-  assert.ok((html.match(/In practice/g) ?? []).length >= 9);
+  assert.match(html, /class="service-card__number"[^>]*>05</);
+  assert.doesNotMatch(html, />Overview<|>Key uses<|>In practice</);
   assert.match(
     html,
     /The assistant finds the relevant information and responds directly/,
