@@ -155,21 +155,27 @@ export function AiAutomationOfferingsScroll() {
         const fadeProgress = gsap.utils.clamp(
           0,
           1,
-          (progress - 0.06) / 0.64,
+          (progress - 0.04) / 0.72,
         );
-        const groupPosition = fadeProgress * groupCount;
 
         words.forEach((word, index) => {
           const groupIndex = Math.floor(index / groupSize);
-          const opacity = gsap.utils.clamp(
+          const groupStart =
+            groupCount === 1
+              ? 0
+              : (groupIndex / (groupCount - 1)) * 0.78;
+          const groupProgress = gsap.utils.clamp(
             0,
             1,
-            groupIndex + 1 - groupPosition,
+            (fadeProgress - groupStart) / 0.22,
           );
+          const easedProgress =
+            groupProgress * groupProgress * (3 - 2 * groupProgress);
+          const opacity = 1 - easedProgress;
 
           gsap.set(word, {
             autoAlpha: opacity,
-            x: (1 - opacity) * -18,
+            x: easedProgress * -14,
           });
         });
       };
@@ -189,13 +195,15 @@ export function AiAutomationOfferingsScroll() {
         const nextOpacity =
           nextIndex === currentIndex
             ? 0
-            : gsap.utils.clamp(0, 1, (localProgress - 0.72) / 0.28);
+            : gsap.utils.clamp(0, 1, (localProgress - 0.7) / 0.3);
+        const easedNextOpacity = 1 - Math.pow(1 - nextOpacity, 3);
 
         cards.forEach((card, index) => {
           const isCurrent = index === currentIndex;
           const isNext = index === nextIndex && nextOpacity > 0;
           gsap.set(card, {
-            autoAlpha: isCurrent ? 1 : isNext ? nextOpacity : 0,
+            autoAlpha: isCurrent ? 1 : isNext ? easedNextOpacity : 0,
+            x: isNext ? (1 - easedNextOpacity) * 64 : 0,
             zIndex: isNext ? 2 : isCurrent ? 1 : 0,
           });
         });
@@ -218,10 +226,10 @@ export function AiAutomationOfferingsScroll() {
 
         const nextNumber = numbers[nextIndex];
         if (nextIndex !== currentIndex && nextNumber) {
-          gsap.set(nextNumber, { opacity: nextOpacity });
+          gsap.set(nextNumber, { opacity: easedNextOpacity });
         }
 
-        updateCard(nextOpacity >= 0.5 ? nextIndex : currentIndex);
+        updateCard(easedNextOpacity >= 0.5 ? nextIndex : currentIndex);
       };
 
       renderServices(0);
@@ -309,7 +317,7 @@ export function AiAutomationOfferingsScroll() {
         horizontalTween.kill();
         titleTween?.kill();
         gsap.set(cards, {
-          clearProps: "opacity,visibility,zIndex",
+          clearProps: "opacity,visibility,transform,zIndex",
         });
         gsap.set(wordGroups.flat(), {
           clearProps: "opacity,visibility,transform",
