@@ -4231,8 +4231,8 @@ video {
 .service-journey__next {
   position: absolute;
   z-index: 3;
-  right: 0;
-  bottom: clamp(2.75rem, 5vh, 4rem);
+  right: clamp(1rem, 2vw, 2rem);
+  bottom: clamp(5.5rem, 10vh, 7rem);
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
