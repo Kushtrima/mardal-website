@@ -20,13 +20,43 @@ export const metadata: Metadata = {
  * and the two core service areas.
  */
 export default function AiAutomationPage() {
-  const serviceCards = aiAutomation.chapters.flatMap(
+  const serviceFrames = aiAutomation.chapters.flatMap(
     (chapter, groupIndex) =>
-      chapter.services.map((service, serviceIndex) => ({
-        ...service,
-        groupIndex,
-        serviceIndex,
-      })),
+      chapter.services.flatMap((service) => [
+        {
+          id: service.id,
+          groupIndex,
+          serviceTitle: service.title,
+          frameIndex: 0,
+          label: "Overview",
+          kind: "overview" as const,
+          copy: service.copy,
+          items: service.items,
+          example: service.example,
+        },
+        {
+          id: `${service.id}-key-uses`,
+          groupIndex,
+          serviceTitle: service.title,
+          frameIndex: 1,
+          label: "Key uses",
+          kind: "uses" as const,
+          copy: service.copy,
+          items: service.items,
+          example: service.example,
+        },
+        {
+          id: `${service.id}-in-practice`,
+          groupIndex,
+          serviceTitle: service.title,
+          frameIndex: 2,
+          label: "In practice",
+          kind: "example" as const,
+          copy: service.copy,
+          items: service.items,
+          example: service.example,
+        },
+      ]),
   );
 
   return (
@@ -138,87 +168,57 @@ export default function AiAutomationPage() {
                   data-service-current-title
                   aria-live="polite"
                 >
-                  {serviceCards[0].title}
+                  {serviceFrames[0].serviceTitle}
                 </h3>
 
                 <div className="service-journey__window" data-service-stage>
                   <div className="service-journey__track" data-service-track>
-                    {serviceCards.map((service) => (
+                    {serviceFrames.map((frame) => (
                       <article
                         className="service-card"
-                        id={service.id}
-                        key={service.id}
+                        id={frame.id}
+                        key={frame.id}
                         data-service-card
-                        data-service-group={service.groupIndex}
-                        data-service-title={service.title}
+                        data-service-group={frame.groupIndex}
+                        data-service-title={frame.serviceTitle}
+                        data-service-frame={frame.frameIndex}
+                        aria-label={`${frame.serviceTitle}: ${frame.label}`}
                       >
-                        <h4 className="service-card__mobile-title">
-                          {service.title}
-                        </h4>
+                        {frame.frameIndex === 0 && (
+                          <h4 className="service-card__mobile-title">
+                            {frame.serviceTitle}
+                          </h4>
+                        )}
 
-                        <p className="service-card__copy">{service.copy}</p>
+                        <p className="service-card__label">{frame.label}</p>
 
-                        <div className="service-card__mobile-details">
-                          <div>
-                            <p className="service-detail__label">Key uses</p>
-                            <ul className="service-detail__uses">
-                              {service.items.map((item) => (
-                                <li key={item}>{item}</li>
-                              ))}
-                            </ul>
-                          </div>
+                        {frame.kind === "overview" && (
+                          <p className="service-card__copy">{frame.copy}</p>
+                        )}
 
-                          <div>
-                            <p className="service-detail__label">
-                              In practice
-                            </p>
-                            <p className="service-detail__example">
-                              {service.example}
-                            </p>
-                          </div>
-                        </div>
+                        {frame.kind === "uses" && (
+                          <ul className="service-card__uses">
+                            {frame.items.map((item) => (
+                              <li key={item}>{item}</li>
+                            ))}
+                          </ul>
+                        )}
+
+                        {frame.kind === "example" && (
+                          <p className="service-card__example">
+                            {frame.example}
+                          </p>
+                        )}
 
                         <span
                           className="service-card__number"
                           aria-hidden="true"
                         >
-                          {String(service.serviceIndex + 1).padStart(2, "0")}
+                          {String(frame.frameIndex + 1).padStart(2, "0")}
                         </span>
                       </article>
                     ))}
                   </div>
-                </div>
-
-                <div
-                  className="service-journey__details"
-                  data-service-details
-                >
-                  {serviceCards.map((service, index) => (
-                    <div
-                      className={`service-journey__detail${
-                        index === 0 ? " is-active" : ""
-                      }`}
-                      key={service.id}
-                      data-service-detail={service.id}
-                      aria-hidden={index === 0 ? undefined : "true"}
-                    >
-                      <div>
-                        <p className="service-detail__label">Key uses</p>
-                        <ul className="service-detail__uses">
-                          {service.items.map((item) => (
-                            <li key={item}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div>
-                        <p className="service-detail__label">In practice</p>
-                        <p className="service-detail__example">
-                          {service.example}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
                 </div>
               </div>
 
