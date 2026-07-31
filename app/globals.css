@@ -4128,9 +4128,26 @@ video {
 }
 
 .service-journey__stage {
+  display: grid;
   min-width: 0;
   height: 100%;
   grid-column: 2;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.service-journey__current-title {
+  max-width: 13ch;
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: clamp(3.5rem, 5vw, 5.75rem);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 0.92;
+}
+
+.service-journey__window {
+  height: clamp(17rem, 35vh, 22rem);
+  margin-top: clamp(3rem, 6vh, 5rem);
   overflow: hidden;
 }
 
@@ -4147,72 +4164,21 @@ video {
   width: clamp(27rem, 34vw, 36rem);
   height: 100%;
   flex: 0 0 auto;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   align-content: start;
-  padding-bottom: clamp(2.5rem, 5vh, 4rem);
   scroll-margin-inline: 2rem;
 }
 
-.service-card__title {
-  max-width: 10ch;
+.service-card__mobile-title {
+  display: none;
   margin: 0;
-  font-family: var(--type-display);
-  font-size: clamp(3.25rem, 5vw, 5.75rem);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
-  line-height: 0.9;
 }
 
-.service-card__content {
-  display: grid;
-  max-width: 31rem;
-  align-content: start;
-  gap: clamp(1.5rem, 3vh, 2.5rem);
-  margin-top: clamp(2.75rem, 6vh, 5rem);
-}
-
-.service-card__copy,
-.service-card__example {
+.service-card__copy {
+  max-width: 31ch;
   margin: 0;
-  font-size: clamp(1rem, 1.25vw, 1.25rem);
-  line-height: 1.35;
-}
-
-.service-card__uses {
-  display: grid;
-  grid-template-columns: 6rem minmax(0, 1fr);
-  gap: 1.25rem;
-  padding-block: 1.25rem;
-  border-block: 1px solid rgb(8 8 10 / 18%);
-}
-
-.service-card__uses > p,
-.service-card__example > span {
-  margin: 0;
-  color: rgb(8 8 10 / 48%);
-  font-size: 0.6875rem;
-  letter-spacing: var(--tracking-wide);
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
-.service-card__uses ul {
-  display: grid;
-  gap: 0.35rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.service-card__uses li {
-  font-size: clamp(0.875rem, 1vw, 1rem);
-  line-height: 1.35;
-}
-
-.service-card__example {
-  display: grid;
-  grid-template-columns: 6rem minmax(0, 1fr);
-  gap: 1.25rem;
+  font-size: clamp(1.125rem, 1.5vw, 1.5rem);
+  line-height: 1.18;
 }
 
 .service-card__number {
@@ -4359,7 +4325,18 @@ video {
   }
 
   .service-journey__stage {
+    display: block;
     height: auto;
+    overflow: visible;
+  }
+
+  .service-journey__current-title {
+    display: none;
+  }
+
+  .service-journey__window {
+    height: auto;
+    margin-top: 0;
     overflow: visible;
   }
 
@@ -4374,32 +4351,24 @@ video {
   .service-card {
     width: auto;
     height: auto;
-    min-height: 36rem;
+    min-height: 28rem;
     padding-block: 3.5rem;
     border-top: 1px solid var(--ink);
   }
 
-  .service-card__title {
+  .service-card__mobile-title {
+    display: block;
+    max-width: 10ch;
+    margin: 0 0 2.5rem;
+    font-family: var(--type-display);
     font-size: clamp(3.5rem, 8vw, 5.5rem);
-  }
-
-  .service-card__content {
-    max-width: none;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2rem 3rem;
+    font-weight: var(--weight-heading-xl);
+    letter-spacing: var(--tracking-tight);
+    line-height: 0.94;
   }
 
   .service-card__copy {
-    grid-column: 1;
-  }
-
-  .service-card__uses {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-  }
-
-  .service-card__example {
-    grid-column: 1;
+    max-width: 36ch;
   }
 
   .service-card__number {
@@ -4540,29 +4509,9 @@ video {
     padding-block: 3rem 4rem;
   }
 
-  .service-card__title {
+  .service-card__mobile-title {
     max-width: 9ch;
     font-size: clamp(3rem, 14vw, 4.75rem);
-  }
-
-  .service-card__content {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.75rem;
-    margin-top: 2.5rem;
-  }
-
-  .service-card__copy,
-  .service-card__uses,
-  .service-card__example {
-    grid-column: 1;
-    grid-row: auto;
-  }
-
-  .service-card__uses,
-  .service-card__example {
-    grid-template-columns: 5rem minmax(0, 1fr);
-    gap: 1rem;
   }
 
   .service-card__number {

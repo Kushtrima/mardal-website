@@ -22,9 +22,10 @@ export const metadata: Metadata = {
 export default function AiAutomationPage() {
   const serviceCards = aiAutomation.chapters.flatMap(
     (chapter, groupIndex) =>
-      chapter.services.map((service) => ({
+      chapter.services.map((service, serviceIndex) => ({
         ...service,
         groupIndex,
+        serviceIndex,
       })),
   );
 
@@ -131,41 +132,41 @@ export default function AiAutomationPage() {
                 ))}
               </nav>
 
-              <div className="service-journey__stage" data-service-stage>
-                <div className="service-journey__track" data-service-track>
-                  {serviceCards.map((service, index) => (
-                    <article
-                      className="service-card"
-                      id={service.id}
-                      key={service.id}
-                      data-service-card
-                      data-service-group={service.groupIndex}
-                    >
-                      <h3 className="service-card__title">{service.title}</h3>
+              <div className="service-journey__stage">
+                <h3
+                  className="service-journey__current-title"
+                  data-service-current-title
+                  aria-live="polite"
+                >
+                  {serviceCards[0].title}
+                </h3>
 
-                      <div className="service-card__content">
+                <div className="service-journey__window" data-service-stage>
+                  <div className="service-journey__track" data-service-track>
+                    {serviceCards.map((service) => (
+                      <article
+                        className="service-card"
+                        id={service.id}
+                        key={service.id}
+                        data-service-card
+                        data-service-group={service.groupIndex}
+                        data-service-title={service.title}
+                      >
+                        <h4 className="service-card__mobile-title">
+                          {service.title}
+                        </h4>
+
                         <p className="service-card__copy">{service.copy}</p>
 
-                        <div className="service-card__uses">
-                          <p>Key uses</p>
-                          <ul>
-                            {service.items.map((item) => (
-                              <li key={item}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <p className="service-card__example">
-                          <span>In practice</span>
-                          {service.example}
-                        </p>
-                      </div>
-
-                      <span className="service-card__number" aria-hidden="true">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                    </article>
-                  ))}
+                        <span
+                          className="service-card__number"
+                          aria-hidden="true"
+                        >
+                          {String(service.serviceIndex + 1).padStart(2, "0")}
+                        </span>
+                      </article>
+                    ))}
+                  </div>
                 </div>
               </div>
 

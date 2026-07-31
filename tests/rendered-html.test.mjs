@@ -330,7 +330,11 @@ test("server-renders the AI & Automation service page", async () => {
   );
   assert.match(html, /data-service-track/);
   assert.match(html, /class="service-card__number"[^>]*>01</);
-  assert.match(html, /class="service-card__number"[^>]*>09</);
+  assert.equal(
+    (html.match(/class="service-card__number"[^>]*>01</g) ?? []).length,
+    2,
+  );
+  assert.match(html, /class="service-card__number"[^>]*>05</);
   assert.doesNotMatch(html, /<details|service-row__action|09 services/);
 
   for (const title of [

@@ -43,6 +43,9 @@ export function AiAutomationOfferingsScroll() {
     const nextLabel = nextLink?.querySelector<HTMLElement>(
       "[data-service-next-label]",
     );
+    const currentTitle = section?.querySelector<HTMLElement>(
+      "[data-service-current-title]",
+    );
 
     if (
       !section ||
@@ -51,7 +54,8 @@ export function AiAutomationOfferingsScroll() {
       !track ||
       cards.length === 0 ||
       !nextLink ||
-      !nextLabel
+      !nextLabel ||
+      !currentTitle
     ) {
       return;
     }
@@ -61,6 +65,8 @@ export function AiAutomationOfferingsScroll() {
     );
     const media = gsap.matchMedia();
     let activeGroup = -1;
+    let activeCard = -1;
+    let titleTween: gsap.core.Tween | undefined;
 
     const updateGroup = (groupIndex: number) => {
       if (activeGroup === groupIndex && nextLabel.textContent) return;
@@ -85,7 +91,48 @@ export function AiAutomationOfferingsScroll() {
       }
     };
 
-    updateGroup(0);
+    const updateCard = (cardIndex: number, immediate = false) => {
+      if (activeCard === cardIndex) return;
+
+      const card = cards[cardIndex];
+      if (!card) return;
+
+      activeCard = cardIndex;
+      updateGroup(Number(card.dataset.serviceGroup ?? 0));
+
+      const nextTitle = card.dataset.serviceTitle ?? "";
+      titleTween?.kill();
+
+      if (immediate) {
+        currentTitle.textContent = nextTitle;
+        gsap.set(currentTitle, { clearProps: "opacity,transform" });
+        return;
+      }
+
+      titleTween = gsap.to(currentTitle, {
+        autoAlpha: 0,
+        y: -10,
+        duration: 0.2,
+        ease: "power2.in",
+        overwrite: true,
+        onComplete: () => {
+          currentTitle.textContent = nextTitle;
+          titleTween = gsap.fromTo(
+            currentTitle,
+            { autoAlpha: 0, y: 12 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.36,
+              ease: "power3.out",
+              overwrite: true,
+            },
+          );
+        },
+      });
+    };
+
+    updateCard(0, true);
 
     media.add(DESKTOP_QUERY, () => {
       let jumpTween: gsap.core.Tween | undefined;
@@ -124,13 +171,17 @@ export function AiAutomationOfferingsScroll() {
             ease: "power1.inOut",
           },
           onUpdate: (self) => {
-            const automationStart = automationCard
-              ? Math.max(
-                  0,
-                  automationCard.offsetLeft - stage.clientWidth * 0.22,
-                )
-              : Number.POSITIVE_INFINITY;
-            updateGroup(self.progress * distance() >= automationStart ? 1 : 0);
+            const translatedDistance = self.progress * distance();
+            const nearestCardIndex = cards.reduce(
+              (nearestIndex, card, index) =>
+                Math.abs(card.offsetLeft - translatedDistance) <
+                Math.abs(cards[nearestIndex].offsetLeft - translatedDistance)
+                  ? index
+                  : nearestIndex,
+              0,
+            );
+
+            updateCard(nearestCardIndex);
           },
         },
       });
@@ -199,7 +250,9 @@ export function AiAutomationOfferingsScroll() {
           link.removeEventListener("click", handleGroupClick),
         );
         horizontalTween.kill();
+        titleTween?.kill();
         gsap.set(track, { clearProps: "transform" });
+        gsap.set(currentTitle, { clearProps: "opacity,visibility,transform" });
       };
     });
 
@@ -215,7 +268,7 @@ export function AiAutomationOfferingsScroll() {
 
           if (visibleEntry) {
             const card = visibleEntry.target as HTMLElement;
-            updateGroup(Number(card.dataset.serviceGroup ?? 0));
+            updateCard(cards.indexOf(card), true);
           }
         },
         {
