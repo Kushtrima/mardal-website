@@ -4067,7 +4067,7 @@ video {
   align-self: stretch;
   margin: 0;
   padding:
-    calc(clamp(2rem, 4vh, 2.5rem) + clamp(2.25rem, 5vh, 3rem))
+    calc(clamp(2rem, 4vh, 2.5rem) + clamp(2.25rem, 5vh, 3rem) + 40px)
     clamp(2rem, 4vw, 4.5rem)
     clamp(6rem, 15vh, 8rem)
     0;
