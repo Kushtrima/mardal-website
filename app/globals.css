@@ -4452,7 +4452,7 @@ video {
     max-width: 10ch;
     margin: 0 0 clamp(5rem, 22vw, 7.5rem);
     padding: 0;
-    font-size: clamp(2.75rem, 12vw, 3.75rem);
+    font-size: clamp(2.25rem, 10vw, 3rem);
     line-height: 1.02;
   }
 
@@ -4460,27 +4460,27 @@ video {
     display: grid;
     gap: clamp(4.5rem, 21vw, 7rem);
     grid-template-columns: minmax(0, 1fr);
+    padding-left: clamp(1.25rem, 5vw, 2rem);
+    border-left: 1px solid rgb(8 8 10 / 72%);
   }
 
   .service-overview__copy {
     grid-column: 1 !important;
     grid-row: auto;
-    width: calc(100% - clamp(1.75rem, 8vw, 2.75rem));
+    width: 100%;
     max-width: none;
-    justify-self: start;
+    justify-self: stretch;
     margin: 0;
-    padding: 0 clamp(1.25rem, 5vw, 2rem) 0 0 !important;
+    padding: 0 !important;
     border: 0;
-    border-right: 1px solid rgb(8 8 10 / 72%);
     font-size: 1.125rem;
     line-height: 1.4;
   }
 
   .service-overview__copy:nth-child(even) {
-    justify-self: end;
-    padding: 0 0 0 clamp(1.25rem, 5vw, 2rem) !important;
-    border-right: 0;
-    border-left: 1px solid rgb(8 8 10 / 72%);
+    justify-self: stretch;
+    padding: 0 !important;
+    border: 0;
   }
 
   .service-offerings {
