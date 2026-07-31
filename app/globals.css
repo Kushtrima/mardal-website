@@ -4424,11 +4424,11 @@ video {
   }
 
   .service-overview {
-    padding-block: clamp(5rem, 20vw, 7rem);
+    padding-block: clamp(5rem, 20vw, 7rem) clamp(8rem, 30vw, 11rem);
     background: linear-gradient(
       180deg,
       var(--canvas) 0,
-      #efedf8 8rem,
+      var(--canvas) calc(100% - 10rem),
       #efedf8 100%
     );
   }
@@ -4442,27 +4442,38 @@ video {
   .service-overview__title {
     grid-column: 1;
     grid-row: auto;
-    max-width: 11ch;
-    margin: 0 0 clamp(3rem, 12vw, 4.5rem);
+    max-width: 10ch;
+    margin: 0 0 clamp(5rem, 22vw, 7.5rem);
     padding: 0;
-    font-size: clamp(2.5rem, 11.5vw, 3.5rem);
+    font-size: clamp(2.75rem, 12vw, 3.75rem);
+    line-height: 1.02;
   }
 
   .service-overview__columns {
     display: grid;
-    gap: 2rem;
+    gap: clamp(4.5rem, 21vw, 7rem);
     grid-template-columns: minmax(0, 1fr);
   }
 
   .service-overview__copy {
     grid-column: 1 !important;
     grid-row: auto;
-    max-width: 36ch;
+    width: calc(100% - clamp(1.75rem, 8vw, 2.75rem));
+    max-width: none;
+    justify-self: start;
     margin: 0;
-    padding: 1.5rem 0 0 !important;
-    border-top: 1px solid var(--line);
+    padding: 0 clamp(1.25rem, 5vw, 2rem) 0 0 !important;
+    border: 0;
+    border-right: 1px solid rgb(8 8 10 / 72%);
+    font-size: clamp(1.25rem, 5.6vw, 1.5rem);
+    line-height: 1.33;
+  }
+
+  .service-overview__copy:nth-child(even) {
+    justify-self: end;
+    padding: 0 0 0 clamp(1.25rem, 5vw, 2rem) !important;
     border-right: 0;
-    line-height: 1.4;
+    border-left: 1px solid rgb(8 8 10 / 72%);
   }
 
   .service-offerings {
