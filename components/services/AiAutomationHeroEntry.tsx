@@ -2,6 +2,7 @@
 
 import { useLayoutEffect } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /**
  * A single route-entry sequence for the AI & Automation hero.
@@ -11,7 +12,10 @@ import gsap from "gsap";
  */
 export function AiAutomationHeroEntry() {
   useLayoutEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
     const hero = document.querySelector<HTMLElement>("[data-service-hero]");
+    const page = document.querySelector<HTMLElement>("[data-service-page]");
     if (!hero) return;
 
     const title = hero.querySelector<HTMLElement>(
@@ -32,6 +36,10 @@ export function AiAutomationHeroEntry() {
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       gsap.set(targets, { clearProps: "all" });
+      if (page) {
+        page.style.setProperty("--service-surface", "#050505");
+        page.style.setProperty("--service-ink", "#f5f5f5");
+      }
       return;
     }
 
@@ -94,6 +102,20 @@ export function AiAutomationHeroEntry() {
           { autoAlpha: 1, duration: 0.66, y: 0 },
           0.72,
         );
+      }
+
+      if (page) {
+        gsap.to(page, {
+          "--service-surface": "#050505",
+          "--service-ink": "#f5f5f5",
+          ease: "none",
+          scrollTrigger: {
+            trigger: hero,
+            start: "bottom bottom",
+            end: "bottom 35%",
+            scrub: true,
+          },
+        });
       }
     }, hero);
 

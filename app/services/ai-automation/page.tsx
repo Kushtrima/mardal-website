@@ -36,7 +36,7 @@ export default function AiAutomationPage() {
       <AiAutomationHeroEntry />
       <AiAutomationOfferingsScroll />
 
-      <main className="service-page" id="main-content">
+      <main className="service-page" id="main-content" data-service-page>
         <SiteHeader />
 
         <section

@@ -3910,17 +3910,22 @@ video {
    way forward. The pattern has no panel or coloured ground; the page itself is
    the field. */
 .service-page {
-  background: var(--canvas);
+  --service-surface: var(--canvas);
+  --service-ink: var(--ink);
+
+  color: var(--service-ink);
+  background: var(--service-surface);
 }
 
 /* ScrollTrigger adds this wrapper around the pinned services section. Keep
    only that generated space on the service tint, rather than tinting the
    entire page behind the header and the hero transitions. */
 .service-page > .pin-spacer {
-  background: #efedf8;
+  background: var(--service-surface);
 }
 
 .service-hero {
+  color: var(--ink);
   background: var(--canvas);
 }
 
@@ -4027,12 +4032,8 @@ video {
 }
 
 .service-overview {
-  background: linear-gradient(
-    180deg,
-    var(--canvas) 0,
-    #efedf8 12rem,
-    #efedf8 100%
-  );
+  color: var(--service-ink);
+  background: var(--service-surface);
 }
 
 .service-overview__inner {
@@ -4065,7 +4066,8 @@ video {
   align-self: stretch;
   margin: clamp(2rem, 4vh, 2.5rem) 0 clamp(6rem, 15vh, 8rem);
   padding: clamp(2.25rem, 5vh, 3rem) clamp(2rem, 4vw, 4.5rem) 0 0;
-  border-right: 1px solid rgb(8 8 10 / 72%);
+  border-right: 1px solid
+    color-mix(in srgb, var(--service-ink) 72%, transparent);
   font-size: var(--text-body);
   line-height: 1.3;
 }
@@ -4085,7 +4087,8 @@ video {
 }
 
 .service-offerings {
-  background: var(--canvas);
+  color: var(--service-ink);
+  background: var(--service-surface);
 }
 
 .service-journey {
@@ -4115,7 +4118,7 @@ video {
 }
 
 .service-journey__nav-link {
-  color: rgb(8 8 10 / 38%);
+  color: color-mix(in srgb, var(--service-ink) 38%, transparent);
   font-size: clamp(1rem, 1.3vw, 1.25rem);
   line-height: 1.2;
   transition: color 320ms var(--ease-standard);
@@ -4123,7 +4126,7 @@ video {
 
 .service-journey__nav-link.is-active,
 .service-journey__nav-link[aria-current="true"] {
-  color: var(--ink);
+  color: var(--service-ink);
 }
 
 .service-journey__stage {
@@ -4185,7 +4188,7 @@ video {
 .service-card__example {
   max-width: 35ch;
   margin: 0;
-  color: var(--ink);
+  color: var(--service-ink);
   font-size: clamp(1rem, 1.2vw, 1.1875rem);
   font-weight: var(--weight-body);
   line-height: 1.3;
@@ -4220,7 +4223,8 @@ video {
 
 .service-cta {
   padding-block: 60px;
-  background: var(--canvas);
+  color: var(--service-ink);
+  background: var(--service-surface);
 }
 
 .service-cta__inner {
@@ -4331,7 +4335,7 @@ video {
     gap: 1.5rem;
     margin-bottom: 3rem;
     padding-block: 1rem;
-    background: var(--canvas);
+    background: var(--service-surface);
   }
 
   .service-journey__stage {
@@ -4364,7 +4368,8 @@ video {
     height: auto;
     min-height: 28rem;
     padding-block: 3.5rem;
-    border-top: 1px solid var(--ink);
+    border-top: 1px solid
+      color-mix(in srgb, var(--service-ink) 72%, transparent);
   }
 
   .service-card__mobile-title {
@@ -4455,12 +4460,7 @@ video {
 
   .service-overview {
     padding-block: clamp(5rem, 20vw, 7rem) clamp(8rem, 30vw, 11rem);
-    background: linear-gradient(
-      180deg,
-      var(--canvas) 0,
-      var(--canvas) calc(100% - 10rem),
-      #efedf8 100%
-    );
+    background: var(--service-surface);
   }
 
   .service-overview__inner {
@@ -4484,7 +4484,8 @@ video {
     gap: clamp(3rem, 14vw, 5rem);
     grid-template-columns: minmax(0, 1fr);
     padding-left: clamp(1.25rem, 5vw, 2rem);
-    border-left: 1px solid rgb(8 8 10 / 72%);
+    border-left: 1px solid
+      color-mix(in srgb, var(--service-ink) 72%, transparent);
   }
 
   .service-overview__copy {
@@ -4542,7 +4543,7 @@ video {
 
   .service-cta {
     padding-block: clamp(5rem, 20vw, 7rem);
-    background: var(--canvas);
+    background: var(--service-surface);
   }
 
   .service-cta__title {
