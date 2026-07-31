@@ -4386,7 +4386,7 @@ video {
   .service-hero__inner {
     display: grid;
     height: calc(100svh - 4.45rem);
-    min-height: 35rem;
+    min-height: 0;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: auto minmax(12rem, 1fr) auto;
     gap: 0.75rem 1rem;
@@ -4401,7 +4401,7 @@ video {
 
   .service-hero__title {
     max-width: 11ch;
-    font-size: clamp(2rem, 9.5vw, 3.5rem);
+    font-size: clamp(1.5rem, 7.2vw, 3.25rem);
   }
 
   .service-hero__pattern {
@@ -4417,6 +4417,7 @@ video {
     grid-column: 1;
     grid-row: 3;
     max-width: 11ch;
+    align-self: end;
     margin: 0;
     font-size: clamp(1.625rem, 7vw, 2rem);
   }
@@ -4424,6 +4425,7 @@ video {
   .service-hero__cta {
     grid-column: 2;
     grid-row: 3;
+    align-self: end;
     margin: 0;
     font-size: 1.0625rem;
   }
