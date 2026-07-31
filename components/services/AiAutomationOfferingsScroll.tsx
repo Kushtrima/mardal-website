@@ -28,6 +28,13 @@ export function AiAutomationOfferingsScroll() {
         return;
       }
 
+      /* Phones use the same content as a natural editorial document. The
+         pinned, gesture-locked stack belongs to the wider desktop layout and
+         would otherwise fight native touch scrolling. */
+      if (!window.matchMedia("(min-width: 48.0625rem)").matches) {
+        return;
+      }
+
       const cards = gsap.utils.toArray<HTMLElement>(
         "[data-service-offering]",
         section,
@@ -97,7 +104,6 @@ export function AiAutomationOfferingsScroll() {
 
         const lastCardIndex = cards.length - 1;
         let currentCardIndex = 0;
-        let activeTrigger: ScrollTrigger | undefined;
         let gestureLocked = false;
         let gestureHasStopped = true;
         let isAnimating = false;
@@ -205,7 +211,7 @@ export function AiAutomationOfferingsScroll() {
           },
         });
 
-        activeTrigger = timeline.scrollTrigger;
+        const activeTrigger = timeline.scrollTrigger;
 
         if (activeTrigger?.isActive) {
           currentCardIndex = Math.round(
