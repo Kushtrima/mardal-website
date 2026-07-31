@@ -150,28 +150,9 @@ export function AiAutomationOfferingsScroll() {
           start: "top top",
           end: () => `+=${Math.max(distance() + window.innerWidth * 0.45, 1)}`,
           pin: viewport,
-          scrub: 0.75,
+          scrub: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          snap: {
-            snapTo: (value) => {
-              const maxDistance = distance();
-              if (maxDistance <= 0) return 0;
-
-              const points = cards.map((card) =>
-                gsap.utils.clamp(0, 1, card.offsetLeft / maxDistance),
-              );
-
-              return points.reduce((closest, point) =>
-                Math.abs(point - value) < Math.abs(closest - value)
-                  ? point
-                  : closest,
-              );
-            },
-            duration: { min: 0.18, max: 0.48 },
-            delay: 0.12,
-            ease: "power1.inOut",
-          },
           onUpdate: (self) => {
             const translatedDistance = self.progress * distance();
             const nearestCardIndex = cards.reduce(
