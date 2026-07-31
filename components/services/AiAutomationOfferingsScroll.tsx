@@ -147,7 +147,7 @@ export function AiAutomationOfferingsScroll() {
       );
 
       const distance = () =>
-        Math.max(cards.length * window.innerHeight * 0.72, 1);
+        Math.max(cards.length * window.innerHeight * 0.92, 1);
 
       const renderWordExit = (words: HTMLElement[], progress: number) => {
         const groupSize = 3;
