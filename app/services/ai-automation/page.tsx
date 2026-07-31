@@ -123,30 +123,40 @@ export default function AiAutomationPage() {
                         {offering.title}
                       </h3>
 
-                      <div className="service-offering__year" aria-hidden="true">
-                        <span className="service-offering__year-label">Year</span>
-                        <span className="service-offering__year-value">
-                          {aiAutomation.year}
-                        </span>
-                      </div>
+                      <div
+                        className="service-offering__guides"
+                        aria-hidden="true"
+                      />
+
+                      <p className="service-offering__section-label service-offering__section-label--overview">
+                        Overview
+                      </p>
 
                       <p className="service-offering__copy">{offering.copy}</p>
 
-                      <div className="service-offering__details">
-                        <ul className="service-offering__list">
-                          {offering.items.map((item) => (
-                            <li key={item}>{item}</li>
-                          ))}
-                        </ul>
+                      <p className="service-offering__section-label service-offering__section-label--capabilities">
+                        Capabilities
+                      </p>
 
-                        {"example" in offering && (
+                      <ul className="service-offering__list">
+                        {offering.items.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+
+                      {"example" in offering && (
+                        <>
+                          <p className="service-offering__section-label service-offering__section-label--example">
+                            Example
+                          </p>
+
                           <div className="service-offering__example-block">
                             <p className="service-offering__example">
                               {offering.example}
                             </p>
                           </div>
-                        )}
-                      </div>
+                        </>
+                      )}
                     </>
                   )}
                 </article>

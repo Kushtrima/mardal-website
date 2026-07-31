@@ -40,8 +40,10 @@ export function AiAutomationOfferingsScroll() {
             [
               ".service-offering__title",
               ".service-offering__group-title",
+              ".service-offering__section-label",
               ".service-offering__copy",
-              ".service-offering__details",
+              ".service-offering__list",
+              ".service-offering__example-block",
             ].join(", "),
             card,
           );
@@ -64,12 +66,12 @@ export function AiAutomationOfferingsScroll() {
             y: 0,
           });
 
-          const year = card.querySelector<HTMLElement>(
-            ".service-offering__year",
+          const guides = card.querySelector<HTMLElement>(
+            ".service-offering__guides",
           );
 
-          if (year) {
-            gsap.set(year, { autoAlpha: index === 0 ? 1 : 0 });
+          if (guides) {
+            gsap.set(guides, { autoAlpha: index === 0 ? 1 : 0 });
           }
         });
 
@@ -90,11 +92,11 @@ export function AiAutomationOfferingsScroll() {
           const coveredCard = cards[index];
           const coveredContent = contentFor(coveredCard);
           const incomingContent = contentFor(card);
-          const coveredYear = coveredCard.querySelector<HTMLElement>(
-            ".service-offering__year",
+          const coveredGuides = coveredCard.querySelector<HTMLElement>(
+            ".service-offering__guides",
           );
-          const incomingYear = card.querySelector<HTMLElement>(
-            ".service-offering__year",
+          const incomingGuides = card.querySelector<HTMLElement>(
+            ".service-offering__guides",
           );
 
           timeline
@@ -129,9 +131,9 @@ export function AiAutomationOfferingsScroll() {
               index + 0.05,
             );
 
-          if (coveredYear) {
+          if (coveredGuides) {
             timeline.to(
-              coveredYear,
+              coveredGuides,
               {
                 autoAlpha: 0,
                 duration: 0.2,
@@ -141,9 +143,9 @@ export function AiAutomationOfferingsScroll() {
             );
           }
 
-          if (incomingYear) {
+          if (incomingGuides) {
             timeline.to(
-              incomingYear,
+              incomingGuides,
               {
                 autoAlpha: 1,
                 duration: 0.45,

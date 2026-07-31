@@ -7,7 +7,6 @@ export const aiAutomation = {
   slug: "ai-automation",
   eyebrow: "Mardal Services",
   title: "AI & Automation",
-  year: "2026",
   lede: "Turn repetitive work into intelligent workflows.",
   support: "Build smarter operations with AI agents.",
   heroCta: "Let’s build",
