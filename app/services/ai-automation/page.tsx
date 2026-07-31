@@ -129,14 +129,12 @@ export default function AiAutomationPage() {
                         <span className="service-row__title">
                           {service.title}
                         </span>
+                        <span className="service-row__preview">
+                          {service.copy}
+                        </span>
                       </summary>
 
                       <div className="service-row__panel" data-service-row-panel>
-                        <section className="service-row__detail-block">
-                          <h4>Overview</h4>
-                          <p>{service.copy}</p>
-                        </section>
-
                         <section className="service-row__detail-block">
                           <h4>Key Uses</h4>
                           <ul>
