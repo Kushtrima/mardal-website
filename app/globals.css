@@ -4079,7 +4079,7 @@ video {
   position: absolute;
   top: 0;
   right: 0;
-  bottom: 50px;
+  bottom: clamp(6rem, 15vh, 8rem);
   width: 1px;
   background: color-mix(in srgb, var(--service-ink) 72%, transparent);
   content: "";
