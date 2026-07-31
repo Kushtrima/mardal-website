@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import gsap from "gsap";
-import { Observer } from "gsap/Observer";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const DESKTOP_QUERY =
@@ -16,7 +15,7 @@ const STACKED_QUERY =
  */
 export function AiAutomationOfferingsScroll() {
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger, Observer);
+    gsap.registerPlugin(ScrollTrigger);
 
     const section = document.querySelector<HTMLElement>(
       "[data-service-offerings]",
@@ -139,12 +138,6 @@ export function AiAutomationOfferingsScroll() {
 
     media.add(DESKTOP_QUERY, () => {
       let jumpTween: gsap.core.Tween | undefined;
-      let gestureTween: gsap.core.Tween | undefined;
-      let gestureObserver: Observer | undefined;
-      let currentStep = 0;
-      let gestureLocked = false;
-      let gestureHasStopped = true;
-      let gestureIsAnimating = false;
       const journeyState = { progress: 0 };
       const wordGroups = cards.map((card) =>
         Array.from(card.querySelectorAll<HTMLElement>("[data-service-word]")),
@@ -294,116 +287,13 @@ export function AiAutomationOfferingsScroll() {
           scrub: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          onEnter: (self) => {
-            currentStep = Math.min(
-              Math.round(self.progress * cards.length),
-              cards.length - 1,
-            );
-            gestureLocked = false;
-            gestureHasStopped = true;
-            gestureObserver?.enable();
-          },
-          onEnterBack: (self) => {
-            currentStep = Math.min(
-              Math.round(self.progress * cards.length),
-              cards.length - 1,
-            );
-            gestureLocked = false;
-            gestureHasStopped = true;
-            gestureObserver?.enable();
-          },
-          onLeave: () => gestureObserver?.disable(),
-          onLeaveBack: () => gestureObserver?.disable(),
           onUpdate: (self) => {
             renderServices(self.progress);
-
-            if (!gestureIsAnimating) {
-              currentStep = Math.min(
-                Math.round(self.progress * cards.length),
-                cards.length - 1,
-              );
-            }
           },
         },
       });
 
       const trigger = horizontalTween.scrollTrigger;
-
-      const animateToStep = (nextStep: number) => {
-        if (!trigger) return;
-
-        const destination =
-          trigger.start +
-          (trigger.end - trigger.start) * (nextStep / cards.length);
-        const scrollState = { value: trigger.scroll() };
-
-        gestureTween?.kill();
-        gestureIsAnimating = true;
-        gestureTween = gsap.to(scrollState, {
-          value: destination,
-          duration: 1.15,
-          ease: "power3.inOut",
-          overwrite: true,
-          onUpdate: () => window.scrollTo(0, scrollState.value),
-          onComplete: () => {
-            currentStep = nextStep;
-            gestureIsAnimating = false;
-
-            if (gestureHasStopped) {
-              gestureLocked = false;
-            }
-          },
-        });
-      };
-
-      const moveOneService = (direction: -1 | 1) => {
-        gestureHasStopped = false;
-
-        if (gestureLocked || gestureIsAnimating || !trigger) return;
-
-        gestureLocked = true;
-        const nextStep = currentStep + direction;
-
-        if (nextStep < 0 || nextStep >= cards.length) {
-          gestureObserver?.disable();
-          gestureLocked = false;
-          window.scrollTo(
-            0,
-            direction > 0 ? trigger.end + 2 : trigger.start - 2,
-          );
-          return;
-        }
-
-        animateToStep(nextStep);
-      };
-
-      gestureObserver = Observer.create({
-        target: window,
-        type: "wheel",
-        wheelSpeed: -1,
-        tolerance: 10,
-        preventDefault: true,
-        lockAxis: true,
-        onUp: () => moveOneService(1),
-        onDown: () => moveOneService(-1),
-        onStopDelay: 0.26,
-        onStop: () => {
-          gestureHasStopped = true;
-
-          if (!gestureIsAnimating) {
-            gestureLocked = false;
-          }
-        },
-      });
-      gestureObserver.disable();
-
-      if (trigger?.isActive) {
-        currentStep = Math.min(
-          Math.round(trigger.progress * cards.length),
-          cards.length - 1,
-        );
-        gestureObserver.enable();
-      }
 
       const scrollToProgress = (progress: number) => {
         if (!trigger) return;
@@ -462,8 +352,6 @@ export function AiAutomationOfferingsScroll() {
 
       return () => {
         jumpTween?.kill();
-        gestureTween?.kill();
-        gestureObserver?.kill();
         nextLink.removeEventListener("click", handleNextClick);
         groupLinks.forEach((link) =>
           link.removeEventListener("click", handleGroupClick),
