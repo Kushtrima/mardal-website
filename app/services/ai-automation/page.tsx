@@ -118,21 +118,16 @@ export default function AiAutomationPage() {
                 </header>
 
                 <div className="service-chapter__rows">
-                  {chapter.services.map((service, serviceIndex) => (
+                  {chapter.services.map((service) => (
                     <details
                       className="service-row"
                       id={service.id}
                       key={service.id}
-                      open={chapterIndex === 0 && serviceIndex === 0}
                       data-service-row
                     >
                       <summary className="service-row__summary">
                         <span className="service-row__title">
                           {service.title}
-                        </span>
-                        <span className="service-row__action" aria-hidden="true">
-                          <span />
-                          <span />
                         </span>
                       </summary>
 

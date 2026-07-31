@@ -21,6 +21,7 @@ export function AiAutomationOfferingsScroll() {
     >();
     const targetStates = new Map<HTMLDetailsElement, boolean>();
     const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY);
+    const hoverPointer = window.matchMedia("(hover: hover) and (pointer: fine)");
 
     const frame = window.requestAnimationFrame(() => {
       const section = document.querySelector<HTMLElement>(
@@ -41,8 +42,7 @@ export function AiAutomationOfferingsScroll() {
 
         if (rows.length === 0) return;
 
-        const initiallyOpenRows = rows.filter((row) => row.open);
-        initiallyOpenRows.slice(1).forEach((row) => {
+        rows.forEach((row) => {
           row.open = false;
         });
 
@@ -140,6 +140,12 @@ export function AiAutomationOfferingsScroll() {
 
           const handleClick = (event: MouseEvent) => {
             event.preventDefault();
+
+            // Fine pointers use hover. Keep mouse clicks from immediately
+            // reversing the state that mouseenter just established; keyboard
+            // activation still arrives with detail 0 and remains supported.
+            if (hoverPointer.matches && event.detail > 0) return;
+
             const shouldOpen = !targetStates.get(row);
 
             if (shouldOpen) {
@@ -155,8 +161,51 @@ export function AiAutomationOfferingsScroll() {
             setRowState(shouldOpen);
           };
 
+          const openExclusively = () => {
+            if (targetStates.get(row)) return;
+
+            rows.forEach((otherRow) => {
+              if (otherRow !== row && targetStates.get(otherRow)) {
+                otherRow.querySelector<HTMLElement>("summary")?.click();
+              }
+            });
+
+            setRowState(true);
+          };
+
+          const handleMouseEnter = () => {
+            if (hoverPointer.matches) openExclusively();
+          };
+
+          const handleMouseLeave = () => {
+            if (hoverPointer.matches && targetStates.get(row)) {
+              setRowState(false);
+            }
+          };
+
+          const handleFocusIn = () => openExclusively();
+
+          const handleFocusOut = (event: FocusEvent) => {
+            if (
+              !row.contains(event.relatedTarget as Node | null) &&
+              targetStates.get(row)
+            ) {
+              setRowState(false);
+            }
+          };
+
           summary.addEventListener("click", handleClick);
-          cleanups.push(() => summary.removeEventListener("click", handleClick));
+          row.addEventListener("mouseenter", handleMouseEnter);
+          row.addEventListener("mouseleave", handleMouseLeave);
+          row.addEventListener("focusin", handleFocusIn);
+          row.addEventListener("focusout", handleFocusOut);
+          cleanups.push(() => {
+            summary.removeEventListener("click", handleClick);
+            row.removeEventListener("mouseenter", handleMouseEnter);
+            row.removeEventListener("mouseleave", handleMouseLeave);
+            row.removeEventListener("focusin", handleFocusIn);
+            row.removeEventListener("focusout", handleFocusOut);
+          });
         });
       });
     });
