@@ -4189,8 +4189,9 @@ video {
   grid-row: 1;
   max-width: 45ch;
   align-self: start;
-  margin: 0;
-  font-size: var(--service-detail-size);
+  margin: -4px 0 0;
+  font-size: 24px;
+  font-weight: var(--weight-medium);
   line-height: 1.2;
 }
 

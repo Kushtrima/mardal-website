@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import gsap from "gsap";
+import { Observer } from "gsap/Observer";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /**
@@ -14,6 +15,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 export function AiAutomationOfferingsScroll() {
   useEffect(() => {
     let context: gsap.Context | undefined;
+    let gestureObserver: Observer | undefined;
+    let scrollTween: gsap.core.Tween | undefined;
 
     const frame = window.requestAnimationFrame(() => {
       const section = document.querySelector<HTMLElement>(
@@ -31,7 +34,7 @@ export function AiAutomationOfferingsScroll() {
       );
       if (cards.length < 2) return;
 
-      gsap.registerPlugin(ScrollTrigger);
+      gsap.registerPlugin(ScrollTrigger, Observer);
       section.classList.add("is-scroll-stack");
 
       context = gsap.context(() => {
@@ -92,6 +95,89 @@ export function AiAutomationOfferingsScroll() {
           }
         });
 
+        const lastCardIndex = cards.length - 1;
+        let currentCardIndex = 0;
+        let activeTrigger: ScrollTrigger | undefined;
+        let gestureLocked = false;
+        let gestureHasStopped = true;
+        let isAnimating = false;
+
+        const animateToCard = (nextCardIndex: number) => {
+          if (!activeTrigger) return;
+
+          const start = activeTrigger.start + 1;
+          const end = activeTrigger.end - 1;
+          const targetScroll = gsap.utils.clamp(
+            start,
+            end,
+            activeTrigger.start +
+              (activeTrigger.end - activeTrigger.start) *
+                (nextCardIndex / lastCardIndex),
+          );
+          const scrollPosition = { value: activeTrigger.scroll() };
+
+          scrollTween?.kill();
+          isAnimating = true;
+
+          scrollTween = gsap.to(scrollPosition, {
+            value: targetScroll,
+            duration: 0.9,
+            ease: "power2.inOut",
+            overwrite: true,
+            onUpdate: () => activeTrigger?.scroll(scrollPosition.value),
+            onComplete: () => {
+              currentCardIndex = nextCardIndex;
+              isAnimating = false;
+
+              if (gestureHasStopped) {
+                gestureLocked = false;
+              }
+            },
+          });
+        };
+
+        const moveOneCard = (direction: -1 | 1) => {
+          gestureHasStopped = false;
+
+          if (gestureLocked || isAnimating || !activeTrigger) return;
+
+          gestureLocked = true;
+          const nextCardIndex = currentCardIndex + direction;
+
+          if (nextCardIndex < 0 || nextCardIndex > lastCardIndex) {
+            const exitScroll =
+              direction > 0 ? activeTrigger.end + 2 : activeTrigger.start - 2;
+
+            gestureObserver?.disable();
+            gestureLocked = false;
+            activeTrigger.scroll(exitScroll);
+            return;
+          }
+
+          animateToCard(nextCardIndex);
+        };
+
+        gestureObserver = Observer.create({
+          target: window,
+          type: "wheel,touch,pointer",
+          wheelSpeed: -1,
+          tolerance: 10,
+          preventDefault: true,
+          allowClicks: true,
+          lockAxis: true,
+          onUp: () => moveOneCard(1),
+          onDown: () => moveOneCard(-1),
+          onStopDelay: 0.22,
+          onStop: () => {
+            gestureHasStopped = true;
+
+            if (!isAnimating) {
+              gestureLocked = false;
+            }
+          },
+        });
+        gestureObserver.disable();
+
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: section,
@@ -102,8 +188,31 @@ export function AiAutomationOfferingsScroll() {
             scrub: 0.55,
             anticipatePin: 1,
             invalidateOnRefresh: true,
+            onEnter: (self) => {
+              currentCardIndex = Math.round(self.progress * lastCardIndex);
+              gestureLocked = false;
+              gestureHasStopped = true;
+              gestureObserver?.enable();
+            },
+            onEnterBack: (self) => {
+              currentCardIndex = Math.round(self.progress * lastCardIndex);
+              gestureLocked = false;
+              gestureHasStopped = true;
+              gestureObserver?.enable();
+            },
+            onLeave: () => gestureObserver?.disable(),
+            onLeaveBack: () => gestureObserver?.disable(),
           },
         });
+
+        activeTrigger = timeline.scrollTrigger;
+
+        if (activeTrigger?.isActive) {
+          currentCardIndex = Math.round(
+            activeTrigger.progress * lastCardIndex,
+          );
+          gestureObserver.enable();
+        }
 
         cards.slice(1).forEach((card, index) => {
           const coveredCard = cards[index];
@@ -193,6 +302,8 @@ export function AiAutomationOfferingsScroll() {
 
     return () => {
       window.cancelAnimationFrame(frame);
+      scrollTween?.kill();
+      gestureObserver?.kill();
       context?.revert();
 
       const section = document.querySelector<HTMLElement>(
