@@ -4458,7 +4458,7 @@ video {
 
   .service-overview__columns {
     display: grid;
-    gap: clamp(4.5rem, 21vw, 7rem);
+    gap: clamp(3rem, 14vw, 5rem);
     grid-template-columns: minmax(0, 1fr);
     padding-left: clamp(1.25rem, 5vw, 2rem);
     border-left: 1px solid rgb(8 8 10 / 72%);
