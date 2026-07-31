@@ -147,7 +147,7 @@ export function AiAutomationOfferingsScroll() {
         ease: "none",
         scrollTrigger: {
           trigger: section,
-          start: "top+=60 top",
+          start: "top+=20 top",
           end: () => `+=${Math.max(distance() + window.innerWidth * 0.45, 1)}`,
           pin: viewport,
           scrub: true,
