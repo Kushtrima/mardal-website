@@ -52,6 +52,9 @@ export function AiAutomationHeroEntry() {
             autoAlpha: 1,
             clipPath: "inset(0 0 0% 0)",
             duration: 0.95,
+            onComplete: () => {
+              gsap.set(title, { clearProps: "clipPath" });
+            },
             y: 0,
           },
           0,
