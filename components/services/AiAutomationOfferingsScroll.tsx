@@ -28,13 +28,6 @@ export function AiAutomationOfferingsScroll() {
         return;
       }
 
-      /* Phones use the same content as a natural editorial document. The
-         pinned, gesture-locked stack belongs to the wider desktop layout and
-         would otherwise fight native touch scrolling. */
-      if (!window.matchMedia("(min-width: 48.0625rem)").matches) {
-        return;
-      }
-
       const cards = gsap.utils.toArray<HTMLElement>(
         "[data-service-offering]",
         section,
@@ -42,6 +35,78 @@ export function AiAutomationOfferingsScroll() {
       if (cards.length < 2) return;
 
       gsap.registerPlugin(ScrollTrigger, Observer);
+
+      /* Phones keep native touch scrolling, while each editorial group is
+         revealed by the scroll position that brings it into view. This gives
+         the mobile layout deliberate motion without trapping long service
+         descriptions inside a pinned viewport. */
+      if (!window.matchMedia("(min-width: 48.0625rem)").matches) {
+        context = gsap.context(() => {
+          cards.forEach((card) => {
+            const title = card.querySelector<HTMLElement>(
+              ".service-offering__title, .service-offering__group-title",
+            );
+            const overviewLabel = card.querySelector<HTMLElement>(
+              ".service-offering__section-label--overview",
+            );
+            const overview = card.querySelector<HTMLElement>(
+              ".service-offering__copy",
+            );
+            const capabilitiesLabel = card.querySelector<HTMLElement>(
+              ".service-offering__section-label--capabilities",
+            );
+            const capabilityItems = gsap.utils.toArray<HTMLElement>(
+              ".service-offering__list li",
+              card,
+            );
+            const exampleLabel = card.querySelector<HTMLElement>(
+              ".service-offering__section-label--example",
+            );
+            const example = card.querySelector<HTMLElement>(
+              ".service-offering__example-block",
+            );
+
+            const revealGroups = [
+              title ? [title] : [],
+              [overviewLabel, overview].filter(
+                (element): element is HTMLElement => Boolean(element),
+              ),
+              [capabilitiesLabel, ...capabilityItems].filter(
+                (element): element is HTMLElement => Boolean(element),
+              ),
+              [exampleLabel, example].filter(
+                (element): element is HTMLElement => Boolean(element),
+              ),
+            ].filter((group) => group.length > 0);
+
+            revealGroups.forEach((group, groupIndex) => {
+              gsap.fromTo(
+                group,
+                {
+                  autoAlpha: 0,
+                  y: groupIndex === 0 ? 32 : 52,
+                },
+                {
+                  autoAlpha: 1,
+                  y: 0,
+                  stagger: groupIndex === 2 ? 0.035 : 0.06,
+                  ease: "none",
+                  scrollTrigger: {
+                    trigger: group[0],
+                    start: "top 92%",
+                    end: "top 68%",
+                    scrub: 0.55,
+                  },
+                },
+              );
+            });
+          });
+        }, section);
+
+        void document.fonts.ready.then(() => ScrollTrigger.refresh());
+        return;
+      }
+
       section.classList.add("is-scroll-stack");
 
       context = gsap.context(() => {

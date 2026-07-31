@@ -4490,7 +4490,7 @@ video {
     display: block;
     min-height: 0;
     padding-block: clamp(3.5rem, 15vw, 5rem);
-    border-top: 1px solid rgb(8 8 10 / 42%);
+    border-top: 0;
     will-change: auto;
   }
 
@@ -4506,7 +4506,7 @@ video {
   .service-offering--group:not(:first-of-type) {
     min-height: 52svh;
     margin-top: clamp(2rem, 10vw, 4rem);
-    border-top: 1px solid rgb(8 8 10 / 42%);
+    border-top: 0;
   }
 
   .service-offering__title {
@@ -4520,10 +4520,22 @@ video {
   }
 
   .service-offering__section-label {
+    display: flex;
     width: auto;
+    align-items: center;
+    justify-self: start;
+    gap: 0.75rem;
     padding: 0;
     font-size: 11px;
     text-align: left;
+  }
+
+  .service-offering__section-label::before {
+    width: 1.75rem;
+    height: 1px;
+    flex: 0 0 auto;
+    background: #000;
+    content: "";
   }
 
   .service-offering__section-label--overview {
