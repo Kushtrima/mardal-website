@@ -8,14 +8,18 @@ const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 /**
  * Progressively enhances the native service details rows.
  *
- * Scrolling, focus, keyboard interaction, and the open state all remain native
- * browser behavior. JavaScript only keeps one row open per chapter and adds a
- * restrained reveal to the newly opened panel.
+ * The details elements remain accessible without JavaScript. With JavaScript,
+ * their height and content animate as one continuous gesture while each
+ * chapter keeps a single focused service open.
  */
 export function AiAutomationOfferingsScroll() {
   useEffect(() => {
     const cleanups: Array<() => void> = [];
-    const animatedPanels = new Set<HTMLElement>();
+    const activeTimelines = new Map<
+      HTMLDetailsElement,
+      gsap.core.Timeline
+    >();
+    const targetStates = new Map<HTMLDetailsElement, boolean>();
     const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY);
 
     const frame = window.requestAnimationFrame(() => {
@@ -43,51 +47,116 @@ export function AiAutomationOfferingsScroll() {
         });
 
         rows.forEach((row) => {
+          targetStates.set(row, row.open);
+
+          const summary = row.querySelector<HTMLElement>("summary");
           const panel = row.querySelector<HTMLElement>(
             "[data-service-row-panel]",
           );
+          if (!summary || !panel) return;
 
-          const handleToggle = () => {
-            if (!panel) return;
-
-            gsap.killTweensOf(panel);
-            animatedPanels.add(panel);
-
-            if (!row.open) {
-              gsap.set(panel, { clearProps: "opacity,transform" });
-              return;
-            }
-
-            rows.forEach((otherRow) => {
-              if (otherRow !== row && otherRow.open) {
-                otherRow.open = false;
-              }
-            });
+          const setRowState = (shouldOpen: boolean) => {
+            targetStates.set(row, shouldOpen);
+            activeTimelines.get(row)?.kill();
 
             if (reducedMotion.matches) {
-              gsap.set(panel, { clearProps: "opacity,transform" });
+              row.open = shouldOpen;
+              gsap.set([row, panel], {
+                clearProps: "height,overflow,opacity,transform",
+              });
               return;
             }
 
-            gsap.fromTo(
-              panel,
-              {
-                opacity: 0,
-                y: 12,
+            const startHeight = row.offsetHeight;
+            let endHeight: number;
+
+            // A rapid second interaction can interrupt the previous tween.
+            // Remove its temporary height before measuring the new destination.
+            gsap.set(row, { clearProps: "height,overflow" });
+
+            if (shouldOpen) {
+              row.open = true;
+              endHeight = row.offsetHeight;
+            } else {
+              // Measure the native closed height synchronously, then restore
+              // the open state so the content remains visible while it folds.
+              row.open = false;
+              endHeight = row.offsetHeight;
+              row.open = true;
+            }
+
+            gsap.set(row, {
+              height: startHeight,
+              overflow: "clip",
+            });
+
+            if (shouldOpen && !panel.style.opacity) {
+              gsap.set(panel, { opacity: 0, y: 22 });
+            }
+
+            const timeline = gsap.timeline({
+              onComplete: () => {
+                if (!shouldOpen) {
+                  row.open = false;
+                }
+
+                gsap.set([row, panel], {
+                  clearProps: "height,overflow,opacity,transform",
+                });
+                activeTimelines.delete(row);
               },
+            });
+
+            timeline.to(
+              row,
               {
-                opacity: 1,
-                y: 0,
-                duration: 0.38,
-                ease: "power2.out",
-                clearProps: "opacity,transform",
-                overwrite: true,
+                height: endHeight,
+                duration: shouldOpen ? 0.82 : 0.68,
+                ease: "power3.inOut",
               },
+              0,
             );
+
+            timeline.to(
+              panel,
+              shouldOpen
+                ? {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.58,
+                    ease: "power3.out",
+                  }
+                : {
+                    opacity: 0,
+                    y: -12,
+                    duration: 0.32,
+                    ease: "power2.in",
+                  },
+              shouldOpen ? 0.18 : 0,
+            );
+
+            activeTimelines.set(row, timeline);
           };
 
-          row.addEventListener("toggle", handleToggle);
-          cleanups.push(() => row.removeEventListener("toggle", handleToggle));
+          const handleClick = (event: MouseEvent) => {
+            event.preventDefault();
+            const shouldOpen = !targetStates.get(row);
+
+            if (shouldOpen) {
+              rows.forEach((otherRow) => {
+                if (otherRow !== row && targetStates.get(otherRow)) {
+                  const otherSummary =
+                    otherRow.querySelector<HTMLElement>("summary");
+                  otherSummary?.click();
+                }
+              });
+            }
+
+            setRowState(shouldOpen);
+          };
+
+          summary.addEventListener("click", handleClick);
+          cleanups.push(() => summary.removeEventListener("click", handleClick));
         });
       });
     });
@@ -95,9 +164,15 @@ export function AiAutomationOfferingsScroll() {
     return () => {
       window.cancelAnimationFrame(frame);
       cleanups.forEach((cleanup) => cleanup());
-      gsap.killTweensOf(Array.from(animatedPanels));
-      gsap.set(Array.from(animatedPanels), {
-        clearProps: "opacity,transform",
+      activeTimelines.forEach((timeline) => timeline.kill());
+      const animatedRows = Array.from(activeTimelines.keys());
+      const animatedPanels = animatedRows
+        .map((row) =>
+          row.querySelector<HTMLElement>("[data-service-row-panel]"),
+        )
+        .filter((panel): panel is HTMLElement => Boolean(panel));
+      gsap.set([...animatedRows, ...animatedPanels], {
+        clearProps: "height,overflow,opacity,transform",
       });
     };
   }, []);

@@ -325,6 +325,7 @@ test("server-renders the AI & Automation service page", async () => {
   assert.match(html, /Automation Solutions/);
   assert.equal((html.match(/class="service-row"/g) ?? []).length, 9);
   assert.equal((html.match(/<details[^>]* open=""/g) ?? []).length, 1);
+  assert.doesNotMatch(html, /service-row__number|09 services/);
 
   for (const title of [
     "AI Assistants",

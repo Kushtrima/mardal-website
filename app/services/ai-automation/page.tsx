@@ -101,10 +101,6 @@ export default function AiAutomationPage() {
           <Container className="service-offerings__inner">
             <header className="service-offerings__masthead">
               <h2 id="service-offerings-title">AI &amp; Automation Services</h2>
-              <p>
-                <span aria-hidden="true" />
-                09 services
-              </p>
             </header>
 
             {aiAutomation.chapters.map((chapter, chapterIndex) => (
@@ -124,7 +120,7 @@ export default function AiAutomationPage() {
                   {"description" in chapter ? (
                     <p>{chapter.description}</p>
                   ) : (
-                    <p>{String(chapter.services.length).padStart(2, "0")} services</p>
+                    <p>Knowledge, documents, data, and connected systems.</p>
                   )}
                 </header>
 
@@ -138,9 +134,6 @@ export default function AiAutomationPage() {
                       data-service-row
                     >
                       <summary className="service-row__summary">
-                        <span className="service-row__number">
-                          {String(serviceIndex + 1).padStart(2, "0")}
-                        </span>
                         <span className="service-row__title">
                           {service.title}
                         </span>
