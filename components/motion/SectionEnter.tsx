@@ -86,6 +86,7 @@ export function SectionEnter() {
            the pinned element. */
         const inner = section.querySelector<HTMLElement>("[data-enter]");
         const target = inner ?? section;
+        const fadeOnly = target.dataset.enterMode === "fade";
 
         const timeline = gsap.timeline({
           scrollTrigger: {
@@ -101,6 +102,15 @@ export function SectionEnter() {
             invalidateOnRefresh: true,
           },
         });
+
+        if (fadeOnly) {
+          timeline.fromTo(
+            target,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.72, ease: "power1.out" },
+          );
+          return;
+        }
 
         timeline
           /* Linear on purpose. An ease would vary the rate it catches up at,

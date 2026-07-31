@@ -88,7 +88,11 @@ export default function AiAutomationPage() {
           aria-labelledby="service-overview-title"
           data-route-section
         >
-          <Container className="service-overview__inner" data-enter>
+          <Container
+            className="service-overview__inner"
+            data-enter
+            data-enter-mode="fade"
+          >
             <h2 className="service-overview__title" id="service-overview-title">
               {aiAutomation.overview.title}
             </h2>
