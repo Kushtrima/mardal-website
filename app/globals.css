@@ -4224,6 +4224,7 @@ video {
 
 .service-card__number {
   align-self: end;
+  color: var(--accent);
   font-size: clamp(1.125rem, 1.5vw, 1.5rem);
   line-height: 1;
   font-variant-numeric: tabular-nums;
