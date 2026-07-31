@@ -4415,7 +4415,7 @@ video {
 
   .service-hero__support {
     position: absolute;
-    bottom: clamp(1.5rem, 5svh, 2.5rem);
+    bottom: 0.75rem;
     left: 0;
     max-width: 11ch;
     margin: 0;
@@ -4425,7 +4425,7 @@ video {
   .service-hero__cta {
     position: absolute;
     right: 0;
-    bottom: clamp(1.5rem, 5svh, 2.5rem);
+    bottom: 0.75rem;
     margin: 0;
     font-size: 1.0625rem;
     white-space: nowrap;
