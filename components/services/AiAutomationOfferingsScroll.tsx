@@ -183,7 +183,12 @@ export function AiAutomationOfferingsScroll() {
             }
           };
 
-          const handleFocusIn = () => openExclusively();
+          const handleFocusIn = () => {
+            // Touch taps focus a summary before dispatching click. Opening on
+            // every focus would therefore make the following tap close it
+            // immediately. Only keyboard-visible focus opens automatically.
+            if (summary.matches(":focus-visible")) openExclusively();
+          };
 
           const handleFocusOut = (event: FocusEvent) => {
             if (

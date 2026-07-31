@@ -4141,7 +4141,7 @@ video {
   position: relative;
   overflow: clip;
   border-top: 1px solid var(--ink);
-  background: var(--canvas);
+  background: #efedf8;
   scroll-margin-top: 1rem;
   transition:
     color 320ms var(--ease-standard),
@@ -4200,7 +4200,7 @@ video {
   position: relative;
   z-index: 1;
   min-width: 0;
-  padding: 0 clamp(1.5rem, 3vw, 3rem) clamp(1.5rem, 3vw, 3rem);
+  padding: 0 0 clamp(1.5rem, 3vw, 3rem);
 }
 
 .service-row__detail-block {
@@ -4209,7 +4209,7 @@ video {
   grid-template-columns: 52% 48%;
   gap: 0;
   align-items: start;
-  padding-block: clamp(1.5rem, 2.5vw, 2.75rem);
+  padding: clamp(1.5rem, 2.5vw, 2.75rem) clamp(1.5rem, 3vw, 3rem);
   border-bottom: 1px solid rgb(255 255 255 / 62%);
 }
 
@@ -4550,12 +4550,12 @@ video {
 
   .service-row__panel {
     min-height: 0;
-    padding: 0 1.5rem 2rem;
+    padding: 0 0 2rem;
   }
 
   .service-row__detail-block {
     display: block;
-    padding-block: 1.5rem;
+    padding: 1.5rem;
   }
 
   .service-row__detail-block:last-child {
