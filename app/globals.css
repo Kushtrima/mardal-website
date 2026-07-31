@@ -4203,6 +4203,7 @@ video {
   max-width: none;
   align-content: start;
   gap: clamp(1.25rem, 2.5vh, 2rem);
+  padding-top: 10px;
 }
 
 .service-card__copy,
@@ -4211,7 +4212,7 @@ video {
   max-width: 35ch;
   margin: 0;
   color: var(--service-ink);
-  font-size: clamp(1rem, 1.2vw, 1.1875rem);
+  font-size: clamp(1.0625rem, 1.3vw, 1.3125rem);
   font-weight: var(--weight-body);
   line-height: 1.3;
 }
