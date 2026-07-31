@@ -41,7 +41,12 @@ export default function AiAutomationPage() {
                 id="service-title"
                 data-service-hero-title
               >
-                {aiAutomation.lede}
+                <span className="service-hero__title-line">
+                  Turn repetitive work
+                </span>
+                <span className="service-hero__title-line">
+                  into intelligent workflows.
+                </span>
               </h1>
             </div>
 

@@ -3956,6 +3956,11 @@ video {
   line-height: var(--leading-heading-xl);
 }
 
+.service-hero__title-line {
+  display: block;
+  white-space: nowrap;
+}
+
 .service-hero__support {
   z-index: 1;
   grid-column: 1 / span 4;
@@ -4396,7 +4401,7 @@ video {
 
   .service-hero__title {
     max-width: 11ch;
-    font-size: clamp(2.5rem, 10.6vw, 3.5rem);
+    font-size: clamp(2rem, 9.5vw, 3.5rem);
   }
 
   .service-hero__pattern {
