@@ -4477,8 +4477,9 @@ video {
   }
 
   .service-offerings {
-    padding-block: clamp(3rem, 12vw, 4rem) clamp(5rem, 18vw, 7rem);
-    overflow: clip;
+    padding-block: 0;
+    overflow: visible;
+    isolation: isolate;
   }
 
   .service-offerings__inner {
@@ -4487,25 +4488,30 @@ video {
   }
 
   .service-offering {
+    position: sticky;
+    top: 0;
     display: block;
-    min-height: 0;
-    padding-block: clamp(3.5rem, 15vw, 5rem);
+    min-height: 100svh;
+    margin-inline: calc(var(--page-gutter) * -1);
+    padding: clamp(3.5rem, 15vw, 5rem) var(--page-gutter);
     border-top: 0;
+    background: #efedf8;
+    box-shadow: 0 -1.5rem 2.5rem rgb(56 38 92 / 4%);
     will-change: auto;
   }
 
   .service-offering--group {
     display: flex;
-    min-height: 48svh;
+    min-height: 100svh;
     align-items: center;
-    margin: 0;
-    padding: clamp(5rem, 22vw, 7rem) 0;
+    margin-inline: calc(var(--page-gutter) * -1);
+    padding: clamp(5rem, 22vw, 7rem) var(--page-gutter);
     border-top: 0;
   }
 
   .service-offering--group:not(:first-of-type) {
-    min-height: 52svh;
-    margin-top: clamp(2rem, 10vw, 4rem);
+    min-height: 100svh;
+    margin-top: 0;
     border-top: 0;
   }
 
@@ -4596,7 +4602,7 @@ video {
   }
 
   .service-offering--group {
-    padding-right: 0;
+    padding-right: var(--page-gutter);
   }
 
   .service-offering__guides {
