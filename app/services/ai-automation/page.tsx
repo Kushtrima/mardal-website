@@ -212,7 +212,9 @@ export default function AiAutomationPage() {
                 data-service-next-link
               >
                 <span data-service-next-label>Automation</span>
-                <span aria-hidden="true">→</span>
+                <span className="service-journey__next-arrow" aria-hidden="true">
+                  ↗
+                </span>
               </a>
             </Container>
           </div>

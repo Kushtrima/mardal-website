@@ -4241,10 +4241,22 @@ video {
   transition: color 250ms var(--ease-standard);
 }
 
+.service-journey__next-arrow {
+  display: inline-block;
+  font-size: 1.15em;
+  line-height: 0.8;
+  transform: translateY(-0.06em);
+  transition: transform 300ms var(--ease-standard);
+}
+
 @media (hover: hover) {
   .service-journey__nav-link:hover,
   .service-journey__next:hover {
     color: var(--accent);
+  }
+
+  .service-journey__next:hover .service-journey__next-arrow {
+    transform: translate(0.16em, -0.2em);
   }
 }
 
