@@ -113,19 +113,19 @@ export function AiAutomationOfferingsScroll() {
 
       titleTween = gsap.to(currentTitle, {
         autoAlpha: 0,
-        y: -10,
-        duration: 0.2,
+        x: -28,
+        duration: 0.28,
         ease: "power2.in",
         overwrite: true,
         onComplete: () => {
           currentTitle.textContent = nextTitle;
           titleTween = gsap.fromTo(
             currentTitle,
-            { autoAlpha: 0, y: 12 },
+            { autoAlpha: 0, x: 32 },
             {
               autoAlpha: 1,
-              y: 0,
-              duration: 0.36,
+              x: 0,
+              duration: 0.44,
               ease: "power3.out",
               overwrite: true,
             },
@@ -155,6 +155,22 @@ export function AiAutomationOfferingsScroll() {
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             const translatedDistance = self.progress * distance();
+            const exitFadeDistance = Math.min(
+              Math.max(stage.clientWidth * 0.14, 160),
+              260,
+            );
+
+            cards.forEach((card) => {
+              const cardLeft = card.offsetLeft - translatedDistance;
+              const exitOpacity = gsap.utils.clamp(
+                0.16,
+                1,
+                (cardLeft + exitFadeDistance) / exitFadeDistance,
+              );
+
+              gsap.set(card, { opacity: exitOpacity });
+            });
+
             const nearestCardIndex = cards.reduce(
               (nearestIndex, card, index) =>
                 Math.abs(card.offsetLeft - translatedDistance) <
@@ -235,6 +251,7 @@ export function AiAutomationOfferingsScroll() {
         horizontalTween.kill();
         titleTween?.kill();
         gsap.set(track, { clearProps: "transform" });
+        gsap.set(cards, { clearProps: "opacity" });
         gsap.set(currentTitle, { clearProps: "opacity,visibility,transform" });
       };
     });

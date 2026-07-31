@@ -4183,6 +4183,7 @@ video {
   grid-template-rows: minmax(0, 1fr) auto;
   align-content: start;
   scroll-margin-inline: 2rem;
+  will-change: opacity;
 }
 
 .service-card__mobile-title {
