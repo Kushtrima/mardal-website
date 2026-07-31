@@ -181,6 +181,7 @@ export function AiAutomationOfferingsScroll() {
       };
 
       const renderServices = (progress: number) => {
+        const incomingOffset = Math.min(stage.clientWidth * 0.52, 640);
         const journeyPosition = progress * cards.length;
         const currentIndex = Math.min(
           Math.floor(journeyPosition),
@@ -203,7 +204,7 @@ export function AiAutomationOfferingsScroll() {
           const isNext = index === nextIndex && nextOpacity > 0;
           gsap.set(card, {
             autoAlpha: isCurrent ? 1 : isNext ? easedNextOpacity : 0,
-            x: isNext ? (1 - easedNextOpacity) * 64 : 0,
+            x: isNext ? (1 - easedNextOpacity) * incomingOffset : 0,
             zIndex: isNext ? 2 : isCurrent ? 1 : 0,
           });
         });
