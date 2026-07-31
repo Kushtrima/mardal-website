@@ -3958,7 +3958,6 @@ video {
 
 .service-hero__title-line {
   display: block;
-  white-space: nowrap;
 }
 
 .service-hero__support {
@@ -4402,7 +4401,7 @@ video {
 
   .service-hero__title {
     max-width: none;
-    font-size: clamp(1.125rem, 7.2vw, 3.25rem);
+    font-size: clamp(2.5rem, 10.6vw, 3.5rem);
   }
 
   .service-hero__pattern {
@@ -4429,6 +4428,7 @@ video {
     bottom: clamp(1.5rem, 5svh, 2.5rem);
     margin: 0;
     font-size: 1.0625rem;
+    white-space: nowrap;
   }
 
   .service-overview {
