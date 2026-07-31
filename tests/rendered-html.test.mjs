@@ -304,10 +304,9 @@ test("server-renders the AI & Automation service page", async () => {
 
   const html = await response.text();
   assert.match(html, /<title>AI &amp; Automation — Mardal<\/title>/i);
-  assert.match(
-    html,
-    /class="service-hero__title"[^>]*>Turn repetitive work into intelligent workflows\.</,
-  );
+  assert.match(html, /class="service-hero__title"/);
+  assert.match(html, /Turn repetitive work/);
+  assert.match(html, /into intelligent workflows\./);
   assert.match(html, /Build smarter operations with AI agents\./);
   assert.match(html, /class="service-hero__pattern"/);
   assert.doesNotMatch(
@@ -319,9 +318,29 @@ test("server-renders the AI & Automation service page", async () => {
   // of it is left behind.
   assert.doesNotMatch(html, /service-banner/);
 
-  // Both blocks are words the site already says elsewhere.
-  assert.match(html, /Solving real business problems with AI/);
-  assert.match(html, /Less repetition\. More progress\./);
+  // Option C presents every service as a progressive row, grouped into two
+  // chapters. The first row is useful even before client-side JavaScript runs.
+  assert.match(html, /AI &amp; Automation Services/);
+  assert.match(html, /AI Solutions/);
+  assert.match(html, /Automation Solutions/);
+  assert.equal((html.match(/class="service-row"/g) ?? []).length, 9);
+  assert.equal((html.match(/<details[^>]* open=""/g) ?? []).length, 1);
+
+  for (const title of [
+    "AI Assistants",
+    "Document Intelligence",
+    "AI Data &amp; Insights",
+    "AI Integration",
+    "Sales &amp; CRM Automation",
+    "Customer Service Automation",
+    "Document &amp; Approval Automation",
+    "Order &amp; Operations Automation",
+    "Reporting &amp; Alerts",
+  ]) {
+    assert.match(html, new RegExp(title));
+  }
+
+  assert.doesNotMatch(html, /is-scroll-stack|data-service-track/);
 
   // The page carries the site's own header and footer.
   assert.match(html, /class="site-nav"/);

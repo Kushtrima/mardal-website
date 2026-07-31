@@ -99,74 +99,82 @@ export default function AiAutomationPage() {
           data-service-offerings
         >
           <Container className="service-offerings__inner">
-            <h2 className="visually-hidden" id="service-offerings-title">
-              AI and automation services
-            </h2>
+            <header className="service-offerings__masthead">
+              <h2 id="service-offerings-title">AI &amp; Automation Services</h2>
+              <p>
+                <span aria-hidden="true" />
+                09 services
+              </p>
+            </header>
 
-            {aiAutomation.offerings.map((offering) => {
-              const isGroup =
-                "kind" in offering && offering.kind === "group";
-              const isDense =
-                "layout" in offering && offering.layout === "dense";
-
-              return (
-                <article
-                  className={`service-offering${
-                    isGroup ? " service-offering--group" : ""
-                  }${isDense ? " service-offering--dense" : ""}`}
-                  id={offering.id}
-                  key={offering.id}
-                  data-service-offering
-                >
-                  {isGroup ? (
-                    <h3 className="service-offering__group-title">
-                      {offering.title}
-                    </h3>
+            {aiAutomation.chapters.map((chapter, chapterIndex) => (
+              <section
+                className={`service-chapter service-chapter--${
+                  chapterIndex === 0 ? "ai" : "automation"
+                }`}
+                key={chapter.id}
+                aria-labelledby={`${chapter.id}-title`}
+                data-service-chapter
+              >
+                <header className="service-chapter__header">
+                  <h3 id={`${chapter.id}-title`}>
+                    <span aria-hidden="true" />
+                    {chapter.title}
+                  </h3>
+                  {"description" in chapter ? (
+                    <p>{chapter.description}</p>
                   ) : (
-                    <>
-                      <h3 className="service-offering__title">
-                        {offering.title}
-                      </h3>
-
-                      <div
-                        className="service-offering__guides"
-                        aria-hidden="true"
-                      />
-
-                      <p className="service-offering__section-label service-offering__section-label--overview">
-                        Overview
-                      </p>
-
-                      <p className="service-offering__copy">{offering.copy}</p>
-
-                      <p className="service-offering__section-label service-offering__section-label--capabilities">
-                        Capabilities
-                      </p>
-
-                      <ul className="service-offering__list">
-                        {offering.items.map((item) => (
-                          <li key={item}>{item}</li>
-                        ))}
-                      </ul>
-
-                      {"example" in offering && (
-                        <>
-                          <p className="service-offering__section-label service-offering__section-label--example">
-                            Example
-                          </p>
-
-                          <div className="service-offering__example-block">
-                            <p className="service-offering__example">
-                              {offering.example}
-                            </p>
-                          </div>
-                        </>
-                      )}
-                    </>
+                    <p>{String(chapter.services.length).padStart(2, "0")} services</p>
                   )}
-                </article>
-              );
-            })}
+                </header>
+
+                <div className="service-chapter__rows">
+                  {chapter.services.map((service, serviceIndex) => (
+                    <details
+                      className="service-row"
+                      id={service.id}
+                      key={service.id}
+                      open={chapterIndex === 0 && serviceIndex === 0}
+                      data-service-row
+                    >
+                      <summary className="service-row__summary">
+                        <span className="service-row__number">
+                          {String(serviceIndex + 1).padStart(2, "0")}
+                        </span>
+                        <span className="service-row__title">
+                          {service.title}
+                        </span>
+                        <span className="service-row__action" aria-hidden="true">
+                          <span />
+                          <span />
+                        </span>
+                      </summary>
+
+                      <div className="service-row__panel" data-service-row-panel>
+                        <section className="service-row__detail-block">
+                          <h4>Overview</h4>
+                          <p>{service.copy}</p>
+                        </section>
+
+                        <section className="service-row__detail-block">
+                          <h4>Key Uses</h4>
+                          <ul>
+                            {service.items.map((item) => (
+                              <li key={item}>{item}</li>
+                            ))}
+                          </ul>
+                        </section>
+
+                        <section className="service-row__detail-block">
+                          <h4>In Practice</h4>
+                          <p>{service.example}</p>
+                        </section>
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </section>
+            ))}
           </Container>
         </section>
 
