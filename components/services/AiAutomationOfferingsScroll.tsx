@@ -138,12 +138,96 @@ export function AiAutomationOfferingsScroll() {
 
     media.add(DESKTOP_QUERY, () => {
       let jumpTween: gsap.core.Tween | undefined;
+      const journeyState = { progress: 0 };
+      const wordGroups = cards.map((card) =>
+        Array.from(card.querySelectorAll<HTMLElement>("[data-service-word]")),
+      );
+      const numbers = cards.map((card) =>
+        card.querySelector<HTMLElement>("[data-service-number]"),
+      );
 
       const distance = () =>
-        Math.max(0, track.scrollWidth - stage.clientWidth);
+        Math.max(cards.length * window.innerHeight * 0.72, 1);
 
-      const horizontalTween = gsap.to(track, {
-        x: () => -distance(),
+      const renderWordExit = (words: HTMLElement[], progress: number) => {
+        const groupSize = 3;
+        const groupCount = Math.max(Math.ceil(words.length / groupSize), 1);
+        const fadeProgress = gsap.utils.clamp(
+          0,
+          1,
+          (progress - 0.06) / 0.64,
+        );
+        const groupPosition = fadeProgress * groupCount;
+
+        words.forEach((word, index) => {
+          const groupIndex = Math.floor(index / groupSize);
+          const opacity = gsap.utils.clamp(
+            0,
+            1,
+            groupIndex + 1 - groupPosition,
+          );
+
+          gsap.set(word, {
+            autoAlpha: opacity,
+            x: (1 - opacity) * -18,
+          });
+        });
+      };
+
+      const renderServices = (progress: number) => {
+        const journeyPosition = progress * cards.length;
+        const currentIndex = Math.min(
+          Math.floor(journeyPosition),
+          cards.length - 1,
+        );
+        const localProgress = gsap.utils.clamp(
+          0,
+          1,
+          journeyPosition - currentIndex,
+        );
+        const nextIndex = Math.min(currentIndex + 1, cards.length - 1);
+        const nextOpacity =
+          nextIndex === currentIndex
+            ? 0
+            : gsap.utils.clamp(0, 1, (localProgress - 0.72) / 0.28);
+
+        cards.forEach((card, index) => {
+          const isCurrent = index === currentIndex;
+          const isNext = index === nextIndex && nextOpacity > 0;
+          gsap.set(card, {
+            autoAlpha: isCurrent ? 1 : isNext ? nextOpacity : 0,
+            zIndex: isNext ? 2 : isCurrent ? 1 : 0,
+          });
+        });
+
+        renderWordExit(wordGroups[currentIndex], localProgress);
+
+        if (nextIndex !== currentIndex) {
+          gsap.set(wordGroups[nextIndex], {
+            autoAlpha: 1,
+            x: 0,
+          });
+        }
+
+        const currentNumber = numbers[currentIndex];
+        if (currentNumber) {
+          gsap.set(currentNumber, {
+            opacity: gsap.utils.clamp(0, 1, (0.88 - localProgress) / 0.18),
+          });
+        }
+
+        const nextNumber = numbers[nextIndex];
+        if (nextIndex !== currentIndex && nextNumber) {
+          gsap.set(nextNumber, { opacity: nextOpacity });
+        }
+
+        updateCard(nextOpacity >= 0.5 ? nextIndex : currentIndex);
+      };
+
+      renderServices(0);
+
+      const horizontalTween = gsap.to(journeyState, {
+        progress: 1,
         ease: "none",
         scrollTrigger: {
           trigger: section,
@@ -154,33 +238,7 @@ export function AiAutomationOfferingsScroll() {
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            const translatedDistance = self.progress * distance();
-            const exitFadeDistance = Math.min(
-              Math.max(stage.clientWidth * 0.14, 160),
-              260,
-            );
-
-            cards.forEach((card) => {
-              const cardLeft = card.offsetLeft - translatedDistance;
-              const exitOpacity = gsap.utils.clamp(
-                0.16,
-                1,
-                (cardLeft + exitFadeDistance) / exitFadeDistance,
-              );
-
-              gsap.set(card, { opacity: exitOpacity });
-            });
-
-            const nearestCardIndex = cards.reduce(
-              (nearestIndex, card, index) =>
-                Math.abs(card.offsetLeft - translatedDistance) <
-                Math.abs(cards[nearestIndex].offsetLeft - translatedDistance)
-                  ? index
-                  : nearestIndex,
-              0,
-            );
-
-            updateCard(nearestCardIndex);
+            renderServices(self.progress);
           },
         },
       });
@@ -205,9 +263,9 @@ export function AiAutomationOfferingsScroll() {
       };
 
       const progressForCard = (card: HTMLElement) => {
-        const maxDistance = distance();
-        return maxDistance > 0
-          ? gsap.utils.clamp(0, 1, card.offsetLeft / maxDistance)
+        const cardIndex = cards.indexOf(card);
+        return cards.length > 0
+          ? gsap.utils.clamp(0, 1, cardIndex / cards.length)
           : 0;
       };
 
@@ -250,8 +308,16 @@ export function AiAutomationOfferingsScroll() {
         );
         horizontalTween.kill();
         titleTween?.kill();
-        gsap.set(track, { clearProps: "transform" });
-        gsap.set(cards, { clearProps: "opacity" });
+        gsap.set(cards, {
+          clearProps: "opacity,visibility,zIndex",
+        });
+        gsap.set(wordGroups.flat(), {
+          clearProps: "opacity,visibility,transform",
+        });
+        gsap.set(
+          numbers.filter((number): number is HTMLElement => number !== null),
+          { clearProps: "opacity" },
+        );
         gsap.set(currentTitle, { clearProps: "opacity,visibility,transform" });
       };
     });

@@ -13,6 +13,21 @@ export const metadata: Metadata = {
   description: aiAutomation.lede,
 };
 
+function ServiceWords({ className, text }: { className: string; text: string }) {
+  const words = text.trim().split(/\s+/);
+
+  return (
+    <p className={className} aria-label={text}>
+      {words.map((word, index) => (
+        <span data-service-word key={`${word}-${index}`}>
+          {word}
+          {index < words.length - 1 ? " " : ""}
+        </span>
+      ))}
+    </p>
+  );
+}
+
 /**
  * The first of the service pages.
  *
@@ -162,20 +177,26 @@ export default function AiAutomationPage() {
                         </h4>
 
                         <div className="service-card__body">
-                          <p className="service-card__copy">{service.copy}</p>
+                          <ServiceWords
+                            className="service-card__copy"
+                            text={service.copy}
+                          />
 
-                          <p className="service-card__capabilities">
-                            {service.capabilities}
-                          </p>
+                          <ServiceWords
+                            className="service-card__capabilities"
+                            text={service.capabilities}
+                          />
 
-                          <p className="service-card__example">
-                            {service.example}
-                          </p>
+                          <ServiceWords
+                            className="service-card__example"
+                            text={service.example}
+                          />
                         </div>
 
                         <span
                           className="service-card__number"
                           aria-hidden="true"
+                          data-service-number
                         >
                           {String(service.serviceIndex + 1).padStart(2, "0")}
                         </span>

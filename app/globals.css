@@ -4164,26 +4164,31 @@ video {
 .service-journey__window {
   height: clamp(25rem, 50vh, 31rem);
   margin-top: clamp(2.5rem, 4.5vh, 3.25rem);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .service-journey__track {
-  display: flex;
-  width: max-content;
+  position: relative;
+  width: 100%;
   height: 100%;
-  gap: clamp(4rem, 6vw, 7rem);
-  will-change: transform;
 }
 
 .service-card {
+  position: absolute;
+  inset: 0 auto auto 0;
   display: grid;
-  width: clamp(30rem, 38vw, 40rem);
+  width: min(100%, 40rem);
   height: 100%;
-  flex: 0 0 auto;
   grid-template-rows: minmax(0, 1fr) auto;
   align-content: start;
+  opacity: 0;
   scroll-margin-inline: 2rem;
-  will-change: opacity;
+  visibility: hidden;
+}
+
+.service-card:first-child {
+  opacity: 1;
+  visibility: visible;
 }
 
 .service-card__mobile-title {
@@ -4207,6 +4212,11 @@ video {
   font-size: clamp(1rem, 1.2vw, 1.1875rem);
   font-weight: var(--weight-body);
   line-height: 1.3;
+}
+
+[data-service-word] {
+  display: inline-block;
+  will-change: transform, opacity;
 }
 
 .service-card__number {
@@ -4378,6 +4388,7 @@ video {
   }
 
   .service-card {
+    position: static;
     display: block;
     width: auto;
     height: auto;
@@ -4385,6 +4396,12 @@ video {
     padding-block: 3.5rem;
     border-top: 1px solid
       color-mix(in srgb, var(--service-ink) 72%, transparent);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  [data-service-word] {
+    display: inline;
   }
 
   .service-card__mobile-title {
