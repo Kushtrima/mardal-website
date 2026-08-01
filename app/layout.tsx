@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "../components/motion/SmoothScroll";
-
-const geistSans = Geist({
-  variable: "--font-geist",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -28,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={geistSans.variable}>
+      <body>
         {/* ScrollSmoother scrolls this content itself rather than letting the
             browser do it, so it has to own a wrapper of its own. Without the
             plugin running these are two ordinary divs and the page scrolls

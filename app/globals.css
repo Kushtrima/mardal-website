@@ -1,10 +1,20 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/geist-latin.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Design tokens — change the visual language here, not inside page components */
 /* -------------------------------------------------------------------------- */
 
 :root {
+  --font-geist: "Geist";
+
   /* Brand and semantic colors */
   /* The page is white; the things that sit on it — the header, the mega menu
      and the cards — carry the tint. */
