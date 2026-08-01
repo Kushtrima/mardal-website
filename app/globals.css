@@ -3058,7 +3058,7 @@ video {
   }
 
   .mobile-menu__detail-list li + li {
-    border-top: 1px solid rgba(245, 245, 245, 0.28);
+    border-top: 0.5px solid rgba(245, 245, 245, 0.28);
   }
 
   .mobile-menu__detail-link {
