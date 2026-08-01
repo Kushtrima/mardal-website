@@ -461,16 +461,6 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
               aria-hidden={mobileActiveMenu === null}
               inert={mobileActiveMenu ? undefined : true}
             >
-              <button
-                className="mobile-menu__back"
-                type="button"
-                onClick={() => setMobileActiveMenu(null)}
-                data-mobile-detail-entry
-              >
-                <span aria-hidden="true">←</span>
-                <span>{mobileItem.label}</span>
-              </button>
-
               <ul className="mobile-menu__detail-list">
                 {mobileItem.items.map((link) => {
                   const isCurrent =
@@ -495,6 +485,17 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                   );
                 })}
               </ul>
+
+              <button
+                className="mobile-menu__back"
+                type="button"
+                aria-label={`Back to the main menu from ${mobileItem.label}`}
+                onClick={() => setMobileActiveMenu(null)}
+                data-mobile-detail-entry
+              >
+                <span>{mobileItem.label}</span>
+                <span aria-hidden="true">↗</span>
+              </button>
             </div>
           </div>
 

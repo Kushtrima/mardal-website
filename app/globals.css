@@ -3029,10 +3029,13 @@ video {
   }
 
   .mobile-menu__back {
-    display: inline-flex;
+    display: flex;
+    width: 100%;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.25rem 0 1.4rem;
+    justify-content: flex-end;
+    gap: 0.55rem;
+    margin-top: clamp(1rem, 2.5vh, 1.5rem);
+    padding: 0.25rem 0;
     border: 0;
     background: transparent;
     color: var(--accent-soft);
@@ -3042,19 +3045,19 @@ video {
     letter-spacing: -0.025em;
   }
 
-  .mobile-menu__back span:first-child {
+  .mobile-menu__back span:last-child {
     transition: transform var(--duration-base) var(--ease-standard);
   }
 
-  .mobile-menu__back:hover span:first-child,
-  .mobile-menu__back:focus-visible span:first-child {
-    transform: translateX(-0.25rem);
+  .mobile-menu__back:hover span:last-child,
+  .mobile-menu__back:focus-visible span:last-child {
+    transform: translate(0.18rem, -0.18rem);
   }
 
   .mobile-menu__detail-list {
     display: grid;
     gap: 0;
-    padding-bottom: 1rem;
+    padding-bottom: 0;
   }
 
   .mobile-menu__detail-list li + li {
