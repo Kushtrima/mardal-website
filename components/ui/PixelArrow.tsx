@@ -19,11 +19,13 @@ const pixelArrowDots = [
 
 export type PixelArrowSize = "small" | "compact" | "medium" | "large";
 export type PixelArrowDirection = "right" | "left" | "up" | "up-right";
+export type PixelArrowShape = "circle" | "square";
 
 type PixelArrowProps = {
   animated?: boolean;
   className?: string;
   direction?: PixelArrowDirection;
+  shape?: PixelArrowShape;
   size?: PixelArrowSize;
 };
 
@@ -31,6 +33,7 @@ export function PixelArrow({
   animated = true,
   className,
   direction = "right",
+  shape = "circle",
   size = "medium",
 }: PixelArrowProps) {
   return (
@@ -39,6 +42,7 @@ export function PixelArrow({
         "pixel-arrow",
         `pixel-arrow--${size}`,
         `pixel-arrow--${direction}`,
+        `pixel-arrow--${shape}`,
         animated && "pixel-arrow--animated",
         className,
       )}

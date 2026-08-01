@@ -454,6 +454,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                       <span>{item.label}</span>
                       <PixelArrow
                         className="mobile-menu__index-arrow"
+                        shape="square"
                         size="medium"
                       />
                     </button>

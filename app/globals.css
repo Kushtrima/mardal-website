@@ -427,6 +427,10 @@ video {
   will-change: opacity;
 }
 
+.pixel-arrow--square > span {
+  border-radius: 0;
+}
+
 .pixel-arrow > [data-column="1"] {
   grid-column: 1;
 }
