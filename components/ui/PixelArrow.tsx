@@ -17,7 +17,7 @@ const pixelArrowDots = [
   [8, 3],
 ] as const;
 
-export type PixelArrowSize = "small" | "medium" | "large";
+export type PixelArrowSize = "small" | "compact" | "medium" | "large";
 export type PixelArrowDirection = "right" | "left" | "up" | "up-right";
 
 type PixelArrowProps = {

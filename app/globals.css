@@ -396,6 +396,11 @@ video {
   --pixel-arrow-gap: 0.045rem;
 }
 
+.pixel-arrow--compact {
+  --pixel-arrow-dot: 0.17rem;
+  --pixel-arrow-gap: 0.075rem;
+}
+
 .pixel-arrow--large {
   --pixel-arrow-dot: 0.26rem;
   --pixel-arrow-gap: 0.115rem;

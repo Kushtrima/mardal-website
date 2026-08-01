@@ -410,7 +410,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                     <PixelArrow
                       className="mega-menu__arrow"
                       direction="up-right"
-                      size="medium"
+                      size="compact"
                     />
                   </a>
                 </li>
