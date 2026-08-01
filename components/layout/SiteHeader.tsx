@@ -447,7 +447,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                       }}
                     >
                       <span>{item.label}</span>
-                      <span aria-hidden="true">↗</span>
+                      <span aria-hidden="true">→</span>
                     </button>
                   </li>
                 ))}

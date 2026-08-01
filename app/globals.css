@@ -3015,11 +3015,13 @@ video {
   }
 
   .mobile-menu__index-link span:last-child {
-    color: var(--accent);
-    font-size: 0.72em;
+    color: rgb(245 245 245 / 52%);
+    font-size: 0.48em;
     font-weight: var(--weight-body);
-    transform: translate(-0.15em, 0.12em);
-    transition: transform var(--duration-base) var(--ease-standard);
+    line-height: 1;
+    transition:
+      color var(--duration-base) var(--ease-standard),
+      transform var(--duration-base) var(--ease-standard);
   }
 
   .mobile-menu__index-link:hover,
@@ -3029,8 +3031,10 @@ video {
   }
 
   .mobile-menu__index-link:hover span:last-child,
-  .mobile-menu__index-link:focus-visible span:last-child {
-    transform: translate(0, -0.05em);
+  .mobile-menu__index-link:focus-visible span:last-child,
+  .mobile-menu__index-link.is-current span:last-child {
+    color: var(--accent);
+    transform: translateX(0.2rem);
   }
 
   .mobile-menu__detail {
