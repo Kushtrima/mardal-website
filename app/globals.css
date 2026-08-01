@@ -4500,19 +4500,19 @@ video {
 
   .service-hero__support {
     position: absolute;
-    bottom: -0.75rem;
+    bottom: max(1rem, env(safe-area-inset-bottom));
     left: 0;
     max-width: 11ch;
     margin: 0;
-    font-size: clamp(1.625rem, 7vw, 2rem);
+    font-size: clamp(1.375rem, 6vw, 1.75rem);
   }
 
   .service-hero__cta {
     position: absolute;
     right: 0;
-    bottom: -0.75rem;
+    bottom: max(1rem, env(safe-area-inset-bottom));
     margin: 0;
-    font-size: 1.0625rem;
+    font-size: 1rem;
     white-space: nowrap;
   }
 
