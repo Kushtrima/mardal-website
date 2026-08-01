@@ -11,25 +11,9 @@ import gsap from "gsap";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/Button";
+import { PixelArrow } from "../ui/PixelArrow";
 import { Container } from "./Container";
 import { menu } from "../../content/home";
-
-const mobileMenuArrowDots = [
-  [1, 3],
-  [2, 3],
-  [3, 3],
-  [4, 3],
-  [5, 3],
-  [6, 3],
-  [6, 2],
-  [6, 4],
-  [6, 1],
-  [6, 5],
-  [7, 2],
-  [7, 4],
-  [7, 3],
-  [8, 3],
-] as const;
 
 type NavigationKey = (typeof menu)[number]["key"];
 
@@ -462,19 +446,10 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                       }}
                     >
                       <span>{item.label}</span>
-                      <span
+                      <PixelArrow
                         className="mobile-menu__index-arrow"
-                        aria-hidden="true"
-                      >
-                        {mobileMenuArrowDots.map(([column, row], step) => (
-                          <span
-                            key={`${column}-${row}`}
-                            data-column={column}
-                            data-row={row}
-                            data-step={step}
-                          />
-                        ))}
-                      </span>
+                        size="medium"
+                      />
                     </button>
                   </li>
                 ))}
