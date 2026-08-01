@@ -9,6 +9,7 @@ import {
 } from "react";
 import gsap from "gsap";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "../ui/Button";
 import { Container } from "./Container";
 import { menu } from "../../content/home";
@@ -21,17 +22,24 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
   _props,
   navigationRef,
 ) {
+  const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
+  const mobileIndexRef = useRef<HTMLDivElement>(null);
+  const mobileDetailRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<number | undefined>(undefined);
   const megaMenuWasOpenRef = useRef(false);
   const [activeMenu, setActiveMenu] = useState<NavigationKey>("services");
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileActiveMenu, setMobileActiveMenu] =
-    useState<NavigationKey | null>("services");
+    useState<NavigationKey | null>(null);
+  const [mobileDisplayMenu, setMobileDisplayMenu] =
+    useState<NavigationKey>("services");
   const activeItem =
     menu.find((item) => item.key === activeMenu) ?? menu[0];
+  const mobileItem =
+    menu.find((item) => item.key === mobileDisplayMenu) ?? menu[0];
 
   function clearCloseTimer() {
     if (closeTimerRef.current === undefined) return;
@@ -124,6 +132,100 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     });
   }, [activeMenu, megaMenuOpen]);
 
+  useLayoutEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const index = mobileIndexRef.current;
+    const detail = mobileDetailRef.current;
+    if (!index || !detail) return;
+
+    const indexEntries = index.querySelectorAll<HTMLElement>(
+      "[data-mobile-menu-entry]",
+    );
+    const detailEntries = detail.querySelectorAll<HTMLElement>(
+      "[data-mobile-detail-entry]",
+    );
+    const targets = [index, detail, ...indexEntries, ...detailEntries];
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    gsap.killTweensOf(targets);
+
+    if (reducedMotion) {
+      gsap.set(index, {
+        autoAlpha: mobileActiveMenu ? 0 : 1,
+        pointerEvents: mobileActiveMenu ? "none" : "auto",
+        xPercent: 0,
+      });
+      gsap.set(detail, {
+        autoAlpha: mobileActiveMenu ? 1 : 0,
+        pointerEvents: mobileActiveMenu ? "auto" : "none",
+        xPercent: 0,
+      });
+      return;
+    }
+
+    const timeline = gsap.timeline({ defaults: { ease: "power3.inOut" } });
+
+    if (mobileActiveMenu) {
+      gsap.set(detail, { pointerEvents: "auto", visibility: "visible" });
+      timeline.to(
+        index,
+        { autoAlpha: 0, duration: 0.36, pointerEvents: "none", xPercent: -14 },
+        0,
+      );
+      timeline.fromTo(
+        detail,
+        { autoAlpha: 0, xPercent: 18 },
+        { autoAlpha: 1, duration: 0.48, xPercent: 0 },
+        0.06,
+      );
+      timeline.fromTo(
+        detailEntries,
+        { autoAlpha: 0, x: 18 },
+        {
+          autoAlpha: 1,
+          duration: 0.42,
+          ease: "power3.out",
+          stagger: 0.035,
+          x: 0,
+        },
+        0.17,
+      );
+    } else {
+      gsap.set(index, { pointerEvents: "auto", visibility: "visible" });
+      timeline.to(
+        detail,
+        { autoAlpha: 0, duration: 0.34, pointerEvents: "none", xPercent: 18 },
+        0,
+      );
+      timeline.fromTo(
+        index,
+        { autoAlpha: 0, xPercent: -10 },
+        { autoAlpha: 1, duration: 0.46, xPercent: 0 },
+        0.04,
+      );
+      timeline.fromTo(
+        indexEntries,
+        { autoAlpha: 0, y: 12 },
+        {
+          autoAlpha: 1,
+          duration: 0.4,
+          ease: "power3.out",
+          stagger: 0.04,
+          y: 0,
+        },
+        0.12,
+      );
+    }
+
+    return () => {
+      timeline.kill();
+      gsap.killTweensOf(targets);
+    };
+  }, [mobileActiveMenu, mobileDisplayMenu, mobileMenuOpen]);
+
   useEffect(() => {
     function handlePointerDown(event: globalThis.PointerEvent) {
       if (
@@ -139,6 +241,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
 
       setMegaMenuOpen(false);
       setMobileMenuOpen(false);
+      setMobileActiveMenu(null);
       headerRef.current
         ?.querySelector<HTMLElement>('[data-nav-trigger][aria-expanded="true"]')
         ?.focus();
@@ -169,7 +272,10 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     const desktopViewport = window.matchMedia("(min-width: 70.0625rem)");
 
     function handleViewportChange(event: MediaQueryListEvent) {
-      if (event.matches) setMobileMenuOpen(false);
+      if (event.matches) {
+        setMobileMenuOpen(false);
+        setMobileActiveMenu(null);
+      }
     }
 
     desktopViewport.addEventListener("change", handleViewportChange);
@@ -181,7 +287,9 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
 
   return (
     <header
-      className="site-header"
+      className={`site-header${
+        mobileMenuOpen ? " site-header--mobile-menu-open" : ""
+      }`}
       ref={headerRef}
       onPointerEnter={clearCloseTimer}
       onPointerLeave={(event) => {
@@ -248,6 +356,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
             aria-controls="mobile-navigation"
             onClick={() => {
               setMegaMenuOpen(false);
+              setMobileActiveMenu(null);
               setMobileMenuOpen((open) => !open);
             }}
           >
@@ -313,53 +422,93 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
         inert={mobileMenuOpen ? undefined : true}
       >
         <Container className="mobile-menu__content">
-          <div className="mobile-menu__categories">
-            {menu.map((item) => {
-              const isOpen = mobileActiveMenu === item.key;
+          <div className="mobile-menu__viewport">
+            <div
+              className="mobile-menu__index"
+              ref={mobileIndexRef}
+              aria-hidden={mobileActiveMenu !== null}
+              inert={mobileActiveMenu ? true : undefined}
+            >
+              <ul className="mobile-menu__index-list">
+                {menu.map((item) => (
+                  <li key={item.key} data-mobile-menu-entry>
+                    <button
+                      className={`mobile-menu__index-link${
+                        item.key === "services" &&
+                        pathname.startsWith("/services")
+                          ? " is-current"
+                          : ""
+                      }`}
+                      type="button"
+                      aria-controls="mobile-menu-detail"
+                      onClick={() => {
+                        setMobileDisplayMenu(item.key);
+                        setMobileActiveMenu(item.key);
+                      }}
+                    >
+                      <span>{item.label}</span>
+                      <span aria-hidden="true">↗</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-              return (
-                <div className="mobile-menu__category" key={item.key}>
-                  <button
-                    className="mobile-menu__category-trigger"
-                    type="button"
-                    aria-expanded={isOpen}
-                    onClick={() => {
-                      setMobileActiveMenu((current) =>
-                        current === item.key ? null : item.key,
-                      );
-                    }}
-                  >
-                    <span>{item.label}</span>
-                    <span aria-hidden="true">{isOpen ? "−" : "+"}</span>
-                  </button>
+            <div
+              className="mobile-menu__detail"
+              id="mobile-menu-detail"
+              ref={mobileDetailRef}
+              aria-hidden={mobileActiveMenu === null}
+              inert={mobileActiveMenu ? undefined : true}
+            >
+              <button
+                className="mobile-menu__back"
+                type="button"
+                onClick={() => setMobileActiveMenu(null)}
+                data-mobile-detail-entry
+              >
+                <span aria-hidden="true">←</span>
+                <span>{mobileItem.label}</span>
+              </button>
 
-                  <div
-                    className={`mobile-menu__submenu${
-                      isOpen ? " mobile-menu__submenu--open" : ""
-                    }`}
-                  >
-                    <div>
-                      <ul>
-                        {item.items.map((link) => (
-                          <li key={link.label}>
-                            <a
-                              href={link.href}
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              {link.label}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+              <ul className="mobile-menu__detail-list">
+                {mobileItem.items.map((link) => {
+                  const isCurrent =
+                    link.href.startsWith("/") && pathname === link.href;
+
+                  return (
+                    <li key={link.label} data-mobile-detail-entry>
+                      <a
+                        className={`mobile-menu__detail-link${
+                          isCurrent ? " is-current" : ""
+                        }`}
+                        href={link.href}
+                        aria-current={isCurrent ? "page" : undefined}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          setMobileActiveMenu(null);
+                        }}
+                      >
+                        <span>{link.label}</span>
+                        <span aria-hidden="true">↗</span>
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
 
-          <Button className="mobile-menu__cta" href="#contact">
-            Start a project
+          <Button
+            className="mobile-menu__cta"
+            href="#contact"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setMobileActiveMenu(null);
+            }}
+          >
+            <span>Start a project</span>
+            <span aria-hidden="true">↗</span>
           </Button>
         </Container>
       </div>

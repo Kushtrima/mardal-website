@@ -84,11 +84,10 @@ test("server-renders the Mardal homepage", async () => {
   // only the category titles and direct navigation choices.
   assert.match(html, /Mardal Services/);
   assert.match(html, /AI &amp; Automation/);
-  assert.match(html, /Manufacturing/);
-  assert.match(html, /Arvena AI/);
-  assert.match(html, /ArvenaAI/);
-  assert.match(html, /About/);
-  assert.match(html, /Careers/);
+  assert.match(html, /System Integration/);
+  assert.match(html, /CRM Solutions/);
+  assert.match(html, /Case Studies/);
+  assert.match(html, /Company/);
   assert.match(html, /Hire us/);
   assert.match(html, /Start a project/);
 
