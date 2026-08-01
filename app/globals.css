@@ -418,7 +418,11 @@ video {
   transform: rotate(-45deg);
 }
 
-.pixel-arrow--corner.pixel-arrow--up-right {
+.pixel-arrow--down-right {
+  transform: rotate(45deg);
+}
+
+.pixel-arrow--corner:is(.pixel-arrow--up-right, .pixel-arrow--down-right) {
   grid-template-columns: repeat(9, var(--pixel-arrow-dot));
   grid-template-rows: repeat(9, var(--pixel-arrow-dot));
   transform: none;
