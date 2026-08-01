@@ -428,6 +428,10 @@ video {
   transform: none;
 }
 
+.pixel-arrow--corner.pixel-arrow--up-right {
+  transform: scaleY(-1);
+}
+
 .pixel-arrow > span {
   display: block;
   width: var(--pixel-arrow-dot);
