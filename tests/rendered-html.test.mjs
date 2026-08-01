@@ -80,17 +80,24 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /class="recommendation-wall recommendation-wall--front"/);
   assert.match(html, /card-icons\/recommendations\.png/);
 
-  // Header — the full menu, including entries whose sections are not on this
-  // page yet.
+  // Header — desktop retains its supporting context, while mobile presents
+  // only the category titles and direct navigation choices.
   assert.match(html, /Mardal Services/);
   assert.match(html, /AI &amp; Automation/);
-  assert.match(html, /Solutions by Industry/);
-  assert.match(html, /Mardal Products/);
-  assert.match(html, /Mardal Projects/);
-  assert.match(html, /Inside Mardal/);
+  assert.match(html, /Manufacturing/);
+  assert.match(html, /Arvena AI/);
+  assert.match(html, /ArvenaAI/);
+  assert.match(html, /About/);
   assert.match(html, /Careers/);
   assert.match(html, /Hire us/);
   assert.match(html, /Start a project/);
+
+  const mobileMenu = html.match(
+    /<div class="mobile-menu"[\s\S]*?Start a project/,
+  )?.[0];
+  assert.ok(mobileMenu);
+  assert.doesNotMatch(mobileMenu, /mobile-menu__(?:eyebrow|view-all)/);
+  assert.doesNotMatch(mobileMenu, /View all/);
 
   // The sections below the fold. These strings are deliberately ones the
   // header menu does not already satisfy, so they prove the section rendered.

@@ -339,7 +339,6 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                     }`}
                   >
                     <div>
-                      <p className="mobile-menu__eyebrow">{item.eyebrow}</p>
                       <ul>
                         {item.items.map((link) => (
                           <li key={link.label}>
@@ -352,13 +351,6 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                           </li>
                         ))}
                       </ul>
-                      <a
-                        className="mobile-menu__view-all"
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        View all {item.label} ↗
-                      </a>
                     </div>
                   </div>
                 </div>

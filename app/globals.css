@@ -493,8 +493,7 @@ video {
   border-right: 1px solid var(--line-soft);
 }
 
-.mega-menu__eyebrow,
-.mobile-menu__eyebrow {
+.mega-menu__eyebrow {
   margin: 0;
   color: var(--accent);
   font-size: var(--text-body);
@@ -2991,14 +2990,10 @@ video {
     grid-template-rows: 1fr;
   }
 
-  .mobile-menu__eyebrow {
-    padding-top: 0.25rem;
-  }
-
   .mobile-menu__submenu ul {
     display: grid;
     gap: 0.65rem;
-    margin: 1rem 0 0;
+    margin: 0.2rem 0 1.4rem;
     padding: 0;
     list-style: none;
   }
@@ -3009,13 +3004,6 @@ video {
     padding-block: 0.2rem;
     font-size: var(--text-body);
     letter-spacing: -0.02em;
-  }
-
-  .mobile-menu__view-all {
-    display: inline-flex;
-    margin: 1.25rem 0 1.4rem;
-    color: var(--accent);
-    font-weight: var(--weight-medium);
   }
 
   .mobile-menu__cta {
