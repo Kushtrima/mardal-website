@@ -3204,7 +3204,7 @@ video {
     font: inherit;
     font-family: var(--type-display);
     font-size: clamp(2.35rem, 7.2vw, 4rem);
-    font-weight: var(--weight-heading-xl);
+    font-weight: var(--weight-body);
     letter-spacing: var(--tracking-tight);
     line-height: 1.08;
     text-align: left;
