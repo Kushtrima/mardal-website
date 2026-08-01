@@ -419,8 +419,10 @@ video {
 }
 
 .pixel-arrow > span {
+  display: block;
   width: var(--pixel-arrow-dot);
   height: var(--pixel-arrow-dot);
+  box-sizing: border-box;
   border-radius: 50%;
   background: currentColor;
   opacity: 1;
@@ -428,7 +430,28 @@ video {
 }
 
 .pixel-arrow--square > span {
+  aspect-ratio: 1;
   border-radius: 0;
+}
+
+.pixel-arrow--small.pixel-arrow--square {
+  --pixel-arrow-dot: 2px;
+  --pixel-arrow-gap: 1px;
+}
+
+.pixel-arrow--compact.pixel-arrow--square {
+  --pixel-arrow-dot: 3px;
+  --pixel-arrow-gap: 1px;
+}
+
+.pixel-arrow--medium.pixel-arrow--square {
+  --pixel-arrow-dot: 4px;
+  --pixel-arrow-gap: 1px;
+}
+
+.pixel-arrow--large.pixel-arrow--square {
+  --pixel-arrow-dot: 5px;
+  --pixel-arrow-gap: 2px;
 }
 
 .pixel-arrow > [data-column="1"] {
