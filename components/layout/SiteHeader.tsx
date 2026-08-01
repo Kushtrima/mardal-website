@@ -456,7 +456,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                         className="mobile-menu__index-arrow"
                         direction="up-right"
                         shape="square"
-                        size="medium"
+                        size="compact"
                         variant="corner"
                       />
                     </button>
