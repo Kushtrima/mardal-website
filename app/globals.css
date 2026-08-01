@@ -638,7 +638,7 @@ video {
 @keyframes pixel-arrow-matrix-reconstruct {
   0%,
   5% {
-    opacity: 0;
+    opacity: 0.38;
   }
 
   9%,
@@ -648,7 +648,7 @@ video {
 
   62%,
   100% {
-    opacity: 0;
+    opacity: 0.38;
   }
 }
 
