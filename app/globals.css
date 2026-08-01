@@ -3016,8 +3016,8 @@ video {
 
   .mobile-menu__index-arrow {
     position: relative;
-    width: 3.65rem;
-    height: 2rem;
+    width: 2.1rem;
+    height: 1.15rem;
     flex: 0 0 auto;
     color: rgb(245 245 245 / 52%);
     transition:
@@ -3029,26 +3029,24 @@ video {
     position: absolute;
     top: 50%;
     left: 0;
-    width: 0.25rem;
-    height: 0.25rem;
+    width: 0.18rem;
+    height: 0.18rem;
     border-radius: 50%;
     background: currentColor;
     box-shadow:
-      0.48rem 0 currentColor,
-      0.96rem 0 currentColor,
-      1.44rem 0 currentColor,
-      1.92rem 0 currentColor,
-      2.4rem 0 currentColor,
-      2.88rem 0 currentColor,
-      3.36rem 0 currentColor,
-      2.4rem -0.96rem currentColor,
-      1.92rem -0.48rem currentColor,
-      2.4rem -0.48rem currentColor,
-      2.88rem -0.48rem currentColor,
-      1.92rem 0.48rem currentColor,
-      2.4rem 0.48rem currentColor,
-      2.88rem 0.48rem currentColor,
-      2.4rem 0.96rem currentColor;
+      0.26rem 0 currentColor,
+      0.52rem 0 currentColor,
+      0.78rem 0 currentColor,
+      1.04rem 0 currentColor,
+      1.3rem 0 currentColor,
+      1.56rem 0 currentColor,
+      1.82rem 0 currentColor,
+      1.3rem -0.52rem currentColor,
+      1.3rem -0.26rem currentColor,
+      1.56rem -0.26rem currentColor,
+      1.3rem 0.26rem currentColor,
+      1.56rem 0.26rem currentColor,
+      1.3rem 0.52rem currentColor;
     transform: translateY(-50%);
     content: "";
   }
