@@ -3209,6 +3209,8 @@ video {
   }
 
   .mobile-menu__index-arrow {
+    --pixel-arrow-gap: 2px;
+
     color: #fff;
   }
 
