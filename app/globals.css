@@ -3043,37 +3043,37 @@ video {
 
   .mobile-menu__index-arrow > [data-column="2"] {
     grid-column: 2;
-    animation-delay: 38ms;
+    animation-delay: 90ms;
   }
 
   .mobile-menu__index-arrow > [data-column="3"] {
     grid-column: 3;
-    animation-delay: 76ms;
+    animation-delay: 180ms;
   }
 
   .mobile-menu__index-arrow > [data-column="4"] {
     grid-column: 4;
-    animation-delay: 114ms;
+    animation-delay: 270ms;
   }
 
   .mobile-menu__index-arrow > [data-column="5"] {
     grid-column: 5;
-    animation-delay: 152ms;
+    animation-delay: 360ms;
   }
 
   .mobile-menu__index-arrow > [data-column="6"] {
     grid-column: 6;
-    animation-delay: 190ms;
+    animation-delay: 450ms;
   }
 
   .mobile-menu__index-arrow > [data-column="7"] {
     grid-column: 7;
-    animation-delay: 228ms;
+    animation-delay: 540ms;
   }
 
   .mobile-menu__index-arrow > [data-column="8"] {
     grid-column: 8;
-    animation-delay: 266ms;
+    animation-delay: 630ms;
   }
 
   .mobile-menu__index-arrow > [data-row="1"] {
@@ -3111,23 +3111,27 @@ video {
     color: var(--accent);
   }
 
-  .mobile-menu__index-link:hover .mobile-menu__index-arrow > span,
-  .mobile-menu__index-link:focus-visible .mobile-menu__index-arrow > span {
-    animation: mobile-menu-dot-step 420ms var(--ease-standard) both;
+  .mobile-menu__index-link:hover
+    .mobile-menu__index-arrow
+    > [data-row="3"],
+  .mobile-menu__index-link:focus-visible
+    .mobile-menu__index-arrow
+    > [data-row="3"] {
+    animation-name: mobile-menu-pixel-off;
+    animation-duration: 110ms;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
   }
 
-  @keyframes mobile-menu-dot-step {
+  @keyframes mobile-menu-pixel-off {
     0%,
     100% {
       opacity: 0.72;
     }
 
-    42% {
-      opacity: 0.08;
-    }
-
-    68% {
-      opacity: 1;
+    25%,
+    75% {
+      opacity: 0;
     }
   }
 
