@@ -469,20 +469,10 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                         {mobileMenuArrowDots.map(([column, row]) => (
                           <span
                             key={`${column}-${row}`}
-                            className={
-                              column === 1 && row === 3
-                                ? "mobile-menu__index-arrow-tail"
-                                : undefined
-                            }
                             data-column={column}
                             data-row={row}
                           />
                         ))}
-                        <span
-                          className="mobile-menu__index-arrow-lead"
-                          data-column="9"
-                          data-row="3"
-                        />
                       </span>
                     </button>
                   </li>

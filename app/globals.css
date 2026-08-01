@@ -3016,10 +3016,10 @@ video {
 
   .mobile-menu__index-arrow {
     display: grid;
-    width: 2.26rem;
+    width: 2.1rem;
     height: 1.22rem;
     flex: 0 0 auto;
-    grid-template-columns: repeat(9, 0.18rem);
+    grid-template-columns: repeat(8, 0.18rem);
     grid-template-rows: repeat(5, 0.18rem);
     gap: 0.08rem;
     align-content: center;
@@ -3033,46 +3033,47 @@ video {
     border-radius: 50%;
     background: currentColor;
     opacity: 0.72;
-    will-change: transform, opacity;
-    transition:
-      opacity 220ms var(--ease-standard),
-      transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity;
   }
 
   .mobile-menu__index-arrow > [data-column="1"] {
     grid-column: 1;
+    animation-delay: 0ms;
   }
 
   .mobile-menu__index-arrow > [data-column="2"] {
     grid-column: 2;
+    animation-delay: 38ms;
   }
 
   .mobile-menu__index-arrow > [data-column="3"] {
     grid-column: 3;
+    animation-delay: 76ms;
   }
 
   .mobile-menu__index-arrow > [data-column="4"] {
     grid-column: 4;
+    animation-delay: 114ms;
   }
 
   .mobile-menu__index-arrow > [data-column="5"] {
     grid-column: 5;
+    animation-delay: 152ms;
   }
 
   .mobile-menu__index-arrow > [data-column="6"] {
     grid-column: 6;
+    animation-delay: 190ms;
   }
 
   .mobile-menu__index-arrow > [data-column="7"] {
     grid-column: 7;
+    animation-delay: 228ms;
   }
 
   .mobile-menu__index-arrow > [data-column="8"] {
     grid-column: 8;
-  }
-
-  .mobile-menu__index-arrow > [data-column="9"] {
-    grid-column: 9;
+    animation-delay: 266ms;
   }
 
   .mobile-menu__index-arrow > [data-row="1"] {
@@ -3110,22 +3111,24 @@ video {
     color: var(--accent);
   }
 
-  .mobile-menu__index-arrow-lead {
-    opacity: 0;
-    transform: scale(0.2);
+  .mobile-menu__index-link:hover .mobile-menu__index-arrow > span,
+  .mobile-menu__index-link:focus-visible .mobile-menu__index-arrow > span {
+    animation: mobile-menu-dot-step 420ms var(--ease-standard) both;
   }
 
-  .mobile-menu__index-link:hover .mobile-menu__index-arrow-tail,
-  .mobile-menu__index-link:focus-visible .mobile-menu__index-arrow-tail {
-    opacity: 0;
-    transform: scale(0.2);
-  }
+  @keyframes mobile-menu-dot-step {
+    0%,
+    100% {
+      opacity: 0.72;
+    }
 
-  .mobile-menu__index-link:hover .mobile-menu__index-arrow-lead,
-  .mobile-menu__index-link:focus-visible .mobile-menu__index-arrow-lead {
-    opacity: 0.72;
-    transform: scale(1);
-    transition-delay: 70ms;
+    42% {
+      opacity: 0.08;
+    }
+
+    68% {
+      opacity: 1;
+    }
   }
 
   .mobile-menu__detail {
