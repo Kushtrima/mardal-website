@@ -20,14 +20,14 @@ const mobileMenuArrowDots = [
   [3, 3],
   [4, 3],
   [5, 3],
-  [6, 1],
-  [6, 2],
   [6, 3],
+  [6, 2],
   [6, 4],
+  [6, 1],
   [6, 5],
   [7, 2],
-  [7, 3],
   [7, 4],
+  [7, 3],
   [8, 3],
 ] as const;
 
@@ -466,11 +466,12 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                         className="mobile-menu__index-arrow"
                         aria-hidden="true"
                       >
-                        {mobileMenuArrowDots.map(([column, row]) => (
+                        {mobileMenuArrowDots.map(([column, row], step) => (
                           <span
                             key={`${column}-${row}`}
                             data-column={column}
                             data-row={row}
+                            data-step={step}
                           />
                         ))}
                       </span>
