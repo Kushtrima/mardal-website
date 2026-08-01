@@ -638,22 +638,17 @@ video {
   0%,
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 
-  3.8% {
-    opacity: 0.68;
-    transform: scale(0.82);
-  }
-
-  5.8% {
-    opacity: 0.18;
-    transform: scale(0.52);
-  }
-
-  8.5% {
+  5.5% {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(2px);
+  }
+
+  11% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -3248,16 +3243,6 @@ video {
     --pixel-arrow-gap: 2px;
 
     color: #fff;
-  }
-
-  .mobile-menu--open
-    .mobile-menu__index-arrow.pixel-arrow--animated
-    > span {
-    transform-origin: center;
-    animation-name: pixel-arrow-square-wave;
-    animation-duration: 1840ms;
-    animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
-    animation-iteration-count: infinite;
   }
 
   .mobile-menu__index-link:hover,
