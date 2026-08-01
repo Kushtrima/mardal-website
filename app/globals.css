@@ -608,9 +608,9 @@ video {
 .pixel-arrow--corner.pixel-arrow--animated:hover > span,
 :is(a, button):hover .pixel-arrow--corner.pixel-arrow--animated > span,
 :is(a, button):focus-visible .pixel-arrow--corner.pixel-arrow--animated > span {
-  animation-name: pixel-arrow-matrix-flip;
-  animation-duration: 2160ms;
-  animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+  animation-name: pixel-arrow-matrix-rebuild;
+  animation-duration: 2040ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center;
   will-change: opacity, transform;
 }
@@ -635,26 +635,26 @@ video {
   }
 }
 
-@keyframes pixel-arrow-matrix-flip {
+@keyframes pixel-arrow-matrix-rebuild {
   0%,
   100% {
     opacity: 1;
-    transform: perspective(48px) rotateY(0deg);
+    transform: scale(1);
   }
 
-  2.5% {
+  2% {
     opacity: 1;
-    transform: perspective(48px) rotateY(0deg);
+    transform: scale(1);
   }
 
-  6.5% {
-    opacity: 0.08;
-    transform: perspective(48px) rotateY(90deg);
+  5.5% {
+    opacity: 0;
+    transform: scale(0.35);
   }
 
-  10.5% {
+  9% {
     opacity: 1;
-    transform: perspective(48px) rotateY(0deg);
+    transform: scale(1);
   }
 }
 
