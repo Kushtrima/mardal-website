@@ -2901,6 +2901,7 @@ video {
   .site-nav {
     grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 0.65rem;
+    padding: 0.65rem;
   }
 
   .nav-list {
@@ -3314,7 +3315,7 @@ video {
   .site-nav {
     grid-template-columns: minmax(0, 1fr) auto;
     min-height: 3.15rem;
-    padding: 0.2rem 0.3rem 0.2rem 0.6rem;
+    padding: 0.55rem;
   }
 
   .brand {
