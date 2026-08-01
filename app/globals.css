@@ -545,55 +545,55 @@ video {
 }
 
 .pixel-arrow > [data-step="1"] {
-  animation-delay: 70ms;
+  animation-delay: 55ms;
 }
 
 .pixel-arrow > [data-step="2"] {
-  animation-delay: 140ms;
+  animation-delay: 110ms;
 }
 
 .pixel-arrow > [data-step="3"] {
-  animation-delay: 210ms;
+  animation-delay: 165ms;
 }
 
 .pixel-arrow > [data-step="4"] {
-  animation-delay: 280ms;
+  animation-delay: 220ms;
 }
 
 .pixel-arrow > [data-step="5"] {
-  animation-delay: 350ms;
+  animation-delay: 275ms;
 }
 
 .pixel-arrow > [data-step="6"] {
-  animation-delay: 420ms;
+  animation-delay: 330ms;
 }
 
 .pixel-arrow > [data-step="7"] {
-  animation-delay: 490ms;
+  animation-delay: 385ms;
 }
 
 .pixel-arrow > [data-step="8"] {
-  animation-delay: 560ms;
+  animation-delay: 440ms;
 }
 
 .pixel-arrow > [data-step="9"] {
-  animation-delay: 630ms;
+  animation-delay: 495ms;
 }
 
 .pixel-arrow > [data-step="10"] {
-  animation-delay: 700ms;
+  animation-delay: 550ms;
 }
 
 .pixel-arrow > [data-step="11"] {
-  animation-delay: 770ms;
+  animation-delay: 605ms;
 }
 
 .pixel-arrow > [data-step="12"] {
-  animation-delay: 840ms;
+  animation-delay: 660ms;
 }
 
 .pixel-arrow > [data-step="13"] {
-  animation-delay: 910ms;
+  animation-delay: 715ms;
 }
 
 .pixel-arrow--animated:hover > span,
@@ -609,7 +609,7 @@ video {
 :is(a, button):hover .pixel-arrow--corner.pixel-arrow--animated > span,
 :is(a, button):focus-visible .pixel-arrow--corner.pixel-arrow--animated > span {
   animation-name: pixel-arrow-matrix-reconstruct;
-  animation-duration: 1700ms;
+  animation-duration: 1400ms;
   animation-timing-function: ease-in-out;
   animation-fill-mode: both;
   will-change: opacity;
