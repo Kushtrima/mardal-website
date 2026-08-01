@@ -466,11 +466,12 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                         className="mobile-menu__index-arrow"
                         aria-hidden="true"
                       >
-                        {mobileMenuArrowDots.map(([column, row]) => (
+                        {mobileMenuArrowDots.map(([column, row], step) => (
                           <span
                             key={`${column}-${row}`}
                             data-column={column}
                             data-row={row}
+                            data-step={step}
                           />
                         ))}
                       </span>
