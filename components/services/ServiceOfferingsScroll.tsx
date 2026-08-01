@@ -16,7 +16,7 @@ const STACKED_QUERY =
  * Smartphones use a pinned vertical stack, while tablets and reduced-motion
  * users keep a native vertical document.
  */
-export function AiAutomationOfferingsScroll() {
+export function ServiceOfferingsScroll() {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 

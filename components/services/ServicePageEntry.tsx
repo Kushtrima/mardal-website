@@ -5,12 +5,12 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /**
- * A single route-entry sequence for the AI & Automation hero.
+ * Shared route-entry sequence for editorial service-page heroes.
  *
  * The pattern keeps its responsive CSS transform untouched; its motion is a
  * clip reveal, while the three text elements use shallow positional movement.
  */
-export function AiAutomationHeroEntry() {
+export function ServicePageEntry() {
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 

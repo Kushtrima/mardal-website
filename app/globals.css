@@ -3917,6 +3917,8 @@ video {
 .service-page {
   --service-surface: var(--canvas);
   --service-ink: var(--ink);
+  --service-mobile-header-height: 3.9rem;
+  --service-mobile-hero-tail: 30px;
 
   color: var(--service-ink);
   background: var(--service-surface);
@@ -4467,18 +4469,16 @@ video {
   }
 }
 
-/* Mobile: keep the same visual language, but let the page behave like a
-   natural editorial document. The service stack is deliberately unpinned so
-   touch scrolling stays predictable and every long capability list can use
-   the height it actually needs. */
+/* Shared mobile service foundation. JavaScript progressively enhances the
+   offerings into the approved pinned stack when motion is available. */
 @media (max-width: 48rem) {
   .service-hero {
-    padding-bottom: 30px;
+    padding-bottom: var(--service-mobile-hero-tail);
   }
 
   .service-hero__inner {
     display: grid;
-    height: calc(100dvh - 3.9rem);
+    height: calc(100dvh - var(--service-mobile-header-height));
     min-height: 0;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: auto minmax(12rem, 1fr) auto;

@@ -3,8 +3,7 @@ import { Container } from "../../../components/layout/Container";
 import { SiteFooter } from "../../../components/layout/SiteFooter";
 import { SiteHeader } from "../../../components/layout/SiteHeader";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
-import { AiAutomationHeroEntry } from "../../../components/services/AiAutomationHeroEntry";
-import { AiAutomationOfferingsScroll } from "../../../components/services/AiAutomationOfferingsScroll";
+import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
 import { aiAutomation } from "../../../content/ai-automation";
 import { products } from "../../../content/home";
 
@@ -48,8 +47,7 @@ export default function AiAutomationPage() {
   return (
     <>
       <SectionEnter />
-      <AiAutomationHeroEntry />
-      <AiAutomationOfferingsScroll />
+      <ServicePageMotion />
 
       <main className="service-page" id="main-content" data-service-page>
         <SiteHeader />
