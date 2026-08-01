@@ -447,7 +447,10 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                       }}
                     >
                       <span>{item.label}</span>
-                      <span aria-hidden="true">→</span>
+                      <span
+                        className="mobile-menu__index-arrow"
+                        aria-hidden="true"
+                      />
                     </button>
                   </li>
                 ))}
