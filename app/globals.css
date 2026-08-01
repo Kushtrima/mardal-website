@@ -3191,6 +3191,10 @@ video {
     padding-top: 0.75rem;
   }
 
+  .service-page .site-header {
+    background: #fff;
+  }
+
   .site-nav {
     grid-template-columns: minmax(0, 1fr) auto;
     min-height: 3.15rem;
