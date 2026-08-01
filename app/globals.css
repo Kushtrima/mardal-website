@@ -608,11 +608,11 @@ video {
 .pixel-arrow--corner.pixel-arrow--animated:hover > span,
 :is(a, button):hover .pixel-arrow--corner.pixel-arrow--animated > span,
 :is(a, button):focus-visible .pixel-arrow--corner.pixel-arrow--animated > span {
-  animation-name: pixel-arrow-matrix-rebuild;
-  animation-duration: 2040ms;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: center;
-  will-change: opacity, transform;
+  animation-name: pixel-arrow-matrix-reconstruct;
+  animation-duration: 4000ms;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+  will-change: opacity;
 }
 
 @keyframes pixel-arrow-conveyor {
@@ -635,26 +635,20 @@ video {
   }
 }
 
-@keyframes pixel-arrow-matrix-rebuild {
+@keyframes pixel-arrow-matrix-reconstruct {
   0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  2% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  5.5% {
+  5% {
     opacity: 0;
-    transform: scale(0.35);
   }
 
-  9% {
+  9%,
+  55% {
     opacity: 1;
-    transform: scale(1);
+  }
+
+  62%,
+  100% {
+    opacity: 0;
   }
 }
 
