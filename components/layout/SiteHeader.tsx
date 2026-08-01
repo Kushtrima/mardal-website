@@ -490,7 +490,6 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                         }}
                       >
                         <span>{link.label}</span>
-                        <span aria-hidden="true">↗</span>
                       </a>
                     </li>
                   );
