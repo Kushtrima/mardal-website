@@ -3045,12 +3045,12 @@ video {
     letter-spacing: -0.025em;
   }
 
-  .mobile-menu__back span:last-child {
+  .mobile-menu__back span:first-child {
     transition: transform var(--duration-base) var(--ease-standard);
   }
 
-  .mobile-menu__back:hover span:last-child,
-  .mobile-menu__back:focus-visible span:last-child {
+  .mobile-menu__back:hover span:first-child,
+  .mobile-menu__back:focus-visible span:first-child {
     transform: translate(0.18rem, -0.18rem);
   }
 
