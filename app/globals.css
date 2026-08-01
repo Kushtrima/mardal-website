@@ -608,9 +608,11 @@ video {
 .pixel-arrow--corner.pixel-arrow--animated:hover > span,
 :is(a, button):hover .pixel-arrow--corner.pixel-arrow--animated > span,
 :is(a, button):focus-visible .pixel-arrow--corner.pixel-arrow--animated > span {
-  animation-name: pixel-arrow-matrix-scan;
-  animation-duration: 2040ms;
-  animation-timing-function: steps(1, end);
+  animation-name: pixel-arrow-matrix-flip;
+  animation-duration: 2160ms;
+  animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+  transform-origin: center;
+  will-change: opacity, transform;
 }
 
 @keyframes pixel-arrow-conveyor {
@@ -633,31 +635,26 @@ video {
   }
 }
 
-@keyframes pixel-arrow-matrix-scan {
+@keyframes pixel-arrow-matrix-flip {
   0%,
   100% {
     opacity: 1;
-    background-color: currentColor;
+    transform: perspective(48px) rotateY(0deg);
   }
 
-  3.2% {
+  2.5% {
     opacity: 1;
-    background-color: var(--accent-soft);
+    transform: perspective(48px) rotateY(0deg);
   }
 
-  5.4% {
-    opacity: 1;
-    background-color: var(--accent);
+  6.5% {
+    opacity: 0.08;
+    transform: perspective(48px) rotateY(90deg);
   }
 
-  8.2% {
+  10.5% {
     opacity: 1;
-    background-color: var(--accent-soft);
-  }
-
-  11% {
-    opacity: 1;
-    background-color: currentColor;
+    transform: perspective(48px) rotateY(0deg);
   }
 }
 
@@ -3263,13 +3260,6 @@ video {
   .mobile-menu__index-link:hover .mobile-menu__index-arrow,
   .mobile-menu__index-link:focus-visible .mobile-menu__index-arrow {
     color: var(--accent);
-  }
-
-  .mobile-menu__index-link:hover
-    .mobile-menu__index-arrow.pixel-arrow--corner,
-  .mobile-menu__index-link:focus-visible
-    .mobile-menu__index-arrow.pixel-arrow--corner {
-    color: #fff;
   }
 
   .mobile-menu__detail {
