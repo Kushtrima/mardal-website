@@ -493,7 +493,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                 onClick={() => setMobileActiveMenu(null)}
                 data-mobile-detail-entry
               >
-                <span aria-hidden="true">↗</span>
+                <span aria-hidden="true">↖</span>
                 <span>{mobileItem.label}</span>
               </button>
             </div>
