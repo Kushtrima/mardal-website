@@ -609,7 +609,7 @@ video {
 :is(a, button):hover .pixel-arrow--corner.pixel-arrow--animated > span,
 :is(a, button):focus-visible .pixel-arrow--corner.pixel-arrow--animated > span {
   animation-name: pixel-arrow-matrix-reconstruct;
-  animation-duration: 4000ms;
+  animation-duration: 2800ms;
   animation-timing-function: ease-in-out;
   animation-fill-mode: both;
   will-change: opacity;
