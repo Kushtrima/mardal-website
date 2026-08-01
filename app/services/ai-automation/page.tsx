@@ -4,6 +4,7 @@ import { SiteFooter } from "../../../components/layout/SiteFooter";
 import { SiteHeader } from "../../../components/layout/SiteHeader";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
+import { PixelArrow } from "../../../components/ui/PixelArrow";
 import { aiAutomation } from "../../../content/ai-automation";
 import { products } from "../../../content/home";
 
@@ -89,9 +90,11 @@ export default function AiAutomationPage() {
               data-service-hero-cta
             >
               {aiAutomation.heroCta}
-              <span className="service-hero__cta-arrow" aria-hidden="true">
-                ↗
-              </span>
+              <PixelArrow
+                className="service-hero__cta-arrow"
+                direction="up-right"
+                size="small"
+              />
             </a>
           </Container>
         </section>
@@ -210,9 +213,11 @@ export default function AiAutomationPage() {
                 data-service-next-link
               >
                 <span data-service-next-label>Automation</span>
-                <span className="service-journey__next-arrow" aria-hidden="true">
-                  ↗
-                </span>
+                <PixelArrow
+                  className="service-journey__next-arrow"
+                  direction="up-right"
+                  size="small"
+                />
               </a>
             </Container>
           </div>
@@ -231,13 +236,10 @@ export default function AiAutomationPage() {
 
               <a className="service-cta__link" href={products.ctaHref}>
                 {aiAutomation.cta.label}
-                <svg
+                <PixelArrow
                   className="service-cta__arrow"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path d="M3.5 12h16.5M13.5 5.5 20 12l-6.5 6.5" />
-                </svg>
+                  size="small"
+                />
               </a>
             </div>
           </Container>

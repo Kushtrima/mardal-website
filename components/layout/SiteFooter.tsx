@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PixelArrow } from "../ui/PixelArrow";
 import { Container } from "./Container";
 import { FooterBars } from "./FooterBars";
 import { SocialIcon } from "./SocialIcon";
@@ -91,13 +92,11 @@ export function SiteFooter() {
                 the bars instead of among them. */}
             <a className="site-footer__top-link" href="#main-content">
               Back to top
-              <svg
+              <PixelArrow
                 className="site-footer__arrow site-footer__arrow--up"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M12 20.5V4M5.5 10.5 12 4l6.5 6.5" />
-              </svg>
+                direction="up"
+                size="small"
+              />
             </a>
           </div>
 

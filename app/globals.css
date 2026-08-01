@@ -392,8 +392,8 @@ video {
 }
 
 .pixel-arrow--small {
-  --pixel-arrow-dot: 0.14rem;
-  --pixel-arrow-gap: 0.065rem;
+  --pixel-arrow-dot: 0.1rem;
+  --pixel-arrow-gap: 0.045rem;
 }
 
 .pixel-arrow--large {
@@ -403,6 +403,14 @@ video {
 
 .pixel-arrow--left {
   transform: rotate(180deg);
+}
+
+.pixel-arrow--up {
+  transform: rotate(-90deg);
+}
+
+.pixel-arrow--up-right {
+  transform: rotate(-45deg);
 }
 
 .pixel-arrow > span {
@@ -704,13 +712,8 @@ video {
   font-weight: var(--weight-medium);
 }
 
-.mega-menu__view-all span {
+.mega-menu__view-all-arrow {
   color: var(--accent);
-  transition: transform var(--duration-fast) var(--ease-standard);
-}
-
-.mega-menu__view-all:hover span {
-  transform: translate(0.2rem, -0.2rem);
 }
 
 .mega-menu__links {
@@ -755,18 +758,11 @@ video {
 }
 
 .mega-menu__arrow {
-  display: grid;
-  width: 2.25rem;
-  aspect-ratio: 1;
-  place-items: center;
   justify-self: end;
-  border-radius: var(--radius-circle);
   color: var(--accent);
-  font-size: var(--text-body);
   opacity: 0;
   transition:
     color var(--duration-base) var(--ease-standard),
-    background-color var(--duration-base) var(--ease-standard),
     opacity var(--duration-base) var(--ease-standard);
 }
 
@@ -783,8 +779,7 @@ video {
 }
 
 .mega-menu__link:hover .mega-menu__arrow {
-  background: var(--accent);
-  color: var(--accent-contrast);
+  color: var(--accent);
   opacity: 1;
 }
 
@@ -1929,26 +1924,9 @@ video {
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
-/* Drawn rather than typed, so the weight matches the rule above it. */
-.industries-explore__arrow {
-  width: 1.15em;
-  height: 1.15em;
-  flex: 0 0 auto;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.6;
-  transition: transform var(--duration-fast) var(--ease-standard);
-}
-
 @media (hover: hover) {
   .industries-explore:hover {
     color: var(--accent-strong);
-  }
-
-  .industries-explore:hover .industries-explore__arrow {
-    transform: translateX(0.25em);
   }
 }
 
@@ -2536,18 +2514,6 @@ video {
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
-.site-footer__arrow {
-  width: 0.8em;
-  height: 0.8em;
-  flex: 0 0 auto;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.6;
-  transition: transform var(--duration-fast) var(--ease-standard);
-}
-
 /* One column per menu group, each only as wide as its own longest label
    rather than an equal share. Five equal columns are about 120px here and
    "System Integration" needs 145, so equal shares wrap it; sized to content
@@ -3019,11 +2985,6 @@ video {
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
-.site-footer__top-link .site-footer__arrow {
-  width: 1.05em;
-  height: 1.05em;
-}
-
 /* Everything on the panel is white, so hover dips rather than recolours:
    there is no second colour up here that would still read. */
 @media (hover: hover) {
@@ -3033,13 +2994,6 @@ video {
     opacity: 0.72;
   }
 
-  .site-footer__email:hover .site-footer__arrow {
-    transform: translateX(0.2em);
-  }
-
-  .site-footer__top-link:hover .site-footer__arrow {
-    transform: translateY(-0.25em);
-  }
 }
 
 /* No way back up on a phone.
@@ -3222,15 +3176,6 @@ video {
     letter-spacing: -0.025em;
   }
 
-  .mobile-menu__back span:first-child {
-    transition: transform var(--duration-base) var(--ease-standard);
-  }
-
-  .mobile-menu__back:hover span:first-child,
-  .mobile-menu__back:focus-visible span:first-child {
-    transform: translateX(-0.2rem);
-  }
-
   .mobile-menu__detail-list {
     display: grid;
     gap: 0;
@@ -3287,11 +3232,6 @@ video {
     padding-inline: 1.15rem;
     border-radius: var(--shape-control);
     font-size: clamp(1rem, 2.4vw, 1.2rem);
-  }
-
-  .mobile-menu__cta span:last-child {
-    font-size: 1.15em;
-    transform: translateY(-0.05em);
   }
 
   .site-header--mobile-menu-open {
@@ -3927,28 +3867,9 @@ video {
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
-/* Drawn rather than typed, so its weight matches the words beside it. Without
-   this the browser gives the svg its default size and a black fill, and it
-   lands under the link at forty pixels across. */
-.product__arrow {
-  width: 1.15em;
-  height: 1.15em;
-  flex: 0 0 auto;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.6;
-  transition: transform var(--duration-fast) var(--ease-standard);
-}
-
 @media (hover: hover) {
   .product__cta:hover {
     color: var(--accent-strong);
-  }
-
-  .product__cta:hover .product__arrow {
-    transform: translateX(0.25em);
   }
 }
 
@@ -4296,18 +4217,9 @@ video {
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
-.service-hero__cta-arrow {
-  display: inline-block;
-  transition: transform var(--duration-fast) var(--ease-standard);
-}
-
 @media (hover: hover) {
   .service-hero__cta:hover {
     color: var(--accent-strong);
-  }
-
-  .service-hero__cta:hover .service-hero__cta-arrow {
-    transform: translate(0.2em, -0.2em);
   }
 }
 
@@ -4543,22 +4455,10 @@ video {
   transition: color 250ms var(--ease-standard);
 }
 
-.service-journey__next-arrow {
-  display: inline-block;
-  font-size: 1.15em;
-  line-height: 0.8;
-  transform: translateY(-0.06em);
-  transition: transform 300ms var(--ease-standard);
-}
-
 @media (hover: hover) {
   .service-journey__nav-link:hover,
   .service-journey__next:hover {
     color: var(--accent);
-  }
-
-  .service-journey__next:hover .service-journey__next-arrow {
-    transform: translate(0.16em, -0.2em);
   }
 }
 
@@ -4603,24 +4503,6 @@ video {
   font-size: var(--text-body);
   letter-spacing: -0.02em;
   line-height: 1;
-}
-
-.service-cta__arrow {
-  width: 1.15em;
-  height: 1.15em;
-  flex: 0 0 auto;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.6;
-  transition: transform var(--duration-fast) var(--ease-standard);
-}
-
-@media (hover: hover) {
-  .service-cta__link:hover .service-cta__arrow {
-    transform: translateX(0.25em);
-  }
 }
 
 /* Tablet: preserve the desktop composition, but reduce the title and pattern

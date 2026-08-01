@@ -18,7 +18,7 @@ const pixelArrowDots = [
 ] as const;
 
 export type PixelArrowSize = "small" | "medium" | "large";
-export type PixelArrowDirection = "right" | "left";
+export type PixelArrowDirection = "right" | "left" | "up" | "up-right";
 
 type PixelArrowProps = {
   animated?: boolean;
@@ -38,7 +38,7 @@ export function PixelArrow({
       className={cn(
         "pixel-arrow",
         `pixel-arrow--${size}`,
-        direction === "left" && "pixel-arrow--left",
+        `pixel-arrow--${direction}`,
         animated && "pixel-arrow--animated",
         className,
       )}

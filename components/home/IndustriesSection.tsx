@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Container } from "../layout/Container";
+import { PixelArrow } from "../ui/PixelArrow";
 import { solutions } from "../../content/home";
 
 /** The rule beside each industry takes the next of the four brand colours. */
@@ -98,13 +99,10 @@ export function IndustriesSection() {
 
             <a className="industries-explore" href="#contact">
               Explore
-              <svg
+              <PixelArrow
                 className="industries-explore__arrow"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M3.5 12h16.5M13.5 5.5 20 12l-6.5 6.5" />
-              </svg>
+                size="small"
+              />
             </a>
           </div>
 

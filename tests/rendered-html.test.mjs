@@ -90,6 +90,8 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /Company/);
   assert.match(html, /Hire us/);
   assert.match(html, /Start a project/);
+  assert.match(html, /class="pixel-arrow /);
+  assert.doesNotMatch(html, /[↗→←]/);
 
   const mobileMenu = html.match(
     /<div class="mobile-menu"[\s\S]*?Start a project/,
@@ -133,7 +135,10 @@ test("server-renders the Mardal homepage", async () => {
   );
   // A quiet link, not a filled box: the same one the industries use.
   assert.equal((html.match(/class="product__cta"/g) ?? []).length, 3);
-  assert.equal((html.match(/class="product__arrow"/g) ?? []).length, 3);
+  assert.equal(
+    (html.match(/class="[^"]*product__arrow[^"]*"/g) ?? []).length,
+    3,
+  );
   assert.doesNotMatch(html, /button--flat|shape-flat/);
   // Each product states the two things actually known about it, against a
   // rule, the way the reference sets its facts.
@@ -372,6 +377,8 @@ test("server-renders the AI & Automation service page", async () => {
   // The page carries the site's own header and footer.
   assert.match(html, /class="site-nav"/);
   assert.match(html, /<footer class="site-footer"/);
+  assert.match(html, /class="pixel-arrow /);
+  assert.doesNotMatch(html, /[↗→←]/);
 });
 
 test("the menu points at the service page that exists", async () => {

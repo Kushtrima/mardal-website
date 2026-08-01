@@ -387,7 +387,11 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                 onClick={() => setMegaMenuOpen(false)}
               >
                 View all {activeItem.label}
-                <span aria-hidden="true">↗</span>
+                <PixelArrow
+                  className="mega-menu__view-all-arrow"
+                  direction="up-right"
+                  size="small"
+                />
               </a>
             </div>
 
@@ -403,9 +407,11 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <span className="mega-menu__label">{item.label}</span>
-                    <span className="mega-menu__arrow" aria-hidden="true">
-                      ↗
-                    </span>
+                    <PixelArrow
+                      className="mega-menu__arrow"
+                      direction="up-right"
+                      size="small"
+                    />
                   </a>
                 </li>
               ))}
@@ -495,7 +501,11 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                 onClick={() => setMobileActiveMenu(null)}
                 data-mobile-detail-entry
               >
-                <span aria-hidden="true">←</span>
+                <PixelArrow
+                  className="mobile-menu__back-arrow"
+                  direction="left"
+                  size="small"
+                />
                 <span>{mobileItem.label}</span>
               </button>
             </div>
@@ -510,7 +520,11 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
             }}
           >
             <span>Start a project</span>
-            <span aria-hidden="true">↗</span>
+            <PixelArrow
+              className="mobile-menu__cta-arrow"
+              direction="up-right"
+              size="small"
+            />
           </Button>
         </Container>
       </div>

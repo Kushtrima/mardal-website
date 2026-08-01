@@ -1,4 +1,5 @@
 import { Container } from "../layout/Container";
+import { PixelArrow } from "../ui/PixelArrow";
 import { ProductsPin } from "./ProductsPin";
 import { products } from "../../content/home";
 
@@ -87,13 +88,10 @@ export function ProductsSection() {
 
                   <a className="product__cta" href={products.ctaHref}>
                     {products.cta}
-                    <svg
+                    <PixelArrow
                       className="product__arrow"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path d="M3.5 12h16.5M13.5 5.5 20 12l-6.5 6.5" />
-                    </svg>
+                      size="small"
+                    />
                   </a>
                 </div>
               </li>
