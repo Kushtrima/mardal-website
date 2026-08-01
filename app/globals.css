@@ -3023,7 +3023,7 @@ video {
     grid-template-rows: repeat(5, 0.18rem);
     gap: 0.08rem;
     align-content: center;
-    color: rgb(245 245 245 / 52%);
+    color: #fff;
     transition: color var(--duration-base) var(--ease-standard);
   }
 
@@ -3032,7 +3032,7 @@ video {
     height: 0.18rem;
     border-radius: 50%;
     background: currentColor;
-    opacity: 0.72;
+    opacity: 1;
     will-change: opacity;
   }
 
@@ -3155,10 +3155,6 @@ video {
     color: var(--accent);
   }
 
-  .mobile-menu__index-link.is-current .mobile-menu__index-arrow {
-    color: var(--accent);
-  }
-
   .mobile-menu__index-link:hover .mobile-menu__index-arrow > span,
   .mobile-menu__index-link:focus-visible .mobile-menu__index-arrow > span {
     animation-name: mobile-menu-pixel-conveyor;
@@ -3175,7 +3171,7 @@ video {
 
     5.6%,
     100% {
-      opacity: 0.72;
+      opacity: 1;
     }
   }
 
