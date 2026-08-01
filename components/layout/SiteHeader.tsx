@@ -14,7 +14,22 @@ import { Button } from "../ui/Button";
 import { Container } from "./Container";
 import { menu } from "../../content/home";
 
-
+const mobileMenuArrowDots = [
+  [1, 3],
+  [2, 3],
+  [3, 3],
+  [4, 3],
+  [5, 3],
+  [6, 1],
+  [6, 2],
+  [6, 3],
+  [6, 4],
+  [6, 5],
+  [7, 2],
+  [7, 3],
+  [7, 4],
+  [8, 3],
+] as const;
 
 type NavigationKey = (typeof menu)[number]["key"];
 
@@ -450,7 +465,15 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                       <span
                         className="mobile-menu__index-arrow"
                         aria-hidden="true"
-                      />
+                      >
+                        {mobileMenuArrowDots.map(([column, row]) => (
+                          <span
+                            key={`${column}-${row}`}
+                            data-column={column}
+                            data-row={row}
+                          />
+                        ))}
+                      </span>
                     </button>
                   </li>
                 ))}
