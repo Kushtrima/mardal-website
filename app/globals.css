@@ -609,8 +609,8 @@ video {
 :is(a, button):hover .pixel-arrow--corner.pixel-arrow--animated > span,
 :is(a, button):focus-visible .pixel-arrow--corner.pixel-arrow--animated > span {
   animation-name: pixel-arrow-matrix-scan;
-  animation-duration: 1960ms;
-  animation-timing-function: cubic-bezier(0.42, 0, 0.2, 1);
+  animation-duration: 2040ms;
+  animation-timing-function: steps(1, end);
 }
 
 @keyframes pixel-arrow-conveyor {
@@ -637,22 +637,27 @@ video {
   0%,
   100% {
     opacity: 1;
-    transform: translate(0, 0);
+    background-color: currentColor;
   }
 
   3.2% {
-    opacity: 0.72;
-    transform: translate(1px, 1px);
+    opacity: 1;
+    background-color: var(--accent-soft);
   }
 
   5.4% {
-    opacity: 0.16;
-    transform: translate(3px, 3px);
+    opacity: 1;
+    background-color: var(--accent);
   }
 
-  10.8% {
+  8.2% {
     opacity: 1;
-    transform: translate(0, 0);
+    background-color: var(--accent-soft);
+  }
+
+  11% {
+    opacity: 1;
+    background-color: currentColor;
   }
 }
 
@@ -3258,6 +3263,13 @@ video {
   .mobile-menu__index-link:hover .mobile-menu__index-arrow,
   .mobile-menu__index-link:focus-visible .mobile-menu__index-arrow {
     color: var(--accent);
+  }
+
+  .mobile-menu__index-link:hover
+    .mobile-menu__index-arrow.pixel-arrow--corner,
+  .mobile-menu__index-link:focus-visible
+    .mobile-menu__index-arrow.pixel-arrow--corner {
+    color: #fff;
   }
 
   .mobile-menu__detail {
