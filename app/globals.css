@@ -3038,34 +3038,42 @@ video {
 
   .mobile-menu__index-arrow > [data-column="1"] {
     grid-column: 1;
+    animation-delay: 0ms;
   }
 
   .mobile-menu__index-arrow > [data-column="2"] {
     grid-column: 2;
+    animation-delay: 80ms;
   }
 
   .mobile-menu__index-arrow > [data-column="3"] {
     grid-column: 3;
+    animation-delay: 160ms;
   }
 
   .mobile-menu__index-arrow > [data-column="4"] {
     grid-column: 4;
+    animation-delay: 240ms;
   }
 
   .mobile-menu__index-arrow > [data-column="5"] {
     grid-column: 5;
+    animation-delay: 320ms;
   }
 
   .mobile-menu__index-arrow > [data-column="6"] {
     grid-column: 6;
+    animation-delay: 400ms;
   }
 
   .mobile-menu__index-arrow > [data-column="7"] {
     grid-column: 7;
+    animation-delay: 480ms;
   }
 
   .mobile-menu__index-arrow > [data-column="8"] {
     grid-column: 8;
+    animation-delay: 560ms;
   }
 
   .mobile-menu__index-arrow > [data-row="1"] {
@@ -3088,62 +3096,6 @@ video {
     grid-row: 5;
   }
 
-  .mobile-menu__index-arrow > [data-step="0"] {
-    animation-delay: 0ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="1"] {
-    animation-delay: 74ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="2"] {
-    animation-delay: 148ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="3"] {
-    animation-delay: 222ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="4"] {
-    animation-delay: 296ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="5"] {
-    animation-delay: 370ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="6"] {
-    animation-delay: 444ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="7"] {
-    animation-delay: 518ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="8"] {
-    animation-delay: 592ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="9"] {
-    animation-delay: 666ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="10"] {
-    animation-delay: 740ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="11"] {
-    animation-delay: 814ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="12"] {
-    animation-delay: 888ms;
-  }
-
-  .mobile-menu__index-arrow > [data-step="13"] {
-    animation-delay: 962ms;
-  }
-
   .mobile-menu__index-link:hover,
   .mobile-menu__index-link:focus-visible,
   .mobile-menu__index-link.is-current {
@@ -3159,23 +3111,27 @@ video {
     color: var(--accent);
   }
 
-  .mobile-menu__index-link:hover .mobile-menu__index-arrow > span,
-  .mobile-menu__index-link:focus-visible .mobile-menu__index-arrow > span {
-    animation-name: mobile-menu-pixel-off;
-    animation-duration: 72ms;
+  .mobile-menu__index-link:hover
+    .mobile-menu__index-arrow
+    > [data-row="3"],
+  .mobile-menu__index-link:focus-visible
+    .mobile-menu__index-arrow
+    > [data-row="3"] {
+    animation-name: mobile-menu-pixel-conveyor;
+    animation-duration: 640ms;
     animation-timing-function: steps(1, end);
-    animation-fill-mode: both;
+    animation-iteration-count: infinite;
   }
 
-  @keyframes mobile-menu-pixel-off {
+  @keyframes mobile-menu-pixel-conveyor {
     0%,
-    100% {
-      opacity: 0.72;
+    9.9% {
+      opacity: 0;
     }
 
-    30%,
-    70% {
-      opacity: 0;
+    10%,
+    100% {
+      opacity: 0.72;
     }
   }
 
