@@ -419,7 +419,7 @@ video {
 }
 
 .pixel-arrow--corner.pixel-arrow--up-right {
-  grid-template-columns: repeat(9, var(--pixel-arrow-dot));
+  grid-template-columns: repeat(8, var(--pixel-arrow-dot));
   grid-template-rows: repeat(8, var(--pixel-arrow-dot));
   transform: none;
 }
