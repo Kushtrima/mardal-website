@@ -3250,6 +3250,16 @@ video {
     color: #fff;
   }
 
+  .mobile-menu--open
+    .mobile-menu__index-arrow.pixel-arrow--animated
+    > span {
+    transform-origin: center;
+    animation-name: pixel-arrow-square-wave;
+    animation-duration: 1840ms;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+    animation-iteration-count: infinite;
+  }
+
   .mobile-menu__index-link:hover,
   .mobile-menu__index-link:focus-visible,
   .mobile-menu__index-link.is-current {
