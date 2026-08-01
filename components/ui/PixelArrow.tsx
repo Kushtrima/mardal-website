@@ -20,6 +20,7 @@ const pixelArrowDots = [
 export type PixelArrowSize = "small" | "compact" | "medium" | "large";
 export type PixelArrowDirection = "right" | "left" | "up" | "up-right";
 export type PixelArrowShape = "circle" | "square";
+export type PixelArrowVariant = "pixel" | "corner";
 
 type PixelArrowProps = {
   animated?: boolean;
@@ -27,6 +28,7 @@ type PixelArrowProps = {
   direction?: PixelArrowDirection;
   shape?: PixelArrowShape;
   size?: PixelArrowSize;
+  variant?: PixelArrowVariant;
 };
 
 export function PixelArrow({
@@ -35,8 +37,9 @@ export function PixelArrow({
   direction = "right",
   shape = "circle",
   size = "medium",
+  variant = "pixel",
 }: PixelArrowProps) {
-  const isCornerArrow = direction === "up-right";
+  const isCornerArrow = variant === "corner";
 
   return (
     <span
@@ -45,6 +48,7 @@ export function PixelArrow({
         `pixel-arrow--${size}`,
         `pixel-arrow--${direction}`,
         `pixel-arrow--${shape}`,
+        `pixel-arrow--${variant}`,
         animated && "pixel-arrow--animated",
         className,
       )}
