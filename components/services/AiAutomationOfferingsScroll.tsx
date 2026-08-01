@@ -6,12 +6,15 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const DESKTOP_QUERY =
   "(min-width: 64.0625rem) and (prefers-reduced-motion: no-preference)";
+const MOBILE_QUERY =
+  "(max-width: 48rem) and (prefers-reduced-motion: no-preference)";
 const STACKED_QUERY =
-  "(max-width: 64rem), (prefers-reduced-motion: reduce)";
+  "(min-width: 48.0625rem) and (max-width: 64rem), (prefers-reduced-motion: reduce)";
 
 /**
  * Maps vertical page progress to a horizontal editorial journey on desktop.
- * Tablet, mobile, and reduced-motion users keep a native vertical document.
+ * Smartphones use a pinned vertical stack, while tablets and reduced-motion
+ * users keep a native vertical document.
  */
 export function AiAutomationOfferingsScroll() {
   useEffect(() => {
@@ -368,6 +371,155 @@ export function AiAutomationOfferingsScroll() {
           numbers.filter((number): number is HTMLElement => number !== null),
           { clearProps: "opacity" },
         );
+        gsap.set(currentTitle, { clearProps: "opacity,visibility,transform" });
+      };
+    });
+
+    media.add(MOBILE_QUERY, () => {
+      section.classList.add("is-mobile-service-stack");
+
+      let jumpTween: gsap.core.Tween | undefined;
+      const cardContent = cards.map((card) =>
+        Array.from(
+          card.querySelectorAll<HTMLElement>(
+            ".service-card__mobile-title, .service-card__body, .service-card__number",
+          ),
+        ),
+      );
+
+      cards.forEach((card, index) => {
+        gsap.set(card, {
+          autoAlpha: 1,
+          yPercent: index === 0 ? 0 : 105,
+          zIndex: index + 1,
+        });
+      });
+      gsap.set(cardContent.flat(), { autoAlpha: 1, y: 0 });
+      updateCard(0, true);
+
+      const mobileTimeline = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () =>
+            `+=${Math.max(
+              (cards.length - 1) * window.innerHeight * 1.08,
+              1,
+            )}`,
+          pin: viewport,
+          scrub: 0.5,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const cardIndex = Math.min(
+              Math.round(self.progress * (cards.length - 1)),
+              cards.length - 1,
+            );
+            updateCard(cardIndex, true);
+          },
+        },
+      });
+
+      cards.slice(1).forEach((incomingCard, transitionIndex) => {
+        mobileTimeline
+          .to(
+            cardContent[transitionIndex],
+            {
+              autoAlpha: 0,
+              y: -12,
+              duration: 0.34,
+              stagger: 0.025,
+            },
+            transitionIndex,
+          )
+          .fromTo(
+            incomingCard,
+            { autoAlpha: 1, yPercent: 105 },
+            {
+              autoAlpha: 1,
+              yPercent: 0,
+              duration: 1,
+              ease: "power2.out",
+            },
+            transitionIndex + 0.08,
+          );
+      });
+
+      const trigger = mobileTimeline.scrollTrigger;
+
+      const scrollToCard = (card: HTMLElement) => {
+        if (!trigger) return;
+        const cardIndex = cards.indexOf(card);
+        if (cardIndex < 0) return;
+
+        jumpTween?.kill();
+        const scrollState = { value: trigger.scroll() };
+        const progress =
+          cards.length > 1 ? cardIndex / (cards.length - 1) : 0;
+        const destination =
+          trigger.start + (trigger.end - trigger.start) * progress;
+
+        jumpTween = gsap.to(scrollState, {
+          value: destination,
+          duration: 1.05,
+          ease: "power3.inOut",
+          overwrite: true,
+          onUpdate: () => window.scrollTo(0, scrollState.value),
+        });
+      };
+
+      const handleGroupClick = (event: Event) => {
+        const link = event.currentTarget as HTMLAnchorElement;
+        const target = section.querySelector<HTMLElement>(link.hash);
+        if (!target) return;
+        event.preventDefault();
+        scrollToCard(target);
+      };
+
+      groupLinks.forEach((link) =>
+        link.addEventListener("click", handleGroupClick),
+      );
+
+      const handleNextClick = (event: Event) => {
+        event.preventDefault();
+
+        if (activeGroup === 0 && automationCard) {
+          scrollToCard(automationCard);
+          return;
+        }
+
+        if (trigger) {
+          jumpTween?.kill();
+          const scrollState = { value: trigger.scroll() };
+          jumpTween = gsap.to(scrollState, {
+            value: trigger.end + 2,
+            duration: 1.05,
+            ease: "power3.inOut",
+            overwrite: true,
+            onUpdate: () => window.scrollTo(0, scrollState.value),
+          });
+        }
+      };
+
+      nextLink.addEventListener("click", handleNextClick);
+      void document.fonts.ready.then(() => ScrollTrigger.refresh());
+
+      return () => {
+        jumpTween?.kill();
+        nextLink.removeEventListener("click", handleNextClick);
+        groupLinks.forEach((link) =>
+          link.removeEventListener("click", handleGroupClick),
+        );
+        mobileTimeline.kill();
+        titleTween?.kill();
+        section.classList.remove("is-mobile-service-stack");
+        gsap.set(cards, {
+          clearProps: "opacity,visibility,transform,zIndex",
+        });
+        gsap.set(cardContent.flat(), {
+          clearProps: "opacity,visibility,transform",
+        });
         gsap.set(currentTitle, { clearProps: "opacity,visibility,transform" });
       };
     });
