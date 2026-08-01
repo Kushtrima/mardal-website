@@ -759,7 +759,7 @@ video {
 
 .mega-menu__arrow {
   justify-self: end;
-  color: var(--accent);
+  color: var(--ink);
   opacity: 0;
   transition:
     color var(--duration-base) var(--ease-standard),
@@ -779,7 +779,7 @@ video {
 }
 
 .mega-menu__link:hover .mega-menu__arrow {
-  color: var(--accent);
+  color: var(--ink);
   opacity: 1;
 }
 
