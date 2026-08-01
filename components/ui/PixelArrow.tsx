@@ -36,6 +36,8 @@ export function PixelArrow({
   shape = "circle",
   size = "medium",
 }: PixelArrowProps) {
+  const isCornerArrow = direction === "up-right";
+
   return (
     <span
       className={cn(
@@ -48,14 +50,22 @@ export function PixelArrow({
       )}
       aria-hidden="true"
     >
-      {pixelArrowDots.map(([column, row], step) => (
-        <span
-          key={`${column}-${row}`}
-          data-column={column}
-          data-row={row}
-          data-step={step}
-        />
-      ))}
+      {isCornerArrow ? (
+        <>
+          <span className="pixel-arrow__corner-shaft" data-step="0" />
+          <span className="pixel-arrow__corner-head-top" data-step="1" />
+          <span className="pixel-arrow__corner-head-side" data-step="2" />
+        </>
+      ) : (
+        pixelArrowDots.map(([column, row], step) => (
+          <span
+            key={`${column}-${row}`}
+            data-column={column}
+            data-row={row}
+            data-step={step}
+          />
+        ))
+      )}
     </span>
   );
 }
