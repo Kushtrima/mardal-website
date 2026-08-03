@@ -4318,6 +4318,13 @@ video {
   mask-size: contain;
 }
 
+/* Every service keeps the same artwork box and responsive dimensions while
+   supplying its own geometry through a page-specific mask. */
+.service-hero__pattern--system-integration {
+  -webkit-mask-image: url("/system-integration-pattern-v2.png");
+  mask-image: url("/system-integration-pattern-v2.png");
+}
+
 .service-overview {
   margin-bottom: 200px;
   color: var(--service-ink);

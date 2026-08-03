@@ -63,7 +63,7 @@ export function ServiceOfferingsScroll() {
       return;
     }
 
-    const automationCard = cards.find(
+    const nextGroupCard = cards.find(
       (card) => card.dataset.serviceGroup === "1",
     );
     const media = gsap.matchMedia();
@@ -85,9 +85,10 @@ export function ServiceOfferingsScroll() {
         }
       });
 
-      if (groupIndex === 0 && automationCard) {
-        nextLink.href = `#${automationCard.id}`;
-        nextLabel.textContent = "Automation";
+      if (groupIndex === 0 && nextGroupCard) {
+        nextLink.href = `#${nextGroupCard.id}`;
+        nextLabel.textContent =
+          groupLinks[1]?.textContent?.trim() || "Next services";
       } else {
         nextLink.href = "#service-cta-title";
         nextLabel.textContent = "Let’s build";
@@ -337,8 +338,8 @@ export function ServiceOfferingsScroll() {
       const handleNextClick = (event: Event) => {
         event.preventDefault();
 
-        if (activeGroup === 0 && automationCard) {
-          scrollToProgress(progressForCard(automationCard));
+        if (activeGroup === 0 && nextGroupCard) {
+          scrollToProgress(progressForCard(nextGroupCard));
           return;
         }
 
@@ -484,8 +485,8 @@ export function ServiceOfferingsScroll() {
       const handleNextClick = (event: Event) => {
         event.preventDefault();
 
-        if (activeGroup === 0 && automationCard) {
-          scrollToCard(automationCard);
+        if (activeGroup === 0 && nextGroupCard) {
+          scrollToCard(nextGroupCard);
           return;
         }
 

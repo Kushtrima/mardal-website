@@ -381,7 +381,41 @@ test("server-renders the AI & Automation service page", async () => {
   assert.doesNotMatch(html, /[↗→←]/);
 });
 
-test("the menu points at the service page that exists", async () => {
+test("server-renders the System Integration service page", async () => {
+  const response = await render("/services/system-integration");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /<title>System Integration — Mardal<\/title>/i);
+  assert.match(html, /class="service-hero__title"/);
+  assert.match(html, /Keep your business/);
+  assert.match(html, /in sync\./);
+  assert.match(html, /Bring your software, data, and operations together\./);
+  assert.match(
+    html,
+    /class="service-hero__pattern service-hero__pattern--system-integration"/,
+  );
+  assert.match(html, /System Integration Services/);
+  assert.match(html, /Business Integrations/);
+  assert.match(html, /Data &amp; Connectivity/);
+  assert.equal((html.match(/class="service-card"/g) ?? []).length, 6);
+  assert.equal((html.match(/data-service-group-link=/g) ?? []).length, 2);
+  assert.match(html, /CRM &amp; ERP Integration/);
+  assert.match(html, /E-commerce &amp; Operations Integration/);
+  assert.match(html, /Accounting &amp; Payment Integration/);
+  assert.match(html, /API &amp; Custom Integration/);
+  assert.match(html, /Communication Integration/);
+  assert.match(html, /Data Migration &amp; Synchronization/);
+  assert.match(html, /Connect the systems used across sales, orders, inventory/);
+  assert.match(html, /Connect applications and business data/);
+  assert.match(html, /Microsoft Teams, and Slack/);
+  assert.match(html, /new CRM without duplicate records/);
+  assert.match(html, /class="site-nav"/);
+  assert.match(html, /<footer class="site-footer"/);
+});
+
+test("the menu points at the service pages that exist", async () => {
   const html = await (await render()).text();
   assert.match(html, /href="\/services\/ai-automation"/);
+  assert.match(html, /href="\/services\/system-integration"/);
 });
