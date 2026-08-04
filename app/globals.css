@@ -4330,6 +4330,12 @@ video {
   mask-image: url("/system-integration-pattern-v2.png");
 }
 
+.service-hero__pattern--crm-solutions {
+  background: #ace5ca;
+  -webkit-mask-image: url("/crm-solutions-pattern-v4.png");
+  mask-image: url("/crm-solutions-pattern-v4.png");
+}
+
 .service-overview {
   margin-bottom: 200px;
   color: var(--service-ink);

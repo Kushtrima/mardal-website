@@ -49,6 +49,9 @@ export function ServiceOfferingsScroll() {
     const currentTitle = section?.querySelector<HTMLElement>(
       "[data-service-current-title]",
     );
+    const ctaTitle = document.querySelector<HTMLElement>(
+      ".service-cta__title[id]",
+    );
 
     if (
       !section ||
@@ -63,13 +66,15 @@ export function ServiceOfferingsScroll() {
       return;
     }
 
-    const nextGroupCard = cards.find(
-      (card) => card.dataset.serviceGroup === "1",
-    );
     const media = gsap.matchMedia();
     let activeGroup = -1;
     let activeCard = -1;
     let titleTween: gsap.core.Tween | undefined;
+
+    const firstCardForGroup = (groupIndex: number) =>
+      cards.find(
+        (card) => Number(card.dataset.serviceGroup ?? 0) === groupIndex,
+      );
 
     const updateGroup = (groupIndex: number) => {
       if (activeGroup === groupIndex && nextLabel.textContent) return;
@@ -85,12 +90,15 @@ export function ServiceOfferingsScroll() {
         }
       });
 
-      if (groupIndex === 0 && nextGroupCard) {
+      const nextGroupIndex = groupIndex + 1;
+      const nextGroupCard = firstCardForGroup(nextGroupIndex);
+
+      if (nextGroupCard) {
         nextLink.href = `#${nextGroupCard.id}`;
         nextLabel.textContent =
-          groupLinks[1]?.textContent?.trim() || "Next services";
+          groupLinks[nextGroupIndex]?.textContent?.trim() || "Next services";
       } else {
-        nextLink.href = "#service-cta-title";
+        nextLink.href = ctaTitle ? `#${ctaTitle.id}` : "#contact";
         nextLabel.textContent = "Let’s build";
       }
     };
@@ -338,7 +346,8 @@ export function ServiceOfferingsScroll() {
       const handleNextClick = (event: Event) => {
         event.preventDefault();
 
-        if (activeGroup === 0 && nextGroupCard) {
+        const nextGroupCard = firstCardForGroup(activeGroup + 1);
+        if (nextGroupCard) {
           scrollToProgress(progressForCard(nextGroupCard));
           return;
         }
@@ -485,7 +494,8 @@ export function ServiceOfferingsScroll() {
       const handleNextClick = (event: Event) => {
         event.preventDefault();
 
-        if (activeGroup === 0 && nextGroupCard) {
+        const nextGroupCard = firstCardForGroup(activeGroup + 1);
+        if (nextGroupCard) {
           scrollToCard(nextGroupCard);
           return;
         }

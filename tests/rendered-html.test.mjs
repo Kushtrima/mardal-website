@@ -426,8 +426,71 @@ test("server-renders the System Integration service page", async () => {
   assert.match(html, /<footer class="site-footer"/);
 });
 
+test("server-renders the CRM Solutions service page", async () => {
+  const response = await render("/services/crm-solutions");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /<title>CRM Solutions — Mardal<\/title>/i);
+  assert.match(html, /One system for/);
+  assert.match(html, /your business\./);
+  assert.match(
+    html,
+    /Keep everything organized, connected, and easy to manage\./,
+  );
+  assert.match(
+    html,
+    /class="service-hero__pattern service-hero__pattern--crm-solutions"/,
+  );
+  assert.match(html, /CRM Solutions Services/);
+  assert.match(html, /CRM Strategy/);
+  assert.match(html, /CRM Implementation/);
+  assert.match(html, /CRM Operations/);
+  assert.match(html, /AI-Powered/);
+  assert.equal((html.match(/class="service-card"/g) ?? []).length, 18);
+  assert.equal((html.match(/data-service-group-link=/g) ?? []).length, 4);
+  assert.match(
+    html,
+    /<span data-service-word="true">We<\/span> (?:<!-- -->)?<span data-service-word="true">review<\/span>/,
+  );
+  assert.match(html, /information across spreadsheets, emails, documents/);
+  assert.match(html, /recommend the most practical option/);
+  assert.match(html, /properties, owners, buyers, viewings, documents/);
+  assert.match(html, /products, services, pricing information/);
+  assert.match(html, /where work is delayed/);
+  assert.match(html, /AI extracts the company details/);
+  assert.match(html, /suggest missing field updates/);
+
+  for (const title of [
+    "Business Process Planning",
+    "CRM Selection",
+    "CRM Structure",
+    "Setup &amp; Configuration",
+    "CRM Customization",
+    "Data Migration",
+    "Company &amp; Contact Records",
+    "Products &amp; Services",
+    "Activities &amp; Tasks",
+    "Sales &amp; Opportunities",
+    "Service &amp; Support",
+    "Dashboards &amp; Reporting",
+    "Training &amp; Improvement",
+    "AI Information Assistant",
+    "Data Organization",
+    "Communication Assistance",
+    "Work &amp; Opportunity Assistance",
+    "Service Assistance",
+  ]) {
+    assert.match(html, new RegExp(title));
+  }
+
+  assert.match(html, /class="site-nav"/);
+  assert.match(html, /<footer class="site-footer"/);
+});
+
 test("the menu points at the service pages that exist", async () => {
   const html = await (await render()).text();
   assert.match(html, /href="\/services\/ai-automation"/);
   assert.match(html, /href="\/services\/system-integration"/);
+  assert.match(html, /href="\/services\/crm-solutions"/);
 });
