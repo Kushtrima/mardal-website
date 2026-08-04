@@ -4710,7 +4710,7 @@ video {
 
 .ai-capability-chapter {
   display: grid;
-  min-height: clamp(34rem, 58vw, 46rem);
+  min-height: clamp(18rem, 20vw, 21rem);
   grid-template-rows: auto minmax(0, 1fr);
   padding: clamp(1.5rem, 2.25vw, 2.5rem);
   border-top: 1px solid rgba(245, 245, 245, 0.15);
@@ -4799,7 +4799,9 @@ video {
 
 @media (hover: hover) and (pointer: fine) and (min-width: 64.01rem) {
   .ai-capability-chapter {
-    transition: background-color 420ms var(--ease-standard);
+    transition:
+      min-height 620ms var(--ease-standard),
+      background-color 420ms var(--ease-standard);
   }
 
   .ai-capability-chapter__title {
@@ -4823,6 +4825,7 @@ video {
 
   .ai-capability-chapter:hover,
   .ai-capability-chapter:focus-within {
+    min-height: clamp(34rem, 45vw, 42rem);
     background: rgba(131, 98, 184, 0.055);
   }
 
