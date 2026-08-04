@@ -90,12 +90,15 @@ export function SiteFooter() {
           <div className="site-footer__meta">
             {/* Kept in this row rather than the one below it, so it sits above
                 the bars instead of among them. */}
-            <a className="site-footer__top-link" href="#main-content">
-              Back to top
+            <a
+              className="site-footer__top-link"
+              href="#main-content"
+              aria-label="Back to top"
+            >
               <PixelArrow
                 className="site-footer__arrow site-footer__arrow--up"
                 direction="up"
-                size="small"
+                size="compact"
               />
             </a>
           </div>

@@ -3049,11 +3049,15 @@ video {
    a single child against. */
 .site-footer__top-link {
   display: inline-flex;
-  gap: 0.5em;
+  width: clamp(3rem, 3.5vw, 3.5rem);
+  aspect-ratio: 1;
   align-items: center;
+  justify-content: center;
   margin-left: auto;
-  font-size: var(--text-body);
-  letter-spacing: -0.02em;
+  margin-block: 0;
+  padding: 0;
+  border: 1px solid currentColor;
+  border-radius: 50%;
   line-height: 1;
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
@@ -4304,7 +4308,7 @@ video {
   position: absolute;
   top: 50%;
   right: 0;
-  width: min(100%, 27rem);
+  width: min(100%, 30rem);
   aspect-ratio: 1447 / 1087;
   background: var(--accent);
   transform: translateY(calc(-50% - 50px));
@@ -4321,6 +4325,7 @@ video {
 /* Every service keeps the same artwork box and responsive dimensions while
    supplying its own geometry through a page-specific mask. */
 .service-hero__pattern--system-integration {
+  background: #f1ce6d;
   -webkit-mask-image: url("/system-integration-pattern-v2.png");
   mask-image: url("/system-integration-pattern-v2.png");
 }

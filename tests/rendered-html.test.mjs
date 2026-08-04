@@ -200,6 +200,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /© \d{4} Mardal/);
   assert.match(html, /class="site-footer__nav"/);
   assert.match(html, /Back to top/);
+  assert.doesNotMatch(
+    html,
+    /class="site-footer__top-link"[^>]*>\s*Back to top/,
+  );
   // No oversized wordmark: the footer logo stays at brand size.
   assert.doesNotMatch(html, /site-footer__wordmark/);
   // The closing line, set as two explicit lines at the display size.
