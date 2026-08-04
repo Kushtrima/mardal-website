@@ -189,6 +189,8 @@ export default function CrmSolutionsPage() {
                   className="service-journey__skip"
                   href="#crm-solutions-cta"
                   data-scroll-direct
+                  data-scroll-preserve-view
+                  data-service-skip
                 >
                   <PixelX
                     className="service-journey__skip-icon"

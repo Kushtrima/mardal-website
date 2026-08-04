@@ -46,6 +46,9 @@ export function ServiceOfferingsScroll() {
     const nextLabel = nextLink?.querySelector<HTMLElement>(
       "[data-service-next-label]",
     );
+    const skipLink = section?.querySelector<HTMLAnchorElement>(
+      "[data-service-skip]",
+    );
     const currentTitle = section?.querySelector<HTMLElement>(
       "[data-service-current-title]",
     );
@@ -151,6 +154,8 @@ export function ServiceOfferingsScroll() {
     media.add(DESKTOP_QUERY, () => {
       let jumpTween: gsap.core.Tween | undefined;
       let groupSwitchTween: gsap.core.Timeline | undefined;
+      let skipReleaseTimer: number | undefined;
+      let isSkipping = false;
       const journeyState = { progress: 0 };
       const wordGroups = cards.map((card) =>
         Array.from(card.querySelectorAll<HTMLElement>("[data-service-word]")),
@@ -301,7 +306,7 @@ export function ServiceOfferingsScroll() {
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            renderServices(self.progress);
+            if (!isSkipping) renderServices(self.progress);
           },
         },
       });
@@ -384,6 +389,19 @@ export function ServiceOfferingsScroll() {
         link.addEventListener("click", handleGroupClick),
       );
 
+      const handleSkipClick = () => {
+        jumpTween?.kill();
+        groupSwitchTween?.kill();
+        gsap.set(stage, { autoAlpha: 1, x: 0 });
+        isSkipping = true;
+        window.clearTimeout(skipReleaseTimer);
+        skipReleaseTimer = window.setTimeout(() => {
+          isSkipping = false;
+        }, 1700);
+      };
+
+      skipLink?.addEventListener("click", handleSkipClick);
+
       const handleNextClick = (event: Event) => {
         event.preventDefault();
 
@@ -407,6 +425,8 @@ export function ServiceOfferingsScroll() {
       return () => {
         jumpTween?.kill();
         groupSwitchTween?.kill();
+        window.clearTimeout(skipReleaseTimer);
+        skipLink?.removeEventListener("click", handleSkipClick);
         nextLink.removeEventListener("click", handleNextClick);
         groupLinks.forEach((link) =>
           link.removeEventListener("click", handleGroupClick),

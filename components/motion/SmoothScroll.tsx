@@ -71,6 +71,8 @@ export function SmoothScroll() {
       event.preventDefault();
       const shouldScrollDirectly =
         link?.hasAttribute("data-scroll-direct") ?? false;
+      const shouldPreserveView =
+        link?.hasAttribute("data-scroll-preserve-view") ?? false;
 
       if (shouldScrollDirectly) {
         directScrollTween?.kill();
@@ -78,8 +80,9 @@ export function SmoothScroll() {
         const destination = smoother.offset(target, "top top");
         const approachDistance = Math.min(window.innerHeight * 0.72, 720);
         const currentPosition = smoother.scrollTop();
-        const approachPosition =
-          destination >= currentPosition
+        const approachPosition = shouldPreserveView
+          ? currentPosition
+          : destination >= currentPosition
             ? Math.max(currentPosition, destination - approachDistance)
             : Math.min(currentPosition, destination + approachDistance);
         const scrollState = { value: approachPosition };
