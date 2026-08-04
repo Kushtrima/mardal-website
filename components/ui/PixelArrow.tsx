@@ -57,6 +57,22 @@ const pixelCornerArrowDots = [
   [9, 9, 13],
 ] as const;
 
+const pixelXDots = [
+  [1, 1],
+  [7, 1],
+  [2, 2],
+  [6, 2],
+  [3, 3],
+  [5, 3],
+  [4, 4],
+  [3, 5],
+  [5, 5],
+  [2, 6],
+  [6, 6],
+  [1, 7],
+  [7, 7],
+] as const;
+
 export type PixelArrowSize = "small" | "compact" | "medium" | "large";
 export type PixelArrowDirection =
   | "right"
@@ -118,6 +134,43 @@ export function PixelArrow({
           />
         ))
       )}
+    </span>
+  );
+}
+
+type PixelXProps = {
+  animated?: boolean;
+  className?: string;
+  shape?: PixelArrowShape;
+  size?: PixelArrowSize;
+};
+
+export function PixelX({
+  animated = true,
+  className,
+  shape = "circle",
+  size = "medium",
+}: PixelXProps) {
+  return (
+    <span
+      className={cn(
+        "pixel-arrow",
+        "pixel-x",
+        `pixel-arrow--${size}`,
+        `pixel-arrow--${shape}`,
+        animated && "pixel-arrow--animated",
+        className,
+      )}
+      aria-hidden="true"
+    >
+      {pixelXDots.map(([column, row], step) => (
+        <span
+          key={`${column}-${row}`}
+          data-column={column}
+          data-row={row}
+          data-step={step}
+        />
+      ))}
     </span>
   );
 }

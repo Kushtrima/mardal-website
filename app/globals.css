@@ -406,6 +406,11 @@ video {
   --pixel-arrow-gap: 0.115rem;
 }
 
+.pixel-x {
+  grid-template-columns: repeat(7, var(--pixel-arrow-dot));
+  grid-template-rows: repeat(7, var(--pixel-arrow-dot));
+}
+
 .pixel-arrow--left {
   transform: rotate(180deg);
 }
@@ -4448,7 +4453,7 @@ video {
   color: var(--accent);
 }
 
-.service-journey__cancel {
+.service-journey__skip {
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
@@ -4576,7 +4581,7 @@ video {
 
 @media (hover: hover) {
   .service-journey__nav-link:hover,
-  .service-journey__cancel:hover,
+  .service-journey__skip:hover,
   .service-journey__next:hover {
     color: var(--accent);
   }
