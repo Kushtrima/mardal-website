@@ -349,8 +349,22 @@ test("server-renders the AI & Automation service page", async () => {
   );
   assert.match(
     html,
-    /class="service-journey__skip" href="#ai-automation-cta" data-scroll-direct="true" data-scroll-duration="1.5" data-scroll-ease="sine.in" data-scroll-preserve-view="true" data-service-skip="true"[^>]*>[\s\S]*?pixel-x[\s\S]*?Skip[\s\S]*?<\/a>/,
+    /class="service-journey__skip" href="#ai-capabilities" data-scroll-direct="true" data-scroll-duration="1.5" data-scroll-ease="sine.in" data-scroll-preserve-view="true" data-service-skip="true"[^>]*>[\s\S]*?pixel-x[\s\S]*?Skip[\s\S]*?<\/a>/,
   );
+  assert.match(html, /class="ai-capabilities" id="ai-capabilities"/);
+  assert.equal(
+    (html.match(/class="ai-capability-card ai-capability-card--/g) ?? [])
+      .length,
+    5,
+  );
+  assert.match(html, /Five capabilities for more demanding AI work\./);
+  assert.match(html, /Tailored AI Solutions/);
+  assert.match(html, /RAG Systems &amp; Reliable AI/);
+  assert.match(html, /Predictive Analytics &amp; Forecasting/);
+  assert.match(html, /Enterprise MLOps &amp; Governed AI/);
+  assert.match(html, /Computer Vision &amp; Edge AI/);
+  assert.match(html, /Secure vector databases/);
+  assert.match(html, /Full AI Act compliance/);
   assert.match(html, /class="service-cta" id="ai-automation-cta"/);
   assert.match(html, /class="service-journey__controls"/);
   assert.match(

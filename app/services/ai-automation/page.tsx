@@ -215,7 +215,7 @@ export default function AiAutomationPage() {
               <div className="service-journey__controls">
                 <a
                   className="service-journey__skip"
-                  href="#ai-automation-cta"
+                  href="#ai-capabilities"
                   data-scroll-direct
                   data-scroll-duration="1.5"
                   data-scroll-ease="sine.in"
@@ -244,6 +244,80 @@ export default function AiAutomationPage() {
               </div>
             </Container>
           </div>
+        </section>
+
+        <section
+          className="ai-capabilities"
+          id="ai-capabilities"
+          aria-labelledby="ai-capabilities-title"
+          data-route-section
+        >
+          <Container
+            className="ai-capabilities__inner"
+            data-enter
+            data-enter-mode="none"
+          >
+            <header className="ai-capabilities__header">
+              <p className="ai-capabilities__eyebrow">
+                {aiAutomation.advancedCapabilities.eyebrow}
+              </p>
+              <h2
+                className="ai-capabilities__title"
+                id="ai-capabilities-title"
+              >
+                {aiAutomation.advancedCapabilities.title}
+              </h2>
+              <p className="ai-capabilities__intro">
+                {aiAutomation.advancedCapabilities.intro}
+              </p>
+            </header>
+
+            <div className="ai-capabilities__grid">
+              {aiAutomation.advancedCapabilities.items.map(
+                (capability, index) => (
+                  <article
+                    className={`ai-capability-card ai-capability-card--${capability.id}`}
+                    key={capability.id}
+                  >
+                    <div className="ai-capability-card__topline">
+                      <span
+                        className="ai-capability-card__index"
+                        aria-hidden="true"
+                      >
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="ai-capability-card__category">
+                        {capability.category}
+                      </span>
+                    </div>
+
+                    <div className="ai-capability-card__content">
+                      <div className="ai-capability-card__summary">
+                        <h3 className="ai-capability-card__title">
+                          {capability.title}
+                        </h3>
+                        <p className="ai-capability-card__copy">
+                          {capability.copy}
+                        </p>
+                      </div>
+
+                      <ul className="ai-capability-card__list">
+                        {capability.points.map((point) => (
+                          <li className="ai-capability-card__item" key={point}>
+                            <span
+                              className="ai-capability-card__pixel"
+                              aria-hidden="true"
+                            />
+                            <span>{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </article>
+                ),
+              )}
+            </div>
+          </Container>
         </section>
 
         <section

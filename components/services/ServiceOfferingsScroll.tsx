@@ -417,7 +417,12 @@ export function ServiceOfferingsScroll() {
         const currentFrame = document.createElement("div");
         const targetFrame = document.createElement("div");
         const currentView = viewport.cloneNode(true) as HTMLElement;
-        const targetView = target.cloneNode(true) as HTMLElement;
+        const targetViews: HTMLElement[] = [];
+        let targetSibling: Element | null = target;
+        while (targetSibling) {
+          targetViews.push(targetSibling.cloneNode(true) as HTMLElement);
+          targetSibling = targetSibling.nextElementSibling;
+        }
         const footer = document.querySelector<HTMLElement>(".site-footer");
         const footerView = footer?.cloneNode(true) as HTMLElement | undefined;
 
@@ -443,7 +448,7 @@ export function ServiceOfferingsScroll() {
         currentView.removeAttribute("style");
 
         currentFrame.append(currentView);
-        targetFrame.append(targetView);
+        targetFrame.append(...targetViews);
         if (footerView) targetFrame.append(footerView);
         transitionTrack.append(currentFrame, targetFrame);
         overlay.append(transitionTrack);

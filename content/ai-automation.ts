@@ -151,6 +151,69 @@ export const aiAutomation = {
       ],
     },
   ],
+  advancedCapabilities: {
+    eyebrow: "Specialized AI systems",
+    title: "Five capabilities for more demanding AI work.",
+    intro:
+      "For projects that need deeper intelligence, stronger governance, or real-time decision-making, we design focused AI systems around the work they need to perform.",
+    items: [
+      {
+        id: "tailored-ai-solutions",
+        category: "Custom",
+        title: "Tailored AI Solutions",
+        copy: "We develop custom AI applications, dashboards, and portal solutions that integrate directly with your existing system landscape.",
+        points: [
+          "Proprietary model development",
+          "Tailored UX/UI",
+          "GDPR-compliant architecture",
+        ],
+      },
+      {
+        id: "rag-systems",
+        category: "Knowledge",
+        title: "RAG Systems & Reliable AI",
+        copy: "With Retrieval-Augmented Generation, we anchor LLMs in your own data and documents for reliable answers without hallucinations.",
+        points: [
+          "Secure vector databases",
+          "Zero-hallucination architecture",
+          "Automated information extraction",
+        ],
+      },
+      {
+        id: "predictive-analytics",
+        category: "Analytics",
+        title: "Predictive Analytics & Forecasting",
+        copy: "Proactive decisions instead of reaction: predictive models detect failures, risks, and trends early based on your data.",
+        points: [
+          "Predictive maintenance for industry",
+          "Supply chain optimisation",
+          "Automated anomaly detection",
+        ],
+      },
+      {
+        id: "enterprise-mlops",
+        category: "Enterprise",
+        title: "Enterprise MLOps & Governed AI",
+        copy: "We ensure stable ML pipelines, monitoring, model updates, and auditability—the foundation for productive AI at scale.",
+        points: [
+          "Continuous model monitoring",
+          "Automated CI/CD pipelines",
+          "Full AI Act compliance",
+        ],
+      },
+      {
+        id: "computer-vision",
+        category: "Perception",
+        title: "Computer Vision & Edge AI",
+        copy: "Deep-learning-based image recognition for defect detection, quality control, and process optimisation—in real time and with the highest precision.",
+        points: [
+          "Real-time inference at the edge",
+          "Sub-millimetre precision",
+          "Automated classification",
+        ],
+      },
+    ],
+  },
   cta: {
     title: "Let’s build\nwhat your business\nneeds next.",
     label: "Get in touch",
