@@ -4664,6 +4664,10 @@ video {
   text-align: center;
 }
 
+.service-page--crm-solutions .service-cta__inner {
+  transform: none !important;
+}
+
 .service-cta__title {
   max-width: 20ch;
   margin: 0 auto;

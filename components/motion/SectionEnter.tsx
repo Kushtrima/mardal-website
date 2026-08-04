@@ -86,6 +86,8 @@ export function SectionEnter() {
            the pinned element. */
         const inner = section.querySelector<HTMLElement>("[data-enter]");
         const target = inner ?? section;
+        const enterMode = target.dataset.enterMode;
+        if (enterMode === "none") return;
         const fadeOnly = target.dataset.enterMode === "fade";
 
         const timeline = gsap.timeline({

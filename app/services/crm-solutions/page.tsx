@@ -230,7 +230,7 @@ export default function CrmSolutionsPage() {
             <div
               className="service-cta__inner"
               data-enter
-              data-enter-mode="fade"
+              data-enter-mode="none"
             >
               <h2
                 className="service-cta__title"
