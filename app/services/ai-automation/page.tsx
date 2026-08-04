@@ -278,6 +278,7 @@ export default function AiAutomationPage() {
                   <article
                     className={`ai-capability-chapter ai-capability-chapter--${capability.id}`}
                     key={capability.id}
+                    tabIndex={0}
                   >
                     <div className="ai-capability-chapter__signal">
                       <span

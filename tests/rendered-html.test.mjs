@@ -357,6 +357,7 @@ test("server-renders the AI & Automation service page", async () => {
       .length,
     5,
   );
+  assert.equal((html.match(/tabindex="0"/g) ?? []).length, 5);
   assert.doesNotMatch(html, /ai-capability-(?:card|row)/);
   assert.match(html, /Five capabilities for more demanding AI work\./);
   assert.match(html, /Tailored AI Solutions/);

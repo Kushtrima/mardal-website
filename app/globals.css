@@ -4797,6 +4797,69 @@ video {
   content: "";
 }
 
+@media (hover: hover) and (pointer: fine) and (min-width: 64.01rem) {
+  .ai-capability-chapter {
+    transition: background-color 420ms var(--ease-standard);
+  }
+
+  .ai-capability-chapter__title {
+    transition: transform 420ms var(--ease-standard);
+  }
+
+  .ai-capability-chapter__details {
+    max-height: 0;
+    margin-top: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(0.75rem);
+    visibility: hidden;
+    transition:
+      max-height 620ms var(--ease-standard),
+      margin-top 420ms var(--ease-standard),
+      opacity 320ms var(--ease-standard),
+      transform 420ms var(--ease-standard),
+      visibility 0s linear 620ms;
+  }
+
+  .ai-capability-chapter:hover,
+  .ai-capability-chapter:focus-within {
+    background: rgba(131, 98, 184, 0.055);
+  }
+
+  .ai-capability-chapter:hover .ai-capability-chapter__title,
+  .ai-capability-chapter:focus-within .ai-capability-chapter__title {
+    transform: translateY(-0.5rem);
+  }
+
+  .ai-capability-chapter:hover .ai-capability-chapter__details,
+  .ai-capability-chapter:focus-within .ai-capability-chapter__details {
+    max-height: 34rem;
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+    transition:
+      max-height 620ms var(--ease-standard),
+      margin-top 420ms var(--ease-standard),
+      opacity 360ms 80ms var(--ease-standard),
+      transform 420ms 60ms var(--ease-standard),
+      visibility 0s;
+  }
+
+  .ai-capability-chapter:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: -2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-capability-chapter,
+  .ai-capability-chapter__title,
+  .ai-capability-chapter__details {
+    transition: none !important;
+  }
+}
+
 .service-cta {
   padding-block: 60px;
   color: var(--service-ink);
