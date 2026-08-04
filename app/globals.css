@@ -4741,7 +4741,6 @@ video {
       transparent 42%
     ),
     linear-gradient(145deg, #151515, #0d0d0d 72%);
-  will-change: transform, opacity, filter;
 }
 
 .ai-capability-card--tailored-ai-solutions {
