@@ -272,47 +272,45 @@ export default function AiAutomationPage() {
               </p>
             </header>
 
-            <div className="ai-capabilities__grid">
+            <div className="ai-capabilities__list">
               {aiAutomation.advancedCapabilities.items.map(
                 (capability, index) => (
                   <article
-                    className={`ai-capability-card ai-capability-card--${capability.id}`}
+                    className={`ai-capability-row ai-capability-row--${capability.id}`}
                     key={capability.id}
                   >
-                    <div className="ai-capability-card__topline">
+                    <div className="ai-capability-row__meta">
                       <span
-                        className="ai-capability-card__index"
+                        className="ai-capability-row__index"
                         aria-hidden="true"
                       >
                         {String(index + 1).padStart(2, "0")}
                       </span>
-                      <span className="ai-capability-card__category">
+                      <span className="ai-capability-row__category">
                         {capability.category}
                       </span>
                     </div>
 
-                    <div className="ai-capability-card__content">
-                      <div className="ai-capability-card__summary">
-                        <h3 className="ai-capability-card__title">
-                          {capability.title}
-                        </h3>
-                        <p className="ai-capability-card__copy">
-                          {capability.copy}
-                        </p>
-                      </div>
-
-                      <ul className="ai-capability-card__list">
-                        {capability.points.map((point) => (
-                          <li className="ai-capability-card__item" key={point}>
-                            <span
-                              className="ai-capability-card__pixel"
-                              aria-hidden="true"
-                            />
-                            <span>{point}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="ai-capability-row__summary">
+                      <h3 className="ai-capability-row__title">
+                        {capability.title}
+                      </h3>
+                      <p className="ai-capability-row__copy">
+                        {capability.copy}
+                      </p>
                     </div>
+
+                    <ul className="ai-capability-row__points">
+                      {capability.points.map((point) => (
+                        <li className="ai-capability-row__point" key={point}>
+                          <span
+                            className="ai-capability-row__pixel"
+                            aria-hidden="true"
+                          />
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </article>
                 ),
               )}

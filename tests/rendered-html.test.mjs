@@ -353,10 +353,11 @@ test("server-renders the AI & Automation service page", async () => {
   );
   assert.match(html, /class="ai-capabilities" id="ai-capabilities"/);
   assert.equal(
-    (html.match(/class="ai-capability-card ai-capability-card--/g) ?? [])
+    (html.match(/class="ai-capability-row ai-capability-row--/g) ?? [])
       .length,
     5,
   );
+  assert.doesNotMatch(html, /ai-capability-card/);
   assert.match(html, /Five capabilities for more demanding AI work\./);
   assert.match(html, /Tailored AI Solutions/);
   assert.match(html, /RAG Systems &amp; Reliable AI/);

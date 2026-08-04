@@ -4658,22 +4658,6 @@ video {
   background: #050505;
 }
 
-.ai-capabilities::before {
-  position: absolute;
-  top: 0;
-  right: -20vw;
-  width: 65vw;
-  height: 65vw;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(131, 98, 184, 0.13),
-    transparent 68%
-  );
-  content: "";
-  pointer-events: none;
-}
-
 .ai-capabilities__inner {
   position: relative;
   z-index: 1;
@@ -4715,138 +4699,94 @@ video {
   line-height: 1.45;
 }
 
-.ai-capabilities__grid {
+.ai-capabilities__list {
+  border-bottom: 1px solid rgba(245, 245, 245, 0.16);
+}
+
+.ai-capability-row {
+  --row-accent: #8362b8;
+
   display: grid;
+  min-height: clamp(24rem, 30vw, 31rem);
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: clamp(1rem, 1.7vw, 1.75rem);
+  gap: clamp(1.25rem, 2.25vw, 2.5rem);
+  align-items: start;
+  padding-block: clamp(3rem, 5vw, 5rem);
+  border-top: 1px solid rgba(245, 245, 245, 0.16);
 }
 
-.ai-capability-card {
-  --card-accent: #8362b8;
-  --card-glow: rgba(131, 98, 184, 0.17);
+.ai-capability-row--rag-systems {
+  --row-accent: #f1ce6d;
+}
 
-  position: relative;
+.ai-capability-row--predictive-analytics {
+  --row-accent: #ace5ca;
+}
+
+.ai-capability-row--enterprise-mlops {
+  --row-accent: #e77c98;
+}
+
+.ai-capability-row--computer-vision {
+  --row-accent: #73cbe8;
+}
+
+.ai-capability-row__meta {
   display: flex;
-  min-height: clamp(29rem, 38vw, 37rem);
+  grid-column: 1 / span 2;
   flex-direction: column;
-  grid-column: span 6;
-  overflow: hidden;
-  padding: clamp(1.75rem, 3vw, 3rem);
-  border: 1px solid rgba(245, 245, 245, 0.12);
-  border-radius: clamp(1.5rem, 2.5vw, 2.5rem);
-  background:
-    radial-gradient(
-      circle at 100% 0,
-      var(--card-glow),
-      transparent 42%
-    ),
-    linear-gradient(145deg, #151515, #0d0d0d 72%);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
 }
 
-.ai-capability-card--tailored-ai-solutions {
-  grid-column: 1 / span 7;
-}
-
-.ai-capability-card--rag-systems {
-  --card-accent: #f1ce6d;
-  --card-glow: rgba(241, 206, 109, 0.13);
-
-  grid-column: 8 / -1;
-}
-
-.ai-capability-card--predictive-analytics {
-  --card-accent: #ace5ca;
-  --card-glow: rgba(172, 229, 202, 0.13);
-
-  grid-column: 1 / span 5;
-}
-
-.ai-capability-card--enterprise-mlops {
-  --card-accent: #e77c98;
-  --card-glow: rgba(231, 124, 152, 0.13);
-
-  grid-column: 6 / -1;
-}
-
-.ai-capability-card--computer-vision {
-  --card-accent: #73cbe8;
-  --card-glow: rgba(115, 203, 232, 0.13);
-
-  min-height: clamp(25rem, 30vw, 31rem);
-  grid-column: 1 / -1;
-}
-
-.ai-capability-card__topline {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.ai-capability-card__index {
-  color: var(--card-accent);
+.ai-capability-row__index {
+  color: var(--row-accent);
   font-family: var(--type-display);
-  font-size: clamp(2.5rem, 4.5vw, 4.75rem);
+  font-size: clamp(3rem, 5.3vw, 5.75rem);
   letter-spacing: -0.07em;
-  line-height: 0.8;
+  line-height: 0.75;
 }
 
-.ai-capability-card__category {
-  padding: 0.55rem 0.8rem 0.48rem;
-  border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 999px;
+.ai-capability-row__category {
   color: rgba(245, 245, 245, 0.62);
-  background: rgba(245, 245, 245, 0.045);
   font-size: clamp(0.6875rem, 0.75vw, 0.8125rem);
   letter-spacing: 0.1em;
   line-height: 1;
   text-transform: uppercase;
 }
 
-.ai-capability-card__content {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  min-height: 0;
-  flex: 1;
-  flex-direction: column;
-  justify-content: flex-end;
-  margin-top: clamp(4rem, 8vw, 7rem);
+.ai-capability-row__summary {
+  grid-column: 3 / span 6;
 }
 
-.ai-capability-card__summary {
-  max-width: 40rem;
-}
-
-.ai-capability-card__title {
-  max-width: 18ch;
+.ai-capability-row__title {
+  max-width: 15ch;
   margin: 0;
   font-family: var(--type-display);
-  font-size: clamp(2rem, 3.1vw, 3.35rem);
+  font-size: clamp(2.75rem, 4.65vw, 5rem);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
-  line-height: 0.98;
+  line-height: 0.94;
 }
 
-.ai-capability-card__copy {
-  max-width: 39ch;
-  margin: clamp(1.25rem, 2vw, 1.75rem) 0 0;
+.ai-capability-row__copy {
+  max-width: 42ch;
+  margin: clamp(2rem, 3.5vw, 3.5rem) 0 0;
   color: rgba(245, 245, 245, 0.58);
   font-size: clamp(1rem, 1.15vw, 1.1875rem);
   line-height: 1.45;
 }
 
-.ai-capability-card__list {
+.ai-capability-row__points {
   display: grid;
-  gap: 0.9rem;
-  margin: clamp(2rem, 3vw, 3rem) 0 0;
-  padding: clamp(1.75rem, 2.5vw, 2.5rem) 0 0;
-  border-top: 1px solid rgba(245, 245, 245, 0.09);
+  grid-column: 9 / -1;
+  gap: 1.1rem;
+  align-self: end;
+  margin: 0;
+  padding: 0 0 0 clamp(1rem, 2vw, 2rem);
   list-style: none;
 }
 
-.ai-capability-card__item {
+.ai-capability-row__point {
   display: flex;
   gap: 1rem;
   align-items: baseline;
@@ -4855,28 +4795,17 @@ video {
   line-height: 1.3;
 }
 
-.ai-capability-card__pixel {
+.ai-capability-row__pixel {
   position: relative;
   top: -0.12em;
   width: 0.22rem;
   height: 0.22rem;
   flex: 0 0 auto;
-  background: var(--card-accent);
+  background: var(--row-accent);
   box-shadow:
-    0.28rem 0 var(--card-accent),
-    0.56rem 0 var(--card-accent),
-    0.56rem -0.28rem var(--card-accent);
-}
-
-.ai-capability-card--computer-vision .ai-capability-card__content {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.75fr);
-  gap: clamp(3rem, 8vw, 9rem);
-  align-items: end;
-}
-
-.ai-capability-card--computer-vision .ai-capability-card__list {
-  margin-top: 0;
+    0.28rem 0 var(--row-accent),
+    0.56rem 0 var(--row-accent),
+    0.56rem -0.28rem var(--row-accent);
 }
 
 .service-cta {
@@ -4947,16 +4876,22 @@ video {
     margin-top: 1.5rem;
   }
 
-  .ai-capability-card,
-  .ai-capability-card--tailored-ai-solutions,
-  .ai-capability-card--rag-systems,
-  .ai-capability-card--predictive-analytics,
-  .ai-capability-card--enterprise-mlops {
-    grid-column: span 6;
+  .ai-capability-row {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 
-  .ai-capability-card--computer-vision {
-    grid-column: 1 / -1;
+  .ai-capability-row__meta {
+    grid-column: 1 / span 2;
+  }
+
+  .ai-capability-row__summary {
+    grid-column: 3 / -1;
+  }
+
+  .ai-capability-row__points {
+    grid-column: 3 / span 5;
+    margin-top: 2rem;
+    padding-left: 0;
   }
 
   .service-hero__inner {
@@ -5416,41 +5351,38 @@ video {
     margin-top: 1.5rem;
   }
 
-  .ai-capabilities__grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1rem;
-  }
-
-  .ai-capability-card,
-  .ai-capability-card--tailored-ai-solutions,
-  .ai-capability-card--rag-systems,
-  .ai-capability-card--predictive-analytics,
-  .ai-capability-card--enterprise-mlops,
-  .ai-capability-card--computer-vision {
+  .ai-capability-row {
+    display: block;
     min-height: 0;
-    grid-column: 1;
-    padding: 1.5rem;
-    border-radius: 1.5rem;
+    padding-block: 2.5rem 3rem;
   }
 
-  .ai-capability-card__index {
+  .ai-capability-row__meta {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .ai-capability-row__index {
     font-size: 3rem;
   }
 
-  .ai-capability-card__content,
-  .ai-capability-card--computer-vision .ai-capability-card__content {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    margin-top: 5rem;
+  .ai-capability-row__summary {
+    margin-top: 4rem;
   }
 
-  .ai-capability-card__title {
-    font-size: clamp(2rem, 10vw, 2.75rem);
+  .ai-capability-row__title {
+    font-size: clamp(2.5rem, 12vw, 3.75rem);
   }
 
-  .ai-capability-card--computer-vision .ai-capability-card__list {
-    margin-top: 2rem;
+  .ai-capability-row__copy {
+    margin-top: 1.5rem;
+  }
+
+  .ai-capability-row__points {
+    margin-top: 2.5rem;
+    padding-left: 0;
   }
 }
 
