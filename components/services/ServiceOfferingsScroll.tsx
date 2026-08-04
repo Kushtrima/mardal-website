@@ -331,12 +331,23 @@ export function ServiceOfferingsScroll() {
           : 0;
       };
 
+      const showProgressImmediately = (progress: number) => {
+        if (!trigger) return;
+        jumpTween?.kill();
+
+        const destination =
+          trigger.start + (trigger.end - trigger.start) * progress;
+        trigger.scroll(destination);
+        renderServices(progress);
+        ScrollTrigger.update();
+      };
+
       const handleGroupClick = (event: Event) => {
         const link = event.currentTarget as HTMLAnchorElement;
         const target = section.querySelector<HTMLElement>(link.hash);
         if (!target) return;
         event.preventDefault();
-        scrollToProgress(progressForCard(target));
+        showProgressImmediately(progressForCard(target));
       };
 
       groupLinks.forEach((link) =>
@@ -479,12 +490,29 @@ export function ServiceOfferingsScroll() {
         });
       };
 
+      const showCardImmediately = (card: HTMLElement) => {
+        if (!trigger) return;
+        const cardIndex = cards.indexOf(card);
+        if (cardIndex < 0) return;
+
+        jumpTween?.kill();
+        const progress =
+          cards.length > 1 ? cardIndex / (cards.length - 1) : 0;
+        const destination =
+          trigger.start + (trigger.end - trigger.start) * progress;
+
+        trigger.scroll(destination);
+        mobileTimeline.progress(progress);
+        updateCard(cardIndex, true);
+        ScrollTrigger.update();
+      };
+
       const handleGroupClick = (event: Event) => {
         const link = event.currentTarget as HTMLAnchorElement;
         const target = section.querySelector<HTMLElement>(link.hash);
         if (!target) return;
         event.preventDefault();
-        scrollToCard(target);
+        showCardImmediately(target);
       };
 
       groupLinks.forEach((link) =>
