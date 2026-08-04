@@ -4741,21 +4741,7 @@ video {
       transparent 42%
     ),
     linear-gradient(145deg, #151515, #0d0d0d 72%);
-}
-
-.ai-capability-card::after {
-  position: absolute;
-  right: -4.5rem;
-  bottom: -4.5rem;
-  width: 11rem;
-  height: 11rem;
-  border: 1px solid color-mix(in srgb, var(--card-accent) 42%, transparent);
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 1.35rem color-mix(in srgb, var(--card-accent) 7%, transparent),
-    0 0 0 2.7rem color-mix(in srgb, var(--card-accent) 4%, transparent);
-  content: "";
-  pointer-events: none;
+  will-change: transform, opacity, filter;
 }
 
 .ai-capability-card--tailored-ai-solutions {

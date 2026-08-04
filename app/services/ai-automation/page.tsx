@@ -4,6 +4,7 @@ import { Container } from "../../../components/layout/Container";
 import { SiteFooter } from "../../../components/layout/SiteFooter";
 import { SiteHeader } from "../../../components/layout/SiteHeader";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
+import { AiCapabilitiesMotion } from "../../../components/services/AiCapabilitiesMotion";
 import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
 import { aiAutomation } from "../../../content/ai-automation";
@@ -50,6 +51,7 @@ export default function AiAutomationPage() {
     <>
       <SectionEnter />
       <ServicePageMotion />
+      <AiCapabilitiesMotion />
 
       <main
         className="service-page service-page--ai-automation"
@@ -278,6 +280,7 @@ export default function AiAutomationPage() {
                   <article
                     className={`ai-capability-card ai-capability-card--${capability.id}`}
                     key={capability.id}
+                    data-ai-capability-card
                   >
                     <div className="ai-capability-card__topline">
                       <span
