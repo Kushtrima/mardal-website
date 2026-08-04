@@ -2589,7 +2589,11 @@ video {
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
   line-height: 1;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    opacity var(--duration-fast) var(--ease-standard);
 }
 
 /* One column per menu group, each only as wide as its own longest label
@@ -3079,9 +3083,15 @@ video {
    there is no second colour up here that would still read. */
 @media (hover: hover) {
   .site-footer__link:hover,
-  .site-footer__email:hover,
-  .site-footer__top-link:hover {
+  .site-footer__email:hover {
     opacity: 0.72;
+  }
+
+  .site-footer__top-link:hover {
+    border-color: #fff;
+    background: #fff;
+    color: var(--accent);
+    opacity: 1;
   }
 
 }
