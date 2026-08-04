@@ -76,7 +76,7 @@ export function SmoothScroll() {
         directScrollTween?.kill();
 
         const destination = smoother.offset(target, "top top");
-        const approachDistance = Math.min(window.innerHeight * 0.55, 560);
+        const approachDistance = Math.min(window.innerHeight * 0.72, 720);
         const currentPosition = smoother.scrollTop();
         const approachPosition = Math.min(
           destination,
@@ -87,8 +87,8 @@ export function SmoothScroll() {
         smoother.scrollTo(approachPosition, false);
         directScrollTween = gsap.to(scrollState, {
           value: destination,
-          duration: 0.72,
-          ease: "power2.inOut",
+          duration: 1.35,
+          ease: "power3.inOut",
           overwrite: true,
           onUpdate: () => smoother.scrollTop(scrollState.value),
         });
