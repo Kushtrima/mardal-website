@@ -4619,6 +4619,10 @@ video {
   background: #050505;
 }
 
+.service-skip-transition__frame--target .site-footer {
+  background: #050505;
+}
+
 .service-skip-transition__frame .service-journey {
   height: 100%;
   min-height: 0;

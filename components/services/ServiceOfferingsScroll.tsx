@@ -412,6 +412,8 @@ export function ServiceOfferingsScroll() {
         const targetFrame = document.createElement("div");
         const currentView = viewport.cloneNode(true) as HTMLElement;
         const targetView = target.cloneNode(true) as HTMLElement;
+        const footer = document.querySelector<HTMLElement>(".site-footer");
+        const footerView = footer?.cloneNode(true) as HTMLElement | undefined;
 
         overlay.className =
           "service-skip-transition service-page service-page--crm-solutions";
@@ -434,6 +436,7 @@ export function ServiceOfferingsScroll() {
 
         currentFrame.append(currentView);
         targetFrame.append(targetView);
+        if (footerView) targetFrame.append(footerView);
         transitionTrack.append(currentFrame, targetFrame);
         overlay.append(transitionTrack);
         document.body.append(overlay);
