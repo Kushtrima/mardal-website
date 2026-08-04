@@ -397,7 +397,7 @@ export function ServiceOfferingsScroll() {
         window.clearTimeout(skipReleaseTimer);
         skipReleaseTimer = window.setTimeout(() => {
           isSkipping = false;
-        }, 1700);
+        }, 2550);
       };
 
       skipLink?.addEventListener("click", handleSkipClick);

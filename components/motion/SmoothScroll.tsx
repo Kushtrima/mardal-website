@@ -73,6 +73,12 @@ export function SmoothScroll() {
         link?.hasAttribute("data-scroll-direct") ?? false;
       const shouldPreserveView =
         link?.hasAttribute("data-scroll-preserve-view") ?? false;
+      const requestedDuration = Number.parseFloat(
+        link?.getAttribute("data-scroll-duration") ?? "",
+      );
+      const scrollDuration = Number.isFinite(requestedDuration)
+        ? Math.min(Math.max(requestedDuration, 0.3), 4)
+        : 1.35;
 
       if (shouldScrollDirectly) {
         directScrollTween?.kill();
@@ -90,7 +96,7 @@ export function SmoothScroll() {
         smoother.scrollTo(approachPosition, false);
         directScrollTween = gsap.to(scrollState, {
           value: destination,
-          duration: 1.35,
+          duration: scrollDuration,
           ease: "power3.inOut",
           overwrite: true,
           onUpdate: () => smoother.scrollTop(scrollState.value),
