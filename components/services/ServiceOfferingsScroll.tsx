@@ -444,7 +444,7 @@ export function ServiceOfferingsScroll() {
 
         skipTransition = gsap.to(transitionTrack, {
           y: -window.innerHeight,
-          duration: 2.1,
+          duration: 1.8,
           ease: "sine.in",
           overwrite: true,
           onComplete: () => {
