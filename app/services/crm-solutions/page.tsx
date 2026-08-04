@@ -184,20 +184,34 @@ export default function CrmSolutionsPage() {
                 </div>
               </div>
 
-              <a
-                className="service-journey__next"
-                href={`#${crmSolutions.chapters[1].services[0].id}`}
-                data-service-next-link
-              >
-                <span data-service-next-label>
-                  {crmSolutions.chapters[1].title}
-                </span>
-                <PixelArrow
-                  className="service-journey__next-arrow"
-                  direction="up-right"
-                  size="small"
-                />
-              </a>
+              <div className="service-journey__controls">
+                <a
+                  className="service-journey__cancel"
+                  href="#crm-solutions-title"
+                >
+                  <PixelArrow
+                    className="service-journey__cancel-arrow"
+                    direction="left"
+                    size="small"
+                  />
+                  <span>Cancel</span>
+                </a>
+
+                <a
+                  className="service-journey__next"
+                  href={`#${crmSolutions.chapters[1].services[0].id}`}
+                  data-service-next-link
+                >
+                  <span data-service-next-label>
+                    {crmSolutions.chapters[1].title}
+                  </span>
+                  <PixelArrow
+                    className="service-journey__next-arrow"
+                    direction="up-right"
+                    size="small"
+                  />
+                </a>
+              </div>
             </Container>
           </div>
         </section>

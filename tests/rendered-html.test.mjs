@@ -451,6 +451,16 @@ test("server-renders the CRM Solutions service page", async () => {
   assert.equal((html.match(/data-service-group-link=/g) ?? []).length, 4);
   assert.match(
     html,
+    /class="service-journey__cancel" href="#crm-solutions-title"[^>]*>[\s\S]*?Cancel[\s\S]*?<\/a>/,
+  );
+  assert.match(html, /class="service-journey__controls"/);
+  assert.match(html, /data-service-next-link/);
+  assert.doesNotMatch(
+    html,
+    /class="service-journey__next"[^>]*(?:aria-hidden="true"|tabindex="-1")/,
+  );
+  assert.match(
+    html,
     /<span data-service-word="true">We<\/span> (?:<!-- -->)?<span data-service-word="true">review<\/span>/,
   );
   assert.match(html, /information across spreadsheets, emails, documents/);

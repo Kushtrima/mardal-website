@@ -4448,6 +4448,15 @@ video {
   color: var(--accent);
 }
 
+.service-journey__cancel {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: clamp(1rem, 1.25vw, 1.25rem);
+  line-height: 1;
+  transition: color 250ms var(--ease-standard);
+}
+
 .service-journey__stage {
   display: grid;
   min-width: 0;
@@ -4548,8 +4557,26 @@ video {
   transition: color 250ms var(--ease-standard);
 }
 
+.service-page--crm-solutions .service-journey__controls {
+  position: absolute;
+  z-index: 3;
+  right: clamp(1rem, 2vw, 2rem);
+  bottom: clamp(5.5rem, 10vh, 7rem);
+  left: calc(clamp(12rem, 20vw, 19rem) + clamp(2rem, 4vw, 5rem));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.service-page--crm-solutions
+  .service-journey__controls
+  .service-journey__next {
+  position: static;
+}
+
 @media (hover: hover) {
   .service-journey__nav-link:hover,
+  .service-journey__cancel:hover,
   .service-journey__next:hover {
     color: var(--accent);
   }
@@ -4734,6 +4761,20 @@ video {
     position: static;
     justify-content: flex-end;
     margin-top: 2.5rem;
+  }
+
+  .service-page--crm-solutions .service-journey__controls {
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2.5rem;
+  }
+
+  .service-page--crm-solutions
+    .service-journey__controls
+    .service-journey__next {
+    margin-top: 0;
   }
 }
 
@@ -5006,6 +5047,24 @@ video {
     margin: 1rem 0 0;
     font-size: 1rem;
   }
+
+  .service-offerings.is-mobile-service-stack .service-journey__controls {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    display: flex;
+    grid-row: 3;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1rem 0 0;
+  }
+
+  .service-offerings.is-mobile-service-stack
+    .service-journey__controls
+    .service-journey__next {
+    margin: 0;
+  }
 }
 
 @media (max-width: 48rem) and (max-height: 44rem) and (prefers-reduced-motion: no-preference) {
@@ -5034,7 +5093,7 @@ video {
   }
 
   .service-offerings.is-mobile-service-stack .service-card__number,
-  .service-offerings.is-mobile-service-stack .service-journey__next {
+  .service-offerings.is-mobile-service-stack .service-journey__controls {
     margin-top: 0.65rem;
   }
 }
