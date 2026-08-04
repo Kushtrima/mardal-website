@@ -4800,53 +4800,90 @@ video {
 @media (hover: hover) and (pointer: fine) and (min-width: 64.01rem) {
   .ai-capability-chapter {
     transition:
-      min-height 620ms var(--ease-standard),
-      background-color 420ms var(--ease-standard);
+      min-height 840ms 80ms var(--ease-standard),
+      background-color 520ms var(--ease-standard);
   }
 
   .ai-capability-chapter__title {
-    transition: transform 420ms var(--ease-standard);
+    transition: transform 640ms var(--ease-standard);
   }
 
   .ai-capability-chapter__details {
     max-height: 0;
     margin-top: 0;
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(0.75rem);
+    overflow: clip;
     visibility: hidden;
     transition:
-      max-height 620ms var(--ease-standard),
-      margin-top 420ms var(--ease-standard),
-      opacity 320ms var(--ease-standard),
-      transform 420ms var(--ease-standard),
-      visibility 0s linear 620ms;
+      max-height 820ms 80ms var(--ease-standard),
+      margin-top 620ms 80ms var(--ease-standard),
+      visibility 0s linear 900ms;
+  }
+
+  .ai-capability-chapter__copy,
+  .ai-capability-chapter__point {
+    opacity: 0;
+    transform: translateY(0.7rem);
+    transition:
+      opacity 180ms ease-out,
+      transform 260ms var(--ease-standard);
   }
 
   .ai-capability-chapter:hover,
   .ai-capability-chapter:focus-within {
     min-height: clamp(34rem, 45vw, 42rem);
-    background: rgba(131, 98, 184, 0.055);
+    background-color: rgba(131, 98, 184, 0.055);
+    transition:
+      min-height 840ms var(--ease-standard),
+      background-color 520ms var(--ease-standard);
   }
 
   .ai-capability-chapter:hover .ai-capability-chapter__title,
   .ai-capability-chapter:focus-within .ai-capability-chapter__title {
-    transform: translateY(-0.5rem);
+    transform: translateY(-0.3rem);
   }
 
   .ai-capability-chapter:hover .ai-capability-chapter__details,
   .ai-capability-chapter:focus-within .ai-capability-chapter__details {
     max-height: 34rem;
     margin-top: clamp(1.5rem, 3vw, 2.5rem);
-    opacity: 1;
-    transform: translateY(0);
     visibility: visible;
     transition:
-      max-height 620ms var(--ease-standard),
-      margin-top 420ms var(--ease-standard),
-      opacity 360ms 80ms var(--ease-standard),
-      transform 420ms 60ms var(--ease-standard),
+      max-height 840ms var(--ease-standard),
+      margin-top 620ms var(--ease-standard),
       visibility 0s;
+  }
+
+  .ai-capability-chapter:hover .ai-capability-chapter__copy,
+  .ai-capability-chapter:focus-within .ai-capability-chapter__copy {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity 420ms 160ms ease-out,
+      transform 540ms 120ms var(--ease-standard);
+  }
+
+  .ai-capability-chapter:hover .ai-capability-chapter__point,
+  .ai-capability-chapter:focus-within .ai-capability-chapter__point {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .ai-capability-chapter:hover .ai-capability-chapter__point:nth-child(1),
+  .ai-capability-chapter:focus-within
+    .ai-capability-chapter__point:nth-child(1) {
+    transition-delay: 220ms;
+  }
+
+  .ai-capability-chapter:hover .ai-capability-chapter__point:nth-child(2),
+  .ai-capability-chapter:focus-within
+    .ai-capability-chapter__point:nth-child(2) {
+    transition-delay: 290ms;
+  }
+
+  .ai-capability-chapter:hover .ai-capability-chapter__point:nth-child(3),
+  .ai-capability-chapter:focus-within
+    .ai-capability-chapter__point:nth-child(3) {
+    transition-delay: 360ms;
   }
 
   .ai-capability-chapter:focus-visible {
@@ -4858,7 +4895,9 @@ video {
 @media (prefers-reduced-motion: reduce) {
   .ai-capability-chapter,
   .ai-capability-chapter__title,
-  .ai-capability-chapter__details {
+  .ai-capability-chapter__details,
+  .ai-capability-chapter__copy,
+  .ai-capability-chapter__point {
     transition: none !important;
   }
 }
