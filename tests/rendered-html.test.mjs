@@ -347,6 +347,12 @@ test("server-renders the AI & Automation service page", async () => {
     (html.match(/data-service-group-link=/g) ?? []).length,
     2,
   );
+  assert.match(
+    html,
+    /class="service-journey__skip" href="#ai-automation-cta" data-scroll-direct="true" data-scroll-duration="1.5" data-scroll-ease="sine.in" data-scroll-preserve-view="true" data-service-skip="true"[^>]*>[\s\S]*?pixel-x[\s\S]*?Skip[\s\S]*?<\/a>/,
+  );
+  assert.match(html, /class="service-cta" id="ai-automation-cta"/);
+  assert.match(html, /class="service-journey__controls"/);
   assert.match(html, /data-service-track/);
   assert.match(html, /class="service-card__number"[^>]*>01</);
   assert.equal(
@@ -412,6 +418,12 @@ test("server-renders the System Integration service page", async () => {
   assert.match(html, /Data &amp; Connectivity/);
   assert.equal((html.match(/class="service-card"/g) ?? []).length, 6);
   assert.equal((html.match(/data-service-group-link=/g) ?? []).length, 2);
+  assert.match(
+    html,
+    /class="service-journey__skip" href="#system-integration-cta" data-scroll-direct="true" data-scroll-duration="1.5" data-scroll-ease="sine.in" data-scroll-preserve-view="true" data-service-skip="true"[^>]*>[\s\S]*?pixel-x[\s\S]*?Skip[\s\S]*?<\/a>/,
+  );
+  assert.match(html, /class="service-cta" id="system-integration-cta"/);
+  assert.match(html, /class="service-journey__controls"/);
   assert.match(html, /CRM &amp; ERP/);
   assert.match(html, /E-commerce &amp; Operations/);
   assert.match(html, /Accounting &amp; Payments/);

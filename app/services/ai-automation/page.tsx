@@ -5,7 +5,7 @@ import { SiteFooter } from "../../../components/layout/SiteFooter";
 import { SiteHeader } from "../../../components/layout/SiteHeader";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
-import { PixelArrow } from "../../../components/ui/PixelArrow";
+import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
 import { aiAutomation } from "../../../content/ai-automation";
 import { products } from "../../../content/home";
 
@@ -51,7 +51,11 @@ export default function AiAutomationPage() {
       <SectionEnter />
       <ServicePageMotion />
 
-      <main className="service-page" id="main-content" data-service-page>
+      <main
+        className="service-page service-page--ai-automation"
+        id="main-content"
+        data-service-page
+      >
         <SiteHeader />
 
         <section
@@ -208,29 +212,52 @@ export default function AiAutomationPage() {
                 </div>
               </div>
 
-              <a
-                className="service-journey__next"
-                href={`#${aiAutomation.chapters[1].services[0].id}`}
-                data-service-next-link
-              >
-                <span data-service-next-label>Automation</span>
-                <PixelArrow
-                  className="service-journey__next-arrow"
-                  direction="up-right"
-                  size="small"
-                />
-              </a>
+              <div className="service-journey__controls">
+                <a
+                  className="service-journey__skip"
+                  href="#ai-automation-cta"
+                  data-scroll-direct
+                  data-scroll-duration="1.5"
+                  data-scroll-ease="sine.in"
+                  data-scroll-preserve-view
+                  data-service-skip
+                >
+                  <PixelX
+                    className="service-journey__skip-icon"
+                    size="small"
+                  />
+                  <span>Skip</span>
+                </a>
+
+                <a
+                  className="service-journey__next"
+                  href={`#${aiAutomation.chapters[1].services[0].id}`}
+                  data-service-next-link
+                >
+                  <span data-service-next-label>Automation</span>
+                  <PixelArrow
+                    className="service-journey__next-arrow"
+                    direction="up-right"
+                    size="small"
+                  />
+                </a>
+              </div>
             </Container>
           </div>
         </section>
 
         <section
           className="service-cta"
+          id="ai-automation-cta"
           aria-labelledby="service-cta-title"
           data-route-section
         >
           <Container>
-            <div className="service-cta__inner" data-enter>
+            <div
+              className="service-cta__inner"
+              data-enter
+              data-enter-mode="none"
+            >
               <h2 className="service-cta__title" id="service-cta-title">
                 {aiAutomation.cta.title}
               </h2>

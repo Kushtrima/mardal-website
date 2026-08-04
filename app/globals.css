@@ -4585,7 +4585,7 @@ video {
   transition: color 250ms var(--ease-standard);
 }
 
-.service-page--crm-solutions .service-journey__controls {
+.service-page .service-journey__controls {
   position: absolute;
   z-index: 3;
   right: clamp(1rem, 2vw, 2rem);
@@ -4596,9 +4596,7 @@ video {
   justify-content: space-between;
 }
 
-.service-page--crm-solutions
-  .service-journey__controls
-  .service-journey__next {
+.service-page .service-journey__controls .service-journey__next {
   position: static;
 }
 
@@ -4837,7 +4835,7 @@ video {
     margin-top: 2.5rem;
   }
 
-  .service-page--crm-solutions .service-journey__controls {
+  .service-page .service-journey__controls {
     position: static;
     display: flex;
     align-items: center;
@@ -4845,9 +4843,7 @@ video {
     margin-top: 2.5rem;
   }
 
-  .service-page--crm-solutions
-    .service-journey__controls
-    .service-journey__next {
+  .service-page .service-journey__controls .service-journey__next {
     margin-top: 0;
   }
 }

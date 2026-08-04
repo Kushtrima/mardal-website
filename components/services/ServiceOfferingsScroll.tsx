@@ -421,8 +421,10 @@ export function ServiceOfferingsScroll() {
         const footer = document.querySelector<HTMLElement>(".site-footer");
         const footerView = footer?.cloneNode(true) as HTMLElement | undefined;
 
-        overlay.className =
-          "service-skip-transition service-page service-page--crm-solutions";
+        overlay.className = "service-skip-transition service-page";
+        section
+          .closest<HTMLElement>("[data-service-page]")
+          ?.classList.forEach((className) => overlay.classList.add(className));
         overlay.setAttribute("aria-hidden", "true");
         const sectionStyles = window.getComputedStyle(section);
         overlay.style.setProperty(
