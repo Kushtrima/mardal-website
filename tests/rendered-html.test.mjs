@@ -455,7 +455,7 @@ test("server-renders the CRM Solutions service page", async () => {
   assert.equal((html.match(/data-service-group-link=/g) ?? []).length, 4);
   assert.match(
     html,
-    /class="service-journey__skip" href="#crm-solutions-cta" data-scroll-direct="true" data-scroll-duration="2.1" data-scroll-ease="sine.inOut" data-scroll-preserve-view="true" data-service-skip="true"[^>]*>[\s\S]*?pixel-x[\s\S]*?Skip[\s\S]*?<\/a>/,
+    /class="service-journey__skip" href="#crm-solutions-cta" data-scroll-direct="true" data-scroll-duration="2.1" data-scroll-ease="sine.in" data-scroll-preserve-view="true" data-service-skip="true"[^>]*>[\s\S]*?pixel-x[\s\S]*?Skip[\s\S]*?<\/a>/,
   );
   assert.match(html, /class="service-cta" id="crm-solutions-cta"/);
   assert.match(html, /class="service-journey__controls"/);

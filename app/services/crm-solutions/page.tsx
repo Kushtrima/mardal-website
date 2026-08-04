@@ -190,7 +190,7 @@ export default function CrmSolutionsPage() {
                   href="#crm-solutions-cta"
                   data-scroll-direct
                   data-scroll-duration="2.1"
-                  data-scroll-ease="sine.inOut"
+                  data-scroll-ease="sine.in"
                   data-scroll-preserve-view
                   data-service-skip
                 >

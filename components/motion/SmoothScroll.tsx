@@ -81,7 +81,9 @@ export function SmoothScroll() {
         ? Math.min(Math.max(requestedDuration, 0.3), 4)
         : 1.35;
       const scrollEase =
-        requestedEase === "sine.inOut" ? requestedEase : "power3.inOut";
+        requestedEase === "sine.in" || requestedEase === "sine.inOut"
+          ? requestedEase
+          : "power3.inOut";
 
       if (shouldScrollDirectly) {
         directScrollTween?.kill();

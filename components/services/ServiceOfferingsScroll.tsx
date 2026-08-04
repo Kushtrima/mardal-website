@@ -445,7 +445,7 @@ export function ServiceOfferingsScroll() {
         skipTransition = gsap.to(transitionTrack, {
           y: -window.innerHeight,
           duration: 2.1,
-          ease: "sine.out",
+          ease: "sine.in",
           overwrite: true,
           onComplete: () => {
             const smoother = ScrollSmoother.get();
