@@ -44,6 +44,7 @@ export function SmoothScroll() {
       normalizeScroll: true,
       ignoreMobileResize: true,
     });
+    let directScrollTween: gsap.core.Tween | undefined;
 
     /**
      * Anchor links have to go through the smoother.
@@ -68,13 +69,32 @@ export function SmoothScroll() {
       if (!target) return;
 
       event.preventDefault();
-      const shouldJump = link?.hasAttribute("data-scroll-instant") ?? false;
+      const shouldScrollDirectly =
+        link?.hasAttribute("data-scroll-direct") ?? false;
 
-      smoother.scrollTo(
-        target,
-        !shouldJump,
-        shouldJump ? "top top" : "top 12%",
-      );
+      if (shouldScrollDirectly) {
+        directScrollTween?.kill();
+
+        const destination = smoother.offset(target, "top top");
+        const approachDistance = Math.min(window.innerHeight * 0.55, 560);
+        const currentPosition = smoother.scrollTop();
+        const approachPosition = Math.min(
+          destination,
+          Math.max(currentPosition, destination - approachDistance),
+        );
+        const scrollState = { value: approachPosition };
+
+        smoother.scrollTo(approachPosition, false);
+        directScrollTween = gsap.to(scrollState, {
+          value: destination,
+          duration: 0.72,
+          ease: "power2.inOut",
+          overwrite: true,
+          onUpdate: () => smoother.scrollTop(scrollState.value),
+        });
+      } else {
+        smoother.scrollTo(target, true, "top 12%");
+      }
       history.pushState(null, "", href);
     };
 
@@ -82,6 +102,7 @@ export function SmoothScroll() {
 
     return () => {
       document.removeEventListener("click", handleClick);
+      directScrollTween?.kill();
       smoother.kill();
     };
   }, []);
