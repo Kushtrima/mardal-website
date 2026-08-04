@@ -99,7 +99,7 @@ export function SiteFooter() {
               <PixelArrow
                 className="site-footer__arrow site-footer__arrow--up"
                 direction="up"
-                size="compact"
+                size="small"
               />
             </a>
           </div>
