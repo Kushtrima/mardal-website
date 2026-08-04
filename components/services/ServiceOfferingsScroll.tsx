@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 
 const DESKTOP_QUERY =
   "(min-width: 64.0625rem) and (prefers-reduced-motion: no-preference)";
@@ -154,7 +155,8 @@ export function ServiceOfferingsScroll() {
     media.add(DESKTOP_QUERY, () => {
       let jumpTween: gsap.core.Tween | undefined;
       let groupSwitchTween: gsap.core.Timeline | undefined;
-      let skipReleaseTimer: number | undefined;
+      let skipTransition: gsap.core.Tween | undefined;
+      let skipOverlay: HTMLElement | undefined;
       let isSkipping = false;
       const journeyState = { progress: 0 };
       const wordGroups = cards.map((card) =>
@@ -389,15 +391,71 @@ export function ServiceOfferingsScroll() {
         link.addEventListener("click", handleGroupClick),
       );
 
-      const handleSkipClick = () => {
+      const handleSkipClick = (event: Event) => {
+        const target = skipLink
+          ? document.querySelector<HTMLElement>(skipLink.hash)
+          : null;
+
+        if (!skipLink || !target || isSkipping) return;
+        event.preventDefault();
+
         jumpTween?.kill();
         groupSwitchTween?.kill();
+        skipTransition?.kill();
+        skipOverlay?.remove();
         gsap.set(stage, { autoAlpha: 1, x: 0 });
         isSkipping = true;
-        window.clearTimeout(skipReleaseTimer);
-        skipReleaseTimer = window.setTimeout(() => {
-          isSkipping = false;
-        }, 3200);
+
+        const overlay = document.createElement("div");
+        const transitionTrack = document.createElement("div");
+        const currentFrame = document.createElement("div");
+        const targetFrame = document.createElement("div");
+        const currentView = viewport.cloneNode(true) as HTMLElement;
+        const targetView = target.cloneNode(true) as HTMLElement;
+
+        overlay.className =
+          "service-skip-transition service-page service-page--crm-solutions";
+        overlay.setAttribute("aria-hidden", "true");
+        transitionTrack.className = "service-skip-transition__track";
+        currentFrame.className =
+          "service-skip-transition__frame service-skip-transition__frame--current";
+        targetFrame.className =
+          "service-skip-transition__frame service-skip-transition__frame--target";
+        currentView.removeAttribute("style");
+
+        currentFrame.append(currentView);
+        targetFrame.append(targetView);
+        transitionTrack.append(currentFrame, targetFrame);
+        overlay.append(transitionTrack);
+        document.body.append(overlay);
+        skipOverlay = overlay;
+
+        skipTransition = gsap.to(transitionTrack, {
+          y: -window.innerHeight,
+          duration: 2.8,
+          ease: "sine.out",
+          overwrite: true,
+          onComplete: () => {
+            const smoother = ScrollSmoother.get();
+
+            if (smoother) {
+              smoother.scrollTo(target, false, "top top");
+            } else {
+              window.scrollTo({
+                top: window.scrollY + target.getBoundingClientRect().top,
+                behavior: "auto",
+              });
+            }
+
+            history.pushState(null, "", skipLink.hash);
+            ScrollTrigger.update();
+            window.requestAnimationFrame(() => {
+              overlay.remove();
+              if (skipOverlay === overlay) skipOverlay = undefined;
+              isSkipping = false;
+            });
+          },
+        });
       };
 
       skipLink?.addEventListener("click", handleSkipClick);
@@ -425,7 +483,8 @@ export function ServiceOfferingsScroll() {
       return () => {
         jumpTween?.kill();
         groupSwitchTween?.kill();
-        window.clearTimeout(skipReleaseTimer);
+        skipTransition?.kill();
+        skipOverlay?.remove();
         skipLink?.removeEventListener("click", handleSkipClick);
         nextLink.removeEventListener("click", handleNextClick);
         groupLinks.forEach((link) =>
