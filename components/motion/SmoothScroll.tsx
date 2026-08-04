@@ -76,19 +76,23 @@ export function SmoothScroll() {
       const requestedDuration = Number.parseFloat(
         link?.getAttribute("data-scroll-duration") ?? "",
       );
+      const requestedEase = link?.getAttribute("data-scroll-ease");
       const scrollDuration = Number.isFinite(requestedDuration)
         ? Math.min(Math.max(requestedDuration, 0.3), 4)
         : 1.35;
+      const scrollEase =
+        requestedEase === "sine.inOut" ? requestedEase : "power3.inOut";
 
       if (shouldScrollDirectly) {
         directScrollTween?.kill();
 
         const destination = smoother.offset(target, "top top");
-        const approachDistance = Math.min(window.innerHeight * 0.72, 720);
+        const approachDistance = shouldPreserveView
+          ? Math.min(window.innerHeight * 0.9, 900)
+          : Math.min(window.innerHeight * 0.72, 720);
         const currentPosition = smoother.scrollTop();
-        const approachPosition = shouldPreserveView
-          ? currentPosition
-          : destination >= currentPosition
+        const approachPosition =
+          destination >= currentPosition
             ? Math.max(currentPosition, destination - approachDistance)
             : Math.min(currentPosition, destination + approachDistance);
         const scrollState = { value: approachPosition };
@@ -97,7 +101,7 @@ export function SmoothScroll() {
         directScrollTween = gsap.to(scrollState, {
           value: destination,
           duration: scrollDuration,
-          ease: "power3.inOut",
+          ease: scrollEase,
           overwrite: true,
           onUpdate: () => smoother.scrollTop(scrollState.value),
         });
