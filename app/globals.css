@@ -4597,7 +4597,7 @@ video {
   z-index: 1000;
   inset: 0;
   overflow: hidden;
-  background: #050505;
+  background: var(--service-surface, #050505);
   pointer-events: none;
 }
 
@@ -4612,6 +4612,10 @@ video {
   height: 100vh;
   height: 100svh;
   overflow: hidden;
+  background: var(--service-surface, #050505);
+}
+
+.service-skip-transition__frame--target {
   background: #050505;
 }
 

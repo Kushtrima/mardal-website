@@ -416,6 +416,15 @@ export function ServiceOfferingsScroll() {
         overlay.className =
           "service-skip-transition service-page service-page--crm-solutions";
         overlay.setAttribute("aria-hidden", "true");
+        const sectionStyles = window.getComputedStyle(section);
+        overlay.style.setProperty(
+          "--service-surface",
+          sectionStyles.getPropertyValue("--service-surface"),
+        );
+        overlay.style.setProperty(
+          "--service-ink",
+          sectionStyles.getPropertyValue("--service-ink"),
+        );
         transitionTrack.className = "service-skip-transition__track";
         currentFrame.className =
           "service-skip-transition__frame service-skip-transition__frame--current";
