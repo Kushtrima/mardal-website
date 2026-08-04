@@ -353,6 +353,10 @@ test("server-renders the AI & Automation service page", async () => {
   );
   assert.match(html, /class="service-cta" id="ai-automation-cta"/);
   assert.match(html, /class="service-journey__controls"/);
+  assert.match(
+    html,
+    /class="service-cta__inner" data-enter="true" data-enter-mode="none"/,
+  );
   assert.match(html, /data-service-track/);
   assert.match(html, /class="service-card__number"[^>]*>01</);
   assert.equal(
@@ -424,6 +428,10 @@ test("server-renders the System Integration service page", async () => {
   );
   assert.match(html, /class="service-cta" id="system-integration-cta"/);
   assert.match(html, /class="service-journey__controls"/);
+  assert.match(
+    html,
+    /class="service-cta__inner" data-enter="true" data-enter-mode="none"/,
+  );
   assert.match(html, /CRM &amp; ERP/);
   assert.match(html, /E-commerce &amp; Operations/);
   assert.match(html, /Accounting &amp; Payments/);
@@ -471,6 +479,10 @@ test("server-renders the CRM Solutions service page", async () => {
   );
   assert.match(html, /class="service-cta" id="crm-solutions-cta"/);
   assert.match(html, /class="service-journey__controls"/);
+  assert.match(
+    html,
+    /class="service-cta__inner" data-enter="true" data-enter-mode="none"/,
+  );
   assert.match(html, /data-service-next-link/);
   assert.doesNotMatch(
     html,
