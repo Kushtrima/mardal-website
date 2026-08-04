@@ -68,7 +68,13 @@ export function SmoothScroll() {
       if (!target) return;
 
       event.preventDefault();
-      smoother.scrollTo(target, true, "top 12%");
+      const shouldJump = link?.hasAttribute("data-scroll-instant") ?? false;
+
+      smoother.scrollTo(
+        target,
+        !shouldJump,
+        shouldJump ? "top top" : "top 12%",
+      );
       history.pushState(null, "", href);
     };
 
