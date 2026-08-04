@@ -189,7 +189,7 @@ export default function CrmSolutionsPage() {
                   className="service-journey__skip"
                   href="#crm-solutions-cta"
                   data-scroll-direct
-                  data-scroll-duration="1.8"
+                  data-scroll-duration="1.5"
                   data-scroll-ease="sine.in"
                   data-scroll-preserve-view
                   data-service-skip
