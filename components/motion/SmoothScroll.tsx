@@ -78,10 +78,10 @@ export function SmoothScroll() {
         const destination = smoother.offset(target, "top top");
         const approachDistance = Math.min(window.innerHeight * 0.72, 720);
         const currentPosition = smoother.scrollTop();
-        const approachPosition = Math.min(
-          destination,
-          Math.max(currentPosition, destination - approachDistance),
-        );
+        const approachPosition =
+          destination >= currentPosition
+            ? Math.max(currentPosition, destination - approachDistance)
+            : Math.min(currentPosition, destination + approachDistance);
         const scrollState = { value: approachPosition };
 
         smoother.scrollTo(approachPosition, false);

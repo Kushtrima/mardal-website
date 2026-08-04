@@ -94,6 +94,7 @@ export function SiteFooter() {
               className="site-footer__top-link"
               href="#main-content"
               aria-label="Back to top"
+              data-scroll-direct
             >
               <PixelArrow
                 className="site-footer__arrow site-footer__arrow--up"

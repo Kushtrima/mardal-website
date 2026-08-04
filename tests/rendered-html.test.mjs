@@ -200,6 +200,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /© \d{4} Mardal/);
   assert.match(html, /class="site-footer__nav"/);
   assert.match(html, /Back to top/);
+  assert.match(
+    html,
+    /class="site-footer__top-link" href="#main-content" aria-label="Back to top" data-scroll-direct="true"/,
+  );
   assert.doesNotMatch(
     html,
     /class="site-footer__top-link"[^>]*>\s*Back to top/,
