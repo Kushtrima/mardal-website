@@ -16,7 +16,7 @@ export const systemIntegration = {
       services: [
         {
           id: "crm-erp-integration",
-          title: "CRM & ERP Integration",
+          title: "CRM & ERP",
           copy: "We connect your CRM and ERP so customer, sales, order, inventory, and financial information stays updated across both systems.",
           items: [
             "Synchronize customers and products",
@@ -28,7 +28,7 @@ export const systemIntegration = {
         },
         {
           id: "ecommerce-operations-integration",
-          title: "E-commerce & Operations Integration",
+          title: "E-commerce & Operations",
           copy: "We connect your online store with the systems used to manage products, inventory, orders, customers, accounting, and delivery.",
           items: [
             "Synchronize products, prices, and stock",
@@ -40,7 +40,7 @@ export const systemIntegration = {
         },
         {
           id: "accounting-payment-integration",
-          title: "Accounting & Payment Integration",
+          title: "Accounting & Payments",
           copy: "We connect your business platforms with accounting software and payment services so financial information stays accurate and up to date.",
           items: [
             "Transfer invoices and transaction details",

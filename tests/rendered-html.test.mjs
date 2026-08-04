@@ -356,6 +356,10 @@ test("server-renders the AI & Automation service page", async () => {
     html,
     /The assistant finds the relevant information and responds directly/,
   );
+  assert.match(
+    html,
+    /<span data-service-word="true">The<\/span> <span data-service-word="true">assistant<\/span>/,
+  );
   assert.doesNotMatch(html, /<details|service-row__action|09 services/);
 
   for (const title of [
@@ -400,13 +404,17 @@ test("server-renders the System Integration service page", async () => {
   assert.match(html, /Data &amp; Connectivity/);
   assert.equal((html.match(/class="service-card"/g) ?? []).length, 6);
   assert.equal((html.match(/data-service-group-link=/g) ?? []).length, 2);
-  assert.match(html, /CRM &amp; ERP Integration/);
-  assert.match(html, /E-commerce &amp; Operations Integration/);
-  assert.match(html, /Accounting &amp; Payment Integration/);
+  assert.match(html, /CRM &amp; ERP/);
+  assert.match(html, /E-commerce &amp; Operations/);
+  assert.match(html, /Accounting &amp; Payments/);
   assert.match(html, /API &amp; Custom Integration/);
   assert.match(html, /Communication Integration/);
   assert.match(html, /Data Migration &amp; Synchronization/);
   assert.match(html, /Connect the systems used across sales, orders, inventory/);
+  assert.match(
+    html,
+    /<span data-service-word="true">Connect<\/span> <span data-service-word="true">the<\/span>/,
+  );
   assert.match(html, /Connect applications and business data/);
   assert.match(html, /Microsoft Teams, and Slack/);
   assert.match(html, /new CRM without duplicate records/);

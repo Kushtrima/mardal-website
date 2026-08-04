@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fragment } from "react";
 import { Container } from "../../../components/layout/Container";
 import { SiteFooter } from "../../../components/layout/SiteFooter";
 import { SiteHeader } from "../../../components/layout/SiteHeader";
@@ -19,10 +20,10 @@ function ServiceWords({ className, text }: { className: string; text: string }) 
   return (
     <p className={className} aria-label={text}>
       {words.map((word, index) => (
-        <span data-service-word key={`${word}-${index}`}>
-          {word}
-          {index < words.length - 1 ? " " : ""}
-        </span>
+        <Fragment key={`${word}-${index}`}>
+          <span data-service-word>{word}</span>
+          {index < words.length - 1 ? " " : null}
+        </Fragment>
       ))}
     </p>
   );
