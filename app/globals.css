@@ -3053,8 +3053,9 @@ video {
    to the right rather than left to space-between, which has nothing to space
    a single child against. */
 .site-footer__top-link {
+  position: relative;
   display: inline-flex;
-  width: clamp(2.75rem, 3.1vw, 3.125rem);
+  width: 2.5rem;
   aspect-ratio: 1;
   align-items: center;
   justify-content: center;
@@ -3065,6 +3066,13 @@ video {
   border-radius: 50%;
   line-height: 1;
   transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.site-footer__top-link::after {
+  position: absolute;
+  inset: -0.125rem;
+  border-radius: inherit;
+  content: "";
 }
 
 /* Everything on the panel is white, so hover dips rather than recolours:
