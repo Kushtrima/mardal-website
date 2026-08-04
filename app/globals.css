@@ -4462,6 +4462,11 @@ video {
   transition: color 250ms var(--ease-standard);
 }
 
+.service-journey__skip-icon {
+  --pixel-arrow-dot: 0.085rem;
+  --pixel-arrow-gap: 0.04rem;
+}
+
 .service-journey__stage {
   display: grid;
   min-width: 0;

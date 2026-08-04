@@ -187,7 +187,7 @@ export default function CrmSolutionsPage() {
               <div className="service-journey__controls">
                 <a
                   className="service-journey__skip"
-                  href="#crm-solutions-title"
+                  href="#crm-solutions-cta"
                 >
                   <PixelX
                     className="service-journey__skip-icon"
@@ -217,6 +217,7 @@ export default function CrmSolutionsPage() {
 
         <section
           className="service-cta"
+          id="crm-solutions-cta"
           aria-labelledby="crm-solutions-cta-title"
           data-route-section
         >
