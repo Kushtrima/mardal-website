@@ -150,6 +150,7 @@ export function ServiceOfferingsScroll() {
 
     media.add(DESKTOP_QUERY, () => {
       let jumpTween: gsap.core.Tween | undefined;
+      let groupSwitchTween: gsap.core.Timeline | undefined;
       const journeyState = { progress: 0 };
       const wordGroups = cards.map((card) =>
         Array.from(card.querySelectorAll<HTMLElement>("[data-service-word]")),
@@ -331,15 +332,44 @@ export function ServiceOfferingsScroll() {
           : 0;
       };
 
-      const showProgressImmediately = (progress: number) => {
+      const showProgressWithTransition = (progress: number) => {
         if (!trigger) return;
         jumpTween?.kill();
+        groupSwitchTween?.kill();
+
+        const targetIndex = Math.min(
+          Math.floor(progress * cards.length),
+          cards.length - 1,
+        );
+        updateCard(targetIndex);
 
         const destination =
           trigger.start + (trigger.end - trigger.start) * progress;
-        trigger.scroll(destination);
-        renderServices(progress);
-        ScrollTrigger.update();
+
+        gsap.set(stage, { autoAlpha: 1, x: 0 });
+        groupSwitchTween = gsap
+          .timeline()
+          .to(stage, {
+            autoAlpha: 0,
+            x: -28,
+            duration: 0.28,
+            ease: "power2.in",
+          })
+          .add(() => {
+            trigger.scroll(destination);
+            renderServices(progress);
+            ScrollTrigger.update();
+          })
+          .fromTo(
+            stage,
+            { autoAlpha: 0, x: 32 },
+            {
+              autoAlpha: 1,
+              x: 0,
+              duration: 0.44,
+              ease: "power3.out",
+            },
+          );
       };
 
       const handleGroupClick = (event: Event) => {
@@ -347,7 +377,7 @@ export function ServiceOfferingsScroll() {
         const target = section.querySelector<HTMLElement>(link.hash);
         if (!target) return;
         event.preventDefault();
-        showProgressImmediately(progressForCard(target));
+        showProgressWithTransition(progressForCard(target));
       };
 
       groupLinks.forEach((link) =>
@@ -376,6 +406,7 @@ export function ServiceOfferingsScroll() {
 
       return () => {
         jumpTween?.kill();
+        groupSwitchTween?.kill();
         nextLink.removeEventListener("click", handleNextClick);
         groupLinks.forEach((link) =>
           link.removeEventListener("click", handleGroupClick),
@@ -393,6 +424,7 @@ export function ServiceOfferingsScroll() {
           { clearProps: "opacity" },
         );
         gsap.set(currentTitle, { clearProps: "opacity,visibility,transform" });
+        gsap.set(stage, { clearProps: "opacity,visibility,transform" });
       };
     });
 
@@ -400,6 +432,7 @@ export function ServiceOfferingsScroll() {
       section.classList.add("is-mobile-service-stack");
 
       let jumpTween: gsap.core.Tween | undefined;
+      let groupSwitchTween: gsap.core.Timeline | undefined;
       const cardContent = cards.map((card) =>
         Array.from(
           card.querySelectorAll<HTMLElement>(
@@ -490,21 +523,44 @@ export function ServiceOfferingsScroll() {
         });
       };
 
-      const showCardImmediately = (card: HTMLElement) => {
+      const showCardWithTransition = (card: HTMLElement) => {
         if (!trigger) return;
         const cardIndex = cards.indexOf(card);
         if (cardIndex < 0) return;
 
         jumpTween?.kill();
+        groupSwitchTween?.kill();
         const progress =
           cards.length > 1 ? cardIndex / (cards.length - 1) : 0;
         const destination =
           trigger.start + (trigger.end - trigger.start) * progress;
 
-        trigger.scroll(destination);
-        mobileTimeline.progress(progress);
         updateCard(cardIndex, true);
-        ScrollTrigger.update();
+        gsap.set(stage, { autoAlpha: 1, x: 0 });
+        groupSwitchTween = gsap
+          .timeline()
+          .to(stage, {
+            autoAlpha: 0,
+            x: -28,
+            duration: 0.28,
+            ease: "power2.in",
+          })
+          .add(() => {
+            trigger.scroll(destination);
+            mobileTimeline.progress(progress);
+            updateCard(cardIndex, true);
+            ScrollTrigger.update();
+          })
+          .fromTo(
+            stage,
+            { autoAlpha: 0, x: 32 },
+            {
+              autoAlpha: 1,
+              x: 0,
+              duration: 0.44,
+              ease: "power3.out",
+            },
+          );
       };
 
       const handleGroupClick = (event: Event) => {
@@ -512,7 +568,7 @@ export function ServiceOfferingsScroll() {
         const target = section.querySelector<HTMLElement>(link.hash);
         if (!target) return;
         event.preventDefault();
-        showCardImmediately(target);
+        showCardWithTransition(target);
       };
 
       groupLinks.forEach((link) =>
@@ -546,6 +602,7 @@ export function ServiceOfferingsScroll() {
 
       return () => {
         jumpTween?.kill();
+        groupSwitchTween?.kill();
         nextLink.removeEventListener("click", handleNextClick);
         groupLinks.forEach((link) =>
           link.removeEventListener("click", handleGroupClick),
@@ -560,6 +617,7 @@ export function ServiceOfferingsScroll() {
           clearProps: "opacity,visibility,transform",
         });
         gsap.set(currentTitle, { clearProps: "opacity,visibility,transform" });
+        gsap.set(stage, { clearProps: "opacity,visibility,transform" });
       };
     });
 
