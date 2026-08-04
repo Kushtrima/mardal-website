@@ -227,7 +227,11 @@ export default function CrmSolutionsPage() {
           data-route-section
         >
           <Container>
-            <div className="service-cta__inner" data-enter>
+            <div
+              className="service-cta__inner"
+              data-enter
+              data-enter-mode="fade"
+            >
               <h2
                 className="service-cta__title"
                 id="crm-solutions-cta-title"
