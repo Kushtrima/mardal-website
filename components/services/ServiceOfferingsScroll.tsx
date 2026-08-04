@@ -157,6 +157,7 @@ export function ServiceOfferingsScroll() {
       let groupSwitchTween: gsap.core.Timeline | undefined;
       let skipTransition: gsap.core.Tween | undefined;
       let skipOverlay: HTMLElement | undefined;
+      let skipInteractionCleanup: (() => void) | undefined;
       let isSkipping = false;
       const journeyState = { progress: 0 };
       const wordGroups = cards.map((card) =>
@@ -402,9 +403,13 @@ export function ServiceOfferingsScroll() {
         jumpTween?.kill();
         groupSwitchTween?.kill();
         skipTransition?.kill();
+        skipInteractionCleanup?.();
         skipOverlay?.remove();
         gsap.set(stage, { autoAlpha: 1, x: 0 });
         isSkipping = true;
+
+        const smoother = ScrollSmoother.get();
+        const startingScroll = smoother?.scrollTop() ?? window.scrollY;
 
         const overlay = document.createElement("div");
         const transitionTrack = document.createElement("div");
@@ -442,14 +447,20 @@ export function ServiceOfferingsScroll() {
         document.body.append(overlay);
         skipOverlay = overlay;
 
-        skipTransition = gsap.to(transitionTrack, {
-          y: -window.innerHeight,
-          duration: 1.5,
-          ease: "sine.in",
-          overwrite: true,
-          onComplete: () => {
-            const smoother = ScrollSmoother.get();
+        let hasSettled = false;
+        const settleSkip = (
+          moveToTarget: boolean,
+          completedNaturally = false,
+        ) => {
+          if (hasSettled) return;
+          hasSettled = true;
 
+          skipInteractionCleanup?.();
+          skipInteractionCleanup = undefined;
+          if (!completedNaturally) skipTransition?.kill();
+          skipTransition = undefined;
+
+          if (moveToTarget) {
             if (smoother) {
               smoother.scrollTo(target, false, "top top");
             } else {
@@ -458,15 +469,95 @@ export function ServiceOfferingsScroll() {
                 behavior: "auto",
               });
             }
-
             history.pushState(null, "", skipLink.hash);
-            ScrollTrigger.update();
-            window.requestAnimationFrame(() => {
-              overlay.remove();
-              if (skipOverlay === overlay) skipOverlay = undefined;
-              isSkipping = false;
-            });
-          },
+          } else if (smoother) {
+            smoother.scrollTop(startingScroll);
+          } else {
+            window.scrollTo({ top: startingScroll, behavior: "auto" });
+          }
+
+          ScrollTrigger.update();
+
+          const revealPage = () => {
+            overlay.remove();
+            if (skipOverlay === overlay) skipOverlay = undefined;
+            isSkipping = false;
+          };
+
+          if (completedNaturally) {
+            window.requestAnimationFrame(revealPage);
+          } else {
+            revealPage();
+          }
+        };
+
+        const handleManualWheel = (wheelEvent: WheelEvent) => {
+          if (wheelEvent.deltaY === 0) return;
+          settleSkip(wheelEvent.deltaY > 0);
+        };
+        let touchStartY: number | undefined;
+        const handleManualTouchStart = (touchEvent: TouchEvent) => {
+          touchStartY = touchEvent.touches[0]?.clientY;
+        };
+        const handleManualTouchMove = (touchEvent: TouchEvent) => {
+          const currentY = touchEvent.touches[0]?.clientY;
+          if (touchStartY === undefined || currentY === undefined) return;
+          settleSkip(currentY < touchStartY);
+        };
+        const handleManualKey = (keyEvent: KeyboardEvent) => {
+          const eventTarget = keyEvent.target as HTMLElement | null;
+          if (
+            eventTarget?.matches(
+              "input, textarea, select, button, [contenteditable='true']",
+            )
+          ) {
+            return;
+          }
+
+          const movesForward =
+            keyEvent.key === "ArrowDown" ||
+            keyEvent.key === "PageDown" ||
+            keyEvent.key === "End" ||
+            (keyEvent.key === " " && !keyEvent.shiftKey);
+          const movesBackward =
+            keyEvent.key === "ArrowUp" ||
+            keyEvent.key === "PageUp" ||
+            keyEvent.key === "Home" ||
+            (keyEvent.key === " " && keyEvent.shiftKey);
+
+          if (movesForward || movesBackward) settleSkip(movesForward);
+        };
+
+        window.addEventListener("wheel", handleManualWheel, {
+          capture: true,
+          passive: true,
+        });
+        window.addEventListener("touchstart", handleManualTouchStart, {
+          capture: true,
+          passive: true,
+        });
+        window.addEventListener("touchmove", handleManualTouchMove, {
+          capture: true,
+          passive: true,
+        });
+        window.addEventListener("keydown", handleManualKey, true);
+        skipInteractionCleanup = () => {
+          window.removeEventListener("wheel", handleManualWheel, true);
+          window.removeEventListener(
+            "touchstart",
+            handleManualTouchStart,
+            true,
+          );
+          window.removeEventListener("touchmove", handleManualTouchMove, true);
+          window.removeEventListener("keydown", handleManualKey, true);
+        };
+
+        skipTransition = gsap.to(transitionTrack, {
+          y: -window.innerHeight,
+          duration: 1.5,
+          ease: "sine.in",
+          overwrite: true,
+          onComplete: () => settleSkip(true, true),
         });
       };
 
@@ -496,6 +587,7 @@ export function ServiceOfferingsScroll() {
         jumpTween?.kill();
         groupSwitchTween?.kill();
         skipTransition?.kill();
+        skipInteractionCleanup?.();
         skipOverlay?.remove();
         skipLink?.removeEventListener("click", handleSkipClick);
         nextLink.removeEventListener("click", handleNextClick);
