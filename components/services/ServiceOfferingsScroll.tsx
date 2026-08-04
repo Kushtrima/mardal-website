@@ -410,6 +410,7 @@ export function ServiceOfferingsScroll() {
 
         const smoother = ScrollSmoother.get();
         const startingScroll = smoother?.scrollTop() ?? window.scrollY;
+        smoother?.paused(true);
 
         const overlay = document.createElement("div");
         const transitionTrack = document.createElement("div");
@@ -460,6 +461,8 @@ export function ServiceOfferingsScroll() {
           if (!completedNaturally) skipTransition?.kill();
           skipTransition = undefined;
 
+          smoother?.paused(false);
+
           if (moveToTarget) {
             if (smoother) {
               smoother.scrollTo(target, false, "top top");
@@ -491,9 +494,20 @@ export function ServiceOfferingsScroll() {
           }
         };
 
+        const nudgeSkip = (delta: number) => {
+          if (!skipTransition || delta === 0) return;
+          const nextProgress = gsap.utils.clamp(
+            0,
+            1,
+            skipTransition.progress() +
+              delta / Math.max(window.innerHeight * 1.15, 1),
+          );
+          skipTransition.progress(nextProgress);
+        };
+
         const handleManualWheel = (wheelEvent: WheelEvent) => {
-          if (wheelEvent.deltaY === 0) return;
-          settleSkip(wheelEvent.deltaY > 0);
+          wheelEvent.preventDefault();
+          nudgeSkip(wheelEvent.deltaY);
         };
         let touchStartY: number | undefined;
         const handleManualTouchStart = (touchEvent: TouchEvent) => {
@@ -502,7 +516,9 @@ export function ServiceOfferingsScroll() {
         const handleManualTouchMove = (touchEvent: TouchEvent) => {
           const currentY = touchEvent.touches[0]?.clientY;
           if (touchStartY === undefined || currentY === undefined) return;
-          settleSkip(currentY < touchStartY);
+          touchEvent.preventDefault();
+          nudgeSkip(touchStartY - currentY);
+          touchStartY = currentY;
         };
         const handleManualKey = (keyEvent: KeyboardEvent) => {
           const eventTarget = keyEvent.target as HTMLElement | null;
@@ -525,12 +541,15 @@ export function ServiceOfferingsScroll() {
             keyEvent.key === "Home" ||
             (keyEvent.key === " " && keyEvent.shiftKey);
 
-          if (movesForward || movesBackward) settleSkip(movesForward);
+          if (movesForward || movesBackward) {
+            keyEvent.preventDefault();
+            nudgeSkip((movesForward ? 1 : -1) * window.innerHeight * 0.2);
+          }
         };
 
         window.addEventListener("wheel", handleManualWheel, {
           capture: true,
-          passive: true,
+          passive: false,
         });
         window.addEventListener("touchstart", handleManualTouchStart, {
           capture: true,
@@ -538,7 +557,7 @@ export function ServiceOfferingsScroll() {
         });
         window.addEventListener("touchmove", handleManualTouchMove, {
           capture: true,
-          passive: true,
+          passive: false,
         });
         window.addEventListener("keydown", handleManualKey, true);
         skipInteractionCleanup = () => {
@@ -589,6 +608,7 @@ export function ServiceOfferingsScroll() {
         skipTransition?.kill();
         skipInteractionCleanup?.();
         skipOverlay?.remove();
+        ScrollSmoother.get()?.paused(false);
         skipLink?.removeEventListener("click", handleSkipClick);
         nextLink.removeEventListener("click", handleNextClick);
         groupLinks.forEach((link) =>
