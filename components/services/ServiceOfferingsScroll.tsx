@@ -594,7 +594,7 @@ export function ServiceOfferingsScroll() {
 
         const nextGroupCard = firstCardForGroup(activeGroup + 1);
         if (nextGroupCard) {
-          scrollToProgress(progressForCard(nextGroupCard));
+          showProgressWithTransition(progressForCard(nextGroupCard));
           return;
         }
 
@@ -712,27 +712,6 @@ export function ServiceOfferingsScroll() {
 
       const trigger = mobileTimeline.scrollTrigger;
 
-      const scrollToCard = (card: HTMLElement) => {
-        if (!trigger) return;
-        const cardIndex = cards.indexOf(card);
-        if (cardIndex < 0) return;
-
-        jumpTween?.kill();
-        const scrollState = { value: trigger.scroll() };
-        const progress =
-          cards.length > 1 ? cardIndex / (cards.length - 1) : 0;
-        const destination =
-          trigger.start + (trigger.end - trigger.start) * progress;
-
-        jumpTween = gsap.to(scrollState, {
-          value: destination,
-          duration: 1.05,
-          ease: "power3.inOut",
-          overwrite: true,
-          onUpdate: () => window.scrollTo(0, scrollState.value),
-        });
-      };
-
       const showCardWithTransition = (card: HTMLElement) => {
         if (!trigger) return;
         const cardIndex = cards.indexOf(card);
@@ -790,7 +769,7 @@ export function ServiceOfferingsScroll() {
 
         const nextGroupCard = firstCardForGroup(activeGroup + 1);
         if (nextGroupCard) {
-          scrollToCard(nextGroupCard);
+          showCardWithTransition(nextGroupCard);
           return;
         }
 
