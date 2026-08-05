@@ -4369,22 +4369,24 @@ video {
 
 .service-hero__pattern--crm-solutions {
   background: #ace5ca;
-  -webkit-mask-image: url("/crm-solutions-pattern-v4.png");
-  mask-image: url("/crm-solutions-pattern-v4.png");
+  -webkit-mask-image: url("/crm-solutions-pattern-v5.png");
+  mask-image: url("/crm-solutions-pattern-v5.png");
 }
 
+/* Same redaction language as the AI page -- bars snapped to a shared column
+   grid, several to a row -- in a different arrangement. Drawn at 1447x1087 like
+   the rest, so it no longer needs the mask-size correction the old artwork did. */
 .service-hero__pattern--custom-software {
   background: var(--tint-sky-bar);
-  -webkit-mask-image: url("/custom-software-pattern-v3.png");
-  mask-image: url("/custom-software-pattern-v3.png");
-  -webkit-mask-size: 109.8% 117.4%;
-  mask-size: 109.8% 117.4%;
+  -webkit-mask-image: url("/custom-software-pattern-v5.png");
+  mask-image: url("/custom-software-pattern-v5.png");
 }
 
+/* Same redaction language as the AI page, different arrangement. */
 .service-hero__pattern--web-platforms-apps {
   background: var(--tint-lilac-bar);
-  -webkit-mask-image: url("/web-platforms-apps-pattern-v4.png");
-  mask-image: url("/web-platforms-apps-pattern-v4.png");
+  -webkit-mask-image: url("/web-platforms-apps-pattern-v6.png");
+  mask-image: url("/web-platforms-apps-pattern-v6.png");
 }
 
 .service-overview {
