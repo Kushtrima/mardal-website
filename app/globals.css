@@ -4260,6 +4260,14 @@ video {
   background: var(--service-surface);
 }
 
+/* The hero paints its own white, but the band the header sits in does not, so
+   it showed the surface already darkening while the header was still on
+   screen. The mobile layout has carried this rule from the start; desktop
+   never got it. */
+.service-page .site-header {
+  background: var(--canvas);
+}
+
 .service-hero {
   color: var(--ink);
   background: var(--canvas);
