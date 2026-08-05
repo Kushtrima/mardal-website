@@ -4381,6 +4381,12 @@ video {
   mask-size: 109.8% 117.4%;
 }
 
+.service-hero__pattern--web-platforms-apps {
+  background: var(--tint-lilac-bar);
+  -webkit-mask-image: url("/web-platforms-apps-pattern-v4.png");
+  mask-image: url("/web-platforms-apps-pattern-v4.png");
+}
+
 .service-overview {
   margin-bottom: 200px;
   color: var(--service-ink);

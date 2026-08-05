@@ -27,7 +27,10 @@ export const menu = [
       { label: "System Integration", href: "/services/system-integration" },
       { label: "CRM Solutions", href: "/services/crm-solutions" },
       { label: "Custom Software", href: "/services/custom-software" },
-      { label: "Web Platforms", href: "#web-platforms" },
+      {
+        label: "Web Platforms & Apps",
+        href: "/services/web-platforms-apps",
+      },
     ],
   },
   {
@@ -88,7 +91,7 @@ export const whyMardal = {
   label: "Why Mardal?",
   titleLines: ["Build smarter.", "Scale faster."],
   copy:
-    "We help your business work better by building and connecting the technology you use every day, from AI and automation to CRM, custom software and web platforms. Everything is shaped around your team, your processes and the way your business actually works.",
+      "We help your business work better by building and connecting the technology you use every day, from AI and automation to CRM, custom software, web platforms and apps. Everything is shaped around your team, your processes and the way your business actually works.",
   cards: [
     {
       position: "one",
@@ -151,8 +154,8 @@ export const services = {
     },
     {
       id: "web-platforms",
-      title: "Web Platforms",
-      description: "Fast, scalable digital experiences that are easy to use.",
+      title: "Web Platforms & Apps",
+      description: "Fast, intuitive digital products built to grow.",
     },
   ],
 } as const;
@@ -169,7 +172,7 @@ export const difference = {
   titleLines: ["What Makes Us", "Different."],
   /** Two columns under the heading, set against the second and third box. */
   intro: [
-    "Five connected services. One team. Our designers, engineers and AI specialists work together across automation, CRM, custom software, web platforms and system integration, from strategy to delivery.",
+    "Five connected services. One team. Our designers, engineers and AI specialists work together across automation, CRM, custom software, web platforms, apps and system integration, from strategy to delivery.",
     "Instead of managing separate teams and disconnected tools, you get one partner that makes everything work together—helping your business move faster, adapt more easily and grow with less complexity.",
   ],
   items: [
@@ -177,7 +180,7 @@ export const difference = {
     { id: "system-integration", lines: ["System", "Integration"] },
     { id: "crm-solutions", lines: ["CRM", "Solutions"] },
     { id: "custom-software", lines: ["Custom", "Software"] },
-    { id: "web-platforms", lines: ["Web", "Platforms"] },
+    { id: "web-platforms", lines: ["Web Platforms", "& Apps"] },
   ],
 } as const;
 
