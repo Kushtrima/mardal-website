@@ -4,18 +4,21 @@
  * Same shape as the other four service pages. Four chapters, each one an entry
  * in the left-hand nav, and each holding only the services that belong to it:
  * design before the build, everything that runs in a browser, everything that
- * runs on a phone, and what happens after launch. Each service is a capability
- * sentence, the actions it covers, and one worked example.
+ * runs on a phone, and how AI is built into the product itself. Each service is
+ * a capability sentence, the actions it covers, and one worked example.
+ *
+ * Launch and growth is deliberately one card inside Mobile Apps rather than a
+ * chapter of its own.
  */
 export const webPlatformsApps = {
   title: "Web Platforms & Apps",
   description:
-    "Web platforms and mobile apps designed to be fast, intuitive, and ready to grow.",
-  heroTitleLines: [
-    "Web platforms and apps",
-    "people want to use.",
-  ],
-  support: "Fast, intuitive digital products built to grow.",
+    "Websites, online stores, portals, and mobile apps, built for the people who use them.",
+  /* Kept to the length the other service heroes use -- their first lines run
+     14 to 18 characters, and the previous 22-character line wrapped to three
+     visual lines instead of the two it was written as. */
+  heroTitleLines: ["Web and mobile", "people rely on."],
+  support: "Websites, online stores, portals, and mobile apps.",
   heroCta: "Let’s build",
   chapters: [
     {
@@ -129,93 +132,119 @@ export const webPlatformsApps = {
       id: "mobile-apps",
       title: "Mobile Apps",
       description:
-        "Everything that runs on a phone or tablet, for work that happens away from a desk.",
+        "Apps for phones and tablets, for your customers or for your own team.",
       services: [
         {
-          id: "ios-android-apps",
-          title: "iOS & Android",
-          copy: "We build mobile apps for iOS and Android, shaped around the tasks people complete on a phone.",
+          id: "current-technology",
+          title: "Current Technology",
+          copy: "We build for the iOS and Android versions people are actually running, on frameworks that are still actively maintained, so an app does not need rebuilding when the platforms move on.",
           items: [
-            "Build for iOS and Android",
-            "Design for touch and small screens",
-            "Add accounts, roles, and permissions",
-            "Connect to your existing business systems",
-          ],
-          example:
-            "A company gives its field team an app. The same app runs on iPhone and Android, and every job it records appears in the office system.",
-        },
-        {
-          id: "device-offline",
-          title: "Device & Offline",
-          copy: "We use what the phone can already do, and keep the app working when there is no connection.",
-          items: [
-            "Work offline and synchronize when connected",
-            "Use the camera, scanner, and location",
-            "Send notifications for time-sensitive work",
-            "Store information on the device safely",
-          ],
-          example:
-            "An employee records a job on a phone with no signal. The record is stored on the device and sent to the office system as soon as the connection returns.",
-        },
-        {
-          id: "app-release-updates",
-          title: "Release & Updates",
-          copy: "We publish the app, keep it accepted by the stores, and release changes without interrupting the people using it.",
-          items: [
-            "Publish to the App Store and Google Play",
-            "Manage versions and staged releases",
-            "Monitor crashes and failed updates",
-            "Keep the app working across operating system versions",
+            "Build for current iOS and Android versions",
+            "Use frameworks that are actively maintained",
+            "Share one codebase where both platforms allow it",
+            "Update the app as the platforms change",
           ],
           example:
             "A new phone operating system changes how an app stores files. The app is updated and released before the previous behaviour stops working.",
         },
-      ],
-    },
-    {
-      id: "launch-growth",
-      title: "Launch & Growth",
-      description:
-        "Prepare a product for launch, keep it fast and reachable, and improve it once people are using it.",
-      services: [
         {
-          id: "performance-accessibility",
-          title: "Performance & Accessibility",
-          copy: "We make a product load quickly and work on any device, including for people using assistive technology.",
+          id: "apps-across-industries",
+          title: "Across Industries",
+          copy: "We build apps for the sector you work in, shaped around the records, rules, and steps your own work uses.",
           items: [
-            "Reduce loading time and page weight",
-            "Test on phones, tablets, and slower connections",
-            "Meet recognized accessibility standards",
-            "Check colour contrast and keyboard use",
+            "Shape the app around how your sector works",
+            "Handle the records and rules your field requires",
+            "Connect to the systems common in your industry",
+            "Support the languages your users need",
           ],
           example:
-            "A product page takes too long to open on a phone. Images, fonts, and scripts are reduced, and the page becomes usable on a slow connection.",
+            "A delivery company and a clinic both need an app for staff on the move. Each is built around the records, permissions, and steps its own work requires.",
         },
         {
-          id: "search-analytics",
-          title: "Search & Analytics",
-          copy: "We prepare a site to be found and measured, so decisions after launch are based on what visitors actually do.",
+          id: "offline-apps",
+          title: "Offline Apps",
+          copy: "We build apps that keep working with no connection, and send what they collected as soon as there is one.",
           items: [
-            "Set page titles, descriptions, and structured data",
-            "Publish sitemaps and control indexing",
-            "Set up analytics and conversion tracking",
-            "Report on what visitors do and where they stop",
+            "Work with no signal and synchronize later",
+            "Store information on the device safely",
+            "Use the camera, scanner, and location",
+            "Avoid duplicates when records arrive late",
           ],
           example:
-            "A company cannot tell which pages bring enquiries. Tracking is added to the contact steps, and the pages that produce enquiries become visible.",
+            "A technician records a job on a phone with no signal. The record is stored on the device and reaches the office system as soon as the connection returns.",
         },
         {
-          id: "maintenance-support",
-          title: "Maintenance & Support",
-          copy: "We keep a site or app working after launch, with updates, monitoring, and a clear route for reporting problems.",
+          id: "app-launch-growth",
+          title: "Launch & Growth",
+          copy: "We publish the app, keep it working after release, and improve it once people are using it.",
           items: [
-            "Apply security and platform updates",
-            "Monitor availability and errors",
+            "Publish to the App Store and Google Play",
+            "Monitor availability, errors, and crashes",
             "Fix problems and restore from backups",
             "Plan and release improvements",
           ],
           example:
-            "An error appears after a platform update. Monitoring reports it the same day, the previous version is restored, and the fix is released after testing.",
+            "A release introduces an error on one model of phone. Monitoring reports it, the previous version is restored, and the fix is released after testing.",
+        },
+      ],
+    },
+    {
+      id: "ai-powered",
+      title: "AI-Powered",
+      description:
+        "How AI is built into the site or app itself, so the product does more of the work for the people using it.",
+      services: [
+        {
+          id: "ai-search-recommendations",
+          title: "Search & Recommendations",
+          copy: "We build search that understands what someone is asking for, and suggests what is worth showing next.",
+          items: [
+            "Search products and pages in plain language",
+            "Rank results by what people actually choose",
+            "Suggest related and alternative items",
+            "Explain why a result was suggested",
+          ],
+          example:
+            "A visitor describes what they need instead of naming a product. The store returns the closest matches, and the alternatives most often chosen with them.",
+        },
+        {
+          id: "ai-personalization",
+          title: "Personalization",
+          copy: "We adapt what each person sees to what they have looked at, ordered, or asked for before.",
+          items: [
+            "Show returning visitors relevant content first",
+            "Sort products and pages for each visitor",
+            "Group people by behaviour rather than guesswork",
+            "Let your team override what is shown",
+          ],
+          example:
+            "A returning customer opens the store. The categories they order from most appear first, and a promotion they have already used is not shown again.",
+        },
+        {
+          id: "ai-camera-voice-input",
+          title: "Camera & Voice Input",
+          copy: "We let people photograph, scan, or speak instead of typing, and turn what they capture into information your systems can use.",
+          items: [
+            "Identify products and parts from a photo",
+            "Read text from labels and photographed documents",
+            "Turn spoken notes into structured records",
+            "Mark uncertain results for review",
+          ],
+          example:
+            "A technician photographs a damaged part in the app. The part is identified, the job record is filled in, and anything uncertain is marked for an employee to confirm.",
+        },
+        {
+          id: "ai-content-assistance",
+          title: "Content Assistance",
+          copy: "We take the repetitive part of publishing off the team that owns your content.",
+          items: [
+            "Draft product and page descriptions",
+            "Translate content into other languages",
+            "Write image alt text and page summaries",
+            "Keep a person in the approval step",
+          ],
+          example:
+            "A new product is added with a batch of images. Descriptions, translations, and alt text are prepared automatically, and an employee approves them before publishing.",
         },
       ],
     },
