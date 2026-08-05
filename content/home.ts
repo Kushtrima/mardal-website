@@ -26,7 +26,7 @@ export const menu = [
       { label: "AI & Automation", href: "/services/ai-automation" },
       { label: "System Integration", href: "/services/system-integration" },
       { label: "CRM Solutions", href: "/services/crm-solutions" },
-      { label: "Custom Software", href: "#custom-software" },
+      { label: "Custom Software", href: "/services/custom-software" },
       { label: "Web Platforms", href: "#web-platforms" },
     ],
   },

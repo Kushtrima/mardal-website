@@ -15,19 +15,19 @@ export const aiAutomation = {
     columns: [
       "We start by understanding how work moves through your business: where information enters, who handles it, what decisions are repeated, and where delays happen. Then we build AI and automation that fit directly into that process.",
       "The result may be an assistant that answers customers, a workflow that processes documents, a voice agent that manages calls, or an automated system that moves work from one step to the next.",
-      "Our goal is not to add AI everywhere. It is to use it where it saves time, improves consistency, and makes the process easier to manage.",
+      "Each solution connects with the business systems, approved information, and digital tools your team already uses. We apply AI where it saves time, improves consistency, and makes work easier to manage.",
     ],
   },
   chapters: [
     {
-      id: "ai-solutions",
-      title: "AI Solutions",
-      navLabel: "AI Solutions",
+      id: "ai-applications",
+      title: "AI Applications",
+      navLabel: "AI Applications",
       services: [
         {
           id: "ai-assistants",
           title: "AI Assistants",
-          copy: "Custom AI assistants that use your approved business information to help customers and employees find accurate answers quickly.",
+          copy: "User-facing AI tools that help customers and employees ask questions, find information, and complete everyday tasks using approved business content.",
           items: [
             "Answer customer questions",
             "Explain products and services",
@@ -40,7 +40,7 @@ export const aiAutomation = {
         {
           id: "document-intelligence",
           title: "Document Intelligence",
-          copy: "AI systems that read, understand, and organize information from invoices, contracts, forms, applications, and other business documents.",
+          copy: "AI that reads, extracts, and organizes information from invoices, contracts, forms, applications, and other business documents.",
           items: [
             "Extract names, dates, totals, and reference numbers",
             "Classify and organize documents",
@@ -53,28 +53,15 @@ export const aiAutomation = {
         {
           id: "ai-data-insights",
           title: "AI Data & Insights",
-          copy: "AI solutions that help businesses understand sales, customer, financial, and operational data more clearly.",
+          copy: "AI that analyzes current and historical business data to explain what happened, why it happened, and where attention is needed.",
           items: [
-            "Summarize business performance",
-            "Identify trends and important changes",
+            "Summarize current and past performance",
+            "Explain the causes behind trends and changes",
             "Analyze customer feedback",
-            "Prepare clear management reports",
+            "Answer questions about business performance",
           ],
           example:
-            "At the end of each week, AI analyzes sales data and produces a summary of performance, lost opportunities, unusual changes, and areas requiring attention.",
-        },
-        {
-          id: "ai-integration",
-          title: "AI Integration",
-          copy: "Tailored AI applications, dashboards, and portals connected to your existing business systems, information, and digital tools.",
-          items: [
-            "Connect AI with CRM and ERP systems",
-            "Access approved databases and documents",
-            "Integrate AI into websites and customer portals",
-            "Connect internal applications through APIs",
-          ],
-          example:
-            "An AI assistant connected to the company CRM can answer a customer’s question, retrieve relevant account information, and prepare the next action for employee approval.",
+            "AI reviews weekly sales data and explains why conversion changed, which products drove the result, and where performance needs attention.",
         },
       ],
     },
@@ -114,7 +101,7 @@ export const aiAutomation = {
         {
           id: "document-approval-automation",
           title: "Document & Approval Automation",
-          copy: "Structured workflows that manage documents and internal requests through review, approval, signing, and storage.",
+          copy: "Structured workflows that route documents and internal requests through review, approval, signing, and storage after the required information has been collected.",
           items: [
             "Collect and organize documents automatically",
             "Assign review and approval tasks",
@@ -140,10 +127,10 @@ export const aiAutomation = {
         {
           id: "reporting-alerts",
           title: "Reporting & Alerts",
-          copy: "Automated workflows that generate business reports and notify teams about performance, deadlines, and important changes.",
+          copy: "Automated workflows that collect agreed metrics and deliver scheduled reports or alerts without requiring manual preparation.",
           items: [
-            "Generate scheduled performance reports",
-            "Collect information from connected systems",
+            "Generate and send scheduled reports",
+            "Collect agreed metrics from connected systems",
             "Notify teams about deadlines and overdue tasks",
             "Alert managers to unusual activity or important changes",
           ],
@@ -162,7 +149,7 @@ export const aiAutomation = {
         {
           id: "rag-knowledge-systems",
           title: "RAG & Knowledge Systems",
-          copy: "AI systems that search your approved documents and business data before answering, so responses are grounded in information you control.",
+          copy: "The knowledge layer behind AI assistants and search tools. It retrieves approved company information before answering and shows the sources used.",
           items: [
             "Connect approved documents and company knowledge",
             "Find the most relevant information for each question",
@@ -175,7 +162,7 @@ export const aiAutomation = {
         {
           id: "predictive-analytics",
           title: "Predictive Analytics",
-          copy: "AI systems that use historical and current data to forecast demand, identify risks, and detect important changes earlier.",
+          copy: "AI systems that use historical and current data to forecast what may happen next, including changes in demand, risk, delays, or performance.",
           items: [
             "Forecast demand and business performance",
             "Detect unusual patterns and emerging risks",
@@ -200,8 +187,8 @@ export const aiAutomation = {
         },
         {
           id: "ai-governance-mlops",
-          title: "AI Governance & MLOps",
-          copy: "Tools and processes that monitor, update, document, and control AI systems after they go live.",
+          title: "AI Governance & Operations",
+          copy: "Tools and processes that monitor, update, document, and control AI systems after launch. This operational discipline is often called MLOps.",
           items: [
             "Track AI quality and system health",
             "Test and approve updates before release",

@@ -207,6 +207,7 @@ export function ServiceOfferingsScroll() {
           Math.floor(journeyPosition),
           cards.length - 1,
         );
+        const isLastCard = currentIndex === cards.length - 1;
         const localProgress = gsap.utils.clamp(
           0,
           1,
@@ -259,7 +260,14 @@ export function ServiceOfferingsScroll() {
           });
         });
 
-        renderWordExit(wordGroups[currentIndex], localProgress);
+        if (isLastCard) {
+          gsap.set(wordGroups[currentIndex], {
+            autoAlpha: 1,
+            x: 0,
+          });
+        } else {
+          renderWordExit(wordGroups[currentIndex], localProgress);
+        }
 
         if (nextIndex !== currentIndex) {
           gsap.set(wordGroups[nextIndex], {
@@ -278,7 +286,9 @@ export function ServiceOfferingsScroll() {
         const currentNumber = numbers[currentIndex];
         if (currentNumber) {
           gsap.set(currentNumber, {
-            opacity: gsap.utils.clamp(0, 1, (0.88 - localProgress) / 0.18),
+            opacity: isLastCard
+              ? 1
+              : gsap.utils.clamp(0, 1, (0.88 - localProgress) / 0.18),
           });
         }
 

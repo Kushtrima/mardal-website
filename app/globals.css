@@ -4373,6 +4373,14 @@ video {
   mask-image: url("/crm-solutions-pattern-v4.png");
 }
 
+.service-hero__pattern--custom-software {
+  background: var(--tint-sky-bar);
+  -webkit-mask-image: url("/custom-software-pattern-v3.png");
+  mask-image: url("/custom-software-pattern-v3.png");
+  -webkit-mask-size: 109.8% 117.4%;
+  mask-size: 109.8% 117.4%;
+}
+
 .service-overview {
   margin-bottom: 200px;
   color: var(--service-ink);
