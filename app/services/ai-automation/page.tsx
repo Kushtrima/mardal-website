@@ -153,7 +153,7 @@ export default function AiAutomationPage() {
                     data-service-group-link={index}
                     aria-current={index === 0 ? "true" : undefined}
                   >
-                    {index === 0 ? "AI Solutions" : "Automation"}
+                    {chapter.navLabel}
                   </a>
                 ))}
               </nav>
@@ -215,7 +215,7 @@ export default function AiAutomationPage() {
               <div className="service-journey__controls">
                 <a
                   className="service-journey__skip"
-                  href="#ai-capabilities"
+                  href="#ai-automation-cta"
                   data-scroll-direct
                   data-scroll-duration="1.5"
                   data-scroll-ease="sine.in"
@@ -244,81 +244,6 @@ export default function AiAutomationPage() {
               </div>
             </Container>
           </div>
-        </section>
-
-        <section
-          className="ai-capabilities"
-          id="ai-capabilities"
-          aria-labelledby="ai-capabilities-title"
-          data-route-section
-        >
-          <Container
-            className="ai-capabilities__inner"
-            data-enter
-            data-enter-mode="none"
-          >
-            <header className="ai-capabilities__header">
-              <p className="ai-capabilities__eyebrow">
-                {aiAutomation.advancedCapabilities.eyebrow}
-              </p>
-              <h2
-                className="ai-capabilities__title"
-                id="ai-capabilities-title"
-              >
-                {aiAutomation.advancedCapabilities.title}
-              </h2>
-              <p className="ai-capabilities__intro">
-                {aiAutomation.advancedCapabilities.intro}
-              </p>
-            </header>
-
-            <div className="ai-capabilities__stage">
-              {aiAutomation.advancedCapabilities.items.map(
-                (capability, index) => (
-                  <article
-                    className={`ai-capability-chapter ai-capability-chapter--${capability.id}`}
-                    key={capability.id}
-                    tabIndex={0}
-                  >
-                    <div className="ai-capability-chapter__signal">
-                      <span
-                        className="ai-capability-chapter__index"
-                        aria-hidden="true"
-                      >
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <span className="ai-capability-chapter__category">
-                        {capability.category}
-                      </span>
-                    </div>
-
-                    <div className="ai-capability-chapter__content">
-                      <h3 className="ai-capability-chapter__title">
-                        {capability.title}
-                      </h3>
-
-                      <div className="ai-capability-chapter__details">
-                        <p className="ai-capability-chapter__copy">
-                          {capability.copy}
-                        </p>
-
-                        <ul className="ai-capability-chapter__points">
-                          {capability.points.map((point) => (
-                            <li
-                              className="ai-capability-chapter__point"
-                              key={point}
-                            >
-                              <span>{point}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </article>
-                ),
-              )}
-            </div>
-          </Container>
         </section>
 
         <section

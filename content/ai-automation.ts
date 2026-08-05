@@ -22,6 +22,7 @@ export const aiAutomation = {
     {
       id: "ai-solutions",
       title: "AI Solutions",
+      navLabel: "AI Solutions",
       services: [
         {
           id: "ai-assistants",
@@ -65,7 +66,7 @@ export const aiAutomation = {
         {
           id: "ai-integration",
           title: "AI Integration",
-          copy: "AI solutions connected to your existing business systems, information, and digital tools.",
+          copy: "Tailored AI applications, dashboards, and portals connected to your existing business systems, information, and digital tools.",
           items: [
             "Connect AI with CRM and ERP systems",
             "Access approved databases and documents",
@@ -80,6 +81,7 @@ export const aiAutomation = {
     {
       id: "automation-solutions",
       title: "Automation Solutions",
+      navLabel: "Automation",
       description:
         "Connected workflows that reduce repetitive work, improve response times, and keep business processes moving.",
       services: [
@@ -150,70 +152,68 @@ export const aiAutomation = {
         },
       ],
     },
+    {
+      id: "ai-systems",
+      title: "AI Systems",
+      navLabel: "AI Systems",
+      description:
+        "Advanced AI technologies for projects that need company knowledge, forecasting, visual recognition, or production-grade control.",
+      services: [
+        {
+          id: "rag-knowledge-systems",
+          title: "RAG & Knowledge Systems",
+          copy: "AI systems that search your approved documents and business data before answering, so responses are grounded in information you control.",
+          items: [
+            "Connect approved documents and company knowledge",
+            "Find the most relevant information for each question",
+            "Provide answers with supporting sources",
+            "Reduce unsupported or invented responses",
+          ],
+          example:
+            "An employee asks about a company policy. The system searches the approved policy library, returns a clear answer, and shows the documents used to produce it.",
+        },
+        {
+          id: "predictive-analytics",
+          title: "Predictive Analytics",
+          copy: "AI systems that use historical and current data to forecast demand, identify risks, and detect important changes earlier.",
+          items: [
+            "Forecast demand and business performance",
+            "Detect unusual patterns and emerging risks",
+            "Predict delays, failures, or maintenance needs",
+            "Support planning with data-based forecasts",
+          ],
+          example:
+            "A forecasting system analyzes previous orders and recent sales activity, then highlights expected demand changes so the team can adjust purchasing and staffing earlier.",
+        },
+        {
+          id: "computer-vision",
+          title: "Computer Vision",
+          copy: "AI systems that analyze images and video to recognize objects, find defects, and monitor visual conditions automatically.",
+          items: [
+            "Spot defects and unusual visual changes",
+            "Recognize products, materials, and events",
+            "Analyze images and video in real time",
+            "Route uncertain cases to an employee",
+          ],
+          example:
+            "A camera inspects products as they move through production. The system flags visual defects, records the result, and sends uncertain cases to an employee for review.",
+        },
+        {
+          id: "ai-governance-mlops",
+          title: "AI Governance & MLOps",
+          copy: "Tools and processes that monitor, update, document, and control AI systems after they go live.",
+          items: [
+            "Track AI quality and system health",
+            "Test and approve updates before release",
+            "Keep records of decisions and data use",
+            "Support responsible AI and regulatory readiness",
+          ],
+          example:
+            "A business-critical AI service is continuously checked for quality changes. When performance drops, the team receives an alert, reviews the evidence, and approves a tested update.",
+        },
+      ],
+    },
   ],
-  advancedCapabilities: {
-    eyebrow: "Specialized AI systems",
-    title: "Five capabilities for more demanding AI work.",
-    intro:
-      "For projects that need deeper intelligence, stronger governance, or real-time decision-making, we design focused AI systems around the work they need to perform.",
-    items: [
-      {
-        id: "tailored-ai-solutions",
-        category: "Custom",
-        title: "Tailored AI Solutions",
-        copy: "We develop custom AI applications, dashboards, and portal solutions that integrate directly with your existing system landscape.",
-        points: [
-          "Proprietary model development",
-          "Tailored UX/UI",
-          "GDPR-compliant architecture",
-        ],
-      },
-      {
-        id: "rag-systems",
-        category: "Knowledge",
-        title: "RAG Systems & Reliable AI",
-        copy: "With Retrieval-Augmented Generation, we anchor LLMs in your own data and documents for reliable answers without hallucinations.",
-        points: [
-          "Secure vector databases",
-          "Zero-hallucination architecture",
-          "Automated information extraction",
-        ],
-      },
-      {
-        id: "predictive-analytics",
-        category: "Analytics",
-        title: "Predictive Analytics & Forecasting",
-        copy: "Proactive decisions instead of reaction: predictive models detect failures, risks, and trends early based on your data.",
-        points: [
-          "Predictive maintenance for industry",
-          "Supply chain optimisation",
-          "Automated anomaly detection",
-        ],
-      },
-      {
-        id: "enterprise-mlops",
-        category: "Enterprise",
-        title: "Enterprise MLOps & Governed AI",
-        copy: "We ensure stable ML pipelines, monitoring, model updates, and auditability—the foundation for productive AI at scale.",
-        points: [
-          "Continuous model monitoring",
-          "Automated CI/CD pipelines",
-          "Full AI Act compliance",
-        ],
-      },
-      {
-        id: "computer-vision",
-        category: "Perception",
-        title: "Computer Vision & Edge AI",
-        copy: "Deep-learning-based image recognition for defect detection, quality control, and process optimisation—in real time and with the highest precision.",
-        points: [
-          "Real-time inference at the edge",
-          "Sub-millimetre precision",
-          "Automated classification",
-        ],
-      },
-    ],
-  },
   cta: {
     title: "Let’s build\nwhat your business\nneeds next.",
     label: "Get in touch",
