@@ -843,8 +843,44 @@ video {
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
+/* Every one of the five opens a panel, and nothing said so: they were set as
+   plain words, so the only way to learn there was a menu behind them was to
+   click one. A chevron is the convention for that and costs a third of an em.
+
+   Drawn from two borders of a rotated box rather than shipped as a glyph or an
+   icon: it is two hairlines, it inherits the colour of the word it follows, and
+   it scales with the type because it is sized in em. The nudge up is optical —
+   a rotated square hangs from its own centre, which sits low against a cap
+   height, so the mark is lifted back onto the middle of the word. */
+.nav-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42em;
+}
+
+.nav-trigger::after {
+  width: 0.3em;
+  height: 0.3em;
+  border-right: 1px solid currentcolor;
+  border-bottom: 1px solid currentcolor;
+  content: "";
+  transform: translateY(-0.11em) rotate(45deg);
+}
+
+/* Open, it points back at the panel it opened. Turned 225 rather than -135 so
+   it takes the long way round and reads as a turn rather than a flip. */
 .nav-trigger[aria-expanded="true"] {
   color: var(--accent);
+}
+
+.nav-trigger[aria-expanded="true"]::after {
+  transform: translateY(0.05em) rotate(225deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nav-trigger::after {
+    transition: transform var(--duration-base) var(--ease-handover);
+  }
 }
 
 .mobile-menu-toggle {
@@ -996,26 +1032,38 @@ video {
   display: none;
 }
 
-/* The one filled thing up here, and it keeps the accent it wore on the light
-   bar. Left to the page's tokens it would come out the lighter #a98ad6 with
-   black type, which is a different button from the one that was there — the
-   bar was what changed, not the call to action. */
-.hero-nav-cta {
-  --accent: #8362b8;
-  --accent-strong: #6f4fa7;
-  --accent-contrast: #ffffff;
+/* The one filled thing up here. White on the black bar, and smaller than the
+   words beside it rather than larger: on a bar with no ground of its own a
+   filled shape is already the loudest thing in the row, and size on top of
+   contrast makes it shout. It reads as a control because it is filled, so it
+   does not have to be big as well.
 
-  min-width: clamp(7rem, 8.8vw, 9.1rem);
-  min-height: clamp(2.55rem, 3.3vw, 2.85rem);
+   The accent tokens are set on the button rather than taken from the page.
+   This is the one place white is a fill instead of ink, and --accent means the
+   purple everywhere else, so borrowing the page's would tie the button to a
+   value that has nothing to do with it. --accent-strong is the menu's own
+   surface, because hovering a white fill has to dim it — there is nowhere
+   brighter to go. */
+.hero-nav-cta {
+  --accent: #ffffff;
+  --accent-strong: var(--menu-surface);
+  --accent-contrast: #08080a;
+
+  min-width: clamp(5.4rem, 6.4vw, 6.6rem);
+  min-height: clamp(2.05rem, 2.5vw, 2.3rem);
+  padding: 0.4rem 0.95rem;
   border-radius: var(--shape-control);
-  font-size: var(--text-body);
+  font-size: var(--text-small);
   font-weight: var(--weight-medium);
+  letter-spacing: -0.01em;
   overflow: hidden;
 }
 
+/* No glow. --shadow-accent is a purple cast, drawn to sit under a purple
+   button; under a white one on black it reads as a smudge rather than a lift. */
 .hero-nav-cta:hover {
   background: var(--accent-strong);
-  box-shadow: var(--shadow-accent);
+  box-shadow: none;
 }
 
 .hero-content {
