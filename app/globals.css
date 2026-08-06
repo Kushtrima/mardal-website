@@ -970,29 +970,37 @@ video {
 
 /* A rule that opens to the left of the name it marks.
 
-   The name slides right by exactly the rule plus its gap, and the rule is
-   pinned to the name's own left edge — so it draws itself into the space the
-   name has just left, ending flush with where that name started. That is why
-   the offset and the ::before both read the same two lengths: they are one
-   measurement used twice, and if they ever disagreed the rule would overlap the
-   word or leave a gap in front of it. */
+   THE LINK ITSELF MUST NOT MOVE. Moving it was what made the hover shudder:
+   the box carrying :hover slid out from under the pointer, the state dropped,
+   it slid back, and the pointer was over it again — on and off several times a
+   second for as long as you rested near an edge. The box is fixed here and the
+   name moves inside it.
+
+   Its width covers the name in both places: the text, plus the distance that
+   text travels. So wherever the name is, the pointer is still inside the same
+   unmoved box, and there is no edge to oscillate across.
+
+   The rule is pinned to that box's left edge, which is where the name rests, so
+   it draws into the space the name has just left. The travel and the rule read
+   the same two lengths — one measurement used twice; if they disagreed the rule
+   would overlap the word or leave a hole in front of it. */
 .mega-menu__link {
   --menu-rule: clamp(1.6rem, 3vw, 2.8rem);
   --menu-rule-gap: clamp(0.7rem, 1.2vw, 1.1rem);
+  --menu-travel: calc(var(--menu-rule) + var(--menu-rule-gap));
 
   position: relative;
   display: block;
   width: fit-content;
   padding-block: clamp(0.15rem, 0.4vh, 0.35rem);
-  transition:
-    opacity var(--duration-slow) var(--ease-standard),
-    transform var(--duration-base) var(--ease-handover);
+  padding-right: var(--menu-travel);
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .mega-menu__link::before {
   position: absolute;
   top: 50%;
-  right: calc(100% + var(--menu-rule-gap));
+  left: 0;
   width: var(--menu-rule);
   height: 1px;
   background: currentcolor;
@@ -1009,13 +1017,20 @@ video {
    closes this one up. */
 /* A step over the bar's own links rather than a heading. These are still
    navigation — the panel gives them room, not rank. */
+/* inline-block so it can be moved: this is the part that travels on hover,
+   while the link around it stays put. Both transitions live here — declaring
+   the transform one in a separate rule would have been overwritten by this
+   `transition`, and the name would have jumped rather than travelled. */
 .mega-menu__label {
+  display: inline-block;
   font-family: var(--type-display);
   font-size: clamp(1.1rem, 1.35vw, 1.3rem);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
   line-height: var(--leading-heading);
-  transition: color var(--duration-fast) var(--ease-standard);
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-base) var(--ease-handover);
 }
 
 /* Hovering one name dims the rest. With a rule and a shift already marking the
@@ -1027,7 +1042,11 @@ video {
 
 .mega-menu__links .mega-menu__link:hover {
   opacity: 1;
-  transform: translateX(calc(var(--menu-rule) + var(--menu-rule-gap)));
+}
+
+/* The name travels, not the link. */
+.mega-menu__links .mega-menu__link:hover .mega-menu__label {
+  transform: translateX(var(--menu-travel));
 }
 
 .mega-menu__links .mega-menu__link:hover::before {
