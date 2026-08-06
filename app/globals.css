@@ -1378,7 +1378,7 @@ video {
   /* Two lines of the leading below, and it has to be edited with it: this is
      what holds the four titles to one height so the paragraphs under them line
      up, and it only does that while the two agree. */
-  min-height: 2.4em;
+  min-height: 2em;
   margin: clamp(1.5rem, 2.4vw, 2.25rem) 0 0;
   /* Black rather than the panel's #08080a ink. Asked for directly, and this
      face earns it: CS Alistair is a light display cut, and at 26px its stems
@@ -1388,7 +1388,7 @@ video {
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-tight);
-  line-height: 1.2;
+  line-height: 1;
   text-wrap: balance;
 }
 
