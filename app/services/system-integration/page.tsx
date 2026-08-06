@@ -120,6 +120,8 @@ export default function SystemIntegrationPage() {
         <section
           className="service-offerings"
           aria-labelledby="system-integration-services-title"
+          data-route-section
+          data-enter-mode="fade"
           data-service-offerings
         >
           <div className="service-journey" data-service-viewport>

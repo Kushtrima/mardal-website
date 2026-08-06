@@ -123,9 +123,6 @@
   --leading-body: 1.55;
   --tracking-tight: -0.055em;
   --tracking-wide: 0.12em;
-  /* Capitals carry their own fit: the tight display value is drawn for
-     lowercase and closes capitals up against one another. */
-  --tracking-caps: 0.01em;
 
   /* Layout and spacing */
   /* 16px on a phone, opening to 40px by about a 1000px window and staying
@@ -957,11 +954,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
-  /* Set in caps here rather than in the markup, so the text a screen reader
-     announces and the render test asserts stays the sentence it was written
-     as. */
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-caps);
+  letter-spacing: var(--tracking-tight);
   line-height: var(--leading-heading-xl);
 }
 
@@ -978,7 +971,7 @@ video {
 .hero-copy {
   /* The three lines of it, and the air it keeps between itself and the first
      bar. The em is the copy's own size, so the height follows the type. */
-  --hero-copy-lines: calc(3 * var(--leading-heading) * 1em);
+  --hero-copy-lines: calc(4 * var(--leading-heading) * 1em);
   --hero-copy-clear: 2rem;
   /* Everything above the copy inside the hero, at its tallest: the header's
      own padding, the bar it sits on, and the padding at the top of the
@@ -1010,14 +1003,23 @@ video {
         var(--hero-copy-clear)
     )
   );
-  font-size: var(--text-heading);
+  /* The paragraph size, not the heading one. The tracking goes with it:
+     -0.045em is drawn to hold 30px display type together and closes body-size
+     text up. The leading stays tight because these three lines are broken by
+     hand rather than wrapped. */
+  font-size: var(--text-body);
   font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
   line-height: var(--leading-heading);
 }
 
-/* The field fills the hero: the film is framed 1920 wide, and its bars start
-   just over half way down and run off the bottom edge. */
+/* The film is framed 1920 x 1400 and its bars start just over half way down
+   and run off the bottom edge.
+
+   --hero-field-height is the one number that sets how tall the field stands.
+   The box is pinned to the foot of the hero and the frame is mapped onto it
+   without preserving its aspect (see HeroField.tsx), so lowering this number
+   shortens every bar and every gap between them by the same fraction — the
+   field becomes a shorter version of itself rather than a cropped one. */
 .hero-lines {
   position: absolute;
   inset: 0;
@@ -4327,6 +4329,12 @@ video {
 
 .service-hero {
   position: relative;
+  /* The hero paid nothing at its foot, so the section under it began on the
+     same pixel the hero ended. Half the section gap is what every other
+     section pays on one side. Margin rather than padding: the dissolve below
+     measures the hero's own height to time itself, and padding would stretch
+     that timing along with the box. */
+  margin-bottom: var(--section-space);
   color: var(--ink);
   background: var(--canvas);
 }

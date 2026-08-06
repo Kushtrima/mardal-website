@@ -149,12 +149,42 @@ function settled(b: Bar) {
     : { x: b.x, w: b.w, top: ROWB, h: FOOT - ROWB };
 }
 
+/**
+ * How tall the bars stand, as a share of the height they were drawn at, taken
+ * in about the foot of the frame so they keep running off the bottom edge.
+ *
+ * THE dial for bar height. 1 is the original. It touches the settled pose and
+ * nothing else: the lattice, the columns and the row are built from their own
+ * constants below, and the pattern — which bar is long, which is short, where
+ * each one sits — is untouched. Every bar simply loses the same fraction.
+ */
+const BAR_SCALE = 0.4915;
+
+/**
+ * How far the wave stretches and squashes a bar as it runs through the field.
+ *
+ * It is what decides how tall the settled pose gets, not the bars themselves:
+ * across the field k spans 1 +/- this at the same moment, so the phase stands
+ * 459 + 1071 x WAVE_A units tall. At the 0.5 it was drawn at that came to 994,
+ * against 640 for the lattice, 431 for the columns and 386 for the row — the
+ * one pose towering over the other three. 0.15 brings it to 620, in among
+ * them.
+ */
+const WAVE_A = 0.15;
+/** The lower row's share. Its foot is pinned, so this only lifts its top. */
+const WAVE_B = 0.15;
+
 const MODULES: Module[] = [];
 BARS.forEach((b, i) => {
   const g = settled(b);
   const step = g.w * 2.4;
+  /* Counted off the drawn height, so how many boxes a bar breaks into — and
+     therefore every other pose, which is built from those same boxes — does
+     not change with the scale. */
   const n = Math.max(1, Math.round(g.h / step));
   const seg = g.h / n;
+  const scaledTop = FOOT - (FOOT - g.top) * BAR_SCALE;
+  const scaledSeg = seg * BAR_SCALE;
   for (let j = 0; j < n; j++) {
     MODULES.push({
       row: b.row,
@@ -164,8 +194,8 @@ BARS.forEach((b, i) => {
       n,
       x: g.x,
       w: g.w,
-      solidTop: g.top + j * seg,
-      solidH: seg,
+      solidTop: scaledTop + j * scaledSeg,
+      solidH: scaledSeg,
       gx: 0,
       gy: 0,
       gLag: 0,
@@ -219,7 +249,7 @@ const NP = 9;
 const PW = 176;
 const PMARG = 22;
 const PGAP = (W - 2 * PMARG - NP * PW) / (NP - 1);
-const PILLH = [300, 424, 236, 388, 196, 430, 268, 352, 312];
+const PILLH = [281, 398, 221, 364, 184, 403, 251, 330, 293];
 {
   const n = MODULES.length;
   const per = Math.floor(n / NP);
@@ -247,7 +277,7 @@ const PILLH = [300, 424, 236, 388, 196, 430, 268, 352, 312];
 
 /** One even row of thin lines. */
 const ROWTOP = 662;
-const ROWLEN = 338;
+const ROWLEN = 375;
 const ROWW = 16;
 const ROWX = BARS.map((_, i) => 44 + i * ((1876 - ROWW - 44) / (BARS.length - 1)));
 
@@ -301,25 +331,30 @@ function blend(a: Pose, b: Pose, t: number, out: Frame) {
 export type Frame = { x: number; y: number; w: number; h: number; fill: string };
 
 /** The scenes, in order, with how long each holds. */
+/* The two purple scenes — the field drawing out of its seed marks, and the
+   wave that withdraws it back to them — are held at zero for now, so the loop
+   runs lattice, columns, row and closes. Their own seconds are kept beside
+   them: put 3.45 and 7.6 back to restore the full loop. */
 const SCENES = [
-  { name: "enter", seconds: 3.45 },
+  { name: "enter", seconds: 0 /* 3.45 */ },
   { name: "grid", seconds: 4.1 },
   { name: "pillars", seconds: 4.2 },
   { name: "row", seconds: 3.45 },
-  { name: "wave", seconds: 7.6 },
+  { name: "wave", seconds: 0 /* 7.6 */ },
 ] as const;
 
 export const HERO_LOOP_SECONDS = SCENES.reduce((n, s) => n + s.seconds, 0);
 
 /** An array the component can allocate once and hand back every frame. */
 export function createHeroFrames(): Frame[] {
-  return MODULES.map((m) => ({
-    x: m.x,
-    y: m.solidTop,
-    w: m.w,
-    h: m.solidH,
-    fill: C_ENTER,
-  }));
+  /* The state the server paints and the first frame starts from. It is the row
+     while the purple scenes are held at zero — starting on the settled field
+     would show it in purple until the first frame ran, which is exactly what
+     is being hidden. Restore m.solidTop / m.solidH / C_ENTER with them. */
+  return MODULES.map((m) => {
+    const p = poseRow(m);
+    return { x: p.x, y: p.top, w: p.w, h: p.h, fill: C_ROW };
+  });
 }
 
 /**
@@ -353,7 +388,10 @@ export function heroFrame(elapsed: number, frames: Frame[]) {
       }
       // The bars come apart and every box takes a slot on one even lattice.
       case "grid": {
-        const from = poseSolid(m);
+        /* Opens from the row rather than from the settled field, so the loop
+           closes row -> lattice while the two purple scenes are held at zero.
+           Put poseSolid and C_ENTER back when they are restored. */
+        const from = poseRow(m);
         const to = poseBox(m);
         const tx = move(local, m.gLag);
         const ty = move(local - 0.5, m.gLag);
@@ -361,7 +399,7 @@ export function heroFrame(elapsed: number, frames: Frame[]) {
         f.w = lerp(from.w, to.w, tx);
         f.y = lerp(from.top, to.top, ty);
         f.h = lerp(from.h, to.h, ty);
-        f.fill = mix(C_ENTER, C_GRID, tx);
+        f.fill = mix(C_ROW, C_GRID, tx);
         break;
       }
       // The boxes migrate sideways and pack into nine columns.
@@ -408,14 +446,14 @@ export function heroFrame(elapsed: number, frames: Frame[]) {
 
         if (m.row === "a") {
           const dv = env * Math.sin(phase - m.u * 3.4);
-          const k = 1 + 0.5 * dv;
+          const k = 1 + WAVE_A * dv;
           f.x = s.x;
           f.w = s.w;
           f.y = ROWA + (s.top - ROWA) * k;
           f.h = s.h * k;
         } else {
           const dv = env * Math.sin(phase + m.u * 3.4 + Math.PI / 2);
-          const k = 1 + 0.34 * dv;
+          const k = 1 + WAVE_B * dv;
           f.x = s.x;
           f.w = s.w;
           f.y = FOOT - (FOOT - s.top) * k;

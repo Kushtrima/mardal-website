@@ -50,11 +50,17 @@ test("server-renders the Mardal homepage", async () => {
   // Hero
   assert.match(html, /Innovation/);
   assert.match(html, /lives here/);
-  assert.match(html, /technology behind/);
+  /* The support line, from the hero rather than the meta description — the two
+     say different things now, and matching on the shared words passed without
+     ever reaching the hero. */
+  assert.match(html, /platforms, apps, CRM/);
+  assert.match(html, /integrations between them/);
   assert.match(html, /class="hero-field__box"/);
-  // The field is server-rendered in its settled pose, in the brand colour.
+  /* The field is server-rendered in the row pose, in the row's colour: the two
+     purple scenes are held at zero in lib/hero-motion.ts, and the settled pose
+     is what they open and close on. Back to #8362b8 when they are restored. */
   assert.match(html, /class="hero-field"[^>]*viewBox="0 0 1920 1400"/);
-  assert.match(html, /fill="#8362b8"/);
+  assert.match(html, /fill="#8ec5ef"/);
 
   // Why Mardal
   assert.match(html, /Why Mardal/);

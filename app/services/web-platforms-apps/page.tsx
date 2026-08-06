@@ -120,6 +120,8 @@ export default function WebPlatformsAppsPage() {
         <section
           className="service-offerings"
           aria-labelledby="web-platforms-apps-services-title"
+          data-route-section
+          data-enter-mode="fade"
           data-service-offerings
         >
           <div className="service-journey" data-service-viewport>

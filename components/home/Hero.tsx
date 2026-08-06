@@ -142,11 +142,13 @@ export function Hero() {
         </h1>
 
         <p className="hero-copy" ref={copyRef}>
-          We build the
+          We build the platforms, apps, CRM
           <br />
-          technology behind
+          systems, custom software and
           <br />
-          your growth.
+          applied AI a business runs on,
+          <br />
+          and the integrations between them.
         </p>
       </Container>
 

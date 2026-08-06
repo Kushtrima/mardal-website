@@ -116,6 +116,8 @@ export default function CrmSolutionsPage() {
         <section
           className="service-offerings"
           aria-labelledby="crm-solutions-services-title"
+          data-route-section
+          data-enter-mode="fade"
           data-service-offerings
         >
           <div className="service-journey" data-service-viewport>
