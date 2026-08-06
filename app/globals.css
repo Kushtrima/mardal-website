@@ -3792,14 +3792,16 @@ video {
     margin-left: 30%;
   }
 
-  /* Side by side, each half would be under 10ch wide here and every line would
-     break. Stacked, the plus stops being a join between two columns and becomes
-     the hinge the second half turns on, so it sits flush left with the type
-     rather than centred over nothing. */
+  /* One row here too, as on desktop. The row is 7.86em wide whatever the size —
+     3.53em for the longer half, 3.17em for the other, 1.17em for the mark — so
+     it fits only while the type is under about an eighth of the screen. The
+     shared display size floors at 40px and stops shrinking, which overruns a
+     360px phone; capping it against the viewport lets it carry on down. At
+     390px this still resolves to 37px, so nothing is smaller than it was
+     stacked until the screen is narrower than that. */
   .fusion-title {
-    grid-template-columns: minmax(0, 1fr);
-    justify-items: start;
-    gap: clamp(1rem, 3vw, 1.75rem);
+    gap: clamp(0.35rem, 2vw, 1rem);
+    font-size: min(var(--text-heading-xl), 9.6vw);
   }
 
   /* The forced last line comes off here. Above this width the block is always
