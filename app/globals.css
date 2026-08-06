@@ -196,11 +196,12 @@
   color: var(--ink);
 }
 
-/* The footer panel is a filled accent slab: its words and its bars are both
-   drawn in --accent-contrast, which the page now sets to black. */
-.site-footer {
-  --accent-contrast: #ffffff;
-}
+/* The footer panel is a filled accent slab, and everything on it — the words,
+   the link columns, the social marks and the bar field — is drawn in
+   --accent-contrast. The page sets that to black, and the footer no longer
+   overrides it to white, so the whole panel reads dark on the purple. The one
+   thing that does not follow the colour is the wordmark, which is a raster and
+   is driven by a filter instead; see .site-footer__mark img. */
 
 @theme inline {
   --color-canvas: var(--canvas);
@@ -2746,7 +2747,11 @@ video {
   max-width: none;
   width: calc(100% * 694.25 / 163.92);
   height: auto;
-  filter: brightness(0) invert(1);
+  /* A raster wordmark cannot take currentColor, so it is crushed to a
+     silhouette instead. brightness(0) alone lands it black, with the panel
+     showing through where the mark is transparent; the invert(1) that used to
+     follow it was what made it white. */
+  filter: brightness(0);
 }
 
 /* The words on the left, the links on the right — the two places the
