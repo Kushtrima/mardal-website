@@ -802,14 +802,6 @@ video {
   background: transparent;
 }
 
-/* The bar's own contents ride above the sheet. The sheet comes after them in
-   the markup, so without this it would paint over the very words that open and
-   close it — and the whole of its close affordance is that the word you clicked
-   is still there to click again. */
-.site-nav > :not(.mega-menu) {
-  position: relative;
-  z-index: 1;
-}
 
 .brand {
   display: inline-flex;
@@ -908,66 +900,42 @@ video {
   line-height: 1;
 }
 
-/* The menu is a sheet over the page, not a panel hanging off the bar.
+/* A panel that drops from the bar, on the page's own black.
 
-   It was a 1424x433 slab with a fixed 384px floor, which meant a menu of one
-   item — Case Studies has one — got the same acreage as a menu of seven, and
-   its left column carried 116px of ink in 433px of height with a 245px hole in
-   the middle of it. Filling the glass instead turns that emptiness into the
-   point: the list is the page while it is open.
+   It used to be a light slab with a fixed 384px floor, so a menu of one item —
+   Case Studies has one — got the same acreage as a menu of seven, and its left
+   column carried 116px of ink in 433px of height with a 245px hole in the
+   middle. It was also the last light surface in a header that had gone black.
+   Now it takes the canvas with a hairline around it, and its height is whatever
+   its contents come to: one item is a small box.
 
-   Everything inside is measured in vh rather than vw, which is the whole trick
-   of making this fit. The constraint here is height, not width: seven items
-   have to clear the bar above them and the way-through below them on a laptop
-   as well as a monitor. Sized in vh, the type and the spacing give way together
-   as the window gets shorter, and the sheet never has to scroll — the overflow
-   below is a backstop, not a plan.
-
-   It sits under the bar's own contents rather than over them, so the logo, the
-   links and the call to action stay live: you close it with the same word that
-   opened it. */
+   No transform tricks needed here, unlike the full-window version this replaces
+   — it is positioned against the bar, which is exactly what an absolute box
+   inside .site-nav resolves against. */
 .mega-menu {
-  /* Absolute, not fixed, and this is not a preference.
-
-     GSAP leaves an identity transform on .site-nav after the header's entrance,
-     and ScrollSmoother keeps a matrix3d on .smooth-content, which the header
-     lives inside. A transformed ancestor becomes the containing block for a
-     fixed descendant, so `position: fixed; inset: 0` here resolved against the
-     bar and gave a 1291x167 box rather than the window. Either transform alone
-     is enough to do it, and both are owned by libraries.
-
-     So the sheet is anchored to the bar and sized in viewport units instead:
-     pulled up by the header's own top padding and out by the page gutter to
-     land on the window's corner, then given the window's measurements. The bar
-     is not sticky, so the menu can only be opened while the page is at the top,
-     which is the one position where the two agree. */
   position: absolute;
-  top: calc(-1 * clamp(1rem, 4.5vh, 4.5rem));
-  left: calc(-1 * var(--page-gutter));
-  width: 100vw;
-  height: 100svh;
+  top: calc(100% + 0.55rem);
+  right: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
-  padding: calc(
-      clamp(1rem, 4.5vh, 4.5rem) + clamp(3.45rem, 4.5vw, 3.9rem) +
-        clamp(1.25rem, 4vh, 3rem)
-    )
-    var(--page-gutter) clamp(1.25rem, 4vh, 3rem);
-  overflow-y: auto;
-  border: 0;
-  border-radius: 0;
+  gap: clamp(1.25rem, 2.6vh, 2.25rem);
+  padding: clamp(1.5rem, 2.4vw, 2.75rem);
+  overflow: hidden;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--shape-md);
   background: var(--canvas);
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
 }
 
-/* The head of the sheet. No rule beside it any more — it is above the list
+/* The head of the panel. No rule beside it any more — it sits above the list
    rather than next to it, so the border that used to divide two columns has
    nothing left to divide. */
 .mega-menu__meta {
   display: flex;
-  max-width: 34ch;
+  max-width: 44ch;
   flex-direction: column;
 }
 
@@ -983,17 +951,17 @@ video {
 
 /* A sentence about the section, so it is a paragraph and not a header. */
 .mega-menu__description {
-  max-width: 18rem;
-  margin: 1.25rem 0 0;
+  max-width: 44ch;
+  margin: 0.7rem 0 0;
   font-size: var(--text-copy);
   font-weight: var(--weight-body);
   letter-spacing: -0.02em;
   line-height: var(--leading-body);
 }
 
-/* The foot of the sheet. margin-top: auto is gone with the column it used to
-   be pinned inside — it is the last child of the sheet now, so the list above
-   it does the pushing. */
+/* The foot of the panel. margin-top: auto is gone with the column it used to
+   be pinned inside — it is the last child now, so the list above it sets where
+   it falls, and the panel is only as tall as the two of them together. */
 .mega-menu__view-all {
   display: inline-flex;
   width: fit-content;
@@ -1008,33 +976,39 @@ video {
   color: var(--accent);
 }
 
-/* Centred in what is left between the head and the way-through, so a menu of
-   one and a menu of seven both sit on the sheet's optical middle instead of
-   one of them starting high and trailing off. */
+/* Filled down the column and then across, so the reading order runs 01-04 then
+   05-07 rather than snaking left to right across the panel.
+
+   Four rows is the fixed shape and the longest menu has seven, so it never
+   needs a third column. Rows are `auto`, so a menu with fewer than four items
+   collapses the ones it does not use to nothing and the panel closes up behind
+   it — which is what makes a one-item menu a small box rather than a slab with
+   a hole in it. The columns hug their content instead of splitting the width,
+   so a short menu does not stretch across the panel to fill it. */
 .mega-menu__links {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  justify-content: center;
-  margin: clamp(1.5rem, 5vh, 4rem) 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(4, auto);
+  grid-auto-columns: minmax(0, max-content);
+  justify-content: start;
+  margin: 0;
   padding: 0;
+  column-gap: clamp(2rem, 5vw, 5.5rem);
+  row-gap: clamp(0.15rem, 0.5vw, 0.45rem);
   list-style: none;
 }
 
-/* No rules between the rows. They were doing the work of separating a dense
-   list in a shallow box; at this size the space between the lines is the
-   separation, and the rules only made a menu read like a table. */
-/* The row stays full width so the target is the whole line, but its three
-   columns are packed to the start rather than stretched across it. Stretched,
-   the arrow sat at the far edge of the sheet — a thousand pixels from the word
-   it belonged to, reading as furniture rather than as part of the link. */
+/* No rules between the rows. They were separating a dense list in a shallow
+   box; the space between the lines does that now, and the rules only made a
+   menu read like a table. The three columns pack to the start rather than
+   stretching, so the arrow stays beside the word it belongs to. */
 .mega-menu__link {
   display: grid;
-  grid-template-columns: auto auto 2.4rem;
+  grid-template-columns: auto auto 1.6rem;
   justify-content: start;
-  gap: clamp(0.75rem, 2vw, 1.75rem);
+  gap: clamp(0.6rem, 1.2vw, 1.1rem);
   align-items: baseline;
-  padding-block: clamp(0.2rem, 0.9vh, 0.7rem);
+  padding-block: clamp(0.25rem, 0.6vw, 0.55rem);
   transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
@@ -1050,16 +1024,15 @@ video {
   transition: color var(--duration-base) var(--ease-standard);
 }
 
-/* The display face, at the size the sheet can afford. Sized in vh against the
-   worst case — seven items, the head above and the way-through below — so the
-   longest menu still clears a short laptop window without the sheet scrolling.
-   Weight stays 400: CS Alistair ships one. */
+/* The display face, at the section-heading size rather than the hero one: this
+   is a panel now, and four rows of it have to sit under the bar without the
+   menu becoming the page. Weight stays 400 — CS Alistair ships one. */
 .mega-menu__label {
   font-family: var(--type-title);
-  font-size: clamp(1.35rem, 4.6vh, 2.9rem);
+  font-size: var(--text-heading);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-tight);
-  line-height: 1.06;
+  line-height: 1.12;
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
