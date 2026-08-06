@@ -973,15 +973,16 @@ video {
   transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
-/* The display face, at the section-heading size rather than the hero one: this
-   is a panel now, and four rows of it have to sit under the bar without the
-   menu becoming the page. Weight stays 400 — CS Alistair ships one. */
+/* The grotesque, as it was before the sheet. These are navigation, read at a
+   glance and chosen from, not headings to be read along — and the tracking
+   goes back with the face, since -0.055em is cut for the display serif and
+   closes this one up. */
 .mega-menu__label {
-  font-family: var(--type-title);
+  font-family: var(--type-display);
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-tight);
-  line-height: 1.12;
+  letter-spacing: var(--tracking-heading);
+  line-height: var(--leading-heading);
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
