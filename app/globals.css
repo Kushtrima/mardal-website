@@ -127,7 +127,12 @@
   --weight-strong: 600;
 
   --leading-tight: 0.86;
-  --leading-body: 1.55;
+  /* Every paragraph on the site reads this one number. Each used to carry its
+     own — 1.26, 1.28, 1.35, 1.38, 1.4, 1.45, 1.5 — so the same body size was
+     set seven different ways and no single edit could reach them all. It is
+     also what the service pages already set their copy in, so the two halves
+     of the site agree. Change paragraph leading here and nowhere else. */
+  --leading-body: 1.1;
   --tracking-tight: -0.055em;
   --tracking-wide: 0.12em;
 
@@ -339,7 +344,7 @@ video {
 
 .body-large {
   font-size: var(--text-body);
-  line-height: 1.5;
+  line-height: var(--leading-body);
 }
 
 .eyebrow {
@@ -369,7 +374,7 @@ video {
   font-size: var(--text-body);
   font-weight: var(--weight-body);
   letter-spacing: -0.025em;
-  line-height: 1.28;
+  line-height: var(--leading-body);
 }
 
 /* Zero-size marker so one section can answer to a second menu anchor. */
@@ -859,7 +864,7 @@ video {
   font-size: var(--text-body);
   font-weight: var(--weight-body);
   letter-spacing: -0.02em;
-  line-height: 1.35;
+  line-height: var(--leading-body);
 }
 
 .mega-menu__view-all {
@@ -993,7 +998,7 @@ video {
 .hero-copy {
   /* The three lines of it, and the air it keeps between itself and the first
      bar. The em is the copy's own size, so the height follows the type. */
-  --hero-copy-lines: calc(4 * var(--leading-heading) * 1em);
+  --hero-copy-lines: calc(4 * var(--leading-body) * 1em);
   --hero-copy-clear: 2rem;
   /* Everything above the copy inside the hero, at its tallest: the header's
      own padding, the bar it sits on, and the padding at the top of the
@@ -1031,7 +1036,7 @@ video {
      hand rather than wrapped. */
   font-size: var(--text-body);
   font-weight: var(--weight-heading);
-  line-height: var(--leading-heading);
+  line-height: var(--leading-body);
 }
 
 /* The film is framed 1920 x 1400 and its bars start just over half way down
@@ -1214,7 +1219,7 @@ video {
   font-size: var(--text-body);
   font-weight: var(--weight-body);
   letter-spacing: -0.015em;
-  line-height: 1.45;
+  line-height: var(--leading-body);
 }
 
 .why-section {
@@ -1275,7 +1280,7 @@ video {
   font-size: var(--text-body);
   font-weight: var(--weight-body);
   letter-spacing: -0.025em;
-  line-height: 1.28;
+  line-height: var(--leading-body);
 }
 
 /* Every drawing takes its colour from the card it sits in, so a card is
@@ -1404,7 +1409,7 @@ video {
   color: var(--ink);
   font-size: var(--text-body);
   letter-spacing: -0.015em;
-  line-height: 1.1;
+  line-height: var(--leading-body);
 }
 
 /* The drawing opens the card, held to the left edge. */
@@ -1895,7 +1900,7 @@ video {
   color: var(--ink-muted);
   font-size: var(--text-body);
   letter-spacing: -0.015em;
-  line-height: 1.38;
+  line-height: var(--leading-body);
 }
 
 .service-tile__art {
@@ -1987,7 +1992,7 @@ video {
   color: var(--ink-muted);
   font-size: var(--text-body);
   letter-spacing: -0.015em;
-  line-height: 1.4;
+  line-height: var(--leading-body);
 }
 
 /* The header menu links straight to a sector, so the one it lands on is named
@@ -2048,7 +2053,7 @@ video {
   color: var(--ink);
   font-size: var(--text-body);
   letter-spacing: -0.015em;
-  line-height: 1.45;
+  line-height: var(--leading-body);
 }
 
 /* Three across, two rows, with the sixth cell left empty. A narrow gap on
@@ -2402,7 +2407,7 @@ video {
   font-size: var(--text-body);
   font-weight: var(--weight-body);
   letter-spacing: -0.015em;
-  line-height: 1.26;
+  line-height: var(--leading-body);
 }
 
 .industries-item[aria-pressed="true"] {
@@ -2603,7 +2608,7 @@ video {
   color: var(--ink-muted);
   font-size: var(--text-body);
   letter-spacing: -0.015em;
-  line-height: 1.4;
+  line-height: var(--leading-body);
 }
 
 /* --------------------------------- Contact -------------------------------- */
@@ -2813,7 +2818,7 @@ video {
   max-width: 34ch;
   margin: 0;
   font-size: var(--text-small);
-  line-height: 1.5;
+  line-height: var(--leading-body);
 }
 
 /* The one thing to do down here, set 40px clear of the line above it. */
@@ -3907,7 +3912,7 @@ video {
   .why-copy {
     max-width: 19rem;
     margin-bottom: 4rem;
-    line-height: 1.12;
+    line-height: var(--leading-body);
   }
 
   .why-card {
@@ -4243,7 +4248,7 @@ video {
      to read as lavender against this black rather than as a grey. */
   color: var(--ink);
   font-size: var(--text-body);
-  line-height: 1.35;
+  line-height: var(--leading-body);
 }
 
 /* The quiet link the industries already use, arrow and all — no box, no fill,
