@@ -4931,7 +4931,7 @@ video {
   z-index: 1000;
   inset: 0;
   overflow: hidden;
-  background: var(--service-surface, #050505);
+  background: var(--service-surface, var(--canvas));
   pointer-events: none;
 }
 
@@ -4946,15 +4946,17 @@ video {
   height: 100vh;
   height: 100svh;
   overflow: hidden;
-  background: var(--service-surface, #050505);
+  background: var(--service-surface, var(--canvas));
 }
 
+/* Same black as the page, for the same reason: this frame is a still of the
+   foot of the page, and a near-black here would flash a grey band mid-skip. */
 .service-skip-transition__frame--target {
-  background: #050505;
+  background: var(--canvas);
 }
 
 .service-skip-transition__frame--target .site-footer {
-  background: #050505;
+  background: var(--canvas);
 }
 
 .service-skip-transition__frame .service-journey {
@@ -4982,9 +4984,12 @@ video {
   background: var(--service-surface);
 }
 
+/* The page's own black, not a near-black. #050505 predates the canvas going
+   fully black, and against #000 above it the seam showed as a grey band across
+   the foot of every service page. */
 .service-page .service-cta,
 .service-page + .site-footer {
-  background: #050505;
+  background: var(--canvas);
 }
 
 .service-page .service-cta {
