@@ -1378,27 +1378,25 @@ video {
   /* Two lines of the leading below, and it has to be edited with it: this is
      what holds the four titles to one height so the paragraphs under them line
      up, and it only does that while the two agree. */
-  min-height: 2em;
+  min-height: 2.24em;
   margin: clamp(1.5rem, 2.4vw, 2.25rem) 0 0;
-  /* Black rather than the panel's #08080a ink. Asked for directly, and this
-     face earns it: CS Alistair is a light display cut, and at 26px its stems
-     are thin enough that the near-black the grotesque wore reads grey. */
-  color: #000;
   font-family: var(--type-title);
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-tight);
-  line-height: 1;
+  line-height: var(--leading-heading);
   text-wrap: balance;
 }
 
 .why-card__copy {
   max-width: 30ch;
   margin: clamp(0.65rem, 0.9vw, 0.9rem) 0 0;
-  color: var(--ink-muted);
+  /* The panel's ink rather than its muted grey, so it reads as black and sits
+     at the same weight of colour as the title above it. */
+  color: var(--ink);
   font-size: var(--text-body);
   letter-spacing: -0.015em;
-  line-height: 1.38;
+  line-height: 1;
 }
 
 /* The drawing opens the card, held to the left edge. */
