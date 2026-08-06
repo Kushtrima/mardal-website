@@ -18,23 +18,23 @@ const HOLD_MS = 3000;
  * How much page each industry is given while the section is held.
  *
  * A fraction of the window, so the run takes the same number of wheel turns on
- * a laptop as on a monitor. Seven industries at this rate hold the section for
- * a little over three screens.
+ * a laptop as on a monitor.
  */
 const STEP_VH = 0.45;
 
+/**
+ * How long a wheel gesture is ignored after it has moved the run on.
+ *
+ * A flick of a wheel or a trackpad does not arrive as one event; it arrives as
+ * a burst, and then as a tail of momentum that can run for the best part of a
+ * second. Without this, one flick spent the whole run in a blur. It has to
+ * outlast that tail and still be under the time it takes to look at an
+ * industry and decide to move on.
+ */
+const STEP_LOCK_MS = 700;
+
 /** Below this the two columns stack and there is no room to hold anything. */
 const MIN_WIDTH = "(min-width: 60rem)";
-
-/**
- * How far the page has to travel before a pointed-at industry gives the run
- * back.
- *
- * Comfortably past the smoother's own settling drift, and comfortably under
- * one turn of a wheel, so resting on an industry keeps it while a deliberate
- * scroll takes it away.
- */
-const RELEASE_PX = 40;
 
 /** Whether the section is driven by the scrollbar or by a timer. */
 function canPin() {
@@ -46,32 +46,28 @@ function canPin() {
 
 export function IndustriesSection() {
   const [activeIndex, setActiveIndex] = useState(0);
-  /* Held while the visitor is pointing at the list: their choice outranks the
-     run through the industries, and the run picks up again when they leave. */
-  const heldRef = useRef(false);
-  /* Where the page stood when the visitor took hold, so the release below is
-     measured from one fixed mark rather than frame to frame. */
-  const holdFromRef = useRef<number | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  /* What the wheel counts from. The rendered index comes from the scroll
+     position; this follows it so a gesture knows which step it is leaving. */
+  const indexRef = useRef(0);
 
   /**
-   * Held in place, and stepped through by the scrollbar.
+   * Held in place, and stepped through one industry per gesture.
    *
-   * The section stops under the header and each industry takes its turn as the
-   * page travels the distance below — the scroll position IS the index, so
+   * The section stops under the header and the scroll position IS the index, so
    * scrolling back up walks the list backwards, which a timer can never do.
    *
-   * Pointing at an industry still overrules it, and that needs the hold below
-   * to survive. ScrollSmoother ticks ScrollTrigger every frame whether or not
-   * the page has travelled, so an update that simply re-asserts the scroll
-   * index would overwrite a hover within about 16ms — measured: focusing an
-   * industry left the index exactly where the scrollbar had it, at a scroll
-   * position that had not moved a pixel.
+   * The wheel is taken over while the section is held, and that is the point of
+   * this rather than a detail of it. Left to the page, how many industries went
+   * by depended on how hard the wheel was turned, and a firm flick took four or
+   * five of them before anything could be read. Here a gesture is worth exactly
+   * one industry however hard it is made: the page is sent to the next stop and
+   * the wheel is ignored until it has settled there.
    *
-   * So an update that has not travelled does nothing at all, and one that has
-   * clears the hold. A hover therefore stands for as long as the page is
-   * still, and the first real turn of the wheel takes the run back.
+   * At either end of the list the wheel is handed straight back, so the section
+   * lets go and the page carries on as it always did — there is no way to get
+   * stuck in it.
    */
   useEffect(() => {
     const section = sectionRef.current;
@@ -79,55 +75,65 @@ export function IndustriesSection() {
 
     gsap.registerPlugin(ScrollTrigger);
 
+    const count = solutions.items.length;
+    let trigger: ScrollTrigger | undefined;
+    let lockedUntil = 0;
+
+    function onWheel(event: WheelEvent) {
+      if (!trigger || !trigger.isActive) return;
+
+      const direction = event.deltaY > 0 ? 1 : -1;
+      const next = indexRef.current + direction;
+
+      /* Off either end: give the wheel back rather than swallowing it, so the
+         page scrolls out of the section the way it arrived. */
+      if (next < 0 || next > count - 1) return;
+
+      event.preventDefault();
+
+      if (performance.now() < lockedUntil) return;
+      lockedUntil = performance.now() + STEP_LOCK_MS;
+
+      /* Sent to the middle of the step rather than its edge: the smoother
+         glides rather than jumps, and a target on the boundary would sit one
+         pixel from tipping into the industry next door. */
+      const step = (trigger.end - trigger.start) / count;
+      window.scrollTo(0, Math.round(trigger.start + (next + 0.5) * step));
+    }
+
     const context = gsap.context(() => {
-      ScrollTrigger.create({
+      trigger = ScrollTrigger.create({
         trigger: section,
         start: "top top",
-        end: () =>
-          `+=${solutions.items.length * STEP_VH * window.innerHeight}`,
+        end: () => `+=${count * STEP_VH * window.innerHeight}`,
         pin: true,
         invalidateOnRefresh: true,
+        /* The scroll position stays the one source of the index, whatever
+           moved it — the wheel, a dragged scrollbar, a keyboard. The gesture
+           above only chooses where to send the page. */
         onUpdate: (self) => {
-          if (heldRef.current) {
-            /* Measured from where the hold began rather than between frames.
-               The smoother is still easing for some time after the page stops
-               being pushed, and frame-to-frame that drift is indistinguishable
-               from a slow scroll — it cleared the hold before a hover could be
-               seen. Against a fixed mark it is simply a few pixels that never
-               reach the threshold. */
-            const from = holdFromRef.current;
-            if (
-              from !== null &&
-              Math.abs(window.scrollY - from) < RELEASE_PX
-            ) {
-              return;
-            }
-
-            heldRef.current = false;
-            holdFromRef.current = null;
-          }
-
-          const count = solutions.items.length;
-          /* The last industry would hold for a single pixel at progress 1
-             without the clamp, since floor(1 * count) is off the end. */
           const index = Math.min(count - 1, Math.floor(self.progress * count));
+          indexRef.current = index;
           setActiveIndex(index);
         },
       });
     }, section);
 
+    window.addEventListener("wheel", onWheel, { passive: false });
+
     return () => {
+      window.removeEventListener("wheel", onWheel);
       context.revert();
     };
   }, []);
 
+  /* The clock is the fallback, not a second driver: where the section is held,
+     the scrollbar owns the run and a timer underneath it would fight for the
+     same index. */
   useEffect(() => {
     const list = listRef.current;
     if (!list) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    /* The clock is the fallback, not a second driver: where the section is
-       held, the scrollbar owns the run and a timer underneath it would fight
-       for the same index. */
     if (canPin()) return;
 
     let timer: number | undefined;
@@ -136,8 +142,6 @@ export function IndustriesSection() {
       if (timer) return;
 
       timer = window.setInterval(() => {
-        if (heldRef.current) return;
-
         setActiveIndex((index) => (index + 1) % solutions.items.length);
       }, HOLD_MS);
     }
@@ -159,11 +163,6 @@ export function IndustriesSection() {
         }
 
         stop();
-        /* Letting go is a pointer leaving the list, and a finger never leaves
-           it — so on a touch screen one tap would hold that industry for good
-           and the run would never pick up again. Scrolling the list away is
-           the touch equivalent of leaving it. */
-        heldRef.current = false;
       },
       { rootMargin: "-20% 0px -20% 0px" },
     );
@@ -174,17 +173,6 @@ export function IndustriesSection() {
       stop();
     };
   }, []);
-
-  function hold(index: number) {
-    heldRef.current = true;
-    holdFromRef.current = window.scrollY;
-    setActiveIndex(index);
-  }
-
-  function release() {
-    heldRef.current = false;
-    holdFromRef.current = null;
-  }
 
   return (
     <section
@@ -211,44 +199,24 @@ export function IndustriesSection() {
             >
               {solutions.lede}
             </h2>
-
-            <a className="industries-explore" href="#contact">
-              Explore
-              <PixelArrow
-                className="industries-explore__arrow"
-                direction="up-right"
-                size="small"
-              />
-            </a>
           </div>
 
           <div className="industries-intro">
-            <ul
-              className="industries-list"
-              ref={listRef}
-              onPointerLeave={(event) => {
-                if (event.pointerType === "mouse") release();
-              }}
-              onBlur={(event) => {
-                if (!event.currentTarget.contains(event.relatedTarget)) release();
-              }}
-            >
+            <ul className="industries-list" ref={listRef}>
               {solutions.items.map((industry, index) => (
                 <li key={industry.id}>
-                  {/* A button rather than plain text: pointing at an industry
-                      is what brings it forward, and it has to work from the
-                      keyboard too. */}
-                  <button
+                  {/* Not a control any more. The scrollbar alone brings an
+                      industry forward, so there is nothing here to press: a
+                      button that answers to nothing is a trap for anyone
+                      arriving on it by keyboard. It keeps its id, which the
+                      menu still points at. */}
+                  {/* data-cursor is gone with the interaction. It is the hook
+                      for the hover mark and for the finger cursor, and both
+                      would now be promising something the word cannot do. */}
+                  <div
                     className={`industries-item industries-item--${TINTS[index % TINTS.length]}`}
                     id={industry.id}
-                    data-cursor={TINTS[index % TINTS.length]}
-                    type="button"
-                    aria-pressed={index === activeIndex}
-                    onClick={() => hold(index)}
-                    onFocus={() => hold(index)}
-                    onPointerEnter={(event) => {
-                      if (event.pointerType === "mouse") hold(index);
-                    }}
+                    data-active={index === activeIndex}
                   >
                     <span className="industries-item__name">
                       {/* A rule out to the left of the name, shown only on the
@@ -264,10 +232,25 @@ export function IndustriesSection() {
                     <span className="industries-item__note">
                       {industry.descriptor}
                     </span>
-                  </button>
+                  </div>
                 </li>
               ))}
             </ul>
+
+            {/* Under the run rather than beside the heading: it is where you go
+                once you have read the list, so it belongs at the end of it.
+                Inside this block rather than the grid, because the block
+                carries the indent that puts the list where it is — placed as a
+                grid row it landed 286px to the left of the names, level with
+                nothing at all. */}
+            <a className="industries-explore" href="#contact">
+              Explore
+              <PixelArrow
+                className="industries-explore__arrow"
+                direction="up-right"
+                size="small"
+              />
+            </a>
           </div>
         </Container>
       </div>

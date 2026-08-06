@@ -2502,13 +2502,13 @@ video {
 
 /* The film holds the whole list back and brings one name forward, so the ring
    keeps the attention rather than the type. */
-/* The target runs the width of the column, not just the letters, so pointing
-   at the space beside a short name still picks it. */
+/* No longer a target. The scrollbar alone brings an industry forward, so the
+   pointer has nothing to offer here and must not say otherwise: a hand on a
+   word that cannot be pressed is a promise the page does not keep. */
 .industries-item {
   padding: 0;
   border: 0;
   background: none;
-  cursor: pointer;
   opacity: 0.2;
   text-align: left;
   /* Slow and even: one industry hands over to the next while the run is
@@ -2557,7 +2557,7 @@ video {
     transform 0s linear var(--duration-handover);
 }
 
-.industries-item[aria-pressed="true"] .industries-item__mark--cross {
+.industries-item[data-active="true"] .industries-item__mark--cross {
   transform: translateY(-50%) rotate(90deg);
   transition:
     opacity var(--duration-handover) var(--ease-handover) var(--delay-cross),
@@ -2581,7 +2581,7 @@ video {
   --mark-tint: var(--tint-sky-bar);
 }
 
-.industries-item[aria-pressed="true"] .industries-item__mark {
+.industries-item[data-active="true"] .industries-item__mark {
   opacity: 1;
 }
 
@@ -2606,7 +2606,7 @@ video {
   line-height: var(--leading-body);
 }
 
-.industries-item[aria-pressed="true"] {
+.industries-item[data-active="true"] {
   opacity: 1;
 }
 
@@ -3300,6 +3300,12 @@ video {
 .industries-explore {
   padding-block: 0.6875rem;
   margin-block: -0.6875rem;
+}
+
+/* Under the run, on the list's own left edge — it sits inside the block that
+   carries the list's indent, so it needs nothing but the space above it. */
+.industries-intro > .industries-explore {
+  margin-top: clamp(2.5rem, 6vh, 5rem);
 }
 
 /* The lists space themselves on the links' own boxes, so the gaps come in by
