@@ -150,15 +150,22 @@ function settled(b: Bar) {
 }
 
 /**
- * How tall the bars stand, as a share of the height they were drawn at, taken
- * in about the foot of the frame so they keep running off the bottom edge.
+ * The band every pose stands in.
  *
- * THE dial for bar height. 1 is the original. It touches the settled pose and
- * nothing else: the lattice, the columns and the row are built from their own
- * constants below, and the pattern — which bar is long, which is short, where
- * each one sits — is untouched. Every bar simply loses the same fraction.
+ * The lattice set it — ten rows of boxes at a 40 pitch — and the other three
+ * are fitted to it, so each pose is the same height and sits in the same place
+ * as the one before. Move these two numbers and the whole film follows.
  */
-const BAR_SCALE = 0.4915;
+const BAND_TOP = 670;
+const BAND_FOOT = 1046;
+const BAND = BAND_FOOT - BAND_TOP;
+
+/**
+ * The settled field is drawn ROWA..FOOT, taller than the band, so it is mapped
+ * into it rather than given a height of its own. Derived, not typed: the two
+ * cannot drift apart.
+ */
+const BAR_SCALE = BAND / (FOOT - ROWA);
 
 /**
  * How far the wave stretches and squashes a bar as it runs through the field.
@@ -183,7 +190,7 @@ BARS.forEach((b, i) => {
      not change with the scale. */
   const n = Math.max(1, Math.round(g.h / step));
   const seg = g.h / n;
-  const scaledTop = FOOT - (FOOT - g.top) * BAR_SCALE;
+  const scaledTop = BAND_TOP + (g.top - ROWA) * BAR_SCALE;
   const scaledSeg = seg * BAR_SCALE;
   for (let j = 0; j < n; j++) {
     MODULES.push({
@@ -217,7 +224,7 @@ const GROWS = 10;
 const GBOX = 16;
 const GPITCH = 40;
 const GMARGIN = 6;
-const GY0 = 1046 - GBOX - (GROWS - 1) * GPITCH;
+const GY0 = BAND_FOOT - GBOX - (GROWS - 1) * GPITCH;
 {
   const n = MODULES.length;
   const per = Math.floor(n / GROWS);
@@ -249,7 +256,8 @@ const NP = 9;
 const PW = 176;
 const PMARG = 22;
 const PGAP = (W - 2 * PMARG - NP * PW) / (NP - 1);
-const PILLH = [281, 398, 221, 364, 184, 403, 251, 330, 293];
+/* Proportions as drawn, scaled so the tallest column fills the band. */
+const PILLH = [262, 371, 206, 340, 172, 376, 234, 308, 273];
 {
   const n = MODULES.length;
   const per = Math.floor(n / NP);
@@ -263,12 +271,13 @@ const PILLH = [281, 398, 221, 364, 184, 403, 251, 330, 293];
     const idx = byX.slice(k, k + count);
     k += count;
     idx.sort((a, b) => MODULES[a].gy - MODULES[b].gy || MODULES[a].gx - MODULES[b].gx);
-    const band = PILLH[c % PILLH.length] / count;
+    const colH = PILLH[c % PILLH.length];
+    const band = colH / count;
     idx.forEach((mi, j) => {
       const m = MODULES[mi];
       m.pillX = PMARG + c * (PW + PGAP);
       m.pillW = PW;
-      m.pillTop = ROWA + j * band;
+      m.pillTop = BAND_FOOT - colH + j * band;
       m.pillH = band;
       m.pcol = c / (NP - 1);
     });
@@ -276,8 +285,8 @@ const PILLH = [281, 398, 221, 364, 184, 403, 251, 330, 293];
 }
 
 /** One even row of thin lines. */
-const ROWTOP = 662;
-const ROWLEN = 375;
+const ROWTOP = BAND_TOP;
+const ROWLEN = BAND;
 const ROWW = 16;
 const ROWX = BARS.map((_, i) => 44 + i * ((1876 - ROWW - 44) / (BARS.length - 1)));
 
@@ -340,6 +349,7 @@ const SCENES = [
   { name: "grid", seconds: 4.1 },
   { name: "pillars", seconds: 4.2 },
   { name: "row", seconds: 3.45 },
+  { name: "bars", seconds: 3.45 },
   { name: "wave", seconds: 0 /* 7.6 */ },
 ] as const;
 
@@ -347,14 +357,15 @@ export const HERO_LOOP_SECONDS = SCENES.reduce((n, s) => n + s.seconds, 0);
 
 /** An array the component can allocate once and hand back every frame. */
 export function createHeroFrames(): Frame[] {
-  /* The state the server paints and the first frame starts from. It is the row
-     while the purple scenes are held at zero — starting on the settled field
-     would show it in purple until the first frame ran, which is exactly what
-     is being hidden. Restore m.solidTop / m.solidH / C_ENTER with them. */
-  return MODULES.map((m) => {
-    const p = poseRow(m);
-    return { x: p.x, y: p.top, w: p.w, h: p.h, fill: C_ROW };
-  });
+  /* The state the server paints and the first frame starts from: the two-band
+     field, which is where the cycle hands over to the lattice. */
+  return MODULES.map((m) => ({
+    x: m.x,
+    y: m.solidTop,
+    w: m.w,
+    h: m.solidH,
+    fill: C_ENTER,
+  }));
 }
 
 /**
@@ -388,10 +399,9 @@ export function heroFrame(elapsed: number, frames: Frame[]) {
       }
       // The bars come apart and every box takes a slot on one even lattice.
       case "grid": {
-        /* Opens from the row rather than from the settled field, so the loop
-           closes row -> lattice while the two purple scenes are held at zero.
-           Put poseSolid and C_ENTER back when they are restored. */
-        const from = poseRow(m);
+        /* Opens from the two-band field, which the bars scene before it ends
+           on, so the cycle hands over without a cut. */
+        const from = poseSolid(m);
         const to = poseBox(m);
         const tx = move(local, m.gLag);
         const ty = move(local - 0.5, m.gLag);
@@ -399,7 +409,7 @@ export function heroFrame(elapsed: number, frames: Frame[]) {
         f.w = lerp(from.w, to.w, tx);
         f.y = lerp(from.top, to.top, ty);
         f.h = lerp(from.h, to.h, ty);
-        f.fill = mix(C_ROW, C_GRID, tx);
+        f.fill = mix(C_ENTER, C_GRID, tx);
         break;
       }
       // The boxes migrate sideways and pack into nine columns.
@@ -420,6 +430,14 @@ export function heroFrame(elapsed: number, frames: Frame[]) {
         const t = move(local, m.u);
         blend(posePill(m), poseRow(m), t, f);
         f.fill = mix(C_PILL, C_ROW, t);
+        break;
+      }
+      // The row opens back into the two-band field the loop rests on, and
+      // hands straight back to the lattice.
+      case "bars": {
+        const t = move(local, m.u);
+        blend(poseRow(m), poseSolid(m), t, f);
+        f.fill = mix(C_ROW, C_ENTER, t);
         break;
       }
       // The row opens back into the field, a wave runs through it, and the

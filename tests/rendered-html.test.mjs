@@ -56,11 +56,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /platforms, apps, CRM/);
   assert.match(html, /integrations between them/);
   assert.match(html, /class="hero-field__box"/);
-  /* The field is server-rendered in the row pose, in the row's colour: the two
-     purple scenes are held at zero in lib/hero-motion.ts, and the settled pose
-     is what they open and close on. Back to #8362b8 when they are restored. */
+  /* Server-rendered in the two-band field, the pose the cycle hands over to
+     the lattice from. */
   assert.match(html, /class="hero-field"[^>]*viewBox="0 0 1920 1400"/);
-  assert.match(html, /fill="#8ec5ef"/);
+  assert.match(html, /fill="#8362b8"/);
 
   // Why Mardal
   assert.match(html, /Why Mardal/);
