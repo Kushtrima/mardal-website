@@ -1185,20 +1185,25 @@ video {
   height: 100%;
 }
 
-/* No measure of its own: the 900 the section is held to is already one, and a
+/* Set exactly as the body paragraphs elsewhere on the page are — the same size
+   token, tracking and leading as .difference-intro__text. It was on
+   --text-heading, a step above every other paragraph on the site, which made it
+   the one piece of running text set to its own rule.
+
+   No measure of its own: the 700 the section is held to is already one, and a
    second cap under it would only pull the paragraph in from a block edge the
    heading above it sets. */
 .fusion-copy {
   margin: clamp(3rem, 6vw, 6rem) 0 0;
-  /* Justified, so the paragraph squares off against the block edges the
-     heading above it sets. The last line is left alone, which is the default
-     and the only sane reading — stretching four words across 700px would be a
-     worse fault than the ragged edge it fixes. */
+  /* Justified, so the paragraph squares off against those same edges. The last
+     line is left alone, which is the default and the only sane reading:
+     stretching one word across 700px would be a worse fault than the ragged
+     edge it would fix. */
   text-align: justify;
-  font-size: var(--text-heading);
+  font-size: var(--text-body);
   font-weight: var(--weight-body);
-  letter-spacing: -0.025em;
-  line-height: var(--leading-heading);
+  letter-spacing: -0.015em;
+  line-height: 1.45;
 }
 
 .why-section {
