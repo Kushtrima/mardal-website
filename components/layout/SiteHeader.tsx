@@ -373,15 +373,6 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
             aria-hidden={!megaMenuOpen}
             inert={megaMenuOpen ? undefined : true}
           >
-            <div className="mega-menu__meta">
-              <p className="mega-menu__eyebrow" data-mega-entry>
-                {activeItem.eyebrow}
-              </p>
-              <p className="mega-menu__description" data-mega-entry>
-                {activeItem.description}
-              </p>
-            </div>
-
             <ul className="mega-menu__links">
               {activeItem.items.map((item) => (
                 <li key={item.label} data-mega-entry>

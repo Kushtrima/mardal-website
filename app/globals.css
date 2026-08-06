@@ -900,14 +900,17 @@ video {
   line-height: 1;
 }
 
-/* A panel that drops from the bar, on the page's own black.
+/* A panel that drops from the bar, on the page's own black, holding the list
+   and nothing else.
 
    It used to be a light slab with a fixed 384px floor, so a menu of one item —
    Case Studies has one — got the same acreage as a menu of seven, and its left
    column carried 116px of ink in 433px of height with a 245px hole in the
    middle. It was also the last light surface in a header that had gone black.
    Now it takes the canvas with a hairline around it, and its height is whatever
-   its contents come to: one item is a small box.
+   its contents come to: one item is a small box. The flex column went with the
+   eyebrow and the sentence under it — with one child left there is nothing to
+   stack or space.
 
    No transform tricks needed here, unlike the full-window version this replaces
    — it is positioned against the bar, which is exactly what an absolute box
@@ -917,9 +920,6 @@ video {
   top: calc(100% + 0.55rem);
   right: 0;
   left: 0;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1.25rem, 2.6vh, 2.25rem);
   padding: clamp(1.5rem, 2.4vw, 2.75rem);
   overflow: hidden;
   border: 1px solid var(--line-soft);
@@ -928,35 +928,6 @@ video {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
-}
-
-/* The head of the panel. No rule beside it any more — it sits above the list
-   rather than next to it, so the border that used to divide two columns has
-   nothing left to divide. */
-.mega-menu__meta {
-  display: flex;
-  max-width: 44ch;
-  flex-direction: column;
-}
-
-.mega-menu__eyebrow {
-  margin: 0;
-  color: var(--accent);
-  font-size: var(--text-body);
-  font-weight: var(--weight-strong);
-  letter-spacing: 0.1em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-/* A sentence about the section, so it is a paragraph and not a header. */
-.mega-menu__description {
-  max-width: 44ch;
-  margin: 0.7rem 0 0;
-  font-size: var(--text-copy);
-  font-weight: var(--weight-body);
-  letter-spacing: -0.02em;
-  line-height: var(--leading-body);
 }
 
 
