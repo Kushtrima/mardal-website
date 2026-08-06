@@ -2,9 +2,19 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 
+/* Declared here rather than taken from @cloudflare/workers-types, the same way
+   ExecutionContext below already is. That package is a single global
+   declaration file with no exports, so referencing it anywhere applies it to
+   the whole program — and the global Element it declares carries
+   HTMLRewriter's own append(), which shadowed the DOM's ParentNode.append in
+   every client component. Only the shape this file actually uses is needed. */
+interface Fetcher {
+  fetch(input: Request | string, init?: RequestInit): Promise<Response>;
+}
+
 interface Env {
   ASSETS: Fetcher;
-  DB: D1Database;
+  DB: Cloudflare.Env["DB"];
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {

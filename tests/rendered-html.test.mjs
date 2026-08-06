@@ -346,33 +346,31 @@ test("server-renders the AI & Automation service page", async () => {
   // The service journey renders every card in source order before motion is
   // enhanced, so the content remains complete without client-side JavaScript.
   assert.match(html, /AI &amp; Automation Services/);
-  assert.match(html, /AI Solutions/);
+  assert.match(html, /AI Applications/);
   assert.match(html, /data-service-group-link="1"[^>]*>Automation</);
-  assert.equal((html.match(/class="service-card"/g) ?? []).length, 9);
+  assert.equal((html.match(/class="service-card"/g) ?? []).length, 12);
   assert.equal(
     (html.match(/data-service-group-link=/g) ?? []).length,
-    2,
+    3,
   );
   assert.match(
     html,
-    /class="service-journey__skip" href="#ai-capabilities" data-scroll-direct="true" data-scroll-duration="1.5" data-scroll-ease="sine.in" data-scroll-preserve-view="true" data-service-skip="true"[^>]*>[\s\S]*?pixel-x[\s\S]*?Skip[\s\S]*?<\/a>/,
+    /class="service-journey__skip" href="#ai-automation-cta" data-scroll-direct="true" data-scroll-duration="1.5" data-scroll-ease="sine.in" data-scroll-preserve-view="true" data-service-skip="true"[^>]*>[\s\S]*?pixel-x[\s\S]*?Skip[\s\S]*?<\/a>/,
   );
-  assert.match(html, /class="ai-capabilities" id="ai-capabilities"/);
-  assert.equal(
-    (html.match(/class="ai-capability-chapter ai-capability-chapter--/g) ?? [])
-      .length,
-    5,
-  );
-  assert.equal((html.match(/tabindex="0"/g) ?? []).length, 5);
-  assert.doesNotMatch(html, /ai-capability-(?:card|row)/);
-  assert.match(html, /Five capabilities for more demanding AI work\./);
-  assert.match(html, /Tailored AI Solutions/);
-  assert.match(html, /RAG Systems &amp; Reliable AI/);
-  assert.match(html, /Predictive Analytics &amp; Forecasting/);
-  assert.match(html, /Enterprise MLOps &amp; Governed AI/);
-  assert.match(html, /Computer Vision &amp; Edge AI/);
-  assert.match(html, /Secure vector databases/);
-  assert.match(html, /Full AI Act compliance/);
+  /* The bespoke capabilities section is gone: this page runs the same journey
+     as the other four, and its third chapter carries what that section held. */
+  assert.doesNotMatch(html, /ai-capabilit(?:ies|y)/);
+  assert.match(html, /AI Systems/);
+  assert.match(html, /RAG &amp; Knowledge Systems/);
+  assert.match(html, /Predictive Analytics/);
+  assert.match(html, /AI Governance &amp; Operations/);
+  assert.match(html, /Computer Vision/);
+  /* Two compliance claims were taken out of the copy deliberately and must not
+     come back through here. The page claims regulatory readiness, nothing
+     stronger. See PRODUCT.md, Evidence on Hand. */
+  assert.doesNotMatch(html, /Full AI Act compliance/);
+  assert.doesNotMatch(html, /Secure vector databases/);
+  assert.match(html, /Support responsible AI and regulatory readiness/);
   assert.match(html, /class="service-cta" id="ai-automation-cta"/);
   assert.match(html, /class="service-journey__controls"/);
   assert.match(
@@ -381,16 +379,17 @@ test("server-renders the AI & Automation service page", async () => {
   );
   assert.match(html, /data-service-track/);
   assert.match(html, /class="service-card__number"[^>]*>01</);
+  /* One 01 per chapter, and this page has three. */
   assert.equal(
     (html.match(/class="service-card__number"[^>]*>01</g) ?? []).length,
-    2,
+    3,
   );
   assert.match(html, /class="service-card__number"[^>]*>05</);
   assert.doesNotMatch(html, />Overview<|>Key uses<|>In practice</);
   assert.doesNotMatch(html, /class="service-card__uses"/);
   assert.match(
     html,
-    /Summarize business performance\. Identify trends and important changes\. Analyze customer feedback\. Prepare clear management reports\./,
+    /Summarize current and past performance\. Explain the causes behind trends and changes\. Analyze customer feedback\./,
   );
   assert.match(
     html,
@@ -402,16 +401,20 @@ test("server-renders the AI & Automation service page", async () => {
   );
   assert.doesNotMatch(html, /<details|service-row__action|09 services/);
 
+  /* Every card the journey carries, in order. */
   for (const title of [
     "AI Assistants",
     "Document Intelligence",
     "AI Data &amp; Insights",
-    "AI Integration",
     "Sales &amp; CRM Automation",
     "Customer Service Automation",
     "Document &amp; Approval Automation",
     "Order &amp; Operations Automation",
     "Reporting &amp; Alerts",
+    "RAG &amp; Knowledge Systems",
+    "Predictive Analytics",
+    "Computer Vision",
+    "AI Governance &amp; Operations",
   ]) {
     assert.match(html, new RegExp(title));
   }
@@ -434,16 +437,17 @@ test("server-renders the System Integration service page", async () => {
   assert.match(html, /class="service-hero__title"/);
   assert.match(html, /Keep your business/);
   assert.match(html, /in sync\./);
-  assert.match(html, /Bring your software, data, and operations together\./);
+  assert.match(html, /Connect your CRM, ERP, and business apps\./);
   assert.match(
     html,
     /class="service-hero__pattern service-hero__pattern--system-integration"/,
   );
   assert.match(html, /System Integration Services/);
   assert.match(html, /Business Integrations/);
-  assert.match(html, /Data &amp; Connectivity/);
-  assert.equal((html.match(/class="service-card"/g) ?? []).length, 6);
-  assert.equal((html.match(/data-service-group-link=/g) ?? []).length, 2);
+  assert.match(html, /App Connections/);
+  assert.match(html, /Integration Support/);
+  assert.equal((html.match(/class="service-card"/g) ?? []).length, 9);
+  assert.equal((html.match(/data-service-group-link=/g) ?? []).length, 3);
   assert.match(
     html,
     /class="service-journey__skip" href="#system-integration-cta" data-scroll-direct="true" data-scroll-duration="1.5" data-scroll-ease="sine.in" data-scroll-preserve-view="true" data-service-skip="true"[^>]*>[\s\S]*?pixel-x[\s\S]*?Skip[\s\S]*?<\/a>/,
@@ -457,17 +461,17 @@ test("server-renders the System Integration service page", async () => {
   assert.match(html, /CRM &amp; ERP/);
   assert.match(html, /E-commerce &amp; Operations/);
   assert.match(html, /Accounting &amp; Payments/);
-  assert.match(html, /API &amp; Custom Integration/);
-  assert.match(html, /Communication Integration/);
-  assert.match(html, /Data Migration &amp; Synchronization/);
+  assert.match(html, /Custom Connections/);
+  assert.match(html, /Communication Tools/);
+  assert.match(html, /Data Transfer &amp; Sync/);
   assert.match(html, /Connect the systems used across sales, orders, inventory/);
   assert.match(
     html,
     /<span data-service-word="true">Connect<\/span> <span data-service-word="true">the<\/span>/,
   );
-  assert.match(html, /Connect applications and business data/);
+  assert.match(html, /We connect websites, internal software, and specialist business apps/);
   assert.match(html, /Microsoft Teams, and Slack/);
-  assert.match(html, /new CRM without duplicate records/);
+  assert.match(html, /Information from older software is cleaned and moved into a new system/);
   assert.match(html, /class="site-nav"/);
   assert.match(html, /<footer class="site-footer"/);
 });
