@@ -1125,14 +1125,19 @@ video {
    container's own width is the smaller of the two and this never binds, so the
    phone layout is untouched without a query. */
 .container.fusion-container {
-  max-width: 900px;
+  max-width: 700px;
 }
 
 .fusion-title {
   display: grid;
   grid-template-columns: auto auto auto;
   justify-content: space-between;
-  gap: clamp(1.5rem, 4vw, 4rem);
+  /* A floor, not the spacing: space-between hands the leftover width to the
+     two gaps, so whenever there is room this is overridden and the mark sits
+     evenly between the halves regardless. It only has to be low enough that
+     the three columns cannot outgrow 700 — at 4rem they came within 6px of
+     it, which a font fallback or a rounding difference would have spent. */
+  gap: clamp(1rem, 2.5vw, 2.5rem);
   align-items: center;
   margin: 0;
   font-family: var(--type-title);
@@ -1146,15 +1151,14 @@ video {
   display: block;
 }
 
-/* Four fifths of the height of the two lines it stands beside. The height is
-   still taken from the leading rather than typed, so the mark cannot come loose
-   from the type; it just no longer runs the full height of the block, which
-   made it the loudest thing in the section. The arms are a fraction of that
-   height, and thin enough now to sit at about the stem weight of a 430-weight
-   face rather than twice it. */
+/* Just under two thirds of the height of the two lines it stands beside. The
+   height is still taken from the leading rather than typed, so the mark cannot
+   come loose from the type; it simply no longer competes with it. The arms are
+   a fraction of that height, and now sit a little under the stem weight of a
+   430-weight face, so the mark reads as a hairline join rather than a glyph. */
 .fusion-plus {
-  --fusion-plus-size: calc(2 * var(--leading-heading-xl) * 0.8em);
-  --fusion-plus-arm: calc(var(--fusion-plus-size) * 0.07);
+  --fusion-plus-size: calc(2 * var(--leading-heading-xl) * 0.62em);
+  --fusion-plus-arm: calc(var(--fusion-plus-size) * 0.055);
 
   position: relative;
   width: var(--fusion-plus-size);
