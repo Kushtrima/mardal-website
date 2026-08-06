@@ -1117,6 +1117,17 @@ video {
   padding-block: var(--section-space-lg);
 }
 
+/* The one block on the page that does not fill the glass. Held to 900 and
+   centred, so the two halves stand near enough to read as one statement rather
+   than as two things at opposite ends of a 1360px line. Written against
+   `.container` because that rule sets `max-width: none` to beat a Tailwind
+   utility of the same name, and a single class would lose to it. Below 900 the
+   container's own width is the smaller of the two and this never binds, so the
+   phone layout is untouched without a query. */
+.container.fusion-container {
+  max-width: 900px;
+}
+
 .fusion-title {
   display: grid;
   grid-template-columns: auto auto auto;
@@ -1135,13 +1146,15 @@ video {
   display: block;
 }
 
-/* As tall as the two lines it stands beside — the height is taken from the
-   leading rather than typed, so the mark cannot come loose from the type. The
-   arms are a fraction of that height, thin enough to read as drawn by the same
-   hand as a 430-weight face rather than as a heavy glyph dropped in. */
+/* Four fifths of the height of the two lines it stands beside. The height is
+   still taken from the leading rather than typed, so the mark cannot come loose
+   from the type; it just no longer runs the full height of the block, which
+   made it the loudest thing in the section. The arms are a fraction of that
+   height, and thin enough now to sit at about the stem weight of a 430-weight
+   face rather than twice it. */
 .fusion-plus {
-  --fusion-plus-size: calc(2 * var(--leading-heading-xl) * 1em);
-  --fusion-plus-arm: calc(var(--fusion-plus-size) * 0.088);
+  --fusion-plus-size: calc(2 * var(--leading-heading-xl) * 0.8em);
+  --fusion-plus-arm: calc(var(--fusion-plus-size) * 0.07);
 
   position: relative;
   width: var(--fusion-plus-size);
@@ -1168,11 +1181,10 @@ video {
   height: 100%;
 }
 
-/* Set to a measure rather than the full width. The heading above it is broken
-   by hand into four short lines, and a paragraph run edge to edge under that
-   reads as a different document; held to a measure the two belong together. */
+/* No measure of its own: the 900 the section is held to is already one, and a
+   second cap under it would only pull the paragraph in from a block edge the
+   heading above it sets. */
 .fusion-copy {
-  max-width: 58rem;
   margin: clamp(3rem, 6vw, 6rem) 0 0;
   font-size: var(--text-heading);
   font-weight: var(--weight-body);

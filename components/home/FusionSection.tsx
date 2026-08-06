@@ -21,7 +21,7 @@ export function FusionSection() {
       aria-labelledby="fusion-title"
       data-route-section
     >
-      <Container>
+      <Container className="fusion-container">
         <h2 className="fusion-title" id="fusion-title" aria-label={fusion.spoken}>
           <span className="fusion-title__half">
             {fusion.left.map((line) => (
