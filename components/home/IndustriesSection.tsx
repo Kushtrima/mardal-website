@@ -23,15 +23,24 @@ const HOLD_MS = 3000;
 const STEP_VH = 0.45;
 
 /**
- * How long a wheel gesture is ignored after it has moved the run on.
+ * The quiet needed before a wheel event counts as a new push.
  *
- * A flick of a wheel or a trackpad does not arrive as one event; it arrives as
- * a burst, and then as a tail of momentum that can run for the best part of a
- * second. Without this, one flick spent the whole run in a blur. It has to
- * outlast that tail and still be under the time it takes to look at an
- * industry and decide to move on.
+ * A flick does not arrive as one event. It arrives as a burst, and then as a
+ * tail of momentum that keeps firing for a second or more — on a trackpad,
+ * often two. Timing the tail out cannot work: any limit short enough to feel
+ * responsive is shorter than some tails, and one flick then walks two or three
+ * industries, which is exactly what it did at 700ms.
+ *
+ * So the tail is not timed, it is recognised. Momentum arrives as a steady
+ * stream a frame or so apart; a hand pushing again always leaves a gap first.
+ * Only an event with quiet in front of it starts a step, so a flick is worth
+ * one industry whatever its tail does afterwards.
  */
-const STEP_LOCK_MS = 700;
+const GESTURE_GAP_MS = 120;
+
+/** A floor under the time between steps, so a jittery start cannot fire twice
+ *  before the page has begun to move. */
+const STEP_LOCK_MS = 350;
 
 /** Below this the two columns stack and there is no room to hold anything. */
 const MIN_WIDTH = "(min-width: 60rem)";
@@ -78,9 +87,14 @@ export function IndustriesSection() {
     const count = solutions.items.length;
     let trigger: ScrollTrigger | undefined;
     let lockedUntil = 0;
+    let lastEventAt = 0;
 
     function onWheel(event: WheelEvent) {
       if (!trigger || !trigger.isActive) return;
+
+      const now = performance.now();
+      const gap = now - lastEventAt;
+      lastEventAt = now;
 
       const direction = event.deltaY > 0 ? 1 : -1;
       const next = indexRef.current + direction;
@@ -89,10 +103,15 @@ export function IndustriesSection() {
          page scrolls out of the section the way it arrived. */
       if (next < 0 || next > count - 1) return;
 
+      /* Swallowed either way — momentum must not reach the page and scroll it
+         underneath the run, even on the events that do not step. */
       event.preventDefault();
 
-      if (performance.now() < lockedUntil) return;
-      lockedUntil = performance.now() + STEP_LOCK_MS;
+      /* No quiet in front of it: this is the same push still arriving, or the
+         momentum it left behind. */
+      if (gap < GESTURE_GAP_MS) return;
+      if (now < lockedUntil) return;
+      lockedUntil = now + STEP_LOCK_MS;
 
       /* Sent to the middle of the step rather than its edge: the smoother
          glides rather than jumps, and a target on the boundary would sit one
