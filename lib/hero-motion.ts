@@ -50,12 +50,25 @@ const BAR_SCALE = BAND / (FOOT - ROWA);
  */
 export const HERO_FIELD = { width: W, top: BAND_TOP, height: BAND } as const;
 
-/** One colour per pose, carried across each hand-off. */
-const C_ENTER = "#8362b8";
-const C_GRID = "#f1ce6d";
-const C_PILL = "#6fdd9f";
-const C_ROW = "#8ec5ef";
-const C_WAVE = "#dacdf9";
+/**
+ * The one colour the field is drawn in.
+ *
+ * There was a colour per pose — butter, mint, sky, two purples — and each
+ * hand-off crossed between them, so the film changed hue as well as shape. It
+ * is a single light purple now: the poses still hand over, the mixes below
+ * still run, they simply resolve to the same value at both ends and what moves
+ * is the shape alone.
+ *
+ * The five names are kept rather than collapsed into one, because they are what
+ * says which pose is which at the call sites — and giving any single pose its
+ * own colour back is one edit here rather than an untangling down there.
+ */
+const C_ACCENT = "#c3aef3";
+const C_ENTER = C_ACCENT;
+const C_GRID = C_ACCENT;
+const C_PILL = C_ACCENT;
+const C_ROW = C_ACCENT;
+const C_WAVE = C_ACCENT;
 
 type Bar = {
   x: number;

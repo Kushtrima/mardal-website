@@ -1489,10 +1489,13 @@ video {
 }
 
 /* Every drawing takes its colour from the card it sits in, so a card is
-   recoloured in one place. The first keeps the brand tint; the other three
-   carry the same colours as the cards further down the page. */
+   recoloured in one place. All four now carry the same light purple: they were
+   a muted purple, butter, mint and sky, borrowed from the tint boxes further
+   down the page, and on a white ground four hues across one row read as four
+   unrelated drawings rather than one set. The lilac bar is the same step in its
+   own family as the three it replaces. */
 .why-card {
-  --art-accent: var(--accent-soft);
+  --art-accent: var(--tint-lilac-bar);
 
   position: relative;
   display: flex;
@@ -1505,18 +1508,6 @@ video {
   overflow: hidden;
   border-radius: var(--shape-card);
   background: var(--surface);
-}
-
-.why-card--two {
-  --art-accent: var(--tint-butter-bar);
-}
-
-.why-card--three {
-  --art-accent: var(--tint-mint-bar);
-}
-
-.why-card--four {
-  --art-accent: var(--tint-sky-bar);
 }
 
 /* The label sits in the top-right corner, opposite the drawing. */
