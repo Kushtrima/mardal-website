@@ -2821,12 +2821,15 @@ video {
   display: block;
 }
 
-/* The same step down the links took, so the two read as one register on the
-   panel rather than the paragraph sitting a size above them. */
+/* Running text, so it takes the size every other paragraph does. It used to
+   step down to --text-small to sit level with the link columns beside it, but
+   the copy has since come down to 16 and the columns are still 18 — matching
+   the links now would leave this the smallest paragraph on the site, reading
+   two steps below the page it closes. */
 .site-footer__body {
   max-width: 34ch;
   margin: 0;
-  font-size: var(--text-small);
+  font-size: var(--text-copy);
   line-height: var(--leading-body);
 }
 
