@@ -85,9 +85,12 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /class="recommendation-wall recommendation-wall--front"/);
   assert.match(html, /card-icons\/recommendations\.png/);
 
-  // Header — desktop retains its supporting context, while mobile presents
-  // only the category titles and direct navigation choices.
-  assert.match(html, /Mardal Services/);
+  // Header — the desktop panel is its list and nothing else now: the eyebrow
+  // and the sentence under it are gone, and so are the 01-07 counters, since
+  // both restated what the word you clicked already said.
+  assert.doesNotMatch(html, /mega-menu__(meta|eyebrow|description|number|view-all)/);
+  assert.doesNotMatch(html, /Mardal Services/);
+  assert.match(html, /class="mega-menu__links"/);
   assert.match(html, /AI &amp; Automation/);
   assert.match(html, /System Integration/);
   assert.match(html, /CRM Solutions/);
