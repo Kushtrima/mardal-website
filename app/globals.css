@@ -4160,10 +4160,16 @@ video {
 
 /* Uppercase and letterspaced, the way the reference sets its labels — but at
    the paragraph size, because this site has three type sizes and no fourth. */
+/* A caption over its value, so it is set a step under the paragraph size rather
+   than level with it — which is what the mobile rule below already does, and
+   what desktop was missing. Colour is the page ink now: --ink-muted is #a09aad
+   and carries enough blue and red to read as lavender rather than grey against
+   this black. Uppercase and the wide tracking keep it a label without needing
+   to be a different colour from what it names. */
 .product-fact__label {
   margin: 0;
-  color: var(--ink-muted);
-  font-size: var(--text-body);
+  color: var(--ink);
+  font-size: var(--text-small);
   letter-spacing: var(--tracking-wide);
   line-height: 1.3;
   text-transform: uppercase;
