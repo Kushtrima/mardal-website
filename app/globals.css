@@ -979,7 +979,6 @@ video {
    list run down it and the reading order stays a single line down the page. */
 .mega-menu__links {
   display: grid;
-  justify-content: start;
   margin: 0;
   padding: 0;
   row-gap: clamp(0.9rem, 1.9vh, 1.6rem);
@@ -1038,9 +1037,11 @@ video {
    second for as long as you rested near an edge. The box is fixed here and the
    name moves inside it.
 
-   Its width covers the name in both places: the text, plus the distance that
-   text travels. So wherever the name is, the pointer is still inside the same
-   unmoved box, and there is no edge to oscillate across.
+   The row runs the full width of the ground, which does two things: the mark
+   lands on the right margin, in the same column as the legal line below and the
+   call to action above, and the whole line is the target — so the name can
+   travel inside a box that never moves and there is no edge to oscillate
+   across.
 
    The rule is pinned to that box's left edge, which is where the name rests, so
    it draws into the space the name has just left. The travel and the rule read
@@ -1052,11 +1053,24 @@ video {
   --menu-travel: calc(var(--menu-rule) + var(--menu-rule-gap));
 
   position: relative;
-  display: block;
-  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
   padding-block: clamp(0.15rem, 0.4vh, 0.35rem);
-  padding-right: var(--menu-travel);
   transition: opacity var(--duration-slow) var(--ease-standard);
+}
+
+/* On the right margin, one per name, and diagonal because it opens a page
+   rather than moving along the row. The rotation is pinned here rather than
+   left to the direction class: it is the whole of what the mark means. */
+.mega-menu__arrow {
+  --pixel-arrow-dot: 0.135rem;
+  --pixel-arrow-gap: 0.06rem;
+
+  flex: none;
+  color: var(--ink);
+  transform: rotate(-45deg);
 }
 
 .mega-menu__link::before {
