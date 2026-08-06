@@ -2378,7 +2378,12 @@ video {
      2560 monitor; 45 to 75 is the band a line can be read in without the eye
      losing its place on the way back. */
   max-width: 58ch;
-  color: var(--ink-muted);
+  /* The page ink, as the industry name beside it is. --ink-muted is #a09aad,
+     which carries enough blue and red to read as lavender rather than grey once
+     the row is at full opacity, and next to a near-white name it looked like a
+     colour rather than a level. The row already separates itself from the rest
+     of the list by opacity, so the note does not need to be dimmed again. */
+  color: var(--ink);
   font-family: var(--type-body);
   font-size: var(--text-body);
   font-weight: var(--weight-body);
