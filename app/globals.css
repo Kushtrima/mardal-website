@@ -1195,11 +1195,14 @@ video {
    heading above it sets. */
 .fusion-copy {
   margin: clamp(3rem, 6vw, 6rem) 0 0;
-  /* Justified, so the paragraph squares off against those same edges. The last
-     line is left alone, which is the default and the only sane reading:
-     stretching one word across 700px would be a worse fault than the ragged
-     edge it would fix. */
+  /* Justified, so the paragraph squares off against those same edges, and the
+     last line with it rather than left ragged. Forcing the last line is only
+     safe while it carries enough words to take up the slack: a line with a
+     single word has no word space to stretch and simply sits short, and one
+     with two or three would be pulled apart. It is checked against the copy
+     above, not assumed — see the note on the copy in content/home.ts. */
   text-align: justify;
+  text-align-last: justify;
   font-size: var(--text-body);
   font-weight: var(--weight-body);
   letter-spacing: -0.015em;
@@ -3797,6 +3800,16 @@ video {
     grid-template-columns: minmax(0, 1fr);
     justify-items: start;
     gap: clamp(1rem, 3vw, 1.75rem);
+  }
+
+  /* The forced last line comes off here. Above this width the block is always
+     exactly 700 and the copy was checked to fill its last line edge to edge, so
+     forcing it costs nothing. Below it the block is the screen, the paragraph
+     rewraps to a width nobody has measured, and a last line that lands on two
+     or three words would be dragged to both margins. Ragged is the lesser
+     fault; the other three edges stay square. */
+  .fusion-copy {
+    text-align-last: auto;
   }
 
   /* Wider than the screen so the bars still read at this size, and started a

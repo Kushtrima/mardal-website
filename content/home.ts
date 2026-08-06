@@ -99,7 +99,7 @@ export const fusion = {
   right: ["Human", "Creativity"],
   spoken: "Artificial Intelligence plus Human Creativity",
   copy:
-    "We unite the power and precision of artificial intelligence with the imagination and originality of human creativity, creating technology that thinks smarter, feels more human, and unlocks new possibilities. Together, these strengths help us build intelligent solutions that solve real challenges, transform how businesses work, and deliver lasting impact.",
+    "We unite the power and precision of artificial intelligence with the imagination and originality of human creativity, creating technology that thinks smarter, feels more human, and unlocks new possibilities. Together, these strengths help us build solutions that solve challenges, transform how businesses work, and deliver lasting impact.",
 } as const;
 
 export const whyMardal = {
