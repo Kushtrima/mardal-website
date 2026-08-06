@@ -222,7 +222,11 @@
    rules and accent it had when the whole page was white, rather than each
    child overriding its own colour — so a light panel anywhere on the site
    only has to join this list. */
-.site-header,
+/* The header used to be on this list, when its bar was a light slab. The bar
+   is gone and its words are on the page's own black now, so it takes the page's
+   tokens — but the mega menu it opens is still a light panel and still needs
+   them, so the scope moves down to the panel rather than being dropped. */
+.mega-menu,
 .why-card,
 .difference-card {
   --ink: #08080a;
@@ -793,7 +797,10 @@ video {
   padding: 0.3rem 0.4rem 0.3rem clamp(0.8rem, 1vw, 1.05rem);
   border: 0;
   border-radius: var(--shape-md);
-  background: var(--menu-surface);
+  /* No slab. The bar sits straight on the page, so the padding and the radius
+     now only shape the mega menu that drops out of it and the mobile sheet
+     that fills from it, both of which paint their own ground. */
+  background: transparent;
 }
 
 .brand {
@@ -805,6 +812,11 @@ video {
 .brand-logo {
   width: clamp(9.5rem, 10.5vw, 11.25rem);
   height: auto;
+  /* The wordmark is a flat black SVG, so it is crushed to a silhouette and
+     flipped rather than recoloured — the same pair the footer mark uses, one
+     step further. brightness(0) takes it to solid black whatever it was drawn
+     in, and invert(1) turns that white. */
+  filter: brightness(0) invert(1);
 }
 
 .nav-list {
@@ -984,7 +996,15 @@ video {
   display: none;
 }
 
+/* The one filled thing up here, and it keeps the accent it wore on the light
+   bar. Left to the page's tokens it would come out the lighter #a98ad6 with
+   black type, which is a different button from the one that was there — the
+   bar was what changed, not the call to action. */
 .hero-nav-cta {
+  --accent: #8362b8;
+  --accent-strong: #6f4fa7;
+  --accent-contrast: #ffffff;
+
   min-width: clamp(7rem, 8.8vw, 9.1rem);
   min-height: clamp(2.55rem, 3.3vw, 2.85rem);
   border-radius: var(--shape-control);
