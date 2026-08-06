@@ -255,9 +255,9 @@ export const products = {
   eyebrow: "Mardal Products",
   /** Set as explicit lines, so the break falls in the same place at every
    *  width and the step below it is a decision rather than a wrap. */
-  titleLines: ["Products are", "how we test", "our thinking."],
+  titleLines: ["We build what", "should exist."],
   summary:
-    "We turn focused ideas into useful digital experiences, then carry what we learn into every client partnership.",
+    "Our products begin with a real need, not a trend. We explore, build, test, and refine each idea into a useful digital experience, then bring that knowledge into every solution and partnership we create.",
   /** Photographs, not screenshots: none of the three has an interface worth
    *  showing yet, so each image stands for what the product is about rather
    *  than claiming to be the product. */
