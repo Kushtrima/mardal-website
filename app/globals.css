@@ -88,6 +88,12 @@
   --text-heading-xl: clamp(40px, 5.6vw, 72px);
   --text-heading: clamp(24px, 2.35vw, 30px);
   --text-body: 18px;
+  /* Running text, split from --text-body. The two were one size, but only
+     thirteen of the thirty-six rules on that token are paragraphs: the rest
+     are nav links, buttons, the header call to action and the small labels,
+     and those are read at a glance rather than along a line, so they keep 18
+     while the copy comes down. Change paragraph size here and nowhere else. */
+  --text-copy: 16px;
   /* The home hero's own line, a step above the display size. It is the one
      heading on the site with a whole viewport to itself and nothing beside it
      to match, and at the shared size it read small against that much air. The
@@ -374,7 +380,7 @@ video {
   /* The page ink. --ink-muted is #a09aad, which has enough blue and red in it
      to read as lavender against this black rather than as a grey. */
   color: var(--ink);
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   font-weight: var(--weight-body);
   letter-spacing: -0.025em;
   line-height: var(--leading-body);
@@ -864,7 +870,7 @@ video {
 .mega-menu__description {
   max-width: 18rem;
   margin: 1.25rem 0 0;
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   font-weight: var(--weight-body);
   letter-spacing: -0.02em;
   line-height: var(--leading-body);
@@ -1037,7 +1043,7 @@ video {
      -0.045em is drawn to hold 30px display type together and closes body-size
      text up. The leading stays tight because these three lines are broken by
      hand rather than wrapped. */
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   font-weight: var(--weight-heading);
   line-height: var(--leading-body);
 }
@@ -1219,7 +1225,7 @@ video {
      above, not assumed — see the note on the copy in content/home.ts. */
   text-align: justify;
   text-align-last: justify;
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   font-weight: var(--weight-body);
   letter-spacing: -0.015em;
   line-height: var(--leading-body);
@@ -1280,7 +1286,7 @@ video {
   grid-row: 1;
   max-width: 18rem;
   margin: 0;
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   font-weight: var(--weight-body);
   letter-spacing: -0.025em;
   line-height: var(--leading-body);
@@ -1410,7 +1416,7 @@ video {
   /* The panel's ink rather than its muted grey, so it reads as black and sits
      at the same weight of colour as the title above it. */
   color: var(--ink);
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   letter-spacing: -0.015em;
   line-height: var(--leading-body);
 }
@@ -1901,7 +1907,7 @@ video {
   max-width: 28ch;
   margin: 0.75rem 0 0;
   color: var(--ink-muted);
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   letter-spacing: -0.015em;
   line-height: var(--leading-body);
 }
@@ -1993,7 +1999,7 @@ video {
 .solution-cell__descriptor {
   margin: clamp(0.65rem, 0.9vw, 0.9rem) 0 0;
   color: var(--ink-muted);
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   letter-spacing: -0.015em;
   line-height: var(--leading-body);
 }
@@ -2054,7 +2060,7 @@ video {
   max-width: 58ch;
   margin: 0;
   color: var(--ink);
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   letter-spacing: -0.015em;
   line-height: var(--leading-body);
 }
@@ -2407,7 +2413,7 @@ video {
      of the list by opacity, so the note does not need to be dimmed again. */
   color: var(--ink);
   font-family: var(--type-body);
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   font-weight: var(--weight-body);
   letter-spacing: -0.015em;
   line-height: var(--leading-body);
@@ -2609,7 +2615,7 @@ video {
   max-width: 32ch;
   margin: 0;
   color: var(--ink-muted);
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   letter-spacing: -0.015em;
   line-height: var(--leading-body);
 }
@@ -4250,7 +4256,7 @@ video {
   /* The page ink. --ink-muted is #a09aad, which has enough blue and red in it
      to read as lavender against this black rather than as a grey. */
   color: var(--ink);
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   line-height: var(--leading-body);
 }
 
@@ -4769,7 +4775,7 @@ video {
     clamp(2rem, 4vw, 4.5rem)
     clamp(6rem, 15vh, 8rem)
     0;
-  font-size: var(--text-body);
+  font-size: var(--text-copy);
   font-family: var(--type-body);
   line-height: var(--service-leading-copy);
 }
