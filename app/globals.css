@@ -1360,15 +1360,35 @@ video {
 /* Balanced rather than greedy, so each title breaks at its own sentence
    instead of at the box edge, with two lines' height always reserved so the
    copy underneath starts on the same line across a row. */
+/* The display face, as the headings above them are. Its tracking comes with it:
+   -0.045em is drawn to hold the grotesque together and is too loose under a
+   face this tight. The weight does not change and must not — CS Alistair ships
+   Regular only, so 400 is the one weight there is and anything else would be
+   synthesised. The leading does not change either, because min-height below is
+   two lines of it and the four titles only align while the two agree. */
 .why-card__title {
-  max-width: 16ch;
-  min-height: 2.24em;
+  /* In em, not ch. ch is the width of the zero, which is a property of the
+     face — swapping to CS Alistair narrowed 16ch from about 9.6em to 7.23em
+     without a number changing, and "Built with you. Improved as you grow."
+     needs 7.38em to hold two lines, so it fell to three and stood taller than
+     the other three cards. Measured, the four want between 7.38em (that title)
+     and 9.37em (the point where "Everything working together" would come up
+     onto one line); this sits in the middle of that band. */
+  max-width: 8.4em;
+  /* Two lines of the leading below, and it has to be edited with it: this is
+     what holds the four titles to one height so the paragraphs under them line
+     up, and it only does that while the two agree. */
+  min-height: 2.4em;
   margin: clamp(1.5rem, 2.4vw, 2.25rem) 0 0;
-  font-family: var(--type-display);
+  /* Black rather than the panel's #08080a ink. Asked for directly, and this
+     face earns it: CS Alistair is a light display cut, and at 26px its stems
+     are thin enough that the near-black the grotesque wore reads grey. */
+  color: #000;
+  font-family: var(--type-title);
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.2;
   text-wrap: balance;
 }
 
