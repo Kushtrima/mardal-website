@@ -90,6 +90,7 @@ export function ProductsSection() {
                     {products.cta}
                     <PixelArrow
                       className="product__arrow"
+                      direction="up-right"
                       size="small"
                     />
                   </a>

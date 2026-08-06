@@ -259,7 +259,7 @@ export default function CrmSolutionsPage() {
 
               <a className="service-cta__link" href={products.ctaHref}>
                 {crmSolutions.cta.label}
-                <PixelArrow className="service-cta__arrow" size="small" />
+                <PixelArrow className="service-cta__arrow" direction="up-right" size="small" />
               </a>
             </div>
           </Container>

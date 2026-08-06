@@ -263,7 +263,7 @@ export default function WebPlatformsAppsPage() {
 
               <a className="service-cta__link" href={products.ctaHref}>
                 {webPlatformsApps.cta.label}
-                <PixelArrow className="service-cta__arrow" size="small" />
+                <PixelArrow className="service-cta__arrow" direction="up-right" size="small" />
               </a>
             </div>
           </Container>

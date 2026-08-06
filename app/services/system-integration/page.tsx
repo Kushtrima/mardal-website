@@ -263,7 +263,7 @@ export default function SystemIntegrationPage() {
 
               <a className="service-cta__link" href={products.ctaHref}>
                 {systemIntegration.cta.label}
-                <PixelArrow className="service-cta__arrow" size="small" />
+                <PixelArrow className="service-cta__arrow" direction="up-right" size="small" />
               </a>
             </div>
           </Container>

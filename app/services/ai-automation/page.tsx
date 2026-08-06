@@ -283,6 +283,7 @@ export default function AiAutomationPage() {
                 {aiAutomation.cta.label}
                 <PixelArrow
                   className="service-cta__arrow"
+                  direction="up-right"
                   size="small"
                 />
               </a>

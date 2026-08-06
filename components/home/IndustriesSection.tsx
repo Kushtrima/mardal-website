@@ -101,6 +101,7 @@ export function IndustriesSection() {
               Explore
               <PixelArrow
                 className="industries-explore__arrow"
+                direction="up-right"
                 size="small"
               />
             </a>
