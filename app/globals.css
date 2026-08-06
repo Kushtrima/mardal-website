@@ -41,7 +41,12 @@
      sitting on that lavender re-derives dark ink locally; see the block below
      the tokens. */
   --canvas: #000000;
-  --surface: #efedf8;
+  /* The card ground, and the fill the drawings ON those cards are masked and
+     lit with — .recurring-sphere__cover, .iso-block and the keyframes that
+     animate them all read this. White here rather than only on .why-card for
+     that reason: set the ground white on its own and every shape those drawings
+     paint in --surface would still be lavender, sitting on it. */
+  --surface: #ffffff;
   --menu-surface: #efedf8;
   --ink: #f2f1f5;
   --ink-muted: #a09aad;
