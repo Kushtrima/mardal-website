@@ -708,8 +708,16 @@ video {
      whichever of the two ratios wins, so the two drift apart: between about
      770 and 1330 wide the width has not yet taken over the scale, the line
      stops coming down, and the copy walks into the bars. It did, by 39px at
-     1024 — a bar through the middle of the line. */
-  --hero-ink: max(33.073vw, 45.357svh, 21.318rem);
+     1024 — a bar through the middle of the line.
+
+     The field stands on the foot of the hero at the band's own proportion, so
+     the line is the top of it: 376/1920 is 19.583% of the width, measured up
+     from the bottom. On a hero too short to give it that the field would reach
+     the top, hence the floor. */
+  --hero-ink: max(
+    0px,
+    calc(max(47rem, 100svh) - 19.583vw)
+  );
 
   position: relative;
   isolation: isolate;
@@ -1022,7 +1030,12 @@ video {
    field becomes a shorter version of itself rather than a cropped one. */
 .hero-lines {
   position: absolute;
-  inset: 0;
+  inset: auto 0 0;
+  /* The band is 1920 x 376 (BAND_TOP..BAND_FOOT in lib/hero-motion.ts). Giving
+     its box the same proportion means the film fills it exactly at every
+     width, so it stands on the foot of the hero on a phone and on a 27" alike
+     and is never cropped. */
+  aspect-ratio: 1920 / 376;
   z-index: 1;
   pointer-events: none;
 }
@@ -3581,8 +3594,11 @@ video {
     /* Same line, measured against the field this width gives it: 170% of the
        page wide, nine tenths of the hero tall, and started a tenth of the way
        down. */
-    --hero-ink: calc(
-      max(4.5rem, 10svh) + max(56.224vw, 40.821svh, 18.369rem)
+    /* The field is 170% of the page wide here, so it stands 1.7 x 19.583%
+       of the page tall. */
+    --hero-ink: max(
+      0px,
+      calc(max(45rem, 100svh) - 33.291vw)
     );
 
     min-height: max(45rem, 100svh);
@@ -3667,7 +3683,7 @@ video {
      screen this size reads as a little more air above it. */
   .hero-lines {
     right: auto;
-    top: 10%;
+    top: auto;
     bottom: 0;
     left: -35%;
     width: 170%;

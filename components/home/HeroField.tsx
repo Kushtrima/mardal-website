@@ -101,8 +101,11 @@ export function HeroField() {
   return (
     <svg
       className="hero-field"
-      viewBox={`0 0 ${HERO_FIELD.width} ${HERO_FIELD.height}`}
-      preserveAspectRatio="xMidYMin slice"
+      /* The band, not the frame — see HERO_FIELD. Its box is given the band's
+         own proportion in the stylesheet, so nothing is cropped either way;
+         YMax keeps it standing on the foot if the two ever disagree. */
+      viewBox={`0 ${HERO_FIELD.top} ${HERO_FIELD.width} ${HERO_FIELD.height}`}
+      preserveAspectRatio="xMidYMax meet"
       aria-hidden="true"
       focusable="false"
       ref={svgRef}

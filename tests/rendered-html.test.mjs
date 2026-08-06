@@ -58,7 +58,7 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /class="hero-field__box"/);
   /* Server-rendered in the two-band field, the pose the cycle hands over to
      the lattice from. */
-  assert.match(html, /class="hero-field"[^>]*viewBox="0 0 1920 1400"/);
+  assert.match(html, /class="hero-field"[^>]*viewBox="0 670 1920 376"/);
   assert.match(html, /fill="#8362b8"/);
 
   // Why Mardal

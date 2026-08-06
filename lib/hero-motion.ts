@@ -21,7 +21,34 @@ const ROWB = 865;
 /** Below the frame — where the lower row bottoms out. */
 const FOOT = 1400;
 
-export const HERO_FIELD = { width: W, height: FOOT } as const;
+/**
+ * The band every pose stands in.
+ *
+ * The lattice set it — ten rows of boxes at a 40 pitch — and the other three
+ * are fitted to it, so each pose is the same height and sits in the same place
+ * as the one before. Move these two numbers and the whole film follows.
+ */
+const BAND_TOP = 670;
+const BAND_FOOT = 1046;
+const BAND = BAND_FOOT - BAND_TOP;
+
+/**
+ * The settled field is drawn ROWA..FOOT, taller than the band, so it is mapped
+ * into it rather than given a height of its own. Derived, not typed: the two
+ * cannot drift apart.
+ */
+const BAR_SCALE = BAND / (FOOT - ROWA);
+
+/**
+ * What gets drawn: the band, not the frame.
+ *
+ * The frame is 1920 x 1400 but nothing is drawn outside the band, so showing
+ * the frame would put three quarters of an empty box on the page and leave the
+ * film floating in it. The component takes its viewBox from this, so the band
+ * is the whole of what the browser lays out and it can be sat on the foot of
+ * the hero at any width.
+ */
+export const HERO_FIELD = { width: W, top: BAND_TOP, height: BAND } as const;
 
 /** One colour per pose, carried across each hand-off. */
 const C_ENTER = "#8362b8";
@@ -148,24 +175,6 @@ function settled(b: Bar) {
     ? { x: b.x, w: b.w, top: ROWA, h: b.len ?? 0 }
     : { x: b.x, w: b.w, top: ROWB, h: FOOT - ROWB };
 }
-
-/**
- * The band every pose stands in.
- *
- * The lattice set it — ten rows of boxes at a 40 pitch — and the other three
- * are fitted to it, so each pose is the same height and sits in the same place
- * as the one before. Move these two numbers and the whole film follows.
- */
-const BAND_TOP = 670;
-const BAND_FOOT = 1046;
-const BAND = BAND_FOOT - BAND_TOP;
-
-/**
- * The settled field is drawn ROWA..FOOT, taller than the band, so it is mapped
- * into it rather than given a height of its own. Derived, not typed: the two
- * cannot drift apart.
- */
-const BAR_SCALE = BAND / (FOOT - ROWA);
 
 /**
  * How far the wave stretches and squashes a bar as it runs through the field.
