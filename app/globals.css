@@ -2089,13 +2089,19 @@ video {
   fill: var(--card-tint-bar);
 }
 
+/* The display face, as the Why Mardal card titles are. Its tracking comes with
+   it: -0.045em is drawn to hold the grotesque together and is too loose under a
+   cut this tight. Nothing here is measured in ch and the lines are broken by
+   hand in the markup, so unlike the other card titles the swap cannot move a
+   line break. The weight stays at 400, which is the only one CS Alistair
+   ships. */
 .difference-card__title {
   position: relative;
   margin: 0;
-  font-family: var(--type-display);
+  font-family: var(--type-title);
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
+  letter-spacing: var(--tracking-tight);
   line-height: var(--leading-heading);
 }
 
