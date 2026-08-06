@@ -113,8 +113,15 @@
   --service-text-action: 20px;
   --service-text-overview-title: clamp(44px, 3.6vw, 64px);
   --service-text-card-title: clamp(52px, 4.2vw, 72px);
-  --service-text-copy: 20px;
-  --service-text-copy-mobile: 18px;
+  /* Both point at the page's copy size rather than holding their own. They
+     were 20 and 18: a service card is read full-screen, which was the argument
+     for setting its copy larger than a column's. That argument does not
+     survive the copy on every other page being one size — it left the service
+     pages reading a step above the rest of the site. Kept as names because the
+     service rules ask for them by name, and kept as two because the mobile one
+     is a separate hook if the pages ever need it back. */
+  --service-text-copy: var(--text-copy);
+  --service-text-copy-mobile: var(--text-copy);
   --service-text-number: 20px;
   /* Pointed at the page's paragraph leading rather than holding a number of
      its own, so service copy cannot drift from the copy on every other page.
@@ -5551,7 +5558,7 @@ video {
   .service-offerings.is-mobile-service-stack .service-card__copy,
   .service-offerings.is-mobile-service-stack .service-card__capabilities,
   .service-offerings.is-mobile-service-stack .service-card__example {
-    font-size: 16px;
+    font-size: var(--text-copy);
     line-height: var(--service-leading-copy);
   }
 
