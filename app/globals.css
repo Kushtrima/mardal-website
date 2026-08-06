@@ -1020,6 +1020,12 @@ video {
    between "opens a page" and "moves along a row" — it should not be one
    inherited declaration away from being lost. */
 .mega-menu__arrow {
+  /* A fifth off the compact size. The scale's own next step down is `small`,
+     but that is 0.1rem against 0.17rem — a 41% drop, which is a different mark
+     rather than a smaller one. These two values sit between the two steps. */
+  --pixel-arrow-dot: 0.135rem;
+  --pixel-arrow-gap: 0.06rem;
+
   justify-self: end;
   color: var(--ink);
   opacity: 0;
