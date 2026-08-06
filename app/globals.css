@@ -87,13 +87,28 @@
      at 72px and 30px from roughly 1280px up. */
   --text-heading-xl: clamp(40px, 5.6vw, 72px);
   --text-heading: clamp(24px, 2.35vw, 30px);
-  --text-body: 18px;
+  /* Fluid too, but over a much wider run than the headers.
+
+     A header settles at roughly 1280 because it is set large enough that the
+     last stretch would be showy. Small type has the opposite problem: give it
+     the same shape and it locks at its floor for the whole of the desktop
+     range, so a window dragged from 1600 to 1000 keeps its 18px labels against
+     a layout that has lost a third of its width, and the section reads heavier
+     the narrower it gets — which is what these two are here to stop.
+
+     So the slope is set from the two ends rather than by a plain vw: 16 to 18
+     between a 900 and a 1600 window, and the same 0.286vw for the paragraph
+     size below. Both hold their floor from 900 down, where the layout starts
+     stacking and a further step down costs more than it returns. */
+  --text-body: clamp(16px, calc(13.43px + 0.286vw), 18px);
   /* Running text, split from --text-body. The two were one size, but only
      thirteen of the thirty-six rules on that token are paragraphs: the rest
      are nav links, buttons, the header call to action and the small labels,
      and those are read at a glance rather than along a line, so they keep 18
-     while the copy comes down. Change paragraph size here and nowhere else. */
-  --text-copy: 16px;
+     while the copy comes down. Change paragraph size here and nowhere else.
+     Fluid on the same slope as the size above it: 14 to 16 across the same
+     window range, so the two never drift apart as the page is resized. */
+  --text-copy: clamp(14px, calc(11.43px + 0.286vw), 16px);
   /* The home hero's own line, a step above the display size. It is the one
      heading on the site with a whole viewport to itself and nothing beside it
      to match, and at the shared size it read small against that much air. The
