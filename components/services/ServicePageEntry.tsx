@@ -15,7 +15,6 @@ export function ServicePageEntry() {
     gsap.registerPlugin(ScrollTrigger);
 
     const hero = document.querySelector<HTMLElement>("[data-service-hero]");
-    const page = document.querySelector<HTMLElement>("[data-service-page]");
     if (!hero) return;
 
     const title = hero.querySelector<HTMLElement>(
@@ -36,10 +35,6 @@ export function ServicePageEntry() {
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       gsap.set(targets, { clearProps: "all" });
-      if (page) {
-        page.style.setProperty("--service-surface", "#050505");
-        page.style.setProperty("--service-ink", "#f5f5f5");
-      }
       return;
     }
 
@@ -104,22 +99,61 @@ export function ServicePageEntry() {
         );
       }
 
-      if (page) {
-        gsap.to(page, {
-          "--service-surface": "#050505",
-          "--service-ink": "#f5f5f5",
-          ease: "none",
-          scrollTrigger: {
-            trigger: hero,
-            start: "bottom bottom",
-            end: "bottom 35%",
-            scrub: true,
-          },
-        });
-      }
+      /* The surface used to scrub from the white page to near-black as the
+         hero left. The page is black now, so there is nothing to travel to and
+         the service pages hold one ground the whole way down. The hero's own
+         entrance above is untouched. */
     }, hero);
 
+    /* The dissolve, on the same numbers as the homepage bar field: the pair
+       fades in between 12% and 62% of the hero's height, while the blur's top
+       edge travels from 34% down to -45% across the hero's full height, so the
+       blurred band grows upward as the hero leaves. Pages without the two
+       elements simply do not get it. */
+    const blur = hero.querySelector<HTMLElement>("[data-service-hero-blur]");
+    const fade = hero.querySelector<HTMLElement>("[data-service-hero-fade]");
+    let updateScrollBlur: (() => void) | null = null;
+
+    if (blur && fade) {
+      const setBlurOpacity = gsap.quickTo(blur, "opacity", {
+        duration: 0.28,
+        ease: "power2.out",
+      });
+      const setFadeOpacity = gsap.quickTo(fade, "opacity", {
+        duration: 0.32,
+        ease: "power2.out",
+      });
+      const setBlurBoundary = gsap.quickTo(blur, "--service-hero-blur-start", {
+        duration: 0.28,
+        ease: "power2.out",
+      });
+
+      updateScrollBlur = () => {
+        const heroHeight = hero.offsetHeight;
+        const start = heroHeight * 0.12;
+        const end = heroHeight * 0.62;
+        const progress = Math.min(
+          1,
+          Math.max(0, (window.scrollY - start) / (end - start)),
+        );
+        const movementProgress = Math.min(
+          1,
+          Math.max(0, (window.scrollY - start) / (heroHeight - start)),
+        );
+
+        setBlurOpacity(progress);
+        setFadeOpacity(progress);
+        setBlurBoundary(34 - movementProgress * 79);
+      };
+
+      updateScrollBlur();
+      window.addEventListener("scroll", updateScrollBlur, { passive: true });
+    }
+
     return () => {
+      if (updateScrollBlur) {
+        window.removeEventListener("scroll", updateScrollBlur);
+      }
       context.revert();
     };
   }, []);

@@ -99,6 +99,22 @@ export default function CustomSoftwarePage() {
               />
             </a>
           </Container>
+
+          {/* The hero dissolves as it is scrolled past, the same pair the
+              homepage bar field uses: a blur boundary that travels up the
+              block, and a gradient that takes what is left into the page.
+              Outside the container so both run the full width of the page,
+              the way the homepage field does. */}
+          <div
+            className="service-hero__blur"
+            aria-hidden="true"
+            data-service-hero-blur
+          />
+          <div
+            className="service-hero__fade"
+            aria-hidden="true"
+            data-service-hero-fade
+          />
         </section>
 
         <section

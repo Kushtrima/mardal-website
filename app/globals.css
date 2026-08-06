@@ -8,6 +8,25 @@
   font-display: swap;
 }
 
+/* The h1 face. One weight only — the family ships Regular, Italic and a
+   Reverse Italic, and nothing else, so there is no bold to fall back on and
+   headings must not ask for one. */
+@font-face {
+  font-family: "CS Alistair";
+  src: url("/fonts/cs-alistair-regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CS Alistair";
+  src: url("/fonts/cs-alistair-italic.woff2") format("woff2");
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Design tokens — change the visual language here, not inside page components */
 /* -------------------------------------------------------------------------- */
@@ -16,26 +35,30 @@
   --font-geist: "Geist";
 
   /* Brand and semantic colors */
-  /* The page is white; the things that sit on it — the header, the mega menu
-     and the cards — carry the tint. */
-  --canvas: #ffffff;
+  /* The page is black; the things that sit on it — the header, the mega menu
+     and the cards — keep the lavender they have always had, so they read as
+     lit panels on the page rather than as a second dark surface. Anything
+     sitting on that lavender re-derives dark ink locally; see the block below
+     the tokens. */
+  --canvas: #000000;
   --surface: #efedf8;
   --menu-surface: #efedf8;
-  --ink: #08080a;
-  --ink-muted: #5e5a69;
-  --line: rgb(8 8 10 / 72%);
-  --line-soft: rgb(8 8 10 / 16%);
-  --accent: #8362b8;
-  --accent-soft: #c7b5e3;
-  /* Darker accent for small text: --accent is only 4.12:1 on --canvas. */
-  --accent-strong: #6f4fa7;
-  --accent-contrast: #ffffff;
-  --focus: #6e4fa5;
+  --ink: #f2f1f5;
+  --ink-muted: #a09aad;
+  --line: rgb(242 241 245 / 72%);
+  --line-soft: rgb(242 241 245 / 16%);
+  --accent: #a98ad6;
+  --accent-soft: #6f5b93;
+  /* Lighter accent for small marks and art, now that the ground is black. */
+  --accent-strong: #c0a6e6;
+  --accent-contrast: #000000;
+  --focus: #b294e6;
   /* The canvas at partial strength, for the veil and the fade over the hero
-     bars — both follow the page, so both are white with the canvas.
-     --art-surface is the fill a card drawing sits at before it takes a tint. */
-  --canvas-veil: rgb(255 255 255 / 4%);
-  --canvas-fade: rgb(255 255 255 / 48%);
+     bars — both follow the page, so both are black with the canvas.
+     --art-surface is the fill a card drawing sits at before it takes a tint;
+     it follows the cards, not the page, so it stays white. */
+  --canvas-veil: rgb(0 0 0 / 4%);
+  --canvas-fade: rgb(0 0 0 / 48%);
   --art-surface: #ffffff;
 
   /* Card tints. Each is a flat panel colour and the deeper shade of itself the
@@ -52,6 +75,8 @@
   /* Typography */
   --type-body: var(--font-geist), Arial, Helvetica, sans-serif;
   --type-display: var(--font-geist), Arial, Helvetica, sans-serif;
+  /* h1 only. Everything else stays on --type-display. */
+  --type-title: "CS Alistair", var(--font-geist), Arial, Helvetica, sans-serif;
 
   /* Three sizes, and only three. Every piece of text on the site is one of
      them: the big headers that open a section, the headers inside it, and
@@ -98,6 +123,9 @@
   --leading-body: 1.55;
   --tracking-tight: -0.055em;
   --tracking-wide: 0.12em;
+  /* Capitals carry their own fit: the tight display value is drawn for
+     lowercase and closes capitals up against one another. */
+  --tracking-caps: 0.01em;
 
   /* Layout and spacing */
   /* 16px on a phone, opening to 40px by about a 1000px window and staying
@@ -143,6 +171,31 @@
   --ease-handover: cubic-bezier(0.4, 0, 0.2, 1);
   /* How long the upright copy of the rule waits before it turns. */
   --delay-cross: 800ms;
+}
+
+/* The page is black but three things on it are not: the header pill, the four
+   Why Mardal cards, and the five coloured boxes. Each re-derives the ink,
+   rules and accent it had when the whole page was white, rather than each
+   child overriding its own colour — so a light panel anywhere on the site
+   only has to join this list. */
+.site-header,
+.why-card,
+.difference-card {
+  --ink: #08080a;
+  --ink-muted: #5e5a69;
+  --line: rgb(8 8 10 / 72%);
+  --line-soft: rgb(8 8 10 / 16%);
+  --accent: #8362b8;
+  --accent-strong: #6f4fa7;
+  --accent-contrast: #ffffff;
+
+  color: var(--ink);
+}
+
+/* The footer panel is a filled accent slab: its words and its bars are both
+   drawn in --accent-contrast, which the page now sets to black. */
+.site-footer {
+  --accent-contrast: #ffffff;
 }
 
 @theme inline {
@@ -268,7 +321,7 @@ video {
 .display-heading {
   max-width: 11ch;
   margin: 0;
-  font-family: var(--type-display);
+  font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
@@ -292,7 +345,7 @@ video {
 /* Shared by every section below the hero. */
 .section-title {
   margin: 0;
-  font-family: var(--type-display);
+  font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
@@ -901,10 +954,14 @@ video {
 .hero-title {
   grid-column: 1 / span 7;
   margin: 0;
-  font-family: var(--type-display);
+  font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  /* Set in caps here rather than in the markup, so the text a screen reader
+     announces and the render test asserts stays the sentence it was written
+     as. */
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
   line-height: var(--leading-heading-xl);
 }
 
@@ -1052,7 +1109,7 @@ video {
 .why-title {
   grid-column: 2 / -1;
   margin: 0;
-  font-family: var(--type-display);
+  font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
@@ -1995,7 +2052,7 @@ video {
 /* The section's own big header, set like every other one on the site. */
 .industries-title {
   margin: 0;
-  font-family: var(--type-display);
+  font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
@@ -2397,7 +2454,7 @@ video {
 
 .contact-title {
   margin: 0;
-  font-family: var(--type-display);
+  font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
@@ -2566,7 +2623,7 @@ video {
 .site-footer__title {
   max-width: none;
   margin: 0;
-  font-family: var(--type-display);
+  font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
@@ -3534,11 +3591,11 @@ video {
   }
 
   .service-page .site-header {
-    background: #fff;
+    background: var(--canvas);
   }
 
   .service-page .site-header.site-header--mobile-menu-open {
-    background: #050505;
+    background: var(--canvas);
   }
 
   .site-nav {
@@ -4260,17 +4317,54 @@ video {
   background: var(--service-surface);
 }
 
-/* The hero paints its own white, but the band the header sits in does not, so
-   it showed the surface already darkening while the header was still on
-   screen. The mobile layout has carried this rule from the start; desktop
-   never got it. */
+/* The band the header sits in follows the page rather than the service
+   surface. It was added when the surface still scrubbed from white to black
+   under a stationary header; the surface holds one colour now, but the rule
+   stays so the band never diverges from the page again. */
 .service-page .site-header {
   background: var(--canvas);
 }
 
 .service-hero {
+  position: relative;
   color: var(--ink);
   background: var(--canvas);
+}
+
+/* The dissolve, lifted from the homepage bar field: a blurred pane whose top
+   edge travels up the hero as it is scrolled past, and a gradient that takes
+   whatever is still legible into the page. Both are driven from
+   ServicePageEntry and sit at 0 opacity until it moves them. */
+.service-hero__blur {
+  --service-hero-blur-start: 34;
+
+  position: absolute;
+  z-index: 4;
+  inset: calc(var(--service-hero-blur-start) * 1%) 0 0;
+  backdrop-filter: blur(0.75rem);
+  -webkit-backdrop-filter: blur(0.75rem);
+  background: var(--canvas-veil);
+  mask-image: linear-gradient(to bottom, transparent, #000 52%, #000);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 52%, #000);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.service-hero__fade {
+  position: absolute;
+  z-index: 5;
+  inset: 40% 0 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0,
+    var(--canvas-fade) 34%,
+    var(--canvas) 86%,
+    var(--canvas) 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
 }
 
 .service-hero__inner {
@@ -4298,7 +4392,7 @@ video {
 .service-hero__title {
   max-width: 13.5ch;
   margin: 0;
-  font-family: var(--type-display);
+  font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
@@ -4539,7 +4633,7 @@ video {
 .service-journey__current-title {
   max-width: 100%;
   margin: 0;
-  font-family: var(--type-display);
+  font-family: var(--type-title);
   font-size: var(--service-text-card-title);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
@@ -4728,7 +4822,7 @@ video {
 .service-cta__title {
   max-width: 20ch;
   margin: 0 auto;
-  font-family: var(--type-display);
+  font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
