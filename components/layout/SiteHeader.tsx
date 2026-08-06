@@ -27,7 +27,6 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
   const mobileIndexRef = useRef<HTMLDivElement>(null);
   const mobileDetailRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<number | undefined>(undefined);
-  const megaMenuWasOpenRef = useRef(false);
   const [activeMenu, setActiveMenu] = useState<NavigationKey>("services");
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -67,67 +66,61 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    const menuWasOpen = megaMenuWasOpenRef.current;
-    megaMenuWasOpenRef.current = megaMenuOpen;
-
     gsap.killTweensOf([menu, entries]);
 
     if (reducedMotion) {
       gsap.set(menu, {
         autoAlpha: megaMenuOpen ? 1 : 0,
         pointerEvents: megaMenuOpen ? "auto" : "none",
-        y: 0,
       });
+      gsap.set(entries, { autoAlpha: 1, clipPath: "none" });
       return;
     }
 
-    if (megaMenuOpen) {
-      gsap.set(menu, { pointerEvents: "auto", visibility: "visible" });
+    /* The panel does not move. It is simply there, and the words are uncovered
+       left to right inside it, one after the next — the same direction the
+       footer rules wipe in, so the two read as one idea.
 
-      if (menuWasOpen) {
-        gsap.set(menu, {
-          autoAlpha: 1,
-          scaleY: 1,
-          y: 0,
-        });
-      } else {
-        gsap.fromTo(
-          menu,
-          { autoAlpha: 0, scaleY: 0.985, y: -12 },
-          {
-            autoAlpha: 1,
-            duration: 0.42,
-            ease: "power3.out",
-            scaleY: 1,
-            transformOrigin: "top center",
-            y: 0,
-          },
-        );
-      }
+       Clipped rather than faded or slid: a fade makes a word arrive everywhere
+       at once and says nothing about direction, and a slide moves the word off
+       the line it belongs on. An inset from the right leaves each name exactly
+       where it will end up and only chooses when you can see it. */
+    if (megaMenuOpen) {
+      gsap.set(menu, {
+        autoAlpha: 1,
+        pointerEvents: "auto",
+        visibility: "visible",
+      });
 
       gsap.fromTo(
         entries,
-        { autoAlpha: 0, y: menuWasOpen ? 8 : 12 },
+        { autoAlpha: 1, clipPath: "inset(0 100% 0 0)" },
         {
-          autoAlpha: 1,
-          delay: menuWasOpen ? 0 : 0.06,
-          duration: menuWasOpen ? 0.52 : 0.44,
-          ease: "power2.out",
-          stagger: menuWasOpen ? 0.045 : 0.035,
-          y: 0,
+          clipPath: "inset(0 0% 0 0)",
+          /* Long enough to be read as a wipe rather than a flash, and eased at
+             both ends so no word snaps into place. */
+          duration: 0.55,
+          ease: "power2.inOut",
+          /* Seven items is the longest menu, so the last one starts at 0.33s
+             and the run is done by about 0.88s. The first three names are
+             readable inside 400ms, which is what matters: you are choosing
+             from the top of the list while the foot of it is still arriving. */
+          stagger: 0.055,
         },
       );
       return;
     }
 
+    /* Out on a fade, not a wipe. Reversing the uncover would draw the eye back
+       across words that are on their way out, and the panel has no movement of
+       its own to carry the exit. */
     gsap.to(menu, {
       autoAlpha: 0,
-      duration: 0.28,
+      duration: 0.2,
       ease: "power2.out",
       onComplete: () => {
-        gsap.set(menu, { pointerEvents: "none", y: -8 });
+        gsap.set(menu, { pointerEvents: "none" });
       },
-      y: -8,
     });
   }, [activeMenu, megaMenuOpen]);
 
