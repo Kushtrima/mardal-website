@@ -3298,6 +3298,15 @@ video {
    a single child against. */
 .site-footer__top-link {
   position: relative;
+  /* Lifted clear of the bar field. Its row ends exactly where the field
+     begins — the panel reserves 16rem for the bars and they stand 18.18% of
+     its width, which past about 1400 is the taller of the two, so the disc was
+     sitting 3px inside them. Nudged rather than spaced, because the row's
+     height feeds the panel's, and the field hangs off the panel's foot: give
+     the row a margin and the panel grows, the field drops with it, and the
+     gap comes back the same. Offsetting the disc alone moves it into space
+     that is already empty and leaves that chain alone. */
+  bottom: clamp(1.5rem, 3cqi, 2.5rem);
   display: inline-flex;
   width: 2.25rem;
   aspect-ratio: 1;
