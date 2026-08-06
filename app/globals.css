@@ -959,22 +959,7 @@ video {
   line-height: var(--leading-body);
 }
 
-/* The foot of the panel. margin-top: auto is gone with the column it used to
-   be pinned inside — it is the last child now, so the list above it sets where
-   it falls, and the panel is only as tall as the two of them together. */
-.mega-menu__view-all {
-  display: inline-flex;
-  width: fit-content;
-  align-items: center;
-  gap: 0.65rem;
-  padding-block: 0.45rem;
-  font-size: var(--text-body);
-  font-weight: var(--weight-medium);
-}
 
-.mega-menu__view-all-arrow {
-  color: var(--accent);
-}
 
 /* Filled down the column and then across, so the reading order runs 01-04 then
    05-07 rather than snaking left to right across the panel.
@@ -998,30 +983,19 @@ video {
   list-style: none;
 }
 
-/* No rules between the rows. They were separating a dense list in a shallow
-   box; the space between the lines does that now, and the rules only made a
-   menu read like a table. The three columns pack to the start rather than
-   stretching, so the arrow stays beside the word it belongs to. */
+/* Two columns now the index has gone: the name and its mark. They pack to the
+   start rather than stretching, so the mark stays beside the word it belongs to
+   instead of drifting to the panel's edge. No rules between the rows either —
+   the space between the lines is the separation, and the rules made a menu read
+   like a table. */
 .mega-menu__link {
   display: grid;
-  grid-template-columns: auto auto 1.6rem;
+  grid-template-columns: auto 1.6rem;
   justify-content: start;
   gap: clamp(0.6rem, 1.2vw, 1.1rem);
   align-items: baseline;
   padding-block: clamp(0.25rem, 0.6vw, 0.55rem);
   transition: opacity var(--duration-slow) var(--ease-standard);
-}
-
-/* An index, not a rank, so it is held well under the name it counts. Set from
-   the ink at a fraction rather than from --ink-muted, which is #a09aad and
-   reads lavender on this black. */
-.mega-menu__number {
-  align-self: center;
-  color: rgb(242 241 245 / 38%);
-  font-size: var(--text-small);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.08em;
-  transition: color var(--duration-base) var(--ease-standard);
 }
 
 /* The display face, at the section-heading size rather than the hero one: this
@@ -1036,10 +1010,16 @@ video {
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
+/* The diagonal is pinned here rather than left to the direction class alone.
+   .pixel-arrow--up-right carries the rotation, but this mark sits in a grid
+   cell inside an animated panel, and the rotation is the whole difference
+   between "opens a page" and "moves along a row" — it should not be one
+   inherited declaration away from being lost. */
 .mega-menu__arrow {
   justify-self: end;
   color: var(--ink);
   opacity: 0;
+  transform: rotate(-45deg);
   transition:
     color var(--duration-base) var(--ease-standard),
     opacity var(--duration-base) var(--ease-standard);
@@ -1053,9 +1033,6 @@ video {
   opacity: 1;
 }
 
-.mega-menu__link:hover .mega-menu__number {
-  color: var(--accent);
-}
 
 .mega-menu__link:hover .mega-menu__arrow {
   color: var(--ink);
