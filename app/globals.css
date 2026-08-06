@@ -927,6 +927,11 @@ video {
    From there it is pulled up by the header's own top padding to reach the top
    of the window, and out by the page gutter to reach its right edge. */
 .mega-menu {
+  /* How far the ground reaches past the links on the left. Named because two
+     declarations have to agree on it: the offset that pushes the edge out and
+     the padding that pulls the names back. */
+  --menu-ground: 1.25rem;
+
   position: absolute;
   grid-row: 1;
   grid-column: 2 / -1;
@@ -936,7 +941,12 @@ video {
      6px shy of the edge when only the header's padding was subtracted. */
   top: calc(-1 * (clamp(1rem, 4.5vh, 4.5rem) + 0.3rem));
   right: calc(-1 * (var(--page-gutter) + 0.4rem));
-  left: 0;
+  /* Out past the links by --menu-ground, and padded back in by the same amount
+     so the names stay on the nav's own left edge. That leaves a band of ground
+     ahead of the list rather than cutting the page off flush against the first
+     letter — the only place the panel's edge is visible at all, since the page
+     behind it is the same black. */
+  left: calc(-1 * var(--menu-ground));
   height: 100svh;
   /* Clear of the bar drawn over it: the header's padding, the bar itself, and
      then the space the reference leaves before the first name. */
@@ -944,7 +954,7 @@ video {
       clamp(1rem, 4.5vh, 4.5rem) + clamp(3.45rem, 4.5vw, 3.9rem) +
         clamp(1.75rem, 5vh, 3.5rem)
     )
-    0 0;
+    0 0 var(--menu-ground);
   overflow: hidden;
   border: 0;
   border-radius: 0;
@@ -1024,7 +1034,7 @@ video {
 .mega-menu__label {
   display: inline-block;
   font-family: var(--type-display);
-  font-size: clamp(1.1rem, 1.35vw, 1.3rem);
+  font-size: clamp(1.25rem, 1.55vw, 1.5rem);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
   line-height: var(--leading-heading);
