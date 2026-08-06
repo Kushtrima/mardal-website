@@ -87,6 +87,21 @@ export const menu = [
 
 export const contactEmail = "info@mardal.co";
 
+/**
+ * The line under the hero: the two halves of how the work is made.
+ *
+ * The heading is one sentence broken into three pieces so the plus can be set
+ * between them as a drawn mark rather than a character. `spoken` is what a
+ * screen reader is given in place of that mark, since a CSS shape says nothing.
+ */
+export const fusion = {
+  left: ["Artificial", "Intelligence"],
+  right: ["Human", "Creativity"],
+  spoken: "Artificial Intelligence plus Human Creativity",
+  copy:
+    "We unite the power and precision of artificial intelligence with the imagination and originality of human creativity, creating technology that thinks smarter, feels more human, and unlocks new possibilities.",
+} as const;
+
 export const whyMardal = {
   label: "Why Mardal?",
   titleLines: ["Build smarter.", "Scale faster."],

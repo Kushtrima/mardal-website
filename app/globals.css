@@ -1099,6 +1099,87 @@ video {
   padding-top: var(--section-gap);
 }
 
+/* Artificial Intelligence + Human Creativity.
+
+   The three columns are sized to their words and pushed apart, rather than
+   given a half of the line each. Equal halves put the mark on the container's
+   centre line, which is right only if both sides fill their half — and in this
+   face they do not. "Intelligence" sets 260px where the same word sets 355px in
+   the grotesque this was drawn in, so the left half stood barely half full and
+   opened a 427px hole before the plus against 128px after it. Pushed apart, the
+   two halves hold the outer margins, the plus takes the midpoint of whatever is
+   left between them, and the composition stays balanced however long the words
+   are. Both halves set flush left inside their own block, so the second reads
+   as a second statement rather than the tail of the first. */
+.fusion-section {
+  position: relative;
+  background: var(--canvas);
+  padding-block: var(--section-space-lg);
+}
+
+.fusion-title {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  justify-content: space-between;
+  gap: clamp(1.5rem, 4vw, 4rem);
+  align-items: center;
+  margin: 0;
+  font-family: var(--type-title);
+  font-size: var(--text-heading-xl);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-heading-xl);
+}
+
+.fusion-title__line {
+  display: block;
+}
+
+/* As tall as the two lines it stands beside — the height is taken from the
+   leading rather than typed, so the mark cannot come loose from the type. The
+   arms are a fraction of that height, thin enough to read as drawn by the same
+   hand as a 430-weight face rather than as a heavy glyph dropped in. */
+.fusion-plus {
+  --fusion-plus-size: calc(2 * var(--leading-heading-xl) * 1em);
+  --fusion-plus-arm: calc(var(--fusion-plus-size) * 0.088);
+
+  position: relative;
+  width: var(--fusion-plus-size);
+  height: var(--fusion-plus-size);
+}
+
+.fusion-plus::before,
+.fusion-plus::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  background: currentcolor;
+  content: "";
+}
+
+.fusion-plus::before {
+  width: 100%;
+  height: var(--fusion-plus-arm);
+}
+
+.fusion-plus::after {
+  width: var(--fusion-plus-arm);
+  height: 100%;
+}
+
+/* Set to a measure rather than the full width. The heading above it is broken
+   by hand into four short lines, and a paragraph run edge to edge under that
+   reads as a different document; held to a measure the two belong together. */
+.fusion-copy {
+  max-width: 58rem;
+  margin: clamp(3rem, 6vw, 6rem) 0 0;
+  font-size: var(--text-heading);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.025em;
+  line-height: var(--leading-heading);
+}
+
 .why-section {
   position: relative;
   background: var(--canvas);
@@ -3680,6 +3761,16 @@ video {
       )
     );
     margin-left: 30%;
+  }
+
+  /* Side by side, each half would be under 10ch wide here and every line would
+     break. Stacked, the plus stops being a join between two columns and becomes
+     the hinge the second half turns on, so it sits flush left with the type
+     rather than centred over nothing. */
+  .fusion-title {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    gap: clamp(1rem, 3vw, 1.75rem);
   }
 
   /* Wider than the screen so the bars still read at this size, and started a

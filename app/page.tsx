@@ -1,5 +1,6 @@
 import { CardBarsHover } from "../components/home/CardBarsHover";
 import { DifferenceSection } from "../components/home/DifferenceSection";
+import { FusionSection } from "../components/home/FusionSection";
 import { Hero } from "../components/home/Hero";
 import { IndustriesSection } from "../components/home/IndustriesSection";
 import { ProductsSection } from "../components/home/ProductsSection";
@@ -15,6 +16,7 @@ export default function Home() {
 
       <main id="main-content">
         <Hero />
+        <FusionSection />
         <WhyMardal />
         <IndustriesSection />
         <DifferenceSection />

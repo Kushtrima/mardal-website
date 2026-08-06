@@ -303,7 +303,19 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /data-reveal-item/);
   // Every section on the page is one, including Why Mardal.
   assert.match(html, /class="why-section"[^>]*data-route-section/);
-  assert.equal((html.match(/<section class="[^"]*"[^>]*data-route-section/g) ?? []).length, 4);
+  assert.equal((html.match(/<section class="[^"]*"[^>]*data-route-section/g) ?? []).length, 5);
+
+  // Artificial Intelligence + Human Creativity, under the hero.
+  assert.match(html, /class="fusion-section"[^>]*data-route-section/);
+  assert.match(html, /Artificial<\/span>/);
+  assert.match(html, /Intelligence<\/span>/);
+  assert.match(html, /Human<\/span>/);
+  assert.match(html, /Creativity<\/span>/);
+  assert.match(html, /unlocks new possibilities\./);
+  // The plus is drawn, not typed, so it has to stay out of the accessible tree
+  // and the heading has to carry its own spoken name in its place.
+  assert.match(html, /class="fusion-plus"[^>]*aria-hidden="true"/);
+  assert.match(html, /aria-label="Artificial Intelligence plus Human Creativity"/);
 
   // The isometric drawings did not come back with the section.
   assert.doesNotMatch(html, /class="iso-art"/);
