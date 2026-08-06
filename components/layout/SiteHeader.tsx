@@ -380,19 +380,6 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
               <p className="mega-menu__description" data-mega-entry>
                 {activeItem.description}
               </p>
-              <a
-                className="mega-menu__view-all"
-                href={activeItem.href}
-                data-mega-entry
-                onClick={() => setMegaMenuOpen(false)}
-              >
-                View all {activeItem.label}
-                <PixelArrow
-                  className="mega-menu__view-all-arrow"
-                  direction="up-right"
-                  size="small"
-                />
-              </a>
             </div>
 
             <ul className="mega-menu__links">
@@ -416,6 +403,23 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                 </li>
               ))}
             </ul>
+
+            {/* Out of the meta block and down here: on a sheet this tall the
+                way through to the whole section belongs after the list it
+                summarises, not stranded under the description. */}
+            <a
+              className="mega-menu__view-all"
+              href={activeItem.href}
+              data-mega-entry
+              onClick={() => setMegaMenuOpen(false)}
+            >
+              View all {activeItem.label}
+              <PixelArrow
+                className="mega-menu__view-all-arrow"
+                direction="up-right"
+                size="small"
+              />
+            </a>
           </div>
         </nav>
       </Container>

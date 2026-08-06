@@ -222,11 +222,10 @@
    rules and accent it had when the whole page was white, rather than each
    child overriding its own colour — so a light panel anywhere on the site
    only has to join this list. */
-/* The header used to be on this list, when its bar was a light slab. The bar
-   is gone and its words are on the page's own black now, so it takes the page's
-   tokens — but the mega menu it opens is still a light panel and still needs
-   them, so the scope moves down to the panel rather than being dropped. */
-.mega-menu,
+/* The header was on this list while its bar was a light slab, and the mega menu
+   after it, while the menu was a light panel dropping out of a dark bar. Both
+   are on the page's own black now, so neither belongs here and the light cards
+   are what is left. */
 .why-card,
 .difference-card {
   --ink: #08080a;
@@ -798,9 +797,18 @@ video {
   border: 0;
   border-radius: var(--shape-md);
   /* No slab. The bar sits straight on the page, so the padding and the radius
-     now only shape the mega menu that drops out of it and the mobile sheet
-     that fills from it, both of which paint their own ground. */
+     now only shape the mobile sheet that fills from it, which paints its own
+     ground. */
   background: transparent;
+}
+
+/* The bar's own contents ride above the sheet. The sheet comes after them in
+   the markup, so without this it would paint over the very words that open and
+   close it — and the whole of its close affordance is that the word you clicked
+   is still there to click again. */
+.site-nav > :not(.mega-menu) {
+  position: relative;
+  z-index: 1;
 }
 
 .brand {
@@ -900,30 +908,67 @@ video {
   line-height: 1;
 }
 
+/* The menu is a sheet over the page, not a panel hanging off the bar.
+
+   It was a 1424x433 slab with a fixed 384px floor, which meant a menu of one
+   item — Case Studies has one — got the same acreage as a menu of seven, and
+   its left column carried 116px of ink in 433px of height with a 245px hole in
+   the middle of it. Filling the glass instead turns that emptiness into the
+   point: the list is the page while it is open.
+
+   Everything inside is measured in vh rather than vw, which is the whole trick
+   of making this fit. The constraint here is height, not width: seven items
+   have to clear the bar above them and the way-through below them on a laptop
+   as well as a monitor. Sized in vh, the type and the spacing give way together
+   as the window gets shorter, and the sheet never has to scroll — the overflow
+   below is a backstop, not a plan.
+
+   It sits under the bar's own contents rather than over them, so the logo, the
+   links and the call to action stay live: you close it with the same word that
+   opened it. */
 .mega-menu {
+  /* Absolute, not fixed, and this is not a preference.
+
+     GSAP leaves an identity transform on .site-nav after the header's entrance,
+     and ScrollSmoother keeps a matrix3d on .smooth-content, which the header
+     lives inside. A transformed ancestor becomes the containing block for a
+     fixed descendant, so `position: fixed; inset: 0` here resolved against the
+     bar and gave a 1291x167 box rather than the window. Either transform alone
+     is enough to do it, and both are owned by libraries.
+
+     So the sheet is anchored to the bar and sized in viewport units instead:
+     pulled up by the header's own top padding and out by the page gutter to
+     land on the window's corner, then given the window's measurements. The bar
+     is not sticky, so the menu can only be opened while the page is at the top,
+     which is the one position where the two agree. */
   position: absolute;
-  top: calc(100% + 0.55rem);
-  right: 0;
-  left: 0;
-  display: grid;
-  grid-template-columns: minmax(15rem, 0.78fr) minmax(25rem, 1.5fr);
-  min-height: 24rem;
-  padding: clamp(1.5rem, 2.4vw, 2.75rem);
-  overflow: hidden;
+  top: calc(-1 * clamp(1rem, 4.5vh, 4.5rem));
+  left: calc(-1 * var(--page-gutter));
+  width: 100vw;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: calc(
+      clamp(1rem, 4.5vh, 4.5rem) + clamp(3.45rem, 4.5vw, 3.9rem) +
+        clamp(1.25rem, 4vh, 3rem)
+    )
+    var(--page-gutter) clamp(1.25rem, 4vh, 3rem);
+  overflow-y: auto;
   border: 0;
-  border-radius: var(--shape-md);
-  background: var(--menu-surface);
+  border-radius: 0;
+  background: var(--canvas);
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
 }
 
+/* The head of the sheet. No rule beside it any more — it is above the list
+   rather than next to it, so the border that used to divide two columns has
+   nothing left to divide. */
 .mega-menu__meta {
   display: flex;
-  max-width: 21rem;
+  max-width: 34ch;
   flex-direction: column;
-  padding-right: clamp(1.5rem, 3vw, 3.5rem);
-  border-right: 1px solid var(--line-soft);
 }
 
 .mega-menu__eyebrow {
@@ -946,12 +991,14 @@ video {
   line-height: var(--leading-body);
 }
 
+/* The foot of the sheet. margin-top: auto is gone with the column it used to
+   be pinned inside — it is the last child of the sheet now, so the list above
+   it does the pushing. */
 .mega-menu__view-all {
   display: inline-flex;
   width: fit-content;
   align-items: center;
   gap: 0.65rem;
-  margin-top: auto;
   padding-block: 0.45rem;
   font-size: var(--text-body);
   font-weight: var(--weight-medium);
@@ -961,44 +1008,58 @@ video {
   color: var(--accent);
 }
 
+/* Centred in what is left between the head and the way-through, so a menu of
+   one and a menu of seven both sit on the sheet's optical middle instead of
+   one of them starting high and trailing off. */
 .mega-menu__links {
-  align-self: stretch;
-  margin: 0;
-  padding: 0 0 0 clamp(1.5rem, 3vw, 3.5rem);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  margin: clamp(1.5rem, 5vh, 4rem) 0;
+  padding: 0;
   list-style: none;
 }
 
-.mega-menu__links li {
-  border-bottom: 1px solid var(--line-soft);
-}
-
-.mega-menu__links li:last-child {
-  border-bottom: 0;
-}
-
+/* No rules between the rows. They were doing the work of separating a dense
+   list in a shallow box; at this size the space between the lines is the
+   separation, and the rules only made a menu read like a table. */
+/* The row stays full width so the target is the whole line, but its three
+   columns are packed to the start rather than stretched across it. Stretched,
+   the arrow sat at the far edge of the sheet — a thousand pixels from the word
+   it belonged to, reading as furniture rather than as part of the link. */
 .mega-menu__link {
   display: grid;
-  grid-template-columns: 2.5rem minmax(0, 1fr) 2.4rem;
-  gap: 0.75rem;
-  align-items: center;
-  min-height: clamp(3.5rem, 4.75vw, 5.25rem);
+  grid-template-columns: auto auto 2.4rem;
+  justify-content: start;
+  gap: clamp(0.75rem, 2vw, 1.75rem);
+  align-items: baseline;
+  padding-block: clamp(0.2rem, 0.9vh, 0.7rem);
   transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
+/* An index, not a rank, so it is held well under the name it counts. Set from
+   the ink at a fraction rather than from --ink-muted, which is #a09aad and
+   reads lavender on this black. */
 .mega-menu__number {
-  color: var(--ink-muted);
-  font-size: var(--text-body);
+  align-self: center;
+  color: rgb(242 241 245 / 38%);
+  font-size: var(--text-small);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.08em;
   transition: color var(--duration-base) var(--ease-standard);
 }
 
+/* The display face, at the size the sheet can afford. Sized in vh against the
+   worst case — seven items, the head above and the way-through below — so the
+   longest menu still clears a short laptop window without the sheet scrolling.
+   Weight stays 400: CS Alistair ships one. */
 .mega-menu__label {
-  font-family: var(--type-display);
-  font-size: var(--text-heading);
+  font-family: var(--type-title);
+  font-size: clamp(1.35rem, 4.6vh, 2.9rem);
   font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.06;
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
