@@ -157,8 +157,12 @@
   /* The one panel on the page: the footer. Barely softened — the reference
      rounds its 1084-wide panel by 6px. */
   --shape-panel: 0.5rem;
-  /* Hairlines drawn on the accent rather than on the page. */
-  --panel-line: rgb(255 255 255 / 26%);
+  /* Hairlines drawn on the accent rather than on the page: the strokes between
+     the legal links, and the rule above the contact block. Black now, with the
+     rest of the panel's content. Kept at 26% so they stay hairlines and do not
+     start competing with the words they separate — and black at 26% carries
+     further on this purple than white at 26% did, so they read no fainter. */
+  --panel-line: rgb(0 0 0 / 26%);
   --radius-full: 999px;
   --radius-circle: 50%;
   --shadow-soft: 0 1rem 3rem rgb(21 21 21 / 8%);
@@ -3315,17 +3319,22 @@ video {
   content: "";
 }
 
-/* Everything on the panel is white, so hover dips rather than recolours:
-   there is no second colour up here that would still read. */
+/* Everything on the panel is one colour, so a link hover dips rather than
+   recolours: there is no second colour up here that would still read. The way
+   back up is the exception — it is a target, not a word, so it fills. */
 @media (hover: hover) {
   .site-footer__link:hover,
   .site-footer__email:hover {
     opacity: 0.72;
   }
 
+  /* Fills with the panel's own ink and hands the mark back the accent, so the
+     disc inverts against the panel rather than being told a colour. It was
+     written as #fff either side, which is what made it a white disc after the
+     content went black. */
   .site-footer__top-link:hover {
-    border-color: #fff;
-    background: #fff;
+    border-color: var(--accent-contrast);
+    background: var(--accent-contrast);
     color: var(--accent);
     opacity: 1;
   }
