@@ -2890,9 +2890,39 @@ video {
 }
 
 .site-footer__link {
+  position: relative;
   font-size: var(--text-small);
   letter-spacing: -0.02em;
   transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+/* The rule that wipes in under a footer link.
+
+   Held at the foot of the TEXT, not of the box: these links carry 0.6875rem of
+   padding above and below to make a real tap target, so bottom: 0 would draw
+   the line 11px clear of the words and read as belonging to the row rather
+   than to the link. The offset is that padding, written as the same value.
+
+   Scaled rather than sized, so the compositor moves it and the layout is never
+   asked to. The origin is what gives it direction: it grows from the left on
+   the way in, and because the resting rule origins right, it retracts to the
+   right on the way out rather than rewinding back the way it came. */
+.site-footer__link::after {
+  position: absolute;
+  right: 0;
+  bottom: 0.6875rem;
+  left: 0;
+  height: 1px;
+  background: currentcolor;
+  content: "";
+  transform: scaleX(0);
+  transform-origin: right;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .site-footer__link::after {
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
 }
 
 /* Under the rule: the mark at one end, the way back up at the other. This row
@@ -3352,13 +3382,21 @@ video {
   content: "";
 }
 
-/* Everything on the panel is one colour, so a link hover dips rather than
-   recolours: there is no second colour up here that would still read. The way
-   back up is the exception — it is a target, not a word, so it fills. */
+/* Everything on the panel is one colour, so a hover cannot recolour: there is
+   no second colour up here that would still read. The column and legal links
+   draw a rule instead. The address keeps the dip — it is set at heading size
+   with an icon beside it, and a rule under it would read as a border on the
+   pair rather than as an underline. The way back up fills, being a target
+   rather than a word. */
 @media (hover: hover) {
-  .site-footer__link:hover,
   .site-footer__email:hover {
     opacity: 0.72;
+  }
+
+  /* The one place the origin flips: entering, it grows from the left. */
+  .site-footer__link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
   }
 
   /* Fills with the panel's own ink and hands the mark back the accent, so the
