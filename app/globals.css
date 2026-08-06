@@ -2919,9 +2919,16 @@ video {
   transform-origin: right;
 }
 
+/* Slower, and eased at both ends rather than one.
+
+   --ease-standard is cubic-bezier(0.22, 1, 0.36, 1): it leaves at full speed
+   and spends the rest of its time slowing down, which is right for something
+   answering a click but reads as a snap followed by a drift on a line this
+   short. The handover curve starts from nothing, and the rule draws itself at
+   an even rate instead. */
 @media (prefers-reduced-motion: no-preference) {
   .site-footer__link::after {
-    transition: transform var(--duration-base) var(--ease-standard);
+    transition: transform var(--duration-slow) var(--ease-handover);
   }
 }
 
