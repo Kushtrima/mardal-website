@@ -1190,6 +1190,11 @@ video {
    heading above it sets. */
 .fusion-copy {
   margin: clamp(3rem, 6vw, 6rem) 0 0;
+  /* Justified, so the paragraph squares off against the block edges the
+     heading above it sets. The last line is left alone, which is the default
+     and the only sane reading — stretching four words across 700px would be a
+     worse fault than the ragged edge it fixes. */
+  text-align: justify;
   font-size: var(--text-heading);
   font-weight: var(--weight-body);
   letter-spacing: -0.025em;
