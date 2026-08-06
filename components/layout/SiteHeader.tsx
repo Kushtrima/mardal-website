@@ -13,7 +13,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "../ui/Button";
 import { PixelArrow } from "../ui/PixelArrow";
 import { Container } from "./Container";
-import { menu } from "../../content/home";
+import { footer, menu } from "../../content/home";
 
 type NavigationKey = (typeof menu)[number]["key"];
 
@@ -379,6 +379,26 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                 </li>
               ))}
             </ul>
+
+            {/* The same line the footer carries, in the corner the panel
+                leaves empty. It is the one place these can be reached without
+                first travelling the whole page. */}
+            <div className="mega-menu__legal" data-mega-entry>
+              <span className="mega-menu__copy">
+                {`© ${new Date().getFullYear()} Mardal`}
+              </span>
+
+              {footer.legal.map((link) => (
+                <a
+                  className="mega-menu__legal-link"
+                  href={link.href}
+                  key={link.href}
+                  onClick={() => setMegaMenuOpen(false)}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
           </div>
         </nav>
       </Container>
