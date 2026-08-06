@@ -993,7 +993,11 @@ video {
   grid-template-columns: auto 1.6rem;
   justify-content: start;
   gap: clamp(0.6rem, 1.2vw, 1.1rem);
-  align-items: baseline;
+  /* Centred, not baseline-aligned. On a baseline the mark sat on the line the
+     letters stand on, and since it is a square grid of dots turned 45 degrees,
+     everything below its own centre then hung under the word — which is what
+     made it read as falling away from the name rather than following it. */
+  align-items: center;
   padding-block: clamp(0.25rem, 0.6vw, 0.55rem);
   transition: opacity var(--duration-slow) var(--ease-standard);
 }
