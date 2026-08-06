@@ -375,11 +375,6 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                     onClick={() => setMegaMenuOpen(false)}
                   >
                     <span className="mega-menu__label">{item.label}</span>
-                    <PixelArrow
-                      className="mega-menu__arrow"
-                      direction="up-right"
-                      size="compact"
-                    />
                   </a>
                 </li>
               ))}

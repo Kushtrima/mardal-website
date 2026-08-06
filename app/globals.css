@@ -802,6 +802,16 @@ video {
   background: transparent;
 }
 
+/* The bar rides on the open panel rather than under it. The panel reaches the
+   top of the window and comes after the bar in the markup, so without this it
+   would paint over the very words that open and close it — and the whole of
+   its close affordance is that the word you clicked is still there to click
+   again. */
+.site-nav > :not(.mega-menu) {
+  position: relative;
+  z-index: 1;
+}
+
 
 .brand {
   display: inline-flex;
@@ -900,30 +910,44 @@ video {
   line-height: 1;
 }
 
-/* A panel that drops from the bar, on the page's own black, holding the list
-   and nothing else.
+/* A ground that fills the page from the navigation rightward, with the bar
+   sitting on top of it rather than above it.
 
-   It used to be a light slab with a fixed 384px floor, so a menu of one item —
-   Case Studies has one — got the same acreage as a menu of seven, and its left
-   column carried 116px of ink in 433px of height with a 245px hole in the
-   middle. It was also the last light surface in a header that had gone black.
-   Now it takes the canvas with a hairline around it, and its height is whatever
-   its contents come to: one item is a small box. The flex column went with the
-   eyebrow and the sentence under it — with one child left there is nothing to
-   stack or space.
+   Not a card: no border, no corner, no drop. It runs from the top of the window
+   to the bottom and from the first nav link to the right edge, so the only
+   thing that says where it begins is the page still showing to the left of it.
 
-   No transform tricks needed here, unlike the full-window version this replaces
-   — it is positioned against the bar, which is exactly what an absolute box
-   inside .site-nav resolves against. */
+   The left edge is the whole trick, and it comes from the grid rather than a
+   number. .site-nav lays the bar out as brand | links | call to action, and an
+   absolutely positioned child of a grid that is given a grid area takes THAT
+   area as its containing block — so `grid-column: 2 / -1` means "start where
+   the links start", whatever the brand happens to measure at this width. A
+   typed offset would have to be re-guessed at every breakpoint.
+
+   From there it is pulled up by the header's own top padding to reach the top
+   of the window, and out by the page gutter to reach its right edge. */
 .mega-menu {
   position: absolute;
-  top: calc(100% + 0.55rem);
-  right: 0;
+  grid-row: 1;
+  grid-column: 2 / -1;
+  /* The grid area is .site-nav's CONTENT box, so reaching the window's corner
+     means clearing the bar's own padding as well as the header's: 0.3rem off
+     the top and 0.4rem off the right, which is what left the ground 5px low and
+     6px shy of the edge when only the header's padding was subtracted. */
+  top: calc(-1 * (clamp(1rem, 4.5vh, 4.5rem) + 0.3rem));
+  right: calc(-1 * (var(--page-gutter) + 0.4rem));
   left: 0;
-  padding: clamp(1.5rem, 2.4vw, 2.75rem);
+  height: 100svh;
+  /* Clear of the bar drawn over it: the header's padding, the bar itself, and
+     then the space the reference leaves before the first name. */
+  padding: calc(
+      clamp(1rem, 4.5vh, 4.5rem) + clamp(3.45rem, 4.5vw, 3.9rem) +
+        clamp(1.75rem, 5vh, 3.5rem)
+    )
+    0 0;
   overflow: hidden;
-  border: 1px solid var(--line-soft);
-  border-radius: var(--shape-md);
+  border: 0;
+  border-radius: 0;
   background: var(--canvas);
   opacity: 0;
   pointer-events: none;
@@ -932,93 +956,82 @@ video {
 
 
 
-/* Filled down the column and then across, so the reading order runs 01-04 then
-   05-07 rather than snaking left to right across the panel.
-
-   Four rows is the fixed shape and the longest menu has seven, so it never
-   needs a third column. Rows are `auto`, so a menu with fewer than four items
-   collapses the ones it does not use to nothing and the panel closes up behind
-   it — which is what makes a one-item menu a small box rather than a slab with
-   a hole in it. The columns hug their content instead of splitting the width,
-   so a short menu does not stretch across the panel to fill it. */
+/* One column, however many names there are. Two columns was a way of keeping a
+   short panel short; the panel is the page now, so there is room to let the
+   list run down it and the reading order stays a single line down the page. */
 .mega-menu__links {
   display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(4, auto);
-  grid-auto-columns: minmax(0, max-content);
   justify-content: start;
   margin: 0;
   padding: 0;
-  column-gap: clamp(2rem, 5vw, 5.5rem);
-  row-gap: clamp(0.15rem, 0.5vw, 0.45rem);
+  row-gap: clamp(0.9rem, 1.9vh, 1.6rem);
   list-style: none;
 }
 
-/* Two columns now the index has gone: the name and its mark. They pack to the
-   start rather than stretching, so the mark stays beside the word it belongs to
-   instead of drifting to the panel's edge. No rules between the rows either —
-   the space between the lines is the separation, and the rules made a menu read
-   like a table. */
+/* A rule that opens to the left of the name it marks.
+
+   The name slides right by exactly the rule plus its gap, and the rule is
+   pinned to the name's own left edge — so it draws itself into the space the
+   name has just left, ending flush with where that name started. That is why
+   the offset and the ::before both read the same two lengths: they are one
+   measurement used twice, and if they ever disagreed the rule would overlap the
+   word or leave a gap in front of it. */
 .mega-menu__link {
-  display: grid;
-  grid-template-columns: auto 1.6rem;
-  justify-content: start;
-  gap: clamp(0.6rem, 1.2vw, 1.1rem);
-  /* Centred, not baseline-aligned. On a baseline the mark sat on the line the
-     letters stand on, and since it is a square grid of dots turned 45 degrees,
-     everything below its own centre then hung under the word — which is what
-     made it read as falling away from the name rather than following it. */
-  align-items: center;
-  padding-block: clamp(0.25rem, 0.6vw, 0.55rem);
-  transition: opacity var(--duration-slow) var(--ease-standard);
+  --menu-rule: clamp(1.6rem, 3vw, 2.8rem);
+  --menu-rule-gap: clamp(0.7rem, 1.2vw, 1.1rem);
+
+  position: relative;
+  display: block;
+  width: fit-content;
+  padding-block: clamp(0.15rem, 0.4vh, 0.35rem);
+  transition:
+    opacity var(--duration-slow) var(--ease-standard),
+    transform var(--duration-base) var(--ease-handover);
+}
+
+.mega-menu__link::before {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + var(--menu-rule-gap));
+  width: var(--menu-rule);
+  height: 1px;
+  background: currentcolor;
+  content: "";
+  /* Drawn from the left, following the name out rather than chasing it. */
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-base) var(--ease-handover);
 }
 
 /* The grotesque, as it was before the sheet. These are navigation, read at a
    glance and chosen from, not headings to be read along — and the tracking
    goes back with the face, since -0.055em is cut for the display serif and
    closes this one up. */
+/* A step over the bar's own links rather than a heading. These are still
+   navigation — the panel gives them room, not rank. */
 .mega-menu__label {
   font-family: var(--type-display);
-  font-size: var(--text-heading);
+  font-size: clamp(1.1rem, 1.35vw, 1.3rem);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
   line-height: var(--leading-heading);
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
-/* The diagonal is pinned here rather than left to the direction class alone.
-   .pixel-arrow--up-right carries the rotation, but this mark sits in a grid
-   cell inside an animated panel, and the rotation is the whole difference
-   between "opens a page" and "moves along a row" — it should not be one
-   inherited declaration away from being lost. */
-.mega-menu__arrow {
-  /* A fifth off the compact size. The scale's own next step down is `small`,
-     but that is 0.1rem against 0.17rem — a 41% drop, which is a different mark
-     rather than a smaller one. These two values sit between the two steps. */
-  --pixel-arrow-dot: 0.135rem;
-  --pixel-arrow-gap: 0.06rem;
-
-  justify-self: end;
-  color: var(--ink);
-  opacity: 0;
-  transform: rotate(-45deg);
-  transition:
-    color var(--duration-base) var(--ease-standard),
-    opacity var(--duration-base) var(--ease-standard);
-}
-
+/* Hovering one name dims the rest. With a rule and a shift already marking the
+   one under the pointer, this only has to take the others a step back — 0.42
+   was set when it was the only signal there was. */
 .mega-menu__links:hover .mega-menu__link {
-  opacity: 0.42;
+  opacity: 0.55;
 }
 
 .mega-menu__links .mega-menu__link:hover {
   opacity: 1;
+  transform: translateX(calc(var(--menu-rule) + var(--menu-rule-gap)));
 }
 
-
-.mega-menu__link:hover .mega-menu__arrow {
-  color: var(--ink);
-  opacity: 1;
+.mega-menu__links .mega-menu__link:hover::before {
+  transform: scaleX(1);
 }
 
 .mobile-menu {
