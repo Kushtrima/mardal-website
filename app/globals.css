@@ -4214,7 +4214,9 @@ video {
   max-width: 46ch;
   margin: 0;
   padding-top: 0.5rem;
-  color: var(--ink-muted);
+  /* The page ink. --ink-muted is #a09aad, which has enough blue and red in it
+     to read as lavender against this black rather than as a grey. */
+  color: var(--ink);
   font-size: var(--text-body);
   line-height: 1.35;
 }
