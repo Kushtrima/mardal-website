@@ -995,11 +995,32 @@ video {
   overflow: hidden;
   border: 0;
   border-radius: 0;
-  /* White, and the light-panel tokens above turn everything on it black. */
-  background: var(--surface);
+  /* No ground of its own: .mega-menu__ground carries the white so it can be
+     drawn across without taking the names with it. */
+  background: transparent;
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
+}
+
+/* The white itself, under everything else in the panel and filling it.
+
+   Its own layer for one reason: it has to be able to arrive without the names
+   arriving with it. As the panel's own background, the only way to bring it in
+   was to fade the panel, and that faded its contents too. */
+.mega-menu__ground {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--surface);
+  pointer-events: none;
+}
+
+/* Above the ground. Everything in the panel except the ground itself, which is
+   the only child that has to stay under. */
+.mega-menu > :not(.mega-menu__ground) {
+  position: relative;
+  z-index: 1;
 }
 
 

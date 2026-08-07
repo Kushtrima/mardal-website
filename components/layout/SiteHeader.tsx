@@ -17,6 +17,16 @@ import { footer, menu } from "../../content/home";
 
 type NavigationKey = (typeof menu)[number]["key"];
 
+/**
+ * How far past the bar or the panel the pointer may stray before the menu is
+ * counted as left.
+ *
+ * Enough to cross the hairline between the bar and the ground below it without
+ * the menu deciding you have gone, and small enough that moving off it properly
+ * is unambiguous.
+ */
+const KEEP_OPEN_PADDING = 12;
+
 export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
   _props,
   navigationRef,
@@ -24,6 +34,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
+  const megaMenuGroundRef = useRef<HTMLDivElement>(null);
   const mobileIndexRef = useRef<HTMLDivElement>(null);
   const mobileDetailRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<number | undefined>(undefined);
@@ -74,46 +85,75 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     const wasOpen = megaMenuWasOpenRef.current;
     megaMenuWasOpenRef.current = megaMenuOpen;
 
-    gsap.killTweensOf([menu, entries]);
+    const ground = megaMenuGroundRef.current;
+
+    gsap.killTweensOf([menu, ground, entries]);
 
     if (reducedMotion) {
       gsap.set(menu, {
         autoAlpha: megaMenuOpen ? 1 : 0,
         pointerEvents: megaMenuOpen ? "auto" : "none",
       });
+      gsap.set(ground, { clipPath: "none" });
       gsap.set(entries, { autoAlpha: 1, clipPath: "none" });
       return;
     }
 
-    /* The panel does not move. The ground fades up and the words are uncovered
-       left to right inside it, one after the next — the same direction the
-       footer rules wipe in, so the two read as one idea.
+    /* The panel does not move. The ground is drawn across from the left and the
+       names are uncovered behind it, one after the next — the same direction
+       the footer rules wipe in, so opening is one gesture rather than several.
+
+       The ground was a fade before, and a fade is what made it feel cheap: a
+       white area this size changing opacity reads as a flash, and because the
+       white was the panel's own background the only way to bring it in was to
+       fade the panel, which took the names with it on top of the wipe they were
+       already doing. Two motions on the same words, neither finishing what it
+       started.
 
        Clipped rather than faded or slid: a fade makes a word arrive everywhere
        at once and says nothing about direction, and a slide moves the word off
        the line it belongs on. An inset from the right leaves each name exactly
-       where it will end up and only chooses when you can see it.
+       where it will end up and only chooses when it can be seen.
 
        All of that is the ARRIVAL, and it belongs to arriving. Moving from one
        menu to the next along the bar is not an arrival: the ground is already
-       there and the reader is already reading, so re-running it would flash the
-       white and re-deal the names on every word passed over. Switching swaps
-       the list and leaves the panel alone. */
+       there and the reader is already reading. Switching changes the list and
+       nothing else. */
     if (megaMenuOpen) {
-      gsap.set(menu, { pointerEvents: "auto", visibility: "visible" });
+      gsap.set(menu, {
+        autoAlpha: 1,
+        pointerEvents: "auto",
+        visibility: "visible",
+      });
 
       if (wasOpen) {
-        gsap.set(menu, { autoAlpha: 1 });
-        gsap.set(entries, { autoAlpha: 1, clipPath: "none" });
+        gsap.set(ground, { clipPath: "none" });
+        /* Up on the spot, and quickly. This is a change of subject, not an
+           entrance: long enough not to be a cut, short enough that running
+           along the bar never feels like waiting in a queue. */
+        gsap.fromTo(
+          entries,
+          { autoAlpha: 0, clipPath: "none" },
+          {
+            autoAlpha: 1,
+            duration: 0.18,
+            ease: "power2.out",
+            stagger: 0.02,
+          },
+        );
         return;
       }
 
-      /* The ground on its own, and quicker than the words: it has to be under
-         them before they are worth reading. */
+      /* The ground first and on its own, so it is under the names before they
+         are worth reading. */
       gsap.fromTo(
-        menu,
-        { autoAlpha: 0 },
-        { autoAlpha: 1, duration: 0.4, ease: "power2.out" },
+        ground,
+        { clipPath: "inset(0 100% 0 0)" },
+        {
+          clipPath: "inset(0 0% 0 0)",
+          duration: 0.5,
+          ease: "power2.inOut",
+        },
       );
 
       gsap.fromTo(
@@ -125,10 +165,13 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
              both ends so no word snaps into place. */
           duration: 0.55,
           ease: "power2.inOut",
+          /* Behind the ground rather than with it — the white has a head start
+             and keeps it, so no name is ever uncovered over the page. */
+          delay: 0.12,
           /* Seven items is the longest menu, so the last one starts at 0.33s
-             and the run is done by about 0.88s. The first three names are
-             readable inside 400ms, which is what matters: you are choosing
-             from the top of the list while the foot of it is still arriving. */
+             after that. The first names are readable early, which is what
+             matters: you are choosing from the top of the list while the foot
+             of it is still arriving. */
           stagger: 0.055,
         },
       );
@@ -265,12 +308,52 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
         ?.focus();
     }
 
+    /**
+     * Closes the menu once the pointer is off it, decided by where the pointer
+     * IS rather than by an event saying it left.
+     *
+     * There is a React onPointerLeave on the header already, and on paper it
+     * covers this: the panel is a descendant, so moving onto it is not leaving.
+     * In practice the menu was staying open. Rather than guess at why, this
+     * asks the only question that matters — is the pointer over the bar or over
+     * the panel — and answers it on every move. A miscounted enter or leave
+     * cannot strand it open, because nothing is being counted.
+     */
+    function handlePointerMove(event: globalThis.PointerEvent) {
+      if (event.pointerType !== "mouse") return;
+
+      const panel = megaMenuRef.current;
+      const bar = panel?.closest(".site-nav");
+
+      const over = (element: Element | null | undefined) => {
+        if (!element) return false;
+        const box = element.getBoundingClientRect();
+        return (
+          event.clientX >= box.left - KEEP_OPEN_PADDING &&
+          event.clientX <= box.right + KEEP_OPEN_PADDING &&
+          event.clientY >= box.top - KEEP_OPEN_PADDING &&
+          event.clientY <= box.bottom + KEEP_OPEN_PADDING
+        );
+      };
+
+      if (over(panel) || over(bar)) {
+        clearCloseTimer();
+        return;
+      }
+
+      scheduleMegaMenuClose();
+    }
+
     document.addEventListener("pointerdown", handlePointerDown);
     document.addEventListener("keydown", handleKeyDown);
+    if (megaMenuOpen) {
+      document.addEventListener("pointermove", handlePointerMove);
+    }
 
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("pointermove", handlePointerMove);
       clearCloseTimer();
     };
   }, [megaMenuOpen]);
@@ -397,6 +480,13 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
             aria-hidden={!megaMenuOpen}
             inert={megaMenuOpen ? undefined : true}
           >
+            {/* The white, as its own layer. It used to be the panel's own
+                background, which meant the only way to bring it in was to fade
+                the panel — and that faded the names with it, on top of the wipe
+                they were already doing. Given a layer of its own it can be
+                drawn across on its own. */}
+            <div className="mega-menu__ground" ref={megaMenuGroundRef} />
+
             <ul className="mega-menu__links">
               {activeItem.items.map((item) => (
                 <li key={item.label} data-mega-entry>
