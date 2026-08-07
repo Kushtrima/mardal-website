@@ -94,13 +94,13 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     const menu = megaMenuRef.current;
     if (!menu) return;
 
-    /* Two sets, because the legal line belongs to two of the three moves and
-       not to the third. It arrives with the names and it leaves with them, but
-       running along the bar does not change it — the same words are already
-       there — so replaying it on every switch was the panel announcing
-       something that had not happened. */
+    /* Two sets, because the foot belongs to two of the three moves and not to
+       the third. It arrives with the names and it leaves with them, but running
+       along the bar does not change it — the same small print and the same way
+       in are already there — so replaying it on every switch was the panel
+       announcing something that had not happened. */
     const entries = menu.querySelectorAll(
-      "[data-mega-entry], [data-mega-legal]",
+      "[data-mega-entry], [data-mega-foot]",
     );
     const names = menu.querySelectorAll("[data-mega-entry]");
     const reducedMotion = window.matchMedia(
@@ -560,10 +560,6 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
             {mobileMenuOpen ? "Close" : "Menu"}
           </button>
 
-          <Button className="hero-nav-cta" href="#contact">
-            Hire us
-          </Button>
-
           <div
             className="mega-menu"
             id="desktop-mega-menu"
@@ -597,24 +593,40 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
               ))}
             </ul>
 
-            {/* The same line the footer carries, in the corner the panel
-                leaves empty. It is the one place these can be reached without
-                first travelling the whole page. */}
-            <div className="mega-menu__legal" data-mega-legal>
-              <span className="mega-menu__copy">
-                {`© ${new Date().getFullYear()} Mardal`}
-              </span>
+            {/* The foot of the panel, on the two edges the names above it run
+                between: the small print on the left, the way in on the right.
+                One element as far as the animation is concerned. */}
+            <div className="mega-menu__foot" data-mega-foot>
+              {/* The same line the footer carries. It is the one place these
+                  can be reached without first travelling the whole page. */}
+              <div className="mega-menu__legal">
+                <span className="mega-menu__copy">
+                  {`© ${new Date().getFullYear()} Mardal`}
+                </span>
 
-              {footer.legal.map((link) => (
-                <a
-                  className="mega-menu__legal-link"
-                  href={link.href}
-                  key={link.href}
-                  onClick={() => setMegaMenuOpen(false)}
-                >
-                  {link.label}
-                </a>
-              ))}
+                {footer.legal.map((link) => (
+                  <a
+                    className="mega-menu__legal-link"
+                    href={link.href}
+                    key={link.href}
+                    onClick={() => setMegaMenuOpen(false)}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+
+              {/* Moved off the bar. It stood there in white on the black
+                  header, and the header had to repaint it black every time the
+                  menu opened underneath it. Here it only ever stands on white
+                  and can simply be the ink. */}
+              <Button
+                className="mega-menu__cta"
+                href="#contact"
+                onClick={() => setMegaMenuOpen(false)}
+              >
+                Hire us
+              </Button>
             </div>
           </div>
         </nav>

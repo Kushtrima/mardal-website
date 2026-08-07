@@ -796,7 +796,10 @@ video {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: minmax(13rem, 1fr) auto auto;
+  /* Two: the wordmark and the names. There was a third for the button that used
+     to end the row, and leaving it in place once the button moved into the menu
+     would have held its gap open against the right edge with nothing in it. */
+  grid-template-columns: minmax(13rem, 1fr) auto;
   gap: clamp(1.25rem, 2.6vw, 3.25rem);
   align-items: center;
   min-height: clamp(3.45rem, 4.5vw, 3.9rem);
@@ -834,13 +837,6 @@ video {
 
   color: #08080a;
 }
-
-.site-header--mega-open .hero-nav-cta {
-  --accent: #08080a;
-  --accent-strong: #2a2a30;
-  --accent-contrast: #ffffff;
-}
-
 
 .brand {
   display: inline-flex;
@@ -1036,20 +1032,25 @@ video {
   list-style: none;
 }
 
-/* The legal line, at the foot of the panel on the same edge the names start
-   from. In the page ink, since on this ground the black it wears in the footer
-   would not be there at all.
-   It sat in the far corner before, on the argument that the panel's emptiness
-   should sit between the two rather than under everything. Diagonally opposite
-   the list, it read as a second thing the panel was doing; under it, it is the
-   foot of the one column the panel already is. */
+/* The foot of the panel: the small print on the left, the way in on the right.
+   Each is on one of the two edges the names above them already run between, so
+   the row needs no measurements of its own — space-between puts them there.
+   The panel's padding does the rest: padding-left is --menu-ground, the same
+   band the names are pulled back by, so the small print lines up under them. */
+.mega-menu__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1rem, 2.4vw, 2.25rem);
+}
+
+/* In the page ink, since on this ground the black it wears in the footer would
+   not be there at all. */
 .mega-menu__legal {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  /* The panel's own padding-left is --menu-ground, the same band the names are
-     pulled back by, so this needs no offset to line up with them. */
-  align-self: flex-start;
   gap: clamp(0.75rem, 1.6vw, 1.4rem);
   color: var(--ink);
   font-size: var(--text-small);
@@ -1189,22 +1190,26 @@ video {
   display: none;
 }
 
-/* The one filled thing up here. White on the black bar, and smaller than the
-   words beside it rather than larger: on a bar with no ground of its own a
-   filled shape is already the loudest thing in the row, and size on top of
-   contrast makes it shout. It reads as a control because it is filled, so it
-   does not have to be big as well.
+/* The one filled thing in the panel, and smaller than the names above it rather
+   than larger: a filled shape is already the loudest thing on this much white,
+   and size on top of contrast makes it shout. It reads as a control because it
+   is filled, so it does not have to be big as well.
 
-   The accent tokens are set on the button rather than taken from the page.
-   This is the one place white is a fill instead of ink, and --accent means the
-   purple everywhere else, so borrowing the page's would tie the button to a
-   value that has nothing to do with it. --accent-strong is the menu's own
-   surface, because hovering a white fill has to dim it — there is nowhere
-   brighter to go. */
-.hero-nav-cta {
-  --accent: #ffffff;
-  --accent-strong: var(--menu-surface);
-  --accent-contrast: #08080a;
+   The accent tokens are set on the button rather than taken from the panel.
+   The panel's --accent is the purple that marks the open menu in the bar, and
+   the one fill down here has nothing to do with that mark. Ink instead, which
+   is also what it wore in the bar whenever the menu was open — that was a
+   .site-header--mega-open override, needed only because the button lived on the
+   black bar and the white came up underneath it. On the panel there is no other
+   ground for it to stand on and the override is gone.
+
+   --accent-strong lifts rather than dims on hover: this is a dark fill on
+   white, so there is somewhere darker to go and dimming it toward the ground
+   would read as the button fading out. */
+.mega-menu__cta {
+  --accent: #08080a;
+  --accent-strong: #2a2a30;
+  --accent-contrast: #ffffff;
 
   min-width: clamp(5.4rem, 6.4vw, 6.6rem);
   min-height: clamp(2.05rem, 2.5vw, 2.3rem);
@@ -1217,8 +1222,8 @@ video {
 }
 
 /* No glow. --shadow-accent is a purple cast, drawn to sit under a purple
-   button; under a white one on black it reads as a smudge rather than a lift. */
-.hero-nav-cta:hover {
+   button; under a black one on white it reads as a smudge rather than a lift. */
+.mega-menu__cta:hover {
   background: var(--accent-strong);
   box-shadow: none;
 }
@@ -3693,7 +3698,7 @@ video {
    orientation, and no desktop that has room for the bar. */
 @media (max-width: 64rem), (hover: none) {
   .site-nav {
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.65rem;
     padding: 0.65rem;
   }
@@ -4105,10 +4110,6 @@ video {
 
   .brand-logo {
     width: 7.4rem;
-  }
-
-  .hero-nav-cta {
-    display: none;
   }
 
   .mobile-menu-toggle {
