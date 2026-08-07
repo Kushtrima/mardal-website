@@ -227,10 +227,12 @@
    rules and accent it had when the whole page was white, rather than each
    child overriding its own colour — so a light panel anywhere on the site
    only has to join this list. */
-/* The header was on this list while its bar was a light slab, and the mega menu
-   after it, while the menu was a light panel dropping out of a dark bar. Both
-   are on the page's own black now, so neither belongs here and the light cards
-   are what is left. */
+/* The header was on this list while its bar was a light slab. The bar is on the
+   page's own black now, so it is not; the menu it opens is white again, so it
+   is. Everything inside the menu — the names, the rule that marks one, the
+   marks on the right, the legal line and its hairlines — takes its colour from
+   here rather than each declaring its own. */
+.mega-menu,
 .why-card,
 .difference-card {
   --ink: #08080a;
@@ -817,6 +819,28 @@ video {
   z-index: 1;
 }
 
+/* Turned over while the menu is open, because they are standing on its white
+   ground. Only these two: the ground starts at the links, so the wordmark to
+   their left is still on the page's black and must not follow them.
+
+   The call to action inverts rather than dims. It is a filled shape, and on a
+   white ground a white fill is not a quiet button, it is no button — so the
+   fill takes the ink and the label takes the ground. */
+.site-header--mega-open .nav-list {
+  /* The accent goes with the ink. The word that opened the menu is marked in
+     --accent, and the page's is #a98ad6 — a light purple cut for black, which
+     on white leaves the one word you need to find the faintest in the row. */
+  --accent: #8362b8;
+
+  color: #08080a;
+}
+
+.site-header--mega-open .hero-nav-cta {
+  --accent: #08080a;
+  --accent-strong: #2a2a30;
+  --accent-contrast: #ffffff;
+}
+
 
 .brand {
   display: inline-flex;
@@ -971,7 +995,8 @@ video {
   overflow: hidden;
   border: 0;
   border-radius: 0;
-  background: var(--canvas);
+  /* White, and the light-panel tokens above turn everything on it black. */
+  background: var(--surface);
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
@@ -1019,7 +1044,7 @@ video {
   left: 0;
   width: 1px;
   height: 1em;
-  background: rgb(242 241 245 / 26%);
+  background: var(--line-soft);
   content: "";
   transform: translateY(-50%);
 }

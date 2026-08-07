@@ -279,9 +279,14 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
 
   return (
     <header
+      /* The open menu is a white ground, and the bar is drawn ON it from the
+         links rightward — so while it is open those words are white on white.
+         This is the hook that turns them over. The wordmark is not included:
+         it sits in the first column, to the left of where the ground begins,
+         and stays on the page's black. */
       className={`site-header${
         mobileMenuOpen ? " site-header--mobile-menu-open" : ""
-      }`}
+      }${megaMenuOpen ? " site-header--mega-open" : ""}`}
       ref={headerRef}
       onPointerEnter={clearCloseTimer}
       onPointerLeave={(event) => {
