@@ -18,14 +18,16 @@ import { footer, menu } from "../../content/home";
 type NavigationKey = (typeof menu)[number]["key"];
 
 /**
- * How far past the bar or the panel the pointer may stray before the menu is
+ * How far past the bar or the names the pointer may stray before the menu is
  * counted as left.
  *
- * Enough to cross the hairline between the bar and the ground below it without
- * the menu deciding you have gone, and small enough that moving off it properly
- * is unambiguous.
+ * The region it pads is the bar and the list, NOT the white ground. The ground
+ * reaches the top, right and bottom edges of the window, so treating it as the
+ * menu meant more than half the screen counted as being on it: moving down or
+ * right to read the page kept it open, and only going left onto the hero closed
+ * it. The menu, as far as anyone using it is concerned, is the words.
  */
-const KEEP_OPEN_PADDING = 12;
+const KEEP_OPEN_PADDING = 24;
 
 export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
   _props,
@@ -144,12 +146,16 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
            queue. */
         gsap.fromTo(
           entries,
-          { autoAlpha: 0, clipPath: "none" },
+          { autoAlpha: 0, clipPath: "none", y: 14 },
           {
             autoAlpha: 1,
-            duration: 0.35,
+            y: 0,
+            duration: 0.45,
             ease: "power2.out",
-            stagger: 0.03,
+            /* Enough of a run that the list arrives as a list rather than all
+               at once, and short enough that the last name is in place inside
+               half a second. */
+            stagger: 0.045,
           },
         );
         return;
@@ -338,20 +344,40 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
       if (event.pointerType !== "mouse") return;
 
       const panel = megaMenuRef.current;
-      const bar = panel?.closest(".site-nav");
+      if (!panel) return;
 
-      const over = (element: Element | null | undefined) => {
-        if (!element) return false;
-        const box = element.getBoundingClientRect();
-        return (
-          event.clientX >= box.left - KEEP_OPEN_PADDING &&
-          event.clientX <= box.right + KEEP_OPEN_PADDING &&
-          event.clientY >= box.top - KEEP_OPEN_PADDING &&
-          event.clientY <= box.bottom + KEEP_OPEN_PADDING
-        );
-      };
+      const bar = panel.closest(".site-nav");
+      const list = panel.querySelector(".mega-menu__links");
+      const legal = panel.querySelector(".mega-menu__legal");
 
-      if (over(panel) || over(bar)) {
+      const inside = (box: DOMRect | undefined) =>
+        !!box &&
+        event.clientX >= box.left - KEEP_OPEN_PADDING &&
+        event.clientX <= box.right + KEEP_OPEN_PADDING &&
+        event.clientY >= box.top - KEEP_OPEN_PADDING &&
+        event.clientY <= box.bottom + KEEP_OPEN_PADDING;
+
+      const boxOf = (element: Element | null) =>
+        element?.getBoundingClientRect();
+
+      /* The bar and the list together, as one block, so the gap between the
+         words at the top and the names under them is inside rather than
+         between. */
+      const barBox = boxOf(bar);
+      const listBox = boxOf(list);
+      const block =
+        barBox && listBox
+          ? new DOMRect(
+              Math.min(barBox.left, listBox.left),
+              Math.min(barBox.top, listBox.top),
+              Math.max(barBox.right, listBox.right) -
+                Math.min(barBox.left, listBox.left),
+              Math.max(barBox.bottom, listBox.bottom) -
+                Math.min(barBox.top, listBox.top),
+            )
+          : (barBox ?? listBox);
+
+      if (inside(block) || inside(boxOf(legal))) {
         clearCloseTimer();
         return;
       }
