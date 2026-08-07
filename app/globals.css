@@ -954,8 +954,12 @@ video {
 .mega-menu {
   /* How far the ground reaches past the links on the left. Named because two
      declarations have to agree on it: the offset that pushes the edge out and
-     the padding that pulls the names back. */
-  --menu-ground: 1.25rem;
+     the padding that pulls the names back.
+     Because those two read the same value, this only ever moves the white. The
+     names sit at the nav's own left edge whatever it is set to: the sheet
+     starts this far left of them and the padding puts them straight back. Was
+     20px, now 40. */
+  --menu-ground: 2.5rem;
 
   position: absolute;
   grid-row: 1;
