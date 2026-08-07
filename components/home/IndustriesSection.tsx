@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Container } from "../layout/Container";
 import { PixelArrow } from "../ui/PixelArrow";
 import { solutions } from "../../content/home";
+import { createWheelGate } from "../../lib/wheel-gate";
 
 /** The rule beside each industry takes the next of the four brand colours. */
 const TINTS = ["one", "two", "three", "four"] as const;
@@ -38,9 +39,22 @@ const STEP_VH = 0.45;
  */
 const GESTURE_GAP_MS = 120;
 
-/** A floor under the time between steps, so a jittery start cannot fire twice
- *  before the page has begun to move. */
-const STEP_LOCK_MS = 350;
+/**
+ * The floor under the time between steps.
+ *
+ * The gap rule above catches a trackpad, whose momentum arrives as one
+ * unbroken stream. A wheel is the opposite: one roll of a finger is two or
+ * three separate notches, each its own event, with real pauses between them —
+ * pauses long enough to look like separate pushes, which is why a single roll
+ * was still taking two or three industries.
+ *
+ * So a step also closes the door behind it for a full second. One roll of a
+ * wheel lands inside that and is worth one industry. It is deliberately longer
+ * than it needs to be for the mechanism: this is the dial that decides how fast
+ * the run can be walked, and it is set slow on purpose — there is a sentence to
+ * read at every stop.
+ */
+const STEP_LOCK_MS = 1000;
 
 /** Below this the two columns stack and there is no room to hold anything. */
 const MIN_WIDTH = "(min-width: 60rem)";
@@ -86,15 +100,13 @@ export function IndustriesSection() {
 
     const count = solutions.items.length;
     let trigger: ScrollTrigger | undefined;
-    let lockedUntil = 0;
-    let lastEventAt = 0;
+    /* The rule that decides what counts as a fresh push lives in lib, where it
+       is tested against both devices' event patterns. It had been written twice
+       here and was wrong both times. */
+    const isFreshPush = createWheelGate(GESTURE_GAP_MS, STEP_LOCK_MS);
 
     function onWheel(event: WheelEvent) {
       if (!trigger || !trigger.isActive) return;
-
-      const now = performance.now();
-      const gap = now - lastEventAt;
-      lastEventAt = now;
 
       const direction = event.deltaY > 0 ? 1 : -1;
       const next = indexRef.current + direction;
@@ -107,11 +119,7 @@ export function IndustriesSection() {
          underneath the run, even on the events that do not step. */
       event.preventDefault();
 
-      /* No quiet in front of it: this is the same push still arriving, or the
-         momentum it left behind. */
-      if (gap < GESTURE_GAP_MS) return;
-      if (now < lockedUntil) return;
-      lockedUntil = now + STEP_LOCK_MS;
+      if (!isFreshPush(performance.now())) return;
 
       /* Sent to the middle of the step rather than its edge: the smoother
          glides rather than jumps, and a target on the boundary would sit one
