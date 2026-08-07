@@ -40,7 +40,9 @@ export const menu = [
     description: "Technology shaped around the realities of your sector.",
     href: "#solutions",
     items: [
-      { label: "Finance", href: "#finance" },
+      /* The one industry with a page of its own so far. The rest still point at
+         the run on the homepage until they have one. */
+      { label: "Finance", href: "/solutions/finance" },
       { label: "Healthcare", href: "#healthcare" },
       { label: "Manufacturing", href: "#manufacturing" },
       { label: "Automotive", href: "#automotive" },

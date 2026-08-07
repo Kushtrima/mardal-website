@@ -44,6 +44,13 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    /* Where the built assets are served from. Root for the Codex host, which
+       gives this a domain of its own. A GitHub Pages project site serves under
+       /<repo>/ instead, and every asset URL the build emits is root-absolute —
+       without this they resolve above the site and 404, taking the CSS and the
+       JS with them. Set only by the Pages build, so the normal one is
+       untouched. */
+    base: process.env.PAGES_BASE ?? "/",
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,

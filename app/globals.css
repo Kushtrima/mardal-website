@@ -5035,6 +5035,23 @@ video {
   mask-image: url("/web-platforms-apps-pattern-v6.png");
 }
 
+/* The industry pages put a drawing in the artwork box instead of a mask, so
+   everything the mask variants rely on has to be undone rather than swapped:
+   the flat fill would paint a solid block behind the drawing, and the mask
+   would cut it to the AI page's geometry.
+
+   The box also changes shape. Every mask on this site is drawn at 1447x1087;
+   the industries drawing is staged at 1920x1080, and left at 4:3 it would be
+   letterboxed inside its own box. Given here rather than read off the SVG
+   because the box is laid out before the drawing is measured. */
+.service-hero__pattern--art {
+  width: min(100%, 38rem);
+  aspect-ratio: 16 / 9;
+  background: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
 .service-overview {
   margin-bottom: 200px;
   color: var(--service-ink);
