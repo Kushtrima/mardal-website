@@ -5122,6 +5122,101 @@ video {
   padding-left: clamp(2rem, 4vw, 4.5rem);
 }
 
+/* ---------------------------- Solutions: build ---------------------------- */
+
+/* The five services an industry page names, in that sector's terms.
+
+   Rows, not cards. Each one is a link to a page that already exists and says
+   the whole thing properly, so this is a way through to them rather than five
+   destinations of its own; cards would give every line the weight of a
+   product. The rule under each row is the same hairline the footer and the
+   menu use, so the block reads as a list the site already knows how to draw.
+
+   This is deliberately not the service pages' journey. That is a pinned
+   horizontal run built to carry chapters of capability copy, and five lines
+   do not need to be scrolled sideways to be read. */
+.solution-build {
+  padding-block: clamp(4rem, 12vh, 9rem);
+  color: var(--service-ink);
+  background: var(--service-surface);
+}
+
+.solution-build__title {
+  max-width: 16ch;
+  margin: 0 0 clamp(2.5rem, 6vh, 4rem);
+  font-family: var(--type-display);
+  font-size: var(--service-text-overview-title);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.02;
+}
+
+.solution-build__list {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line-soft);
+  list-style: none;
+}
+
+/* The name holds a column of its own so the five read down the page as a
+   list; letting the copy set the column would ragged them against each
+   other. The arrow takes only what it needs, on the right margin, where
+   every other arrow on this site sits. */
+.solution-build__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr) auto;
+  gap: clamp(1.25rem, 4vw, 4rem);
+  align-items: baseline;
+  padding-block: clamp(1.25rem, 3vh, 2rem);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.solution-build__name {
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: clamp(1.25rem, 1.55vw, 1.5rem);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: var(--leading-heading);
+}
+
+.solution-build__copy {
+  margin: 0;
+  font-size: var(--text-copy);
+  line-height: var(--service-leading-copy);
+}
+
+/* Centred rather than on the baseline: the row is as tall as its copy, and a
+   mark sitting on the first line of a three-line paragraph reads as attached
+   to that line rather than to the row. */
+.solution-build__arrow {
+  align-self: center;
+  color: var(--accent);
+}
+
+@media (hover: hover) {
+  /* The whole row answers, since the whole row is the link. Colour only: the
+     rows are stacked against each other and anything that moves would push
+     its neighbours. */
+  .solution-build__item:hover .solution-build__name {
+    color: var(--accent);
+  }
+}
+
+/* One column below the two-column breakpoint the rest of the page uses. The
+   arrow leaves rather than stacking: at this width the name is already the
+   full measure and a mark under it would read as a sixth row. */
+@media (max-width: 48rem) {
+  .solution-build__item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+
+  .solution-build__arrow {
+    display: none;
+  }
+}
+
 .service-offerings {
   color: var(--service-ink);
   background: var(--service-surface);
