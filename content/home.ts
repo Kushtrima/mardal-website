@@ -68,7 +68,9 @@ export const menu = [
     items: [
       { label: "About", href: "#about" },
       { label: "Team", href: "#team" },
-      { label: "Blog", href: "#blog" },
+      /* The one Company entry with a page of its own. The rest still point at
+         the homepage until they have one. */
+      { label: "Blog", href: "/blog" },
       { label: "Careers", href: "#careers" },
       { label: "Contact", href: "#contact" },
     ],

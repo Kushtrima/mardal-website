@@ -5068,6 +5068,30 @@ video {
   mask-image: url("/web-platforms-apps-pattern-v6.png");
 }
 
+/* The blog draws its bars instead of masking them. Same language as the five
+   above, but as the vector it already has rather than a sixth PNG of one, so
+   everything the mask variants set has to be undone rather than swapped: the
+   flat fill would paint a block behind the drawing and the mask would cut it
+   to the AI page's geometry.
+
+   The box takes the drawing's own 716x336 rather than the 1447x1087 every mask
+   is cut at. RedactedLines is preserveAspectRatio="none", so it stretches to
+   whatever box it is given and would simply have been drawn wrong in the
+   masks' shape rather than letterboxed inside it. */
+.service-hero__pattern--lines {
+  width: min(100%, 34rem);
+  aspect-ratio: 716 / 336;
+  background: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.service-hero__lines {
+  width: 100%;
+  height: 100%;
+  fill: var(--accent);
+}
+
 .service-overview {
   margin-bottom: 200px;
   color: var(--service-ink);
