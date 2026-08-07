@@ -57,6 +57,22 @@ export function Hero() {
       },
     );
 
+    /* Where the blur begins before anything is scrolled, read from the
+       stylesheet rather than written here as well.
+
+       It was a literal in the sweep below, so the number lived in two places
+       and the stylesheet's copy was the dead one: moving the boundary in CSS
+       appeared to do nothing, because the first scroll wrote this one over it.
+       Read once, here, before the sweep has set the property on the element —
+       after that, what is on the element is whatever the animation last put
+       there. */
+    const blurStart =
+      Number.parseFloat(
+        getComputedStyle(linesBlurRef.current).getPropertyValue(
+          "--hero-lines-blur-start",
+        ),
+      ) || 0;
+
     const updateScrollBlur = () => {
       if (!heroRef.current) return;
 
@@ -74,7 +90,8 @@ export function Hero() {
 
       setBlurOpacity(progress);
       setFadeOpacity(progress);
-      setBlurBoundary(34 - movementProgress * 79);
+      /* The same 79 points of travel, from wherever the stylesheet starts it. */
+      setBlurBoundary(blurStart - movementProgress * 79);
     };
 
     const context = gsap.context(() => {

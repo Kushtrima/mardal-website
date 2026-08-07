@@ -1271,8 +1271,12 @@ video {
   max-width: none;
 }
 
+/* Where the two overlays begin down the field. They move together: the blur is
+   what softens the bars and the fade is what takes them to black, and read as
+   one treatment — shifting either alone puts a sharp edge inside a soft one.
+   The fade keeps the six points it has always started below the blur. */
 .hero-lines-blur {
-  --hero-lines-blur-start: 34;
+  --hero-lines-blur-start: 44;
 
   position: absolute;
   inset: calc(var(--hero-lines-blur-start) * 1%) 0 0;
@@ -1294,7 +1298,7 @@ video {
 
 .hero-lines-fade {
   position: absolute;
-  inset: 40% 0 0;
+  inset: 50% 0 0;
   z-index: 3;
   background: linear-gradient(
     to bottom,
