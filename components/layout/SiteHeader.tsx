@@ -27,6 +27,8 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
   const mobileIndexRef = useRef<HTMLDivElement>(null);
   const mobileDetailRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<number | undefined>(undefined);
+  /* Whether the panel was already open the last time the effect below ran. */
+  const megaMenuWasOpenRef = useRef(false);
   const [activeMenu, setActiveMenu] = useState<NavigationKey>("services");
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -66,6 +68,12 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    /* Whether this run is an arrival or a change of list. The effect answers to
+       both the open flag and the active menu, and cannot tell them apart from
+       its inputs alone. */
+    const wasOpen = megaMenuWasOpenRef.current;
+    megaMenuWasOpenRef.current = megaMenuOpen;
+
     gsap.killTweensOf([menu, entries]);
 
     if (reducedMotion) {
@@ -77,20 +85,36 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
       return;
     }
 
-    /* The panel does not move. It is simply there, and the words are uncovered
+    /* The panel does not move. The ground fades up and the words are uncovered
        left to right inside it, one after the next — the same direction the
        footer rules wipe in, so the two read as one idea.
 
        Clipped rather than faded or slid: a fade makes a word arrive everywhere
        at once and says nothing about direction, and a slide moves the word off
        the line it belongs on. An inset from the right leaves each name exactly
-       where it will end up and only chooses when you can see it. */
+       where it will end up and only chooses when you can see it.
+
+       All of that is the ARRIVAL, and it belongs to arriving. Moving from one
+       menu to the next along the bar is not an arrival: the ground is already
+       there and the reader is already reading, so re-running it would flash the
+       white and re-deal the names on every word passed over. Switching swaps
+       the list and leaves the panel alone. */
     if (megaMenuOpen) {
-      gsap.set(menu, {
-        autoAlpha: 1,
-        pointerEvents: "auto",
-        visibility: "visible",
-      });
+      gsap.set(menu, { pointerEvents: "auto", visibility: "visible" });
+
+      if (wasOpen) {
+        gsap.set(menu, { autoAlpha: 1 });
+        gsap.set(entries, { autoAlpha: 1, clipPath: "none" });
+        return;
+      }
+
+      /* The ground on its own, and quicker than the words: it has to be under
+         them before they are worth reading. */
+      gsap.fromTo(
+        menu,
+        { autoAlpha: 0 },
+        { autoAlpha: 1, duration: 0.4, ease: "power2.out" },
+      );
 
       gsap.fromTo(
         entries,
@@ -116,7 +140,9 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
        its own to carry the exit. */
     gsap.to(menu, {
       autoAlpha: 0,
-      duration: 0.2,
+      /* Slower than it was, to match the ground coming up. A 200ms exit against
+         a 400ms arrival reads as the white being snatched away. */
+      duration: 0.32,
       ease: "power2.out",
       onComplete: () => {
         gsap.set(menu, { pointerEvents: "none" });
