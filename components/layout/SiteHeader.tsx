@@ -360,24 +360,20 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
       const boxOf = (element: Element | null) =>
         element?.getBoundingClientRect();
 
-      /* The bar and the list together, as one block, so the gap between the
-         words at the top and the names under them is inside rather than
-         between. */
-      const barBox = boxOf(bar);
-      const listBox = boxOf(list);
-      const block =
-        barBox && listBox
-          ? new DOMRect(
-              Math.min(barBox.left, listBox.left),
-              Math.min(barBox.top, listBox.top),
-              Math.max(barBox.right, listBox.right) -
-                Math.min(barBox.left, listBox.left),
-              Math.max(barBox.bottom, listBox.bottom) -
-                Math.min(barBox.top, listBox.top),
-            )
-          : (barBox ?? listBox);
-
-      if (inside(block) || inside(boxOf(legal))) {
+      /* Each box on its own, never their union. A union is a bounding box, and
+         a bounding box of these two covers a great deal that belongs to
+         neither: the bar runs the full width of the page and the list hangs
+         below its right-hand end, so their union is a band clear across the
+         screen, three hundred pixels deep. Moving left off the names, into the
+         hero, stayed inside it.
+         The padding is what joins them where they should be joined — the bar
+         ends around 90 and the names start around 130, and 24 either side
+         closes that gap without inventing any others. */
+      if (
+        inside(boxOf(bar)) ||
+        inside(boxOf(list)) ||
+        inside(boxOf(legal))
+      ) {
         clearCloseTimer();
         return;
       }
@@ -385,16 +381,35 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
       scheduleMegaMenuClose();
     }
 
+    /* The pointer can also leave without ever being seen outside: off the top
+       of the page into the browser's own chrome, or out of the window
+       altogether. No pointermove is delivered for that, so the last thing seen
+       is a position still on the menu and it would stay open behind whatever
+       was switched to. */
+    function handleDocumentLeave() {
+      scheduleMegaMenuClose();
+    }
+
     document.addEventListener("pointerdown", handlePointerDown);
     document.addEventListener("keydown", handleKeyDown);
     if (megaMenuOpen) {
       document.addEventListener("pointermove", handlePointerMove);
+      document.documentElement.addEventListener(
+        "pointerleave",
+        handleDocumentLeave,
+      );
+      window.addEventListener("blur", handleDocumentLeave);
     }
 
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("pointermove", handlePointerMove);
+      document.documentElement.removeEventListener(
+        "pointerleave",
+        handleDocumentLeave,
+      );
+      window.removeEventListener("blur", handleDocumentLeave);
       clearCloseTimer();
     };
   }, [megaMenuOpen]);
