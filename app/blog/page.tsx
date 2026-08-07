@@ -6,7 +6,7 @@ import { RedactedLines } from "../../components/home/RedactedLines";
 import { SectionEnter } from "../../components/motion/SectionEnter";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
 import { PixelArrow } from "../../components/ui/PixelArrow";
-import { blog } from "../../content/blog";
+import { blog, readingMinutes } from "../../content/blog";
 import { products } from "../../content/home";
 
 export const metadata: Metadata = {
@@ -106,6 +106,73 @@ export default function BlogPage() {
             aria-hidden="true"
             data-service-hero-fade
           />
+        </section>
+
+        {/* A table of arguments, not a feed. At under ten pieces a year a card
+            grid cannot be earned: cards exist to make many things scannable,
+            and there are not many things. A row each, a hairline between, and
+            the thesis said outright rather than an excerpt that makes you click
+            to find out whether clicking was worth it. */}
+        <section
+          className="blog-index"
+          aria-labelledby="blog-index-title"
+          data-route-section
+        >
+          <Container data-enter data-enter-mode="fade">
+            <h2 className="visually-hidden" id="blog-index-title">
+              Writing
+            </h2>
+
+            {blog.posts.length === 0 ? (
+              /* Today's real state, so it is a screen rather than an absence.
+                 The bars are the whole reason they are on this page: everywhere
+                 else on this site they are decoration standing in for writing,
+                 and here they are standing in for writing that is genuinely not
+                 there yet. When the first piece lands they go, and the words
+                 take their place. */
+              <div className="blog-empty">
+                <div className="blog-empty__lines" aria-hidden="true">
+                  <RedactedLines className="blog-empty__bars" />
+                </div>
+
+                <p className="blog-empty__title">{blog.empty.title}</p>
+                <p className="blog-empty__copy">{blog.empty.copy}</p>
+              </div>
+            ) : (
+              <ul className="blog-list">
+                {blog.posts.map((post) => (
+                  <li key={post.slug}>
+                    <a className="blog-row" href={`/blog/${post.slug}`}>
+                      <h3 className="blog-row__title">{post.title}</h3>
+                      <p className="blog-row__thesis">{post.thesis}</p>
+
+                      {/* Date and length together, small, on the margin. The
+                          reader is choosing what to spend time on, so the cost
+                          belongs beside the offer rather than at the end of the
+                          piece. */}
+                      <p className="blog-row__meta">
+                        <time dateTime={post.date}>
+                          {new Date(post.date).toLocaleDateString("en-GB", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </time>
+                        <span aria-hidden="true">·</span>
+                        <span>{readingMinutes(post)} min read</span>
+                      </p>
+
+                      <PixelArrow
+                        className="blog-row__arrow"
+                        direction="up-right"
+                        size="small"
+                      />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Container>
         </section>
       </main>
 
