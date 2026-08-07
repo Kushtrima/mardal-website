@@ -209,19 +209,41 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
       return;
     }
 
-    /* Out on a fade, not a wipe. Reversing the uncover would draw the eye back
-       across words that are on their way out, and the panel has no movement of
-       its own to carry the exit. */
-    gsap.to(menu, {
+    /* The arrival, run backwards.
+       This was a flat 180ms fade of the whole panel, on the argument that an
+       exit is in the way of whatever was wanted instead. That is true of its
+       length and not of its shape: leaving on a fade meant the menu left in a
+       way it never arrived, and the one motion the panel has was only ever seen
+       half of.
+       So the same two layers, the same order reversed. The names are covered
+       from the bottom up, each by the edge that uncovered it travelling back
+       the way it came, and the ground darkens last — the white is the thing
+       the names are written on, so it cannot go before them. */
+    gsap.set(menu, { pointerEvents: "none" });
+
+    gsap.to(entries, {
+      clipPath: "inset(0 100% 0 0)",
+      duration: 0.4,
+      ease: "power2.inOut",
+      /* From the end: the last name to arrive is the first to go, which is what
+         makes this read as the arrival reversed rather than a second, different
+         wipe that happens to run the other way. */
+      stagger: { each: 0.04, from: "end" },
+    });
+
+    gsap.to(ground, {
       autoAlpha: 0,
-      /* Quick, and deliberately not matched to the arrival. Coming in, the white
-         is the thing being looked at and can take its time; going out it is in
-         the way of whatever was wanted instead, and every millisecond of it is
-         spent waiting. */
-      duration: 0.18,
-      ease: "power2.out",
+      duration: 0.45,
+      ease: "power1.inOut",
+      /* Held back the way the names were held back coming in, so the last name
+         is covered as the white is going rather than after it has gone.
+         The whole exit lands at 0.63s against the arrival's 1.10s. A true
+         reversal at full length would leave the white standing in front of the
+         page for over a second after the pointer had already left it, and the
+         old fade was right about that much. */
+      delay: 0.18,
       onComplete: () => {
-        gsap.set(menu, { pointerEvents: "none" });
+        gsap.set(menu, { autoAlpha: 0 });
       },
     });
   }, [activeMenu, megaMenuOpen]);
