@@ -1041,9 +1041,17 @@ video {
    the row needs no measurements of its own — space-between puts them there.
    The panel's padding does the rest: padding-left is --menu-ground, the same
    band the names are pulled back by, so the small print lines up under them. */
+/* One row, always. This wrapped before, and wrapping was the wrong give: the
+   button dropped to a line of its own and space-between, with one item left on
+   that line, parked it hard against the LEFT margin, directly under the small
+   print it is supposed to sit opposite.
+   The row does not need to wrap to fit, because the small print already wraps
+   inside itself. So the giving happens one level down, where two short lines of
+   legal text cost nothing, instead of up here where it costs the whole
+   arrangement. */
 .mega-menu__foot {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
   gap: clamp(1rem, 2.4vw, 2.25rem);
@@ -1055,7 +1063,21 @@ video {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: clamp(0.75rem, 1.6vw, 1.4rem);
+  /* The space either side of each hairline, named because the gap and the
+     padding that follows it have to be the same number: the line is drawn on
+     the padded item's left edge, so the gap is the space before it and the
+     padding is the space after, and the line only looks centred while they
+     agree. They were written out twice at 1.4rem, which is how the row came to
+     be 44.8px wider than anyone chose — the two are not alternatives, they add.
+     Tightened from 1.4rem because the whole line was 360px against 347px of
+     room and orphaned "Cookies" onto a second row. */
+  --legal-gap: clamp(0.6rem, 1.2vw, 1rem);
+
+  /* A flex item will not shrink below its content unless told it may, and this
+     one has to be the thing that gives: without it the row cannot narrow, and
+     the row that cannot narrow is the one that used to wrap. */
+  min-width: 0;
+  gap: var(--legal-gap);
   color: var(--ink);
   font-size: var(--text-small);
   letter-spacing: -0.02em;
@@ -1066,7 +1088,10 @@ video {
    --panel-line: that token is black at 26%, cut for the purple slab. */
 .mega-menu__legal > * + * {
   position: relative;
-  padding-left: clamp(0.75rem, 1.6vw, 1.4rem);
+  /* The other half of the pair. See --legal-gap: this is the space after the
+     line, the gap is the space before it, and they are the same number so the
+     line sits between the two words rather than beside one of them. */
+  padding-left: var(--legal-gap);
 }
 
 .mega-menu__legal > * + *::before {
@@ -1214,6 +1239,10 @@ video {
   --accent: #08080a;
   --accent-contrast: #ffffff;
 
+  /* Never the thing that gives. The small print beside it wraps instead, and a
+     button squeezed narrower than its own label is not a smaller button, it is
+     a broken one. */
+  flex: none;
   min-width: clamp(5.4rem, 6.4vw, 6.6rem);
   min-height: clamp(2.05rem, 2.5vw, 2.3rem);
   padding: 0.4rem 0.95rem;
