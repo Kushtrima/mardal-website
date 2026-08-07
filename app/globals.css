@@ -1036,15 +1036,20 @@ video {
   list-style: none;
 }
 
-/* The legal line, in the far corner: the list is at the head on the left, so
-   this goes to the foot on the right and the panel's emptiness sits between
-   them rather than under everything. In the page ink, since on this ground the
-   black it wears in the footer would not be there at all. */
+/* The legal line, at the foot of the panel on the same edge the names start
+   from. In the page ink, since on this ground the black it wears in the footer
+   would not be there at all.
+   It sat in the far corner before, on the argument that the panel's emptiness
+   should sit between the two rather than under everything. Diagonally opposite
+   the list, it read as a second thing the panel was doing; under it, it is the
+   foot of the one column the panel already is. */
 .mega-menu__legal {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  align-self: flex-end;
+  /* The panel's own padding-left is --menu-ground, the same band the names are
+     pulled back by, so this needs no offset to line up with them. */
+  align-self: flex-start;
   gap: clamp(0.75rem, 1.6vw, 1.4rem);
   color: var(--ink);
   font-size: var(--text-small);

@@ -94,7 +94,15 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     const menu = megaMenuRef.current;
     if (!menu) return;
 
-    const entries = menu.querySelectorAll("[data-mega-entry]");
+    /* Two sets, because the legal line belongs to two of the three moves and
+       not to the third. It arrives with the names and it leaves with them, but
+       running along the bar does not change it — the same words are already
+       there — so replaying it on every switch was the panel announcing
+       something that had not happened. */
+    const entries = menu.querySelectorAll(
+      "[data-mega-entry], [data-mega-legal]",
+    );
+    const names = menu.querySelectorAll("[data-mega-entry]");
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -157,7 +165,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
            become another, short enough that running along the bar is not a
            queue. */
         gsap.fromTo(
-          entries,
+          names,
           { autoAlpha: 0, clipPath: "none", y: 14 },
           {
             autoAlpha: 1,
@@ -592,7 +600,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
             {/* The same line the footer carries, in the corner the panel
                 leaves empty. It is the one place these can be reached without
                 first travelling the whole page. */}
-            <div className="mega-menu__legal" data-mega-entry>
+            <div className="mega-menu__legal" data-mega-legal>
               <span className="mega-menu__copy">
                 {`© ${new Date().getFullYear()} Mardal`}
               </span>
