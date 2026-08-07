@@ -64,7 +64,12 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     setMegaMenuOpen(true);
   }
 
-  function scheduleMegaMenuClose(delay = 170) {
+  /* 170ms before, which was insurance against a gap between the bar and the
+     panel that no longer exists: the ground reaches the top of the window and
+     the bar is drawn on it, so there is nothing to cross and nothing to
+     forgive. What is left is only enough to ignore a pointer clipping a corner
+     on its way past. */
+  function scheduleMegaMenuClose(delay = 60) {
     clearCloseTimer();
     closeTimerRef.current = window.setTimeout(() => {
       setMegaMenuOpen(false);
@@ -94,21 +99,25 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
         autoAlpha: megaMenuOpen ? 1 : 0,
         pointerEvents: megaMenuOpen ? "auto" : "none",
       });
-      gsap.set(ground, { clipPath: "none" });
+      gsap.set(ground, { autoAlpha: 1 });
       gsap.set(entries, { autoAlpha: 1, clipPath: "none" });
       return;
     }
 
-    /* The panel does not move. The ground is drawn across from the left and the
-       names are uncovered behind it, one after the next — the same direction
-       the footer rules wipe in, so opening is one gesture rather than several.
+    /* The panel does not move. The ground lightens where it stands and the
+       names are uncovered on it, one after the next.
 
-       The ground was a fade before, and a fade is what made it feel cheap: a
-       white area this size changing opacity reads as a flash, and because the
-       white was the panel's own background the only way to bring it in was to
-       fade the panel, which took the names with it on top of the wipe they were
-       already doing. Two motions on the same words, neither finishing what it
-       started.
+       The ground is a fade, and slow — no edge travels across it. It was a wipe
+       for one version, on the argument that it would match the names and the
+       footer rules; asked directly, a wipe is not what smooth means here. An
+       edge crossing this much of the screen is an event, and the ground is
+       meant to be the thing the menu is written on, not something that
+       announces itself.
+
+       What it must not do is take the names with it, and that is what its own
+       layer buys. The panel's opacity used to carry both, so every name faded
+       AND wiped — two motions on the same word, neither finishing what it
+       started. Now the ground fades and only the names are clipped.
 
        Clipped rather than faded or slid: a fade makes a word arrive everywhere
        at once and says nothing about direction, and a slide moves the word off
@@ -127,32 +136,36 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
       });
 
       if (wasOpen) {
-        gsap.set(ground, { clipPath: "none" });
-        /* Up on the spot, and quickly. This is a change of subject, not an
-           entrance: long enough not to be a cut, short enough that running
-           along the bar never feels like waiting in a queue. */
+        gsap.set(ground, { autoAlpha: 1 });
+        /* Up on the spot. This is a change of subject, not an entrance, so it
+           stays where it is — but at 180ms it read as a flicker rather than a
+           change, so it is nearly twice that now: long enough to see one list
+           become another, short enough that running along the bar is not a
+           queue. */
         gsap.fromTo(
           entries,
           { autoAlpha: 0, clipPath: "none" },
           {
             autoAlpha: 1,
-            duration: 0.18,
+            duration: 0.35,
             ease: "power2.out",
-            stagger: 0.02,
+            stagger: 0.03,
           },
         );
         return;
       }
 
-      /* The ground first and on its own, so it is under the names before they
-         are worth reading. */
+      /* The ground lightens in place, slowly, and without an edge. */
       gsap.fromTo(
         ground,
-        { clipPath: "inset(0 100% 0 0)" },
+        { autoAlpha: 0 },
         {
-          clipPath: "inset(0 0% 0 0)",
-          duration: 0.5,
-          ease: "power2.inOut",
+          autoAlpha: 1,
+          duration: 0.6,
+          /* Gentle at both ends. A power2 out arrives at speed and stops, which
+             on a plain lightening reads as the white snapping the last of the
+             way. */
+          ease: "power1.inOut",
         },
       );
 
@@ -165,9 +178,9 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
              both ends so no word snaps into place. */
           duration: 0.55,
           ease: "power2.inOut",
-          /* Behind the ground rather than with it — the white has a head start
-             and keeps it, so no name is ever uncovered over the page. */
-          delay: 0.12,
+          /* Held back until the ground is halfway up, so the names are read on
+             white rather than over the page showing through it. */
+          delay: 0.22,
           /* Seven items is the longest menu, so the last one starts at 0.33s
              after that. The first names are readable early, which is what
              matters: you are choosing from the top of the list while the foot
@@ -183,9 +196,11 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
        its own to carry the exit. */
     gsap.to(menu, {
       autoAlpha: 0,
-      /* Slower than it was, to match the ground coming up. A 200ms exit against
-         a 400ms arrival reads as the white being snatched away. */
-      duration: 0.32,
+      /* Quick, and deliberately not matched to the arrival. Coming in, the white
+         is the thing being looked at and can take its time; going out it is in
+         the way of whatever was wanted instead, and every millisecond of it is
+         spent waiting. */
+      duration: 0.18,
       ease: "power2.out",
       onComplete: () => {
         gsap.set(menu, { pointerEvents: "none" });
