@@ -47,6 +47,23 @@ const WORDS_A_MINUTE = 200;
  * edited, and this site does not ship facts it cannot keep true. Counting the
  * words cannot go stale.
  */
+/**
+ * One date format, in one place.
+ *
+ * The index and the piece itself both print it, and two calls to
+ * toLocaleDateString written out separately are two chances to drift apart.
+ * Locale is pinned rather than left to the reader's: the site is English only
+ * by a recorded decision, so a date that reformats itself per visitor would be
+ * the one thing on the page that did.
+ */
+export function formatDate(date: string): string {
+  return new Date(date).toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 export function readingMinutes(post: BlogPost): number {
   const words = post.body
     .map((block) => block.text.trim().split(/\s+/).length)

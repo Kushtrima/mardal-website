@@ -5170,109 +5170,161 @@ video {
   background: var(--service-surface);
 }
 
-.blog-list {
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--line-soft);
-  list-style: none;
+/* The mark on a piece. A ground of its own, because a drawing sitting straight
+   on the page reads as an ornament attached to the text, and one inside a
+   bordered field reads as a plate belonging to the piece. */
+.blog-plate {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--shape-md);
+  background: rgb(255 255 255 / 3.5%);
 }
 
-/* A row, not a card. The title column is fixed so the pieces read down the
-   page as a list; letting each title set its own column would ragged them
-   against one another. The margin holds the date and the length, and the mark
-   sits on the right where every other mark on this site sits. */
-.blog-row {
+.blog-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: var(--accent);
+  /* A texture behind a title, not the subject. At full strength the bars
+     compete with the one thing on the card that matters. */
+  opacity: 0.5;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+/* ------------------------------- Blog: lead ------------------------------- */
+
+/* One piece gets the width. An index where every entry is the same size asks
+   the reader to choose without telling them anything, and the piece at the top
+   of this run is the argument the other two rest on. */
+.blog-lead {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
-  /* Columns only. `gap` sets both axes, and the second row here is the date
-     sitting under its own title — a four-rem column gap opened the same hole
-     vertically and pushed the date halfway to the next piece. The date's own
-     margin sets that distance instead, because it is a different measurement
-     that happens to have been written once. */
-  column-gap: clamp(1.25rem, 4vw, 4rem);
-  row-gap: 0;
-  align-items: baseline;
-  padding-block: clamp(1.75rem, 4vh, 2.75rem);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+  padding-bottom: clamp(2.5rem, 6vh, 4rem);
   border-bottom: 1px solid var(--line-soft);
 }
 
-/* Big, because there are under ten of these and each one is the offer. The
-   display face, at the step below the page titles. */
-.blog-row__title {
-  margin: 0;
-  grid-column: 1;
-  font-family: var(--type-display);
-  font-size: clamp(1.5rem, 2.4vw, 2.25rem);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1.08;
-  text-wrap: balance;
+.blog-lead__art {
+  display: block;
+  aspect-ratio: 16 / 10;
 }
 
-.blog-row__thesis {
-  margin: 0;
-  grid-column: 2;
-  font-size: var(--text-copy);
-  line-height: var(--service-leading-copy);
+.blog-lead__words {
+  display: block;
 }
 
-/* The cost, beside the offer. Someone choosing what to spend twenty minutes on
-   needs to know it is twenty minutes before the click, not after it. */
-.blog-row__meta {
+.blog-lead__meta,
+.blog-card__meta {
   display: flex;
   gap: 0.5em;
   align-items: baseline;
-  margin: clamp(0.5rem, 1.2vh, 0.75rem) 0 0;
-  grid-column: 1;
-  grid-row: 2;
   font-size: var(--text-small);
   letter-spacing: -0.01em;
-  opacity: 0.62;
+  opacity: 0.58;
 }
 
-.blog-row__arrow {
-  grid-column: 3;
-  grid-row: 1;
-  align-self: center;
+.blog-lead__title {
+  max-width: 16ch;
+  margin: clamp(0.75rem, 2vh, 1.1rem) 0 0;
+  font-family: var(--type-title);
+  font-size: clamp(2rem, 3.4vw, 3.25rem);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.blog-lead__thesis {
+  display: block;
+  max-width: 46ch;
+  margin-top: clamp(0.75rem, 2vh, 1.1rem);
+  font-size: var(--text-copy);
+  /* Reading leading, not the page's 1.3. See .blog-article__body. */
+  line-height: 1.6;
+  opacity: 0.78;
+}
+
+.blog-lead__more {
+  display: inline-flex;
+  gap: 0.55em;
+  align-items: center;
+  margin-top: clamp(1rem, 2.5vh, 1.5rem);
   color: var(--accent);
+  font-size: var(--text-body);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* ------------------------------- Blog: grid ------------------------------- */
+
+.blog-grid {
+  display: grid;
+  margin: clamp(2.5rem, 6vh, 4rem) 0 0;
+  padding: 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+  gap: clamp(1.75rem, 4vw, 3rem);
+  list-style: none;
+}
+
+.blog-card {
+  display: block;
+}
+
+.blog-card__art {
+  display: block;
+  aspect-ratio: 16 / 10;
+  margin-bottom: clamp(1rem, 2.5vh, 1.4rem);
+}
+
+.blog-card__title {
+  margin: clamp(0.6rem, 1.5vh, 0.9rem) 0 0;
+  font-family: var(--type-display);
+  font-size: clamp(1.2rem, 1.5vw, 1.5rem);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.blog-card__thesis {
+  display: block;
+  margin-top: 0.55rem;
+  font-size: var(--text-copy);
+  line-height: 1.6;
+  opacity: 0.72;
 }
 
 @media (hover: hover) {
-  /* Colour only. The rows stack against each other, so anything that moves
-     pushes its neighbours. */
-  .blog-row:hover .blog-row__title {
+  /* The plate brightens and the title takes the accent. Colour only: these sit
+     in a grid, so anything that moves shoves its neighbours. */
+  .blog-lead:hover .blog-art,
+  .blog-card:hover .blog-art {
+    opacity: 0.82;
+  }
+
+  .blog-lead:hover .blog-lead__title,
+  .blog-card:hover .blog-card__title {
     color: var(--accent);
   }
 }
 
-/* One column once the two do not fit, and the mark leaves rather than stacking:
-   at this width the title already runs the full measure, and a mark below it
-   reads as another row. */
 @media (max-width: 48rem) {
-  .blog-row {
+  .blog-lead {
     grid-template-columns: minmax(0, 1fr);
-    column-gap: 0;
-    row-gap: 0.75rem;
+    gap: clamp(1rem, 3vh, 1.5rem);
   }
 
-  .blog-row__title,
-  .blog-row__thesis,
-  .blog-row__meta {
-    grid-column: 1;
-    grid-row: auto;
-  }
-
-  .blog-row__arrow {
-    display: none;
+  .blog-lead__title {
+    max-width: none;
   }
 }
 
 /* ------------------------------ Blog: empty ------------------------------- */
 
-/* The state this page is actually in, so it is designed rather than left as an
-   absence. The bars are the point of putting them here: everywhere else on this
-   site they stand in for writing as decoration, and here they stand in for
-   writing that genuinely is not there yet. */
+/* The state this page is in before anything is published, so it is a designed
+   screen rather than an absence. */
 .blog-empty {
   position: relative;
   padding-block: clamp(3rem, 9vh, 6rem);
@@ -5285,8 +5337,6 @@ video {
   right: 0;
   width: min(52%, 30rem);
   aspect-ratio: 716 / 336;
-  /* Faint, and behind. It is the ground the two sentences are written on, not
-     a second thing to look at. */
   opacity: 0.18;
   transform: translateY(-50%);
   pointer-events: none;
@@ -5314,105 +5364,185 @@ video {
   max-width: 46ch;
   margin: clamp(0.75rem, 2vh, 1.25rem) 0 0;
   font-size: var(--text-copy);
-  line-height: var(--service-leading-copy);
+  line-height: 1.6;
   opacity: 0.72;
 }
 
 /* ----------------------------- Blog: one piece ---------------------------- */
 
 .blog-article {
-  padding-block: clamp(3rem, 9vh, 6rem) clamp(4rem, 12vh, 8rem);
+  padding-block: clamp(2.5rem, 7vh, 4.5rem) clamp(4rem, 12vh, 8rem);
   color: var(--service-ink);
   background: var(--service-surface);
 }
 
-/* No hero on a piece. A full-height opening is right for a page that is selling
-   and wrong for one that is being read: it puts a screenful of nothing between
-   the title and the first line of the argument. The reading starts in the first
-   viewport instead. */
-.blog-article__head {
-  margin-bottom: clamp(2.5rem, 6vh, 4rem);
+/* Centred, and this is the correction that mattered most. The first version
+   pinned the column to the left gutter and left the right half of a 1456px
+   page empty, so every line of a long read began at the far edge of a wide
+   black field with nothing opposite it. A reading column belongs in the middle
+   of the page it is read on. */
+.blog-article__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* The measure belongs on the title, not on the block around it. `ch` is the
-   width of a zero in the element's OWN font, and this heading is set in the
-   title face at display size while the block around it inherits the body face
-   at body size — so a max-width in `ch` on the block was measured in the wrong
-   font entirely and squeezed the heading into a six-line column. */
-.blog-article__title {
-  max-width: 16ch;
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading-xl);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
-  line-height: var(--leading-heading-xl);
-  text-wrap: balance;
+.blog-article__head,
+.blog-article__body,
+.blog-next {
+  width: 100%;
+  max-width: 40rem;
 }
 
 .blog-article__meta {
   display: flex;
   gap: 0.5em;
   align-items: baseline;
-  margin: clamp(1rem, 2.5vh, 1.5rem) 0 0;
+  margin: 0 0 clamp(0.75rem, 2vh, 1.1rem);
   font-size: var(--text-small);
   letter-spacing: -0.01em;
-  opacity: 0.62;
+  opacity: 0.58;
 }
 
-/* The measure, and the only reason this column exists. Prose past about 75
-   characters loses the line it is on when the eye comes back to the left. */
+/* The measure belongs on the title, not on the block around it. `ch` is the
+   width of a zero in the element's OWN font, and this heading is set in the
+   title face at display size while the block around it inherits the body face
+   at body size, so a max-width in `ch` there is counted in the wrong font. */
+.blog-article__title {
+  max-width: 18ch;
+  margin: 0;
+  font-family: var(--type-title);
+  font-size: clamp(2.25rem, 4vw, 3.5rem);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+/* The sentence the index promised, kept at the top of the piece rather than
+   left for the reader to find again. Larger than the body, lighter than the
+   title. */
+.blog-article__standfirst {
+  margin: clamp(1rem, 2.5vh, 1.5rem) 0 0;
+  font-size: clamp(1.05rem, 1.35vw, 1.25rem);
+  line-height: 1.5;
+  opacity: 0.78;
+}
+
+/* Wider than the words. The plate breaks the measure on both sides, which is
+   what tells the eye the reading has not started yet. */
+.blog-article__art {
+  display: block;
+  width: 100%;
+  max-width: 52rem;
+  aspect-ratio: 16 / 9;
+  margin-block: clamp(2rem, 5vh, 3.25rem);
+}
+
+/* The measure, and the only reason this column exists. Prose past roughly 75
+   characters loses the line it is on when the eye comes back to the left.
+
+   The leading is 1.6 rather than the page's --leading-body of 1.3. That token
+   was set deliberately and is not touched here: it is right for a marketing
+   paragraph of two lines and wrong for nine hundred words, where the eye needs
+   a clear track back to the start of the next line. This is the one place on
+   the site that has nine hundred words. */
 .blog-article__body {
-  max-width: 68ch;
-  font-size: var(--text-copy);
-  line-height: var(--service-leading-copy);
+  font-size: clamp(1rem, 1.1vw, 1.0625rem);
+  line-height: 1.6;
 }
 
 .blog-article__copy {
-  margin: 0 0 1.25em;
+  margin: 0 0 1.35em;
 }
 
 /* More space above than below, so a heading belongs to what follows it rather
    than floating between two blocks. */
 .blog-article__heading {
-  margin: 2.25em 0 0.75em;
+  margin: 2.5em 0 0.7em;
+  font-family: var(--type-display);
+  font-size: clamp(1.2rem, 1.6vw, 1.45rem);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.15;
+}
+
+/* A rule and a shift, not a coloured slab, and set in the display face so the
+   eye registers a break in the reading rather than another paragraph that
+   happens to be bigger. */
+.blog-article__quote {
+  margin: 2.25em 0;
+  padding-left: clamp(1rem, 2.5vw, 1.75rem);
+  border-left: 1px solid var(--accent);
   font-family: var(--type-display);
   font-size: clamp(1.25rem, 1.8vw, 1.6rem);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
-  line-height: 1.12;
+  line-height: 1.25;
 }
 
-/* A rule and a shift, not a coloured slab. The line is the site's hairline at
-   the accent, which is the only place in a piece any colour appears. */
-.blog-article__quote {
-  margin: 2em 0;
-  padding-left: clamp(1rem, 2.5vw, 1.75rem);
-  border-left: 1px solid var(--accent);
+/* ------------------------------- Blog: next ------------------------------- */
+
+.blog-next {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: center;
+  justify-content: space-between;
+  margin-top: clamp(3rem, 8vh, 5rem);
+  padding-top: clamp(1.5rem, 4vh, 2.25rem);
+  border-top: 1px solid var(--line-soft);
+}
+
+/* Named, because "read more" is not an offer. */
+.blog-next__piece {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 1fr auto;
+  gap: 0.25rem clamp(0.75rem, 2vw, 1.25rem);
+  align-items: center;
+}
+
+.blog-next__label {
+  grid-column: 1;
+  font-size: var(--text-small);
+  letter-spacing: -0.01em;
+  opacity: 0.58;
+}
+
+.blog-next__title {
+  grid-column: 1;
   font-family: var(--type-display);
-  font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+  font-size: clamp(1.05rem, 1.4vw, 1.3rem);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
-/* Back to the list before the call to action. Someone who has finished a piece
-   and is not ready to write an email is looking for the next piece, and a page
-   that only offers contact loses them. */
+.blog-next__arrow {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  color: var(--accent);
+}
+
 .blog-article__back {
   display: inline-flex;
   gap: 0.55em;
   align-items: center;
-  margin-top: clamp(2.5rem, 6vh, 4rem);
   font-size: var(--text-body);
   letter-spacing: -0.02em;
   line-height: 1;
-  transition: color var(--duration-fast) var(--ease-standard);
+  opacity: 0.72;
+  transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
 @media (hover: hover) {
-  .blog-article__back:hover {
+  .blog-next__piece:hover .blog-next__title {
     color: var(--accent);
+  }
+
+  .blog-article__back:hover {
+    opacity: 1;
   }
 }
 

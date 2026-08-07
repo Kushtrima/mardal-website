@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { Container } from "../../components/layout/Container";
 import { SiteFooter } from "../../components/layout/SiteFooter";
 import { SiteHeader } from "../../components/layout/SiteHeader";
+import { BlogArt } from "../../components/blog/BlogArt";
 import { RedactedLines } from "../../components/home/RedactedLines";
 import { SectionEnter } from "../../components/motion/SectionEnter";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
 import { PixelArrow } from "../../components/ui/PixelArrow";
-import { blog, readingMinutes } from "../../content/blog";
+import { blog, formatDate, readingMinutes } from "../../content/blog";
 import { products } from "../../content/home";
 
 export const metadata: Metadata = {
@@ -26,6 +27,8 @@ export const metadata: Metadata = {
  * ServiceOfferingsScroll. There is no journey here, and no body at all yet.
  */
 export default function BlogPage() {
+  const [lead, ...rest] = blog.posts;
+
   return (
     <>
       <SectionEnter />
@@ -108,11 +111,16 @@ export default function BlogPage() {
           />
         </section>
 
-        {/* A table of arguments, not a feed. At under ten pieces a year a card
-            grid cannot be earned: cards exist to make many things scannable,
-            and there are not many things. A row each, a hairline between, and
-            the thesis said outright rather than an excerpt that makes you click
-            to find out whether clicking was worth it. */}
+        {/* An index of writing needs something to look at, and the first
+            version of this had nothing: three ruled rows of text on a black
+            field, which reads as a directory listing rather than as a
+            publication. Every piece carries a mark now, and the newest is given
+            the width to lead with.
+
+            The marks are drawn, not photographed. This site has no pictures and
+            will not use stock, so the picture comes from the language it
+            already speaks: a page of writing with the words blacked out, set
+            fresh for each piece from its own slug. */}
         <section
           className="blog-index"
           aria-labelledby="blog-index-title"
@@ -139,38 +147,64 @@ export default function BlogPage() {
                 <p className="blog-empty__copy">{blog.empty.copy}</p>
               </div>
             ) : (
-              <ul className="blog-list">
-                {blog.posts.map((post) => (
-                  <li key={post.slug}>
-                    <a className="blog-row" href={`/blog/${post.slug}`}>
-                      <h3 className="blog-row__title">{post.title}</h3>
-                      <p className="blog-row__thesis">{post.thesis}</p>
+              <>
+                {/* The lead. One piece gets the width, because an index where
+                    everything is the same size asks the reader to choose
+                    without telling them anything, and the first piece here is
+                    the argument the others rest on. */}
+                <a className="blog-lead" href={`/blog/${lead.slug}`}>
+                  <span className="blog-lead__art blog-plate" aria-hidden="true">
+                    <BlogArt slug={lead.slug} className="blog-art" />
+                  </span>
 
-                      {/* Date and length together, small, on the margin. The
-                          reader is choosing what to spend time on, so the cost
-                          belongs beside the offer rather than at the end of the
-                          piece. */}
-                      <p className="blog-row__meta">
-                        <time dateTime={post.date}>
-                          {new Date(post.date).toLocaleDateString("en-GB", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
-                        </time>
-                        <span aria-hidden="true">·</span>
-                        <span>{readingMinutes(post)} min read</span>
-                      </p>
+                  <span className="blog-lead__words">
+                    <span className="blog-lead__meta">
+                      <time dateTime={lead.date}>{formatDate(lead.date)}</time>
+                      <span aria-hidden="true">·</span>
+                      <span>{readingMinutes(lead)} min read</span>
+                    </span>
 
+                    <h3 className="blog-lead__title">{lead.title}</h3>
+                    <span className="blog-lead__thesis">{lead.thesis}</span>
+
+                    <span className="blog-lead__more">
+                      Read it
                       <PixelArrow
-                        className="blog-row__arrow"
+                        className="blog-lead__arrow"
                         direction="up-right"
                         size="small"
                       />
-                    </a>
-                  </li>
-                ))}
-              </ul>
+                    </span>
+                  </span>
+                </a>
+
+                {rest.length > 0 ? (
+                  <ul className="blog-grid">
+                    {rest.map((post) => (
+                      <li key={post.slug}>
+                        <a className="blog-card" href={`/blog/${post.slug}`}>
+                          <span className="blog-card__art blog-plate" aria-hidden="true">
+                            <BlogArt slug={post.slug} className="blog-art" />
+                          </span>
+
+                          <span className="blog-card__meta">
+                            <time dateTime={post.date}>
+                              {formatDate(post.date)}
+                            </time>
+                            <span aria-hidden="true">·</span>
+                            <span>{readingMinutes(post)} min read</span>
+                          </span>
+
+                          <h3 className="blog-card__title">{post.title}</h3>
+                          <span className="blog-card__thesis">
+                            {post.thesis}
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </>
             )}
           </Container>
         </section>
