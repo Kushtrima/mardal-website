@@ -56,24 +56,53 @@ const GESTURE_GAP_MS = 120;
  */
 const STEP_LOCK_MS = 1000;
 
-/** Below this the two columns stack and there is no room to hold anything. */
-const MIN_WIDTH = "(min-width: 60rem)";
-
-/** Whether the section is driven by the scrollbar or by a timer. */
-function canPin() {
-  return (
-    window.matchMedia(MIN_WIDTH).matches &&
-    !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-}
+/**
+ * When the run is driven by the scrollbar rather than the clock.
+ *
+ * This is the rule in globals.css written the other way round. The layout
+ * stacks at `(max-width: 64rem), (hover: none)`, and the run may only be held
+ * while there are two columns to hold — so this is the negation of that, not a
+ * round number chosen beside it. It was 60rem before, which left 960 to 1024
+ * pinning a layout that had already stacked.
+ */
+const TWO_COLUMN = "(min-width: 64.01rem) and (hover: hover)";
+const NO_MOTION = "(prefers-reduced-motion: reduce)";
 
 export function IndustriesSection() {
   const [activeIndex, setActiveIndex] = useState(0);
+  /**
+   * Which of the two drivers is running, kept in step with the window.
+   *
+   * This was a function called once inside each effect, and once was not
+   * enough: a window resized past the breakpoint left the wrong driver in
+   * place until the page was reloaded — pinning a layout that had stacked, or
+   * running the clock under a layout that could have been held. Held as state
+   * instead, both effects follow it.
+   */
+  const [scrollDriven, setScrollDriven] = useState(false);
   const listRef = useRef<HTMLUListElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   /* What the wheel counts from. The rendered index comes from the scroll
      position; this follows it so a gesture knows which step it is leaving. */
   const indexRef = useRef(0);
+
+  useEffect(() => {
+    const twoColumn = window.matchMedia(TWO_COLUMN);
+    const noMotion = window.matchMedia(NO_MOTION);
+
+    function sync() {
+      setScrollDriven(twoColumn.matches && !noMotion.matches);
+    }
+
+    sync();
+    twoColumn.addEventListener("change", sync);
+    noMotion.addEventListener("change", sync);
+
+    return () => {
+      twoColumn.removeEventListener("change", sync);
+      noMotion.removeEventListener("change", sync);
+    };
+  }, []);
 
   /**
    * Held in place, and stepped through one industry per gesture.
@@ -94,7 +123,7 @@ export function IndustriesSection() {
    */
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section || !canPin()) return;
+    if (!section || !scrollDriven) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
@@ -152,7 +181,7 @@ export function IndustriesSection() {
       window.removeEventListener("wheel", onWheel);
       context.revert();
     };
-  }, []);
+  }, [scrollDriven]);
 
   /* The clock is the fallback, not a second driver: where the section is held,
      the scrollbar owns the run and a timer underneath it would fight for the
@@ -161,7 +190,7 @@ export function IndustriesSection() {
     const list = listRef.current;
     if (!list) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (canPin()) return;
+    if (scrollDriven) return;
 
     let timer: number | undefined;
 
@@ -199,7 +228,7 @@ export function IndustriesSection() {
       observer.disconnect();
       stop();
     };
-  }, []);
+  }, [scrollDriven]);
 
   return (
     <section
