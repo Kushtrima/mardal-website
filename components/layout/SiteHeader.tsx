@@ -623,6 +623,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
               <Button
                 className="mega-menu__cta"
                 href="#contact"
+                variant="secondary"
                 onClick={() => setMegaMenuOpen(false)}
               >
                 Hire us

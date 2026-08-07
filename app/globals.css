@@ -1190,25 +1190,24 @@ video {
   display: none;
 }
 
-/* The one filled thing in the panel, and smaller than the names above it rather
-   than larger: a filled shape is already the loudest thing on this much white,
-   and size on top of contrast makes it shout. It reads as a control because it
-   is filled, so it does not have to be big as well.
+/* Drawn rather than filled, and smaller than the names above it rather than
+   larger: on this much white an outline is enough to read as a control, and a
+   fill at rest would be the loudest thing in a panel whose whole job is the
+   list. Filling on hover is what it has left to say.
 
-   The accent tokens are set on the button rather than taken from the panel.
-   The panel's --accent is the purple that marks the open menu in the bar, and
-   the one fill down here has nothing to do with that mark. Ink instead, which
-   is also what it wore in the bar whenever the menu was open — that was a
-   .site-header--mega-open override, needed only because the button lived on the
-   black bar and the white came up underneath it. On the panel there is no other
-   ground for it to stand on and the override is gone.
+   The tokens are set on the button rather than taken from the panel. The
+   panel's --accent is the purple that marks the open menu up in the bar, and
+   this has nothing to do with that mark; --line is the panel's hairline at 72%,
+   which on white is a grey, and this outline is meant to be ink. Both are named
+   here at full black.
 
-   --accent-strong lifts rather than dims on hover: this is a dark fill on
-   white, so there is somewhere darker to go and dimming it toward the ground
-   would read as the button fading out. */
+   It wore a fill in the bar, white on the black, and the header had to swap it
+   to ink on every open — a .site-header--mega-open override that existed only
+   because the white came up underneath it. On the panel there is no other
+   ground for it to stand on, and that override is gone. */
 .mega-menu__cta {
+  --line: #08080a;
   --accent: #08080a;
-  --accent-strong: #2a2a30;
   --accent-contrast: #ffffff;
 
   min-width: clamp(5.4rem, 6.4vw, 6.6rem);
@@ -1221,11 +1220,20 @@ video {
   overflow: hidden;
 }
 
-/* No glow. --shadow-accent is a purple cast, drawn to sit under a purple
-   button; under a black one on white it reads as a smudge rather than a lift. */
+/* Colour, and only colour. .button:hover raises every button on the site by
+   2px, and it earns that on the page, where it is one moving thing among
+   others. Here it is the last thing in a panel that has come to rest and holds
+   perfectly still, so 2px of travel read as the button coming loose rather than
+   answering. Filling it says the same thing without moving it.
+
+   No glow either. --shadow-accent is a purple cast drawn to sit under a purple
+   button; under a black one on white it is a smudge. */
 .mega-menu__cta:hover {
-  background: var(--accent-strong);
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-contrast);
   box-shadow: none;
+  transform: none;
 }
 
 .hero-content {
