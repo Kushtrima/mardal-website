@@ -18,14 +18,13 @@ import { footer, menu } from "../../content/home";
 type NavigationKey = (typeof menu)[number]["key"];
 
 /**
- * How far past the bar or the names the pointer may stray before the menu is
- * counted as left.
+ * How far past the white sheet the pointer may stray before the menu is counted
+ * as left.
  *
- * The region it pads is the bar and the list, NOT the white ground. The ground
- * reaches the top, right and bottom edges of the window, so treating it as the
- * menu meant more than half the screen counted as being on it: moving down or
- * right to read the page kept it open, and only going left onto the hero closed
- * it. The menu, as far as anyone using it is concerned, is the words.
+ * Only one edge is ever really tested against this. The sheet reaches the top,
+ * right and bottom of the window, so the single edge there is anything to cross
+ * is the left one, onto the page beside it — and the slop forgives a pointer
+ * clipping that edge on its way down the names.
  */
 const KEEP_OPEN_PADDING = 24;
 
@@ -72,8 +71,21 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
      forgive. What is left is only enough to ignore a pointer clipping a corner
      on its way past. */
   function scheduleMegaMenuClose(delay = 60) {
-    clearCloseTimer();
+    /* Once, and then left alone. This used to clear the pending timer and start
+       a new one on every call, which is fine for a single event and wrong for
+       the one thing that actually calls it: a pointer moving off the menu fires
+       pointermove the whole way, and every one of those restarted the
+       countdown. The menu would not close while the mouse was moving — only
+       once it stopped, somewhere else entirely, which is indistinguishable from
+       it not closing at all.
+
+       It is also why this kept passing here. A scripted hover jumps to a
+       coordinate and stops, so the timer always got to run; a hand never
+       stops. */
+    if (closeTimerRef.current !== undefined) return;
+
     closeTimerRef.current = window.setTimeout(() => {
+      closeTimerRef.current = undefined;
       setMegaMenuOpen(false);
     }, delay);
   }
@@ -336,9 +348,9 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
      * There is a React onPointerLeave on the header already, and on paper it
      * covers this: the panel is a descendant, so moving onto it is not leaving.
      * In practice the menu was staying open. Rather than guess at why, this
-     * asks the only question that matters — is the pointer over the bar or over
-     * the panel — and answers it on every move. A miscounted enter or leave
-     * cannot strand it open, because nothing is being counted.
+     * asks the only question that matters — is the pointer over the panel — and
+     * answers it on every move. A miscounted enter or leave cannot strand it
+     * open, because nothing is being counted.
      */
     function handlePointerMove(event: globalThis.PointerEvent) {
       if (event.pointerType !== "mouse") return;
@@ -346,33 +358,26 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
       const panel = megaMenuRef.current;
       if (!panel) return;
 
-      const bar = panel.closest(".site-nav");
-      const list = panel.querySelector(".mega-menu__links");
-      const legal = panel.querySelector(".mega-menu__legal");
+      /* The white sheet, and nothing else. It is what anyone using this sees as
+         the menu, so it is what being on the menu has to mean.
+         This tested three boxes before — the bar, the names, the legal line —
+         and was wrong in both directions at once. The sheet runs the full
+         height of the window while the names sit in the top few centimetres of
+         it, so the five hundred pixels of empty white between the names and the
+         legal line counted as outside: the menu closed under a pointer that was
+         plainly still on it. And the bar runs on past the logo, well clear of
+         the white, so it counted a pointer over the wordmark as still on the
+         menu.
+         One box covers both, and the trigger row needs no box of its own: the
+         panel starts at the grid line the nav content starts at, less the band
+         down its left, so the triggers are inside it at every width. */
+      const box = panel.getBoundingClientRect();
 
-      const inside = (box: DOMRect | undefined) =>
-        !!box &&
+      if (
         event.clientX >= box.left - KEEP_OPEN_PADDING &&
         event.clientX <= box.right + KEEP_OPEN_PADDING &&
         event.clientY >= box.top - KEEP_OPEN_PADDING &&
-        event.clientY <= box.bottom + KEEP_OPEN_PADDING;
-
-      const boxOf = (element: Element | null) =>
-        element?.getBoundingClientRect();
-
-      /* Each box on its own, never their union. A union is a bounding box, and
-         a bounding box of these two covers a great deal that belongs to
-         neither: the bar runs the full width of the page and the list hangs
-         below its right-hand end, so their union is a band clear across the
-         screen, three hundred pixels deep. Moving left off the names, into the
-         hero, stayed inside it.
-         The padding is what joins them where they should be joined — the bar
-         ends around 90 and the names start around 130, and 24 either side
-         closes that gap without inventing any others. */
-      if (
-        inside(boxOf(bar)) ||
-        inside(boxOf(list)) ||
-        inside(boxOf(legal))
+        event.clientY <= box.bottom + KEEP_OPEN_PADDING
       ) {
         clearCloseTimer();
         return;
