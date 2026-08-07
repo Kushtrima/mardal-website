@@ -33,22 +33,12 @@ export const menu = [
       },
     ],
   },
-  {
-    key: "solutions",
-    label: "Solutions",
-    eyebrow: "Solutions by Industry",
-    description: "Technology shaped around the realities of your sector.",
-    href: "#solutions",
-    items: [
-      { label: "Finance", href: "#finance" },
-      { label: "Healthcare", href: "#healthcare" },
-      { label: "Manufacturing", href: "#manufacturing" },
-      { label: "Automotive", href: "#automotive" },
-      { label: "Retail", href: "#retail" },
-      { label: "Logistics", href: "#logistics" },
-      { label: "Public Sector", href: "#public-sector" },
-    ],
-  },
+  /* Solutions is deliberately not here. The seven industries have no pages of
+     their own, so every entry it carried was an anchor back to a run further
+     down the homepage — a menu that only ever scrolled you. The section itself
+     is untouched and still on the homepage; it is reached by reading the page
+     rather than by being sent there. Both the header and the footer read this
+     list, so it is gone from the two of them at once. */
   {
     key: "products",
     label: "Products",
