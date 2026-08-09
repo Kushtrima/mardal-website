@@ -3157,16 +3157,42 @@ video {
     opacity var(--duration-fast) var(--ease-standard);
 }
 
-/* One column per menu group, each only as wide as its own longest label
-   rather than an equal share. Five equal columns are about 120px here and
-   "System Integration" needs 145, so equal shares wrap it; sized to content
-   they fit and the spare width falls between the columns. */
+/* Packed to the right edge, on one pitch.
+
+   Two things were wrong here and they are separate. `space-between` put 229px
+   between each pair of columns at 1440 — three menus strung out with more air
+   between them than inside them, reading as three separate things rather than
+   as one menu. That is what `justify-content: end` fixes, and the spare width
+   now falls to the left of the set, in the band the panel is already empty in.
+
+   The second is why the headings looked crooked even once the set was packed.
+   Columns sized to `max-content` are as wide as their own longest LINK, and
+   those run 49 to 137px, so the gap the eye actually reads — between one
+   heading and the next — measured 110px then 43px while the boxes between
+   them were a uniform 43. The spacing has to be set by the words at the top of
+   each column, not by whatever happens to be the longest link underneath.
+
+   One column width for all three does it: the headings then arrive on a fixed
+   pitch, and since SERVICES, PRODUCTS and COMPANY are 70, 77 and 70px wide the
+   gaps between the words come out within 7px of each other. 9rem is the
+   longest link — "Web Platforms & Apps" at 137 — plus a little; `max-content`
+   as the ceiling means a longer label added later widens its own column rather
+   than wrapping, at the cost of the even pitch, which is the right way round. */
+/* The last column is sized to its own content, not to the shared width. An
+   equal track there is 144px holding a 70px word, so the set stopped 74px short
+   of the panel's edge and the menu looked pushed in from the right. Only the
+   columns with something after them need the shared width — the pitch between
+   headings is set by the track a heading sits in and the gap after it, so the
+   last one can shrink to its words without disturbing it. Three tracks named
+   because the menu has three groups; a fourth would fall to
+   `grid-auto-columns` and keep the shared width. */
 .site-footer__nav {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: max-content;
-  justify-content: space-between;
-  gap: clamp(0.75rem, 1.6cqi, 1.5rem);
+  grid-auto-columns: minmax(9rem, max-content);
+  grid-template-columns: repeat(2, minmax(9rem, max-content)) max-content;
+  justify-content: end;
+  gap: clamp(2rem, 3.2cqi, 2.75rem);
   align-content: start;
 }
 
@@ -3442,16 +3468,20 @@ video {
     gap: clamp(2rem, 6cqi, 3rem);
   }
 
-  /* All four menus across, the way they are on the wide page.
+  /* All the menus across, the way they are on the wide page.
    *
    * This used to ask for as many 8.5rem columns as would fit, which is a
    * count that can be lost to a rounding error — and was: a phone gives the
-   * menus 294px and two 8.5rem columns want 296, so all four dropped into a
+   * menus 294px and two 8.5rem columns want 296, so they all dropped into a
    * single column and the footer became twenty stacked links, 706px to scroll
-   * past. Counted rather than fitted now. */
+   * past. Counted rather than fitted now.
+   *
+   * The count is 3. It said 4 from when the menu had four groups, so the row
+   * has been laying three columns into four and leaving the last quarter
+   * empty ever since Case Studies came out of the footer. */
   .site-footer__nav {
     grid-auto-flow: row;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     justify-content: start;
     gap: clamp(1.5rem, 4cqi, 2.25rem);
   }

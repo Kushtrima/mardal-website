@@ -249,12 +249,15 @@ test("server-renders the Mardal homepage", async () => {
     html,
     /class="site-footer__detail-value">.{0,400}?href="mailto:info@mardal\.co"/s,
   );
-  // The footer renders the site's menu less Case Studies, whose one entry did
-  // not earn a column: Services, Products, Company. This said 4 until the
-  // worker these tests load was actually rebuilt — `1fbc8cf` took Solutions out
-  // of the menu and the count was never followed down here, but the artifact
-  // predated that commit, so the assertion went on passing against a menu that
-  // no longer existed.
+  // The footer renders the site's menu less Case Studies: Services, Products,
+  // Company. The header still offers Case Studies and the footer does not —
+  // put in, then taken back out on 2026-08-09, because its one entry is a dead
+  // anchor to a case study that does not exist and a column of its own made
+  // that more visible rather than less. This assertion is what stops the two
+  // menus drifting on the count alone: it said 4 until the worker these tests
+  // load was actually rebuilt — `1fbc8cf` took Solutions out of the menu and
+  // the number was never followed down here, but the artifact predated that
+  // commit, so it went on passing against a menu that no longer existed.
   assert.equal((html.match(/class="site-footer__group"/g) ?? []).length, 3);
   assert.doesNotMatch(html, /site-footer__group-title">Case Studies/);
   // The ring alone, cropped from the wordmark rather than a second asset.
@@ -272,8 +275,8 @@ test("server-renders the Mardal homepage", async () => {
   // 13 in the three menu groups — five Services, three Products, five Company —
   // the email and the phone in the details block, and the three legal links in
   // the foot. The address is not a link and the social marks are not links yet.
-  // Was 25 against a four-group menu, and stale for the same reason as the
-  // group count above.
+  // Briefly 19 while Case Studies had a column down here, and 25 before
+  // `1fbc8cf` took Solutions out of the menu.
   assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 18);
   assert.doesNotMatch(html, /site-footer__column/);
   // The mark sits under the rule now, with the way back up opposite it, and
