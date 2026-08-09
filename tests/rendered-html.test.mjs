@@ -240,8 +240,12 @@ test("server-renders the Mardal homepage", async () => {
     /class="site-footer__detail-value">.{0,400}?href="mailto:info@mardal\.co"/s,
   );
   // The footer renders the site's menu less Case Studies, whose one entry did
-  // not earn a column.
-  assert.equal((html.match(/class="site-footer__group"/g) ?? []).length, 4);
+  // not earn a column: Services, Products, Company. This said 4 until the
+  // worker these tests load was actually rebuilt — `1fbc8cf` took Solutions out
+  // of the menu and the count was never followed down here, but the artifact
+  // predated that commit, so the assertion went on passing against a menu that
+  // no longer existed.
+  assert.equal((html.match(/class="site-footer__group"/g) ?? []).length, 3);
   assert.doesNotMatch(html, /site-footer__group-title">Case Studies/);
   // The ring alone, cropped from the wordmark rather than a second asset.
   assert.match(html, /class="site-footer__mark"/);
@@ -255,10 +259,12 @@ test("server-renders the Mardal homepage", async () => {
   assert.equal((footerBars[0].match(/y="0" width="10" height="99"/g) ?? []).length, 9);
   assert.equal((footerBars[0].match(/y="99" width="10" height="99"/g) ?? []).length, 10);
   assert.equal((footerBars[0].match(/y="0" width="10" height="198"/g) ?? []).length, 3);
-  // 20 in the four menu groups, the email and the phone in the details block,
-  // and the three legal links in the foot. The address is not a link and the
-  // social marks are not links yet.
-  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 25);
+  // 13 in the three menu groups — five Services, three Products, five Company —
+  // the email and the phone in the details block, and the three legal links in
+  // the foot. The address is not a link and the social marks are not links yet.
+  // Was 25 against a four-group menu, and stale for the same reason as the
+  // group count above.
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 18);
   assert.doesNotMatch(html, /site-footer__column/);
   // The mark sits under the rule now, with the way back up opposite it, and
   // the year and the legal links below them.
