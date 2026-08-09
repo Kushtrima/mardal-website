@@ -226,8 +226,11 @@ a recorded rejection: "Somebody retypes it on a Monday morning" was rejected as
 unprofessional. State the capability directly.
 
 **Fixed CTA vocabulary in use:** "Hire us" (header), "Start a project" (mobile
-menu), "Let's build" (service heroes), "Get in touch" (service CTA blocks and
-product cards), "Explore" (industries).
+menu), "Let's build" (service heroes), "Get in touch" (service CTA blocks),
+"Explore more" (product cards), "Explore" (industries). The product cards said
+"Get in touch" until the owner changed them on 2026-08-09; their link is still
+`mailto:info@mardal.co`, so "Explore more" opens an email client rather than
+going anywhere — none of the three products has a page to go to.
 
 **Spelling convention is unchosen** — shipped copy mixes British and American
 ("fulfilment", "labour" alongside "organize", "analyze", "personalize"). Pick

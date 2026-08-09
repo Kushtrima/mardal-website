@@ -295,7 +295,15 @@ export const products = {
    *  — started, or due — has not been said, so the label stays the neutral
    *  one it was. */
   factLabels: { status: "Status", field: "Field", year: "Year" },
-  cta: "Get in touch",
+  /** The product cards only. `ctaHref` below is read by half the site — every
+   *  service hero and CTA block points at it — but this label is read by
+   *  `ProductsSection` and nowhere else, which is why the cards could be
+   *  changed without touching the "Get in touch" the service pages still use.
+   *
+   *  Sentence case because every call to action on this site is: Hire us,
+   *  Start a project, Let's build, Explore. Tracked upper case is the voice of
+   *  the small labels here, not of the links. */
+  cta: "Explore more",
   ctaHref: "mailto:info@mardal.co",
 } as const;
 

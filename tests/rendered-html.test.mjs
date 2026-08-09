@@ -144,6 +144,16 @@ test("server-renders the Mardal homepage", async () => {
   );
   // A quiet link, not a filled box: the same one the industries use.
   assert.equal((html.match(/class="product__cta"/g) ?? []).length, 3);
+  /* "Explore more" on all three, and it must not leak. `products.cta` is read
+     only by the product cards while `products.ctaHref` beside it is read by
+     half the site, so the label was changed on 2026-08-09 without touching the
+     "Get in touch" the five service CTA blocks still say. Both halves of that
+     are asserted, here and on the service page below. */
+  assert.equal(
+    (html.match(/class="product__cta" href="[^"]*">Explore more/g) ?? []).length,
+    3,
+  );
+  assert.doesNotMatch(html, /class="product__cta" href="[^"]*">Get in touch/);
   assert.equal(
     (html.match(/class="[^"]*product__arrow[^"]*"/g) ?? []).length,
     3,
@@ -441,6 +451,12 @@ test("server-renders the AI & Automation service page", async () => {
   }
 
   assert.doesNotMatch(html, /is-scroll-stack|data-service-row/);
+
+  /* The service CTA still says "Get in touch". The product cards moved to
+     "Explore more" on 2026-08-09 and these did not; the two labels live in
+     different content modules and this is the assertion that keeps them
+     apart. */
+  assert.match(html, /class="service-cta__link" href="[^"]*">Get in touch/);
 
   // The page carries the site's own header and footer.
   assert.match(html, /class="site-nav"/);
