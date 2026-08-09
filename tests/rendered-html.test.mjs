@@ -580,3 +580,44 @@ test("the menu points at the service pages that exist", async () => {
   assert.match(html, /href="\/services\/system-integration"/);
   assert.match(html, /href="\/services\/crm-solutions"/);
 });
+
+/* The block that closes a piece. It is the one part of the blog with logic in
+   it rather than copy — which piece sits on which side — and that logic is only
+   wrong at the ends of the run, where nobody looks. */
+test("a piece ends with the piece behind on the left and the piece ahead on the right", async () => {
+  const html = await (await render("/blog/what-phase-one-does-not-include")).text();
+
+  /* Second of three, so both neighbours are the real ones rather than a wrap. */
+  assert.match(
+    html,
+    /class="blog-more__side blog-more__side--back" href="\/blog\/between-systems"/,
+  );
+  assert.match(
+    html,
+    /class="blog-more__side blog-more__side--on" href="\/blog\/migration-is-the-project"/,
+  );
+
+  /* Named, because "read more" is not an offer. */
+  assert.match(html, /Most failures happen between systems/);
+  assert.match(html, /Migration is the project/);
+
+  /* The way out sits between them, and the piece never offers itself. */
+  assert.match(html, /class="blog-more__all" href="\/blog"/);
+  assert.doesNotMatch(html, /href="\/blog\/what-phase-one-does-not-include"/);
+});
+
+test("the ends of the run wrap rather than offering nothing", async () => {
+  /* First piece: the piece behind it is the last one. */
+  const first = await (await render("/blog/between-systems")).text();
+  assert.match(
+    first,
+    /class="blog-more__side blog-more__side--back" href="\/blog\/migration-is-the-project"/,
+  );
+
+  /* Last piece: the piece ahead of it is the first one. */
+  const last = await (await render("/blog/migration-is-the-project")).text();
+  assert.match(
+    last,
+    /class="blog-more__side blog-more__side--on" href="\/blog\/between-systems"/,
+  );
+});

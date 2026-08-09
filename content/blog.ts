@@ -113,6 +113,16 @@ export const blog = {
     copy: "The first pieces will be about what happens between systems: migration, ownership, permissions, and cutover.",
   },
 
+  /* What closes a piece, before the call to action. "More writing" rather than
+     "read next": the block offers every other piece, so a label naming one of
+     them would be wrong on the second row and wrong again for a reader who has
+     already read the first. Both are plain statements of where the link goes —
+     "read more" is not an offer, and neither is "continue". */
+  more: {
+    title: "More writing",
+    all: "All writing",
+  },
+
   /* The same closing block every service page ends on, so a piece finishes
      where the rest of the site finishes. Line breaks are the copy's:
      .service-cta__title is white-space: pre-line for exactly this. */

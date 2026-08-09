@@ -48,13 +48,23 @@ export default async function BlogPostPage({
   if (index === -1) notFound();
 
   const post = blog.posts[index];
-  /* Wraps, so the last piece offers the first rather than offering nothing.
-     With three of them a dead end at the bottom of the run is a third of the
-     readers with nowhere to go. */
-  const next =
-    blog.posts.length > 1
-      ? blog.posts[(index + 1) % blog.posts.length]
-      : undefined;
+
+  /* The piece on either side of this one, both wrapping, so the ends of the run
+     are not dead ends: the first piece's left-hand offer is the last piece, and
+     the last piece's right-hand offer is the first.
+
+     Two rather than one, because a single "read next" is nothing to anyone who
+     has already read the piece it names — and the pair is what makes the row
+     read as a position in a run rather than as a suggestion. */
+  const count = blog.posts.length;
+  const previous =
+    count > 1 ? blog.posts[(index - 1 + count) % count] : undefined;
+  const next = count > 1 ? blog.posts[(index + 1) % count] : undefined;
+  /* At two published pieces the piece before is also the piece after. Printing
+     it on both sides would offer one thing twice and read as a bug; the right
+     side keeps it. */
+  const before =
+    previous && previous.slug !== next?.slug ? previous : undefined;
 
   return (
     <>
@@ -155,29 +165,65 @@ export default async function BlogPostPage({
             {/* Somewhere to go next, before the call to action. Someone who has
                 finished a piece and is not ready to write an email is looking
                 for the next piece, and a page that only offers contact loses
-                them. The next piece is offered by name, because "read more" is
-                not an offer. */}
-            <nav className="blog-next" aria-label="More writing">
-              {next ? (
-                <a className="blog-next__piece" href={`/blog/${next.slug}`}>
-                  <span className="blog-next__label">Read next</span>
-                  <span className="blog-next__title">{next.title}</span>
-                  <PixelArrow
-                    className="blog-next__arrow"
-                    direction="up-right"
-                    size="small"
-                  />
-                </a>
-              ) : null}
+                them.
 
-              <a className="blog-article__back" href="/blog">
-                <PixelArrow
-                  className="blog-article__back-arrow"
-                  direction="left"
-                  size="small"
-                />
-                All writing
-              </a>
+                One row: the piece behind on the left, the piece ahead on the
+                right, the way out of the run in the middle. It replaced a
+                stacked list that carried each piece's drawing, thesis, date and
+                length — a second index printed under every article, when what a
+                reader wants at the foot of a piece is a direction, not a
+                catalogue. Titles only, at the owner's call.
+
+                It runs the full content column rather than the prose's 38rem.
+                The left and right have to reach the edges of the page for the
+                row to read as two directions rather than as a list that happens
+                to be spread out, and 80rem is where every other section on this
+                site ends. */}
+            <nav className="blog-more" aria-labelledby="blog-more-title">
+              <h2 className="visually-hidden" id="blog-more-title">
+                {blog.more.title}
+              </h2>
+
+              <div className="blog-more__row">
+                {/* An empty cell when there is nothing behind, so the middle
+                    stays in the middle. The grid holds the position; the link
+                    only fills it. */}
+                {before ? (
+                  <a
+                    className="blog-more__side blog-more__side--back"
+                    href={`/blog/${before.slug}`}
+                  >
+                    <PixelArrow
+                      className="blog-more__arrow"
+                      direction="left"
+                      size="small"
+                    />
+                    <span className="blog-more__name">{before.title}</span>
+                  </a>
+                ) : (
+                  <span className="blog-more__side" aria-hidden="true" />
+                )}
+
+                <a className="blog-more__all" href="/blog">
+                  {blog.more.all}
+                </a>
+
+                {next ? (
+                  <a
+                    className="blog-more__side blog-more__side--on"
+                    href={`/blog/${next.slug}`}
+                  >
+                    <span className="blog-more__name">{next.title}</span>
+                    <PixelArrow
+                      className="blog-more__arrow"
+                      direction="right"
+                      size="small"
+                    />
+                  </a>
+                ) : (
+                  <span className="blog-more__side" aria-hidden="true" />
+                )}
+              </div>
             </nav>
           </Container>
         </article>

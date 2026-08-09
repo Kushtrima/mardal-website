@@ -5443,8 +5443,7 @@ video {
    measure set in `ch` in this face comes out a third too long. 38rem at the
    18px below measures ~73. */
 .blog-article__head,
-.blog-article__body,
-.blog-next {
+.blog-article__body {
   width: 100%;
   max-width: 38rem;
 }
@@ -5628,68 +5627,128 @@ video {
   content: "—";
 }
 
-/* ------------------------------- Blog: next ------------------------------- */
+/* --------------------------- Blog: end of piece --------------------------- */
 
-.blog-next {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(1rem, 3vw, 2rem);
-  align-items: center;
-  justify-content: space-between;
-  margin-top: clamp(3rem, 8vh, 5rem);
+/* One row across the whole content column: the piece behind on the left, the
+   piece ahead on the right, the way out of the run in the middle.
+
+   This replaced a stacked list carrying each piece's drawing, thesis, date and
+   length — a second index printed under every article, when a reader who has
+   finished a piece wants a direction rather than a catalogue. The owner asked
+   for left, right and middle, and for the headline only.
+
+   Full width, not the 52rem the plate uses: the two offers have to reach the
+   edges of the page for the row to read as two directions. --container-default
+   is where every other section on this site ends, so it lines up with the
+   footer beneath it rather than floating inside its own margin. */
+.blog-more {
+  width: 100%;
+  margin-top: clamp(3.5rem, 9vh, 6rem);
   padding-top: clamp(1.5rem, 4vh, 2.25rem);
   border-top: 1px solid var(--line-soft);
 }
 
-/* Named, because "read more" is not an offer. */
-.blog-next__piece {
+/* Three cells, and the middle one is sized by its words so it sits on the
+   centre of the page rather than on the centre of whatever is left over.
+   1fr either side keeps it there whatever length the two titles run to.
+
+   The empty span rendered when there is nothing behind is doing real work: it
+   holds the left cell open so the middle stays in the middle on the first
+   piece of a two-piece run. */
+.blog-more__row {
   display: grid;
-  min-width: 0;
-  grid-template-columns: 1fr auto;
-  gap: 0.25rem clamp(0.75rem, 2vw, 1.25rem);
+  grid-template-columns: 1fr auto 1fr;
+  gap: clamp(1.25rem, 4vw, 3rem);
   align-items: center;
 }
 
-.blog-next__label {
-  grid-column: 1;
-  font-size: var(--text-small);
-  letter-spacing: -0.01em;
-  opacity: 0.58;
+/* A title with an arrow on the outside of it — pointing away from the middle,
+   left on the left and right on the right, so the pair reads as a position in
+   a run before a single word of it is read. Aligned to its own edge for the
+   same reason. */
+.blog-more__side {
+  display: flex;
+  gap: 0.7em;
+  /* Centred, not on the baseline. The arrow is a grid of dots with no text in
+     it, so it has no baseline of its own to sit on and dropped a few pixels
+     under the title's when asked for one. */
+  align-items: center;
+  min-width: 0;
 }
 
-.blog-next__title {
-  grid-column: 1;
-  font-family: var(--type-display);
-  font-size: clamp(1.05rem, 1.4vw, 1.3rem);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1.15;
+.blog-more__side--on {
+  justify-content: flex-end;
+  text-align: right;
 }
 
-.blog-next__arrow {
-  grid-column: 2;
-  grid-row: 1 / span 2;
+/* The title face. A piece is introduced in the same voice wherever it appears —
+   the index card, its own h1, and here — so arriving at the article continues
+   the thing that was clicked rather than starting a new typographic idea. A
+   step below the card: this is a footnote to a piece already read, not the
+   front of the publication. */
+.blog-more__name {
+  color: var(--ink);
+  font-family: var(--type-title);
+  font-size: clamp(1.375rem, 1.9vw, 1.75rem);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.1;
+  text-wrap: balance;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.blog-more__arrow {
+  flex: 0 0 auto;
   color: var(--accent);
 }
 
-.blog-article__back {
-  display: inline-flex;
-  gap: 0.55em;
-  align-items: center;
+/* The way out of the run, and a different kind of destination from the two
+   beside it: those are pieces to read, this is the shelf they came off. So it
+   is set in the body voice rather than the title face — same size, same weight
+   as any other link on the site — and the difference in face is what ranks it
+   under the two titles without turning it down. */
+.blog-more__all {
+  color: var(--ink);
   font-size: var(--text-body);
   letter-spacing: -0.02em;
   line-height: 1;
-  opacity: 0.72;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  text-align: center;
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-standard);
 }
 
 @media (hover: hover) {
-  .blog-next__piece:hover .blog-next__title {
+  .blog-more__side:hover .blog-more__name,
+  .blog-more__all:hover {
     color: var(--accent);
   }
+}
 
-  .blog-article__back:hover {
-    opacity: 1;
+/* One column below the breakpoint. Three cells across a phone gives each title
+   two words to a line, and the middle link ends up wedged between two ragged
+   columns. Stacked, the order is the one the row reads in: back, out, on. */
+@media (max-width: 52rem) {
+  .blog-more__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.1rem, 4vh, 1.6rem);
+    justify-items: start;
+  }
+
+  /* An empty cell contributes a gap it has no content to justify. */
+  .blog-more__side:empty {
+    display: none;
+  }
+
+  /* Each arrow keeps the direction it means — left leading the piece behind,
+     right trailing the piece ahead — so the pair still reads as two directions
+     once they are no longer on two sides. */
+  .blog-more__side--on {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .blog-more__all {
+    text-align: left;
   }
 }
 
