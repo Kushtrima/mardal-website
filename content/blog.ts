@@ -21,11 +21,32 @@
 export type BlogBlock =
   | { type: "p"; text: string }
   | { type: "h"; text: string }
-  | { type: "quote"; text: string };
+  | { type: "quote"; text: string }
+  /** Parallel points. `ordered` when the count is part of the argument — "four
+   *  things, and each is a decision" has to arrive as four. Without this block
+   *  the pieces wrote their lists as runs of one-sentence paragraphs, which
+   *  reads as prose that has lost its rhythm rather than as a set. */
+  | { type: "list"; items: string[]; ordered?: boolean };
+
+/** Every word a block contributes, whichever shape it is. */
+function blockWords(block: BlogBlock): number {
+  const text = block.type === "list" ? block.items.join(" ") : block.text;
+
+  return text.trim().split(/\s+/).length;
+}
 
 export type BlogPost = {
   slug: string;
   title: string;
+  /** Who wrote it, printed under the piece and on its card.
+   *
+   *  A byline is a claim about a real person, so this is the one name the
+   *  repository actually records as the author of this work rather than a
+   *  plausible one: PRODUCT.md notes 300 of 300 commits by Kushtrim Arifi, and
+   *  that the team's names and roles have not been supplied for publication.
+   *  No role is printed alongside it for that reason. When a piece is written
+   *  by someone else, change it here — nothing else needs to know. */
+  author: string;
   /** Shown on the index under the title. The argument in one sentence, not a
    *  truncated opening: an excerpt makes the reader click to find out whether
    *  it was worth clicking. */
@@ -66,7 +87,7 @@ export function formatDate(date: string): string {
 
 export function readingMinutes(post: BlogPost): number {
   const words = post.body
-    .map((block) => block.text.trim().split(/\s+/).length)
+    .map(blockWords)
     .reduce((total, count) => total + count, 0);
 
   return Math.max(1, Math.round(words / WORDS_A_MINUTE));
@@ -117,6 +138,7 @@ export const blog = {
     {
       slug: "between-systems",
       title: "Most failures happen between systems",
+      author: "Kushtrim Arifi",
       thesis:
         "The software that fails is rarely the software that was written. It fails where two systems meet, and that is the part nobody was asked to test.",
       date: "2026-08-07",
@@ -156,21 +178,18 @@ export const blog = {
           type: "p",
           text: "Four things, and each is a decision made before code is written rather than a correction made after.",
         },
+        /* Four, numbered, because the paragraph above says four and a reader
+           should be able to count them without reading them. The wording is
+           unchanged from when these were four consecutive paragraphs. */
         {
-          type: "p",
-          text: "Scope is bounded by writing down what phase one does not include, before phase one starts. A list of what is being built is not a boundary.",
-        },
-        {
-          type: "p",
-          text: "Migration is treated as the engagement rather than as its last week. The state before the move is kept, and stays restorable.",
-        },
-        {
-          type: "p",
-          text: "The client owns the source, the schema and the deployment pipeline from the first commit, not at handover.",
-        },
-        {
-          type: "p",
-          text: "Permissions are decided while the system is being designed. Who may see what is a structural question, and answering it after launch means changing the shape of the thing.",
+          type: "list",
+          ordered: true,
+          items: [
+            "Scope is bounded by writing down what phase one does not include, before phase one starts. A list of what is being built is not a boundary.",
+            "Migration is treated as the engagement rather than as its last week. The state before the move is kept, and stays restorable.",
+            "The client owns the source, the schema and the deployment pipeline from the first commit, not at handover.",
+            "Permissions are decided while the system is being designed. Who may see what is a structural question, and answering it after launch means changing the shape of the thing.",
+          ],
         },
         {
           type: "p",
@@ -181,6 +200,7 @@ export const blog = {
     {
       slug: "what-phase-one-does-not-include",
       title: "What phase one does not include",
+      author: "Kushtrim Arifi",
       thesis:
         "Scope only holds when the exclusions are written down first, and agreed by the same people who will later want them included.",
       date: "2026-08-07",
@@ -199,9 +219,19 @@ export const blog = {
           text: "The second list is not a refusal. It is a schedule. The items on it are real, they are wanted, and they are not now. Writing them down does two things: it stops them arriving as surprises, and it lets the price of phase one hold, because that price was quoted against a boundary rather than against a hope.",
         },
         { type: "h", text: "What tends to go on it" },
+        /* Unnumbered: this is the exclusions list itself, and its length is the
+           point rather than its count. Six sentences that were already a list
+           inside one paragraph, split where they were already split. */
         {
-          type: "p",
-          text: "The reports nobody has specified yet. The second language. Connections to systems that are themselves being replaced this year. The permissions model for a team that does not exist yet. The mobile version. The parts of the old system still in daily use that nobody can currently explain.",
+          type: "list",
+          items: [
+            "The reports nobody has specified yet.",
+            "The second language.",
+            "Connections to systems that are themselves being replaced this year.",
+            "The permissions model for a team that does not exist yet.",
+            "The mobile version.",
+            "The parts of the old system still in daily use that nobody can currently explain.",
+          ],
         },
         {
           type: "p",
@@ -225,6 +255,7 @@ export const blog = {
     {
       slug: "migration-is-the-project",
       title: "Migration is the project",
+      author: "Kushtrim Arifi",
       thesis:
         "Moving the data is not the last step of replacing a system. It is the work itself, and scheduling it at the end is how projects arrive late and then go back.",
       date: "2026-08-07",

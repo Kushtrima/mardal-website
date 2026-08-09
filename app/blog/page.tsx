@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "../../components/layout/Container";
 import { SiteFooter } from "../../components/layout/SiteFooter";
 import { SiteHeader } from "../../components/layout/SiteHeader";
-import { BlogArt } from "../../components/blog/BlogArt";
+import { BlogPattern } from "../../components/blog/BlogPattern";
 import { RedactedLines } from "../../components/home/RedactedLines";
 import { SectionEnter } from "../../components/motion/SectionEnter";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
@@ -27,8 +27,6 @@ export const metadata: Metadata = {
  * ServiceOfferingsScroll. There is no journey here, and no body at all yet.
  */
 export default function BlogPage() {
-  const [lead, ...rest] = blog.posts;
-
   return (
     <>
       <SectionEnter />
@@ -147,64 +145,48 @@ export default function BlogPage() {
                 <p className="blog-empty__copy">{blog.empty.copy}</p>
               </div>
             ) : (
-              <>
-                {/* The lead. One piece gets the width, because an index where
-                    everything is the same size asks the reader to choose
-                    without telling them anything, and the first piece here is
-                    the argument the others rest on. */}
-                <a className="blog-lead" href={`/blog/${lead.slug}`}>
-                  <span className="blog-lead__art blog-plate" aria-hidden="true">
-                    <BlogArt slug={lead.slug} className="blog-art" />
-                  </span>
+              /* One card a piece, read top to bottom: when it was published,
+                 what it argues, and how long it takes. The thesis is carried
+                 whole rather than truncated — it is the sentence the reader is
+                 choosing on, and half of it is worse than none. */
+              <ul className="blog-grid">
+                {blog.posts.map((post) => (
+                  <li key={post.slug}>
+                    <a className="blog-card" href={`/blog/${post.slug}`}>
+                      <h3 className="blog-card__title">{post.title}</h3>
 
-                  <span className="blog-lead__words">
-                    <span className="blog-lead__meta">
-                      <time dateTime={lead.date}>{formatDate(lead.date)}</time>
-                      <span aria-hidden="true">·</span>
-                      <span>{readingMinutes(lead)} min read</span>
-                    </span>
-
-                    <h3 className="blog-lead__title">{lead.title}</h3>
-                    <span className="blog-lead__thesis">{lead.thesis}</span>
-
-                    <span className="blog-lead__more">
-                      Read it
-                      <PixelArrow
-                        className="blog-lead__arrow"
-                        direction="up-right"
-                        size="small"
+                      {/* The piece's own mark, closing the headline. The same
+                          drawing the article opens on, at the density a mark
+                          can carry rather than shrunk to fit. Nothing to set
+                          per post: the slug decides it. */}
+                      <BlogPattern
+                        slug={post.slug}
+                        className="blog-card__mark"
                       />
-                    </span>
-                  </span>
-                </a>
 
-                {rest.length > 0 ? (
-                  <ul className="blog-grid">
-                    {rest.map((post) => (
-                      <li key={post.slug}>
-                        <a className="blog-card" href={`/blog/${post.slug}`}>
-                          <span className="blog-card__art blog-plate" aria-hidden="true">
-                            <BlogArt slug={post.slug} className="blog-art" />
+                      <span className="blog-card__foot">
+                        <span className="blog-card__thesis">{post.thesis}</span>
+
+                        {/* The byline closes the card, which is where the date
+                            now lives too: printing it here and again above the
+                            title would be the same fact twice on one card. */}
+                        <span className="blog-card__byline">
+                          <span className="blog-card__author">
+                            {post.author}
                           </span>
-
-                          <span className="blog-card__meta">
+                          <span className="blog-card__stamp">
                             <time dateTime={post.date}>
                               {formatDate(post.date)}
                             </time>
                             <span aria-hidden="true">·</span>
                             <span>{readingMinutes(post)} min read</span>
                           </span>
-
-                          <h3 className="blog-card__title">{post.title}</h3>
-                          <span className="blog-card__thesis">
-                            {post.thesis}
-                          </span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-              </>
+                        </span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
             )}
           </Container>
         </section>

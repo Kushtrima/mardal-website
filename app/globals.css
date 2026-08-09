@@ -47,9 +47,29 @@
      that reason: set the ground white on its own and every shape those drawings
      paint in --surface would still be lavender, sitting on it. */
   --surface: #ffffff;
+  /* A panel raised off the black rather than a second colour on it. The blog
+     cards are the whole reason it exists: a card has to be a surface you could
+     put your finger on, and on a page this dark that is a few percent of light
+     rather than a border. Kept as light-over-canvas so it holds if the canvas
+     ever moves. */
+  --surface-raised: rgb(255 255 255 / 5%);
   --menu-surface: #efedf8;
   --ink: #f2f1f5;
+  /* Long-form reading ink, one step below --ink. Full --ink on a pure black
+     ground haloes: the bloom around each stroke is bearable for a headline and
+     tiring across nine hundred words, which is why every publication that is
+     read rather than scanned dims its body text (Vercel #ededed, Linear
+     #d0d6e0). Set here rather than as an opacity so the value is a colour that
+     can be checked, and so it does not fade whatever it sits on. 15.4:1 on
+     --canvas. Body copy only; headings stay on --ink, and the tonal step
+     between them is the article's first level of hierarchy. */
+  --ink-read: #dcd9e4;
   --ink-muted: #a09aad;
+  /* The same job as --ink-muted with the lavender taken out. --ink-muted is
+     the page's tint carried down into a quiet ink, and it works on a word or
+     two — on a label, a date and three lines of standfirst together it stops
+     reading as grey and starts reading as pink. Neutral, 7.5:1 on --canvas. */
+  --ink-grey: #9a9a9a;
   --line: rgb(242 241 245 / 72%);
   --line-soft: rgb(242 241 245 / 16%);
   --accent: #a98ad6;
@@ -5177,151 +5197,175 @@ video {
 /* The mark on a piece. A ground of its own, because a drawing sitting straight
    on the page reads as an ornament attached to the text, and one inside a
    bordered field reads as a plate belonging to the piece. */
-.blog-plate {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid var(--line-soft);
-  border-radius: var(--shape-md);
-  background: rgb(255 255 255 / 3.5%);
-}
-
+/* The piece's drawing at plate size, inside the article. Accent here and grey
+   on the index card: the plate is artwork, in the colour the same arrangement
+   wears across all five service heroes, and the card's is a mark, which has to
+   stay quieter than the headline above it. */
 .blog-art {
   display: block;
   width: 100%;
   height: 100%;
   fill: var(--accent);
-  /* A texture behind a title, not the subject. At full strength the bars
-     compete with the one thing on the card that matters. */
+  /* Texture at the head of the reading, not the subject. At full strength it
+     competes with the words it is introducing. */
   opacity: 0.5;
   transition: opacity var(--duration-base) var(--ease-standard);
 }
 
-/* ------------------------------- Blog: lead ------------------------------- */
-
-/* One piece gets the width. An index where every entry is the same size asks
-   the reader to choose without telling them anything, and the piece at the top
-   of this run is the argument the other two rest on. */
-.blog-lead {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-  gap: clamp(1.5rem, 4vw, 3.5rem);
-  align-items: center;
-  padding-bottom: clamp(2.5rem, 6vh, 4rem);
-  border-bottom: 1px solid var(--line-soft);
-}
-
-.blog-lead__art {
-  display: block;
-  aspect-ratio: 16 / 10;
-}
-
-.blog-lead__words {
-  display: block;
-}
-
-.blog-lead__meta,
-.blog-card__meta {
-  display: flex;
-  gap: 0.5em;
-  align-items: baseline;
-  font-size: var(--text-small);
-  letter-spacing: -0.01em;
-  opacity: 0.58;
-}
-
-.blog-lead__title {
-  max-width: 16ch;
-  margin: clamp(0.75rem, 2vh, 1.1rem) 0 0;
-  font-family: var(--type-title);
-  font-size: clamp(2rem, 3.4vw, 3.25rem);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
-  line-height: 1.04;
-  text-wrap: balance;
-}
-
-.blog-lead__thesis {
-  display: block;
-  max-width: 46ch;
-  margin-top: clamp(0.75rem, 2vh, 1.1rem);
-  font-size: var(--text-copy);
-  /* Reading leading, not the page's 1.3. See .blog-article__body. */
-  line-height: 1.6;
-  opacity: 0.78;
-}
-
-.blog-lead__more {
-  display: inline-flex;
-  gap: 0.55em;
-  align-items: center;
-  margin-top: clamp(1rem, 2.5vh, 1.5rem);
-  color: var(--accent);
-  font-size: var(--text-body);
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-
 /* ------------------------------- Blog: grid ------------------------------- */
 
+/* Every piece the same size. This replaced a wide lead above two smaller
+   cards, and the argument for that lead — that an index where everything is
+   equal asks the reader to choose without telling them anything — turned out
+   to be answered better by the card itself: each one now carries the date, the
+   whole thesis and the length, so a reader chooses on what the piece says
+   rather than on how big it was drawn. Editorial order still decides which
+   comes first. */
 .blog-grid {
   display: grid;
-  margin: clamp(2.5rem, 6vh, 4rem) 0 0;
+  margin: 0;
   padding: 0;
-  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
-  gap: clamp(1.75rem, 4vw, 3rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+  gap: clamp(0.75rem, 1.2vw, 1.15rem);
   list-style: none;
 }
 
+.blog-grid > li {
+  display: flex;
+}
+
+/* A panel, and the gap between panels is the only separator: no border, which
+   would draw four lines around something that is already a surface.
+   min-height gives the card the proportion the composition depends on — the
+   title at the top, the thesis at the bottom, and deliberate air between them.
+   Without it a one-line title collapses the card to nothing next to a
+   four-line one. */
 .blog-card {
-  display: block;
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: clamp(20rem, 30vw, 26rem);
+  flex-direction: column;
+  padding: clamp(1.35rem, 1.9vw, 1.85rem);
+  overflow: hidden;
+  border-radius: var(--shape-md);
+  background: var(--surface-raised);
+  transition: background var(--duration-fast) var(--ease-standard);
 }
 
-.blog-card__art {
-  display: block;
-  aspect-ratio: 16 / 10;
-  margin-bottom: clamp(1rem, 2.5vh, 1.4rem);
-}
-
+/* Date only. There is no category on a piece and none is invented to fill the
+   slot the reference puts one in; there is no byline either, for the same
+   reason. Same muted, tracked, upper voice the article's own meta line uses,
+   so the index and the piece introduce themselves the same way. */
+/* The title face, not the display face. --type-title is documented h1-only and
+   this is the one place it is asked to do more: the card is the piece's first
+   appearance and the piece's own h1 is set in the same face, so the index now
+   introduces a title in the voice the article will answer in. Set with the h1's
+   own weight and tracking rather than the heading scale's, because the face was
+   drawn for those and looks slack at 400.
+   Sized a step above --text-heading: this serif has a small x-height for its
+   body, so 30px of it reads smaller than 30px of Geist. */
 .blog-card__title {
-  margin: clamp(0.6rem, 1.5vh, 0.9rem) 0 0;
-  font-family: var(--type-display);
-  font-size: clamp(1.2rem, 1.5vw, 1.5rem);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1.12;
+  margin: clamp(0.7rem, 1.6vh, 1rem) 0 0;
+  color: var(--ink);
+  font-family: var(--type-title);
+  font-size: clamp(1.75rem, 2.1vw, 2.125rem);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.06;
   text-wrap: balance;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+/* Grey, and small enough to be a mark. It sits under the title rather than
+   centred in the space below it: a mark floating in the middle of a gap belongs
+   to nothing, and this one is closing the headline. Grey rather than the accent
+   because at this size a coloured mark is the loudest thing on a quiet card,
+   which inverts what the card is for. */
+.blog-card__mark {
+  display: block;
+  width: clamp(7rem, 9vw, 9.25rem);
+  height: auto;
+  margin-top: clamp(1.15rem, 2.6vh, 1.6rem);
+  fill: var(--ink-grey);
+  opacity: 0.7;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+/* margin-top: auto is the whole layout. It drops the thesis and the length to
+   the foot of the card, so a row of cards agrees along its bottom edge however
+   many lines each title runs to, and the space that opens above them is even
+   rather than accidental. */
+.blog-card__foot {
+  display: block;
+  margin-top: auto;
+  padding-top: clamp(1.5rem, 4vh, 2.5rem);
 }
 
 .blog-card__thesis {
   display: block;
-  margin-top: 0.55rem;
+  color: var(--ink-grey);
   font-size: var(--text-copy);
+  /* Reading leading, not the page's 1.3. See .blog-article__body. */
   line-height: 1.6;
-  opacity: 0.72;
+  text-wrap: pretty;
+}
+
+/* The byline closes the card, where the reference puts author faces. Name in
+   full ink and the stamp under it in grey: the person is the thing worth
+   reading, the date and the length are how you decide when. No avatar and no
+   role — the site uses no photography, and PRODUCT.md records that roles have
+   not been supplied for publication. */
+.blog-card__byline {
+  display: block;
+  margin-top: clamp(1rem, 2.5vh, 1.4rem);
+  padding-top: clamp(0.85rem, 2vh, 1.1rem);
+  border-top: 1px solid var(--line-soft);
+}
+
+.blog-card__author {
+  display: block;
+  color: var(--ink);
+  font-size: var(--text-copy);
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.blog-card__stamp {
+  display: flex;
+  gap: 0.5em;
+  margin-top: 0.25em;
+  align-items: baseline;
+  color: var(--ink-grey);
+  font-size: var(--text-small);
+  letter-spacing: -0.01em;
 }
 
 @media (hover: hover) {
-  /* The plate brightens and the title takes the accent. Colour only: these sit
-     in a grid, so anything that moves shoves its neighbours. */
-  .blog-lead:hover .blog-art,
-  .blog-card:hover .blog-art {
-    opacity: 0.82;
+  /* Colour and light only: these sit in a grid, so anything that moves shoves
+     its neighbours. */
+  .blog-card:hover {
+    background: rgb(255 255 255 / 8%);
   }
 
-  .blog-lead:hover .blog-lead__title,
   .blog-card:hover .blog-card__title {
     color: var(--accent);
+  }
+
+  .blog-card:hover .blog-card__mark {
+    opacity: 0.9;
   }
 }
 
 @media (max-width: 48rem) {
-  .blog-lead {
-    grid-template-columns: minmax(0, 1fr);
-    gap: clamp(1rem, 3vh, 1.5rem);
+  /* One column, and the card stops reserving height it no longer needs: at
+     full width a title cannot run long enough to need it. */
+  .blog-card {
+    min-height: 0;
   }
 
-  .blog-lead__title {
-    max-width: none;
+  .blog-card__foot {
+    padding-top: clamp(1.75rem, 6vh, 2.5rem);
   }
 }
 
@@ -5391,21 +5435,34 @@ video {
   align-items: center;
 }
 
+/* 38rem, not 40. The rule this column exists to keep is the one written above
+   .blog-article__body: no more than about 75 characters to a line. It was not
+   being kept. 40rem of Geist at 16px measured 86.4 characters a line, counted
+   off the rendered text rather than assumed, because `ch` is the width of a
+   zero and Geist's zero is half again as wide as its average letter — a
+   measure set in `ch` in this face comes out a third too long. 38rem at the
+   18px below measures ~73. */
 .blog-article__head,
 .blog-article__body,
 .blog-next {
   width: 100%;
-  max-width: 40rem;
+  max-width: 38rem;
 }
 
+/* The site's small-label voice — muted, tracked, upper — rather than a faded
+   copy of the body. Fading text with opacity was the wrong instrument twice on
+   this page: it makes the ink depend on whatever is behind it, and it reads as
+   the same text turned down rather than as a different kind of text. */
 .blog-article__meta {
   display: flex;
-  gap: 0.5em;
+  gap: 0.75em;
   align-items: baseline;
-  margin: 0 0 clamp(0.75rem, 2vh, 1.1rem);
+  margin: 0 0 clamp(1rem, 2.5vh, 1.5rem);
+  color: var(--ink-grey);
   font-size: var(--text-small);
-  letter-spacing: -0.01em;
-  opacity: 0.58;
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 /* The measure belongs on the title, not on the block around it. `ch` is the
@@ -5425,12 +5482,29 @@ video {
 
 /* The sentence the index promised, kept at the top of the piece rather than
    left for the reader to find again. Larger than the body, lighter than the
-   title. */
+   title. It is the invitation into the piece, so it is set at full ink and
+   given its size to carry the difference — it was previously the one element
+   on the page turned down to 0.78, which put the quietest treatment on the
+   line whose whole job is to make someone start reading. */
 .blog-article__standfirst {
   margin: clamp(1rem, 2.5vh, 1.5rem) 0 0;
-  font-size: clamp(1.05rem, 1.35vw, 1.25rem);
-  line-height: 1.5;
-  opacity: 0.78;
+  color: var(--ink);
+  font-size: clamp(1.125rem, 0.4vw + 1rem, 1.3125rem);
+  line-height: 1.45;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+/* Who wrote it. Full ink at copy size, so it reads as a person rather than as
+   another line of filing information, and ruled off above so the head of the
+   piece closes on it. */
+.blog-article__byline {
+  margin: clamp(1.25rem, 3vh, 1.75rem) 0 0;
+  padding-top: clamp(0.85rem, 2vh, 1.1rem);
+  border-top: 1px solid var(--line-soft);
+  color: var(--ink);
+  font-size: var(--text-copy);
+  letter-spacing: -0.015em;
 }
 
 /* Wider than the words. The plate breaks the measure on both sides, which is
@@ -5452,37 +5526,100 @@ video {
    a clear track back to the start of the next line. This is the one place on
    the site that has nine hundred words. */
 .blog-article__body {
-  font-size: clamp(1rem, 1.1vw, 1.0625rem);
+  color: var(--ink-read);
+  font-size: clamp(1.0625rem, 0.35vw + 0.95rem, 1.125rem);
   line-height: 1.6;
 }
 
 .blog-article__copy {
   margin: 0 0 1.35em;
+  text-wrap: pretty;
 }
 
-/* More space above than below, so a heading belongs to what follows it rather
-   than floating between two blocks. */
+/* A section, and it has to look like one. This was clamp(1.2rem, 1.6vw,
+   1.45rem): 1.33x the body, in the body's own face and the body's own colour,
+   which is not a rank — it read as a sentence someone had enlarged. A subhead
+   is the skim structure of the piece and the only thing a reader scrolling
+   fast actually sees.
+   --text-heading is the site's own second size, so this is a return to the
+   scale rather than another number invented for the blog: 30px against an 18px
+   body, 1.67x, which is where the publications this page is measured against
+   sit. The mark above it is the site's 60px rule, and it is what separates a
+   section break from a pulled line without either of them growing. */
 .blog-article__heading {
-  margin: 2.5em 0 0.7em;
+  margin: 2.6em 0 0.75em;
+  color: var(--ink);
   font-family: var(--type-display);
-  font-size: clamp(1.2rem, 1.6vw, 1.45rem);
+  font-size: var(--text-heading);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
-  line-height: 1.15;
+  line-height: var(--leading-heading);
+}
+
+.blog-article__heading::before {
+  display: block;
+  width: 60px;
+  height: 1px;
+  margin-bottom: 0.85em;
+  background: var(--accent);
+  content: "";
 }
 
 /* A rule and a shift, not a coloured slab, and set in the display face so the
    eye registers a break in the reading rather than another paragraph that
-   happens to be bigger. */
+   happens to be bigger. Sized below the subhead rather than above it, which is
+   the correction: at 1.6rem against a 1.45rem subhead the two ranks were
+   within a stroke of each other and the page had no order. A pulled line is a
+   moment inside a section, so it now reads as one. */
 .blog-article__quote {
-  margin: 2.25em 0;
+  margin: 2.4em 0;
   padding-left: clamp(1rem, 2.5vw, 1.75rem);
   border-left: 1px solid var(--accent);
+  color: var(--ink);
   font-family: var(--type-display);
-  font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+  font-size: clamp(1.25rem, 0.55vw + 1.05rem, 1.5rem);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
-  line-height: 1.25;
+  line-height: 1.3;
+  text-wrap: pretty;
+}
+
+/* Parallel points, set as parallel points. Three of the pieces already argue
+   in lists — four commitments, six exclusions — and with no list block they
+   were written as runs of one-sentence paragraphs, which is the copy working
+   around the template. The marker is the accent so the run reads as a set at a
+   glance, and the text hangs off it rather than wrapping under it. */
+.blog-article__list {
+  margin: 0 0 1.35em;
+  padding: 0;
+  list-style: none;
+}
+
+.blog-article__item {
+  position: relative;
+  margin-bottom: 0.85em;
+  padding-left: 1.6em;
+  text-wrap: pretty;
+}
+
+.blog-article__item:last-child {
+  margin-bottom: 0;
+}
+
+.blog-article__item::before {
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  content: counter(list-item);
+  font-variant-numeric: tabular-nums;
+}
+
+.blog-article__list--plain {
+  counter-reset: none;
+}
+
+.blog-article__list--plain .blog-article__item::before {
+  content: "—";
 }
 
 /* ------------------------------- Blog: next ------------------------------- */

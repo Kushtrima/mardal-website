@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Container } from "../../../components/layout/Container";
 import { SiteFooter } from "../../../components/layout/SiteFooter";
 import { SiteHeader } from "../../../components/layout/SiteHeader";
-import { BlogArt } from "../../../components/blog/BlogArt";
+import { BlogPattern } from "../../../components/blog/BlogPattern";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { PixelArrow } from "../../../components/ui/PixelArrow";
 import { blog, formatDate, readingMinutes } from "../../../content/blog";
@@ -80,14 +80,24 @@ export default async function BlogPostPage({
                   the body and lighter than the title, which is what a standfirst
                   is for. */}
               <p className="blog-article__standfirst">{post.thesis}</p>
+
+              {/* Under the standfirst rather than in the meta line above it: a
+                  person's name set in the tracked upper case that line uses
+                  would shout, and a byline belongs next to the writing it is
+                  claiming rather than next to the filing information. */}
+              <p className="blog-article__byline">{post.author}</p>
             </header>
 
-            {/* The piece's own mark, the same one the index showed, at the head
-                of the reading rather than as a banner above it. It is the
-                handover: you clicked this drawing, here it is again, the words
-                start underneath. */}
-            <div className="blog-article__art blog-plate" aria-hidden="true">
-              <BlogArt slug={post.slug} className="blog-art" />
+            {/* The piece's own drawing, the same language the index card
+                showed, at the head of the reading rather than as a banner
+                above it. It is the handover: you clicked this drawing, here it
+                is again at full size, the words start underneath. */}
+            <div className="blog-article__art" aria-hidden="true">
+              <BlogPattern
+                slug={post.slug}
+                density="plate"
+                className="blog-art"
+              />
             </div>
 
             {/* Blocks rather than markup in a string, so a note and an argument
@@ -107,6 +117,30 @@ export default async function BlogPostPage({
                     <blockquote className="blog-article__quote" key={index}>
                       {block.text}
                     </blockquote>
+                  );
+                }
+
+                /* ol when the count carries meaning, ul when it does not, so
+                   the element says what the list is rather than leaving the
+                   marker to say it. */
+                if (block.type === "list") {
+                  const List = block.ordered ? "ol" : "ul";
+
+                  return (
+                    <List
+                      className={
+                        block.ordered
+                          ? "blog-article__list"
+                          : "blog-article__list blog-article__list--plain"
+                      }
+                      key={index}
+                    >
+                      {block.items.map((item) => (
+                        <li className="blog-article__item" key={item}>
+                          {item}
+                        </li>
+                      ))}
+                    </List>
                   );
                 }
 
