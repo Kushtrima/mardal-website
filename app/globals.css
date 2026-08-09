@@ -5544,10 +5544,18 @@ video {
    --text-heading is the site's own second size, so this is a return to the
    scale rather than another number invented for the blog: 30px against an 18px
    body, 1.67x, which is where the publications this page is measured against
-   sit. The mark above it is the site's 60px rule, and it is what separates a
-   section break from a pulled line without either of them growing. */
+   sit.
+
+   **No rule above it.** There was a 60px accent mark here and the owner struck
+   it, with the pulled line's rule, as too many lines through the reading. Space
+   does the work the mark was doing: the top margin carries the 0.85em the rule
+   used to occupy as well as its own, so the gap above a section break is the
+   same size it always was and only the line is gone. That gap is now the only
+   thing announcing a section, which is why it is this large — cut it and the
+   subhead becomes a sentence someone enlarged, which is the fault this heading
+   was rebuilt out of once already. */
 .blog-article__heading {
-  margin: 2.6em 0 0.75em;
+  margin: 3.45em 0 0.75em;
   color: var(--ink);
   font-family: var(--type-display);
   font-size: var(--text-heading);
@@ -5556,31 +5564,29 @@ video {
   line-height: var(--leading-heading);
 }
 
-.blog-article__heading::before {
-  display: block;
-  width: 60px;
-  height: 1px;
-  margin-bottom: 0.85em;
-  background: var(--accent);
-  content: "";
-}
+/* The accent hairline down its left edge went with the subhead's mark, and
+   taking it away broke the piece's order: the pulled line and the subhead were
+   both the display face at full --ink a quarter apart in size, and the rule was
+   the only thing telling them apart. Read without it, a pulled line under a
+   subhead is a second, smaller heading.
 
-/* A rule and a shift, not a coloured slab, and set in the display face so the
-   eye registers a break in the reading rather than another paragraph that
-   happens to be bigger. Sized below the subhead rather than above it, which is
-   the correction: at 1.6rem against a 1.45rem subhead the two ranks were
-   within a stroke of each other and the page had no order. A pulled line is a
-   moment inside a section, so it now reads as one. */
+   So the difference moves into the face. The quote now speaks in --type-title,
+   the serif this piece's own h1 and its index card are set in — the piece's
+   voice raised, against Geist subheads and Geist body. Nothing is drawn, and a
+   reader cannot mistake it for a rank in the structure.
+
+   Sized where it is because the face is not Geist: CS Alistair has a small
+   x-height for its body, so 32px of it reads at about 28 of the subhead's,
+   which keeps the earlier correction — a pulled line is a moment inside a
+   section, not a rank above one — while looking nothing like it. */
 .blog-article__quote {
-  margin: 2.4em 0;
-  padding-left: clamp(1rem, 2.5vw, 1.75rem);
-  border-left: 1px solid var(--accent);
+  margin: 2.2em 0;
   color: var(--ink);
-  font-family: var(--type-display);
-  font-size: clamp(1.25rem, 0.55vw + 1.05rem, 1.5rem);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1.3;
+  font-family: var(--type-title);
+  font-size: clamp(1.5rem, 0.9vw + 1.25rem, 2rem);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.2;
   text-wrap: pretty;
 }
 
