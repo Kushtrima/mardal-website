@@ -640,3 +640,48 @@ test("the ends of the run wrap rather than offering nothing", async () => {
     /class="blog-more__side blog-more__side--on" href="\/blog\/between-systems"/,
   );
 });
+
+/* The Case Studies page, which is a hero and nothing else yet — the same order
+   the Blog was built in. Two of these assertions are about the opening; the
+   third is the one that matters. */
+test("server-renders the Case Studies hero", async () => {
+  const response = await render("/case-studies");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /<title>Case Studies — Mardal<\/title>/i);
+
+  // Authored as two explicit line spans, so the break falls in one place.
+  assert.match(html, /class="service-hero__title-line">Systems we built</);
+  assert.match(html, /class="service-hero__title-line">and handed over\.</);
+  assert.match(html, /What each one replaced, what it does now/);
+
+  /* The drawing is generated, not a sixth PNG: no mask image is cut for this
+     route and none should ever be added. */
+  assert.match(html, /service-hero__pattern--drawn/);
+  assert.match(html, /class="service-hero__drawing"/);
+
+  /* **No client is named, and none may be until the owner says so.**
+     PRODUCT.md records that the delivered archive may be described as Mardal's
+     work but that per-client sign-off for naming these companies in public was
+     never recorded. This is the assertion that catches a name arriving here
+     before that decision does — the copy is written so it never has to. */
+  for (const client of [
+    "EN NUR",
+    "Spitex",
+    "Stolzbau",
+    "Henor",
+    "ANDI SPORT",
+    "Jetonikeramika",
+  ]) {
+    assert.doesNotMatch(html, new RegExp(client, "i"), `${client} named`);
+  }
+
+  /* ArvenaAI is an unreleased in-house product and PRODUCT.md forbids writing
+     it as a delivered client outcome. It belongs under Products; the menu's
+     dead ArvenaAI case-study anchor must not follow the page here. */
+  assert.doesNotMatch(html, /arvena-ai-case-study/);
+
+  assert.match(html, /class="site-nav"/);
+  assert.match(html, /<footer class="site-footer"/);
+});
