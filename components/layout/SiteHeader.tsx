@@ -65,6 +65,19 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     setMegaMenuOpen(true);
   }
 
+  /* At once, not on the timer. The timer is for a pointer that has wandered off
+     the panel and may yet come back; this is for one that has arrived somewhere
+     with no panel behind it, and waiting 60ms there would leave the last menu's
+     list standing under a word that does not own it.
+
+     It matters because the triggers sit inside the panel's own box — that is
+     what keeps the menu open while you run along the bar — so nothing else in
+     here would close it. Reaching a plain link has to say so itself. */
+  function closeMegaMenu() {
+    clearCloseTimer();
+    setMegaMenuOpen(false);
+  }
+
   /* 170ms before, which was insurance against a gap between the bar and the
      panel that no longer exists: the ground reaches the top of the window and
      the bar is drawn on it, so there is nothing to cross and nothing to
@@ -94,15 +107,27 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     const menu = megaMenuRef.current;
     if (!menu) return;
 
-    /* Two sets, because the foot belongs to two of the three moves and not to
+    /* Three sets, because the foot belongs to two of the three moves and not to
        the third. It arrives with the names and it leaves with them, but running
        along the bar does not change it — the same small print and the same way
        in are already there — so replaying it on every switch was the panel
-       announcing something that had not happened. */
+       announcing something that had not happened.
+
+       It gets a handle of its own all the same, because "not replayed" turned
+       out to mean "never put back". The foot is the LAST element in `entries`,
+       so the arrival un-covers it last of all — with the seven sectors under
+       Clients its edge does not even start travelling until 0.6s in and does
+       not land until 1.15s. Move along the bar inside that second, which is
+       exactly what running along a menu is, and the switch below kills the
+       arrival mid-wipe and then restores only the names. The foot stayed at
+       `inset(0 100% 0 0)` — clipped to nothing — and no later switch ever
+       touched it again, so the legal line and the way in were simply gone for
+       the rest of the visit. */
     const entries = menu.querySelectorAll(
       "[data-mega-entry], [data-mega-foot]",
     );
     const names = menu.querySelectorAll("[data-mega-entry]");
+    const foot = menu.querySelectorAll("[data-mega-foot]");
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -159,6 +184,15 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
 
       if (wasOpen) {
         gsap.set(ground, { autoAlpha: 1 });
+        /* The foot is not replayed here — it is put back. A switch may have
+           interrupted an arrival that had not finished uncovering it, and this
+           branch is the only thing that runs afterwards, so if it does not
+           state the foot's resting position nothing ever will. Set rather than
+           tweened, for the same reason the list is not re-staggered: the small
+           print and the way in did not change, so they have nowhere to arrive
+           from. Caught mid-wipe it lands early, which is a great deal better
+           than the alternative it replaces. */
+        gsap.set(foot, { autoAlpha: 1, clipPath: "none", y: 0 });
         /* Up on the spot. This is a change of subject, not an entrance, so it
            stays where it is — but at 180ms it read as a flicker rather than a
            change, so it is nearly twice that now: long enough to see one list
@@ -197,7 +231,13 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
 
       gsap.fromTo(
         entries,
-        { autoAlpha: 1, clipPath: "inset(0 100% 0 0)" },
+        /* `y` is stated even though the arrival does not use it, because the
+           switch does: a switch killed part-way leaves its names somewhere
+           between 14 and 0, and an arrival that only speaks about the clip
+           would inherit that offset and keep it. Every branch has to say where
+           everything it can reach is standing, or the one that stays quiet is
+           the one that strands something. */
+        { autoAlpha: 1, clipPath: "inset(0 100% 0 0)", y: 0 },
         {
           clipPath: "inset(0 0% 0 0)",
           /* Long enough to be read as a wipe rather than a flash, and eased at
@@ -517,33 +557,83 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
           </Link>
 
           <ul className="nav-list">
-            {menu.map((item) => (
-              <li key={item.key}>
-                <button
-                  className="nav-link nav-trigger"
-                  type="button"
-                  aria-expanded={megaMenuOpen && activeMenu === item.key}
-                  aria-controls="desktop-mega-menu"
-                  data-nav-trigger
-                  onClick={() => {
-                    if (megaMenuOpen && activeMenu === item.key) {
-                      setMegaMenuOpen(false);
-                      return;
-                    }
+            {menu.map((item) => {
+              /* Two questions, asked separately, both answered by the entry
+                 itself rather than by a flag set for the header's benefit.
 
-                    openMegaMenu(item.key);
-                  }}
-                  onFocus={() => openMegaMenu(item.key)}
-                  onPointerEnter={(event) => {
-                    if (event.pointerType === "mouse") {
-                      openMegaMenu(item.key);
-                    }
-                  }}
-                >
-                  {item.label}
-                </button>
-              </li>
-            ))}
+                 A word whose href is a route has a page, so it is a link and
+                 clicking it goes there. A word with children has a panel, so
+                 hovering it opens them and it carries the chevron that says so.
+                 Services, Products and Company are the second without the first
+                 — their hrefs are anchors to sections that are not on the page —
+                 so they stay buttons, with nothing to navigate to and a panel to
+                 toggle. Clients is the first entry to be both. */
+              const isPage = item.href.startsWith("/");
+              const hasPanel = item.items.length > 0;
+
+              /* Arriving at a word does the same thing whichever element it is:
+                 open its list, or close whatever list is open if it has none.
+                 The closing half matters because the words sit inside the
+                 panel's own box — that is what keeps it open while you run
+                 along the bar — so a word with nothing behind it is the only
+                 thing that can say so. */
+              const reach = () =>
+                hasPanel ? openMegaMenu(item.key) : closeMegaMenu();
+
+              return (
+                <li key={item.key}>
+                  {isPage ? (
+                    <Link
+                      className={`nav-link${hasPanel ? " nav-trigger" : ""}`}
+                      href={item.href}
+                      /* No onClick: the click belongs to the link. The panel is
+                         opened by arriving at the word and closed by leaving
+                         it, which is the whole of its behaviour here — a word
+                         that both goes somewhere and toggles something on the
+                         same press would be neither. */
+                      aria-expanded={
+                        hasPanel
+                          ? megaMenuOpen && activeMenu === item.key
+                          : undefined
+                      }
+                      aria-controls={hasPanel ? "desktop-mega-menu" : undefined}
+                      aria-current={
+                        pathname === item.href ? "page" : undefined
+                      }
+                      data-nav-trigger={hasPanel || undefined}
+                      onFocus={reach}
+                      onPointerEnter={(event) => {
+                        if (event.pointerType === "mouse") reach();
+                      }}
+                    >
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <button
+                      className="nav-link nav-trigger"
+                      type="button"
+                      aria-expanded={megaMenuOpen && activeMenu === item.key}
+                      aria-controls="desktop-mega-menu"
+                      data-nav-trigger
+                      onClick={() => {
+                        if (megaMenuOpen && activeMenu === item.key) {
+                          setMegaMenuOpen(false);
+                          return;
+                        }
+
+                        openMegaMenu(item.key);
+                      }}
+                      onFocus={reach}
+                      onPointerEnter={(event) => {
+                        if (event.pointerType === "mouse") reach();
+                      }}
+                    >
+                      {item.label}
+                    </button>
+                  )}
+                </li>
+              );
+            })}
           </ul>
 
           <button
@@ -648,33 +738,67 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
               inert={mobileActiveMenu ? true : undefined}
             >
               <ul className="mobile-menu__index-list">
-                {menu.map((item) => (
-                  <li key={item.key} data-mobile-menu-entry>
-                    <button
-                      className={`mobile-menu__index-link${
-                        item.key === "services" &&
-                        pathname.startsWith("/services")
-                          ? " is-current"
-                          : ""
-                      }`}
-                      type="button"
-                      aria-controls="mobile-menu-detail"
-                      onClick={() => {
-                        setMobileDisplayMenu(item.key);
-                        setMobileActiveMenu(item.key);
-                      }}
-                    >
-                      <span>{item.label}</span>
-                      <PixelArrow
-                        className="mobile-menu__index-arrow"
-                        direction="up-right"
-                        shape="square"
-                        size="small"
-                        variant="corner"
-                      />
-                    </button>
-                  </li>
-                ))}
+                {menu.map((item) => {
+                  /* Only the first of the bar's two questions is asked here,
+                     because the second one is about hovering and there is no
+                     hovering on a phone. A word with a page is a link to it and
+                     a tap goes there — which is what a tap on Clients means on
+                     the desktop bar too. Its seven sectors are a hover
+                     affordance and stay one; on this screen they are read on
+                     the homepage, in the section they belong to.
+                     The index keeps its own mark either way, so the list still
+                     reads as one list — here the arrow means the page rather
+                     than the screen behind the word. */
+                  const isLink = item.href.startsWith("/");
+                  const isCurrent = isLink
+                    ? pathname === item.href
+                    : item.key === "services" &&
+                      pathname.startsWith("/services");
+                  const className = `mobile-menu__index-link${
+                    isCurrent ? " is-current" : ""
+                  }`;
+                  const mark = (
+                    <PixelArrow
+                      className="mobile-menu__index-arrow"
+                      direction="up-right"
+                      shape="square"
+                      size="small"
+                      variant="corner"
+                    />
+                  );
+
+                  return (
+                    <li key={item.key} data-mobile-menu-entry>
+                      {isLink ? (
+                        <Link
+                          className={className}
+                          href={item.href}
+                          aria-current={isCurrent ? "page" : undefined}
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            setMobileActiveMenu(null);
+                          }}
+                        >
+                          <span>{item.label}</span>
+                          {mark}
+                        </Link>
+                      ) : (
+                        <button
+                          className={className}
+                          type="button"
+                          aria-controls="mobile-menu-detail"
+                          onClick={() => {
+                            setMobileDisplayMenu(item.key);
+                            setMobileActiveMenu(item.key);
+                          }}
+                        >
+                          <span>{item.label}</span>
+                          {mark}
+                        </button>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 

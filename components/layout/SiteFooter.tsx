@@ -6,8 +6,14 @@ import { SocialIcon } from "./SocialIcon";
 import { contact, contactEmail, footer, menu } from "../../content/home";
 
 /**
- * The site's menu, less Case Studies — the header still offers it, but its one
- * entry does not earn a column of its own down here.
+ * The columns down here: Services, Products, Company.
+ *
+ * Clients is left out, and by name rather than by a rule, because leaving it
+ * out is a decision about this one entry and not a shape its data has. Its list
+ * is the seven sectors, and a footer column of sector anchors is exactly what
+ * came out of this file on 2026-08-09 — seven links that only ever scrolled the
+ * homepage, in a column that made that more visible rather than less. The
+ * header offers them on hover, where they cost a column nothing.
  */
 const groups = menu.filter((group) => group.key !== "case-studies");
 

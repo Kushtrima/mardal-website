@@ -1074,7 +1074,13 @@ video {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  gap: clamp(1rem, 2.4vw, 2.25rem);
+  /* A minimum, not a measure: space-between already holds these two apart at
+     opposite edges, so this only ever states how close they may come when the
+     panel is at its narrowest. Down from 2.4vw, which at a 1448 window was 35px
+     of guaranteed separation standing between the small print and one row —
+     bought back here rather than out of the four words, and it costs nothing
+     visible while the row is not full. */
+  gap: clamp(0.9rem, 1.7vw, 1.75rem);
 }
 
 /* In the page ink, since on this ground the black it wears in the footer would
@@ -1099,7 +1105,20 @@ video {
   min-width: 0;
   gap: var(--legal-gap);
   color: var(--ink);
-  font-size: var(--text-small);
+  /* The fine size, which is the size this same line already wears at the foot
+     of the footer panel — the token is defined for exactly these two places, so
+     this is one legal line matching the other rather than a size invented here.
+
+     It is the third and last thing taken to close this row, and the only one of
+     the three that touches the words. The way in beside it came down from 103px
+     to 69 and the space between them from 35 to 25, which together bought 44px
+     against a 15px shortfall at a 1448 window — and it still wrapped narrower
+     than that, because the panel keeps very nearly the same width as the window
+     narrows while the line does not shrink at all. Twelve takes the four words
+     from 225px to 193 and ends the argument: the row now closes with something
+     like 40px to spare at every width the panel is drawn at, rather than one or
+     two. */
+  font-size: var(--text-fine);
   letter-spacing: -0.02em;
   line-height: 1;
 }
@@ -1259,13 +1278,21 @@ video {
   --accent: #08080a;
   --accent-contrast: #ffffff;
 
-  /* Never the thing that gives. The small print beside it wraps instead, and a
-     button squeezed narrower than its own label is not a smaller button, it is
-     a broken one. */
+  /* Never the thing that GIVES — a button squeezed narrower than its own label
+     is not a smaller button, it is a broken one — but no longer the thing that
+     takes, either. It held a 6.4vw floor that came to 103px at a 1602 window
+     against a label needing 82, so a fifth of it was width it had asked for and
+     was not using, and the small print beside it wrapped to pay for that: the
+     line wants 321px and the foot was leaving it 306, which orphaned "Cookies"
+     onto a row of its own.
+
+     So the box comes in and the label does not. Both are held off the label's
+     own measure rather than set to it, because a floor a hair under the text is
+     the same as no floor at all and the padding is what would go. */
   flex: none;
-  min-width: clamp(5.4rem, 6.4vw, 6.6rem);
-  min-height: clamp(2.05rem, 2.5vw, 2.3rem);
-  padding: 0.4rem 0.95rem;
+  min-width: clamp(4rem, 4.6vw, 4.5rem);
+  min-height: clamp(1.85rem, 2.2vw, 2.05rem);
+  padding: 0.35rem 0.7rem;
   border-radius: var(--shape-control);
   font-size: var(--text-small);
   font-weight: var(--weight-medium);
@@ -5462,6 +5489,326 @@ video {
 }
 
 .blog-empty__copy {
+  position: relative;
+  max-width: 46ch;
+  margin: clamp(0.75rem, 2vh, 1.25rem) 0 0;
+  font-size: var(--text-copy);
+  line-height: 1.6;
+  opacity: 0.72;
+}
+
+/* -------------------------------- Clients --------------------------------- */
+
+/* The same block the Blog index is: the hero dissolves into it and it carries
+   the page from there. Identical padding and ground, because these two are the
+   site's only two indexes and a reader arriving at either should not be able to
+   tell they were built a month apart. */
+.clients-index {
+  padding-block: 0 clamp(4rem, 12vh, 9rem);
+  color: var(--service-ink);
+  background: var(--service-surface);
+}
+
+/* One line of words, wrapping only when it must.
+
+   The first version marked the chosen sector by lighting it and dimming the
+   rest, which is the menu panel's language and was the safe answer. It was also
+   invisible from two feet away: eight words in two greys, and the only thing
+   telling you which list you were looking at was which of them was slightly
+   brighter.
+
+   So the mark is the bar. Redaction is the one motif this site owns — every
+   hero on it is a page of writing with the words blacked out — and the chosen
+   sector is that idea turned over: instead of a bar standing where a word was
+   hidden, the word stands on the bar. It is the same shape, the same tint the
+   hero field is drawn in, and it reads across a room.
+
+   A row of bordered pills was the other option and is what most sites do here.
+   It would put eight outlined shapes on a page whose whole argument is that
+   words on a ground are enough — and it would mark the seven you have not
+   chosen as loudly as the one you have. */
+/* The index beside the work, not above it. `start` rather than stretch so the
+   column of sectors sits at the top of the block and does not grow to the
+   height of whatever the grid happens to be showing. */
+.clients-layout {
+  display: grid;
+  align-items: start;
+  gap: clamp(1.75rem, 3.5vw, 3.25rem);
+  /* The first track is a definite width rather than minmax(0, …), and that is
+     load-bearing: ClientsPin lifts the index out of flow to hold it against the
+     scroll, and a track sized to its content would collapse to nothing the
+     moment the content left it — taking the work column across the page with
+     it. Given a width of its own the column stays where it is whether anything
+     is standing in it or not. */
+  grid-template-columns: clamp(9.5rem, 15vw, 13.5rem) minmax(0, 1fr);
+}
+
+.clients-work {
+  min-width: 0;
+}
+
+/* One under the next, and read as an index rather than as a row of controls. */
+.clients-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: clamp(0.15rem, 0.5vh, 0.35rem);
+}
+
+/* The mega menu's own way of marking a name, which is the reason this stood up
+   in the first place: a rule is drawn from the left and the word steps aside to
+   let it in. Both measures are named here because two declarations have to
+   agree on them — the rule's width, and how far the word moves to clear it. */
+.clients-filter__item {
+  --mark: clamp(1.05rem, 1.7vw, 1.5rem);
+  --mark-gap: 0.55rem;
+
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: clamp(0.3rem, 0.9vh, 0.5rem) 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink-grey);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--text-body);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  text-align: left;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+/* One hairline, in the colour of the word it belongs to — not a coloured bar.
+   The rule is the same object the panel draws, so it is drawn the same way:
+   currentcolor, one pixel, from the left. */
+.clients-filter__item::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: var(--mark);
+  height: 1px;
+  background: currentcolor;
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-base) var(--ease-handover);
+}
+
+/* The word travels, not the button — the same split the panel makes, so the
+   hit area stays where it was while the label moves. */
+.clients-filter__label {
+  display: inline-block;
+  transition: transform var(--duration-base) var(--ease-handover);
+}
+
+.clients-filter__item.is-current {
+  color: var(--ink);
+}
+
+.clients-filter__item.is-current::before {
+  transform: scaleX(1);
+}
+
+.clients-filter__item.is-current .clients-filter__label {
+  transform: translateX(calc(var(--mark) + var(--mark-gap)));
+}
+
+/* Held off the seven by a rule and the space either side of it. Down a column
+   this can be a line without being a border on a control — it is the foot of an
+   index, and what is under it is a different kind of entry. */
+.clients-filter__item--all {
+  margin-top: clamp(0.7rem, 1.8vh, 1.05rem);
+  padding-top: clamp(0.75rem, 1.9vh, 1.1rem);
+  border-top: 1px solid var(--line-soft);
+}
+
+/* Ink, and nothing drawn. Hovering is not choosing: a rule that followed the
+   pointer would have the index drawing and undrawing itself all the way down. */
+.clients-filter__item:hover,
+.clients-filter__item:focus-visible {
+  color: var(--ink);
+}
+
+/* Stacked, the index goes back to being a block of words above the work rather
+   than a column beside it — a 9rem rail on a phone is not a rail. */
+/* The complement of this query is read back in ClientsPin through matchMedia:
+   the index is only held against the scroll while there is a column of work
+   beside it to hold it against. Change the width here and change it there. */
+@media (max-width: 64rem) {
+  .clients-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .clients-filter {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: clamp(0.9rem, 3vw, 1.5rem);
+  }
+
+  .clients-filter__item {
+    width: auto;
+  }
+
+  /* No rule and no step across a line: a word that travels lands on the one
+     beside it. Ink alone marks the choice at this width, which is what the row
+     always had to fall back on. */
+  .clients-filter__item::before {
+    content: none;
+  }
+
+  .clients-filter__item.is-current .clients-filter__label {
+    transform: none;
+  }
+
+  .clients-filter__item--all {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+    margin-left: clamp(0.4rem, 1.4vw, 1rem);
+  }
+}
+
+/* The Blog's grid, at the same measure. Entries are equal here for the reason
+   pieces are equal there: an index where one item is drawn larger is telling
+   the reader which to pick before they have read any of them. */
+.clients-grid {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+  gap: clamp(0.75rem, 1.2vw, 1.15rem);
+  list-style: none;
+}
+
+.clients-grid > li {
+  display: flex;
+}
+
+.clients-card {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: clamp(20rem, 30vw, 26rem);
+  flex-direction: column;
+  padding: clamp(1.35rem, 1.9vw, 1.85rem);
+  overflow: hidden;
+  border-radius: var(--shape-md);
+  background: var(--surface-raised);
+}
+
+/* The sector, and it is the only label on the card. It sits above the title
+   because it is the thing the filter above just acted on: with Finance chosen
+   every card repeats it, which is the confirmation, and with All chosen it is
+   how you read the list. */
+.clients-card__sector {
+  margin: 0;
+  color: var(--ink-grey);
+  font-size: var(--text-fine);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.clients-card__title {
+  margin: clamp(0.7rem, 1.6vh, 1rem) 0 0;
+  color: var(--ink);
+  font-family: var(--type-title);
+  font-size: clamp(1.75rem, 2.1vw, 2.125rem);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.06;
+  text-wrap: balance;
+}
+
+.clients-card__mark {
+  display: block;
+  width: clamp(7rem, 9vw, 9.25rem);
+  height: auto;
+  margin-top: clamp(1.15rem, 2.6vh, 1.6rem);
+  fill: var(--ink-grey);
+  opacity: 0.7;
+}
+
+/* Dropped to the foot, so a row of cards agrees along its bottom edge however
+   long the titles run — the same margin-top: auto the blog card is built on. */
+.clients-card__facts {
+  margin: auto 0 0;
+  padding-top: clamp(1.5rem, 4vh, 2.5rem);
+}
+
+/* Label and answer on one line, the label held to a fixed measure so the three
+   answers start at the same place on every card in the row. Comparing two
+   entries means comparing the same three questions, and they only read as the
+   same three if they line up. */
+.clients-card__fact {
+  display: flex;
+  gap: clamp(0.75rem, 1.4vw, 1.1rem);
+  padding-top: clamp(0.55rem, 1.4vh, 0.8rem);
+  margin-top: clamp(0.55rem, 1.4vh, 0.8rem);
+  border-top: 1px solid var(--line-soft);
+}
+
+.clients-card__fact:first-child {
+  padding-top: 0;
+  margin-top: 0;
+  border-top: 0;
+}
+
+.clients-card__fact dt {
+  flex: none;
+  width: 7rem;
+  color: var(--ink-grey);
+  font-size: var(--text-fine);
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.clients-card__fact dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-copy);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* Every sector's state today, and the Blog's empty state exactly — the bars
+   standing in for writing that genuinely is not there yet. */
+.clients-empty {
+  position: relative;
+  padding-block: clamp(3rem, 9vh, 6rem);
+}
+
+.clients-empty__lines {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: min(52%, 30rem);
+  aspect-ratio: 716 / 336;
+  opacity: 0.18;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.clients-empty__bars {
+  width: 100%;
+  height: 100%;
+  fill: var(--accent);
+}
+
+.clients-empty__title {
+  position: relative;
+  max-width: 20ch;
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.08;
+}
+
+.clients-empty__copy {
   position: relative;
   max-width: 46ch;
   margin: clamp(0.75rem, 2vh, 1.25rem) 0 0;

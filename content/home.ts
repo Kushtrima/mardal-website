@@ -7,6 +7,66 @@
  */
 
 /**
+ * The seven sectors, written once.
+ *
+ * They are read in two places now — the Solutions section down the homepage and
+ * the Clients menu in the header — so they are declared before either and both
+ * are built from this. It is the same argument the menu itself is here for: two
+ * copies of a list are two lists, and they drift.
+ *
+ * Each one is a section on the homepage and nothing more; none has a page. That
+ * is why the menu hrefs below are written `/#id` rather than `#id`. Spelled
+ * that way they resolve from every page on the site — from the Blog or a
+ * service page the sector is a real destination, and from the homepage itself
+ * the browser reads it as the same document and simply scrolls, so nothing is
+ * reloaded for the shorter form's sake.
+ */
+export const industries = [
+  {
+    id: "finance",
+    title: "Finance",
+    descriptor:
+      "Banks, insurance companies, fintech platforms and financial service providers.",
+  },
+  {
+    id: "healthcare",
+    title: "Healthcare",
+    descriptor:
+      "Hospitals, clinics, pharmacies and organizations delivering health services.",
+  },
+  {
+    id: "manufacturing",
+    title: "Manufacturing",
+    descriptor:
+      "Factories, production companies and businesses managing industrial operations.",
+  },
+  {
+    id: "automotive",
+    title: "Automotive",
+    descriptor:
+      "Dealerships, repair services, vehicle platforms and mobility companies.",
+  },
+  {
+    id: "retail",
+    title: "Retail",
+    descriptor:
+      "Physical stores, e-commerce businesses and consumer-focused brands.",
+  },
+  {
+    id: "logistics",
+    title: "Logistics",
+    descriptor:
+      "Transport companies, warehouses, distributors and delivery service providers.",
+  },
+  {
+    id: "public-sector",
+    title: "Public Sector",
+    descriptor:
+      "Government institutions, municipalities and organizations providing public services.",
+  },
+] as const;
+
+/**
  * The site's menu, and the only copy of it.
  *
  * The header renders it as the mega menu and the footer renders it as its link
@@ -51,13 +111,50 @@ export const menu = [
       { label: "Ihrauto", href: "#ihrauto" },
     ],
   },
+  /* The only entry in the bar that is both a page and a list. `href` is a route
+     rather than an anchor, so the word itself is a link and clicking it goes to
+     the page; `items` is not empty, so hovering it opens the panel. The header
+     reads those two facts separately and needs no flag from here.
+
+     What the panel holds is the seven sectors, which is the honest answer to
+     what a menu called Clients can say while PRODUCT.md still forbids naming a
+     client in public: not who they are, but what they do. It names nobody.
+
+     The same seven were a group of their own, Solutions, and came out of the
+     header and the footer on 2026-08-09 because they were a menu that only ever
+     scrolled you. They are back under a word that now has somewhere to go, and
+     written `/#id` so they resolve from every page rather than only from the
+     homepage.
+
+     Before this it was a panel holding a single ArvenaAI anchor pointing at a
+     section on no page — and PRODUCT.md is explicit that it could never point at
+     the Clients page either, since ArvenaAI is an unreleased in-house product
+     and must not be written as a delivered client outcome. It lives under
+     Products.
+
+     "Clients" rather than "Case Studies". The route stays /case-studies — the
+     hero's drawing is generated from that slug, so moving it would redraw the
+     page. */
   {
     key: "case-studies",
-    label: "Case Studies",
-    eyebrow: "Mardal Projects",
-    description: "See how our ideas become useful, working products.",
-    href: "#case-studies",
-    items: [{ label: "ArvenaAI", href: "#arvena-ai-case-study" }],
+    label: "Clients",
+    eyebrow: "Mardal Clients",
+    description: "The sectors we build for, and what each client owns.",
+    href: "/case-studies",
+    /* Each sector goes to the Clients page with itself already chosen, not to a
+       run further down the homepage. That is the difference between a menu that
+       sends you somewhere and one that only scrolls you, and it is why these
+       came out of the header the first time.
+
+       Seven real routes, prerendered, each rendering the Clients page with its
+       own sector already chosen — so the first paint is Finance rather than
+       everything-then-Finance, and the address is a link that can be sent.
+       Changing sector once you are there is a filter rather than a seventh
+       navigation. */
+    items: industries.map((industry) => ({
+      label: industry.title,
+      href: `/case-studies/${industry.id}`,
+    })),
   },
   {
     key: "company",
@@ -196,50 +293,10 @@ export const solutions = {
   eyebrow: "Who we build for",
   title: "Technology shaped around the realities of your sector.",
   lede: "Built across industries",
-  items: [
-    {
-      id: "finance",
-      title: "Finance",
-      descriptor:
-        "Banks, insurance companies, fintech platforms and financial service providers.",
-    },
-    {
-      id: "healthcare",
-      title: "Healthcare",
-      descriptor:
-        "Hospitals, clinics, pharmacies and organizations delivering health services.",
-    },
-    {
-      id: "manufacturing",
-      title: "Manufacturing",
-      descriptor:
-        "Factories, production companies and businesses managing industrial operations.",
-    },
-    {
-      id: "automotive",
-      title: "Automotive",
-      descriptor:
-        "Dealerships, repair services, vehicle platforms and mobility companies.",
-    },
-    {
-      id: "retail",
-      title: "Retail",
-      descriptor:
-        "Physical stores, e-commerce businesses and consumer-focused brands.",
-    },
-    {
-      id: "logistics",
-      title: "Logistics",
-      descriptor:
-        "Transport companies, warehouses, distributors and delivery service providers.",
-    },
-    {
-      id: "public-sector",
-      title: "Public Sector",
-      descriptor:
-        "Government institutions, municipalities and organizations providing public services.",
-    },
-  ],
+  /* The seven, from the one declaration at the top of this file. The header's
+     Clients panel is built from the same list, so a sector cannot be renamed in
+     one place and not the other. */
+  items: industries,
 } as const;
 
 export const products = {

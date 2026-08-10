@@ -23,7 +23,9 @@ async function render(path = "/") {
 }
 
 /** The anchors that are still on the page. The menu also links to Services,
- *  Case Studies, Company and Products, whose sections are not on the page. */
+ *  Company and Products, whose sections are not on the page, and to Clients,
+ *  which is not an anchor at all any more but a link to /case-studies — the
+ *  seven sectors in its panel are the anchors from `finance` down. */
 const menuAnchors = [
   "solutions",
   "products",
@@ -96,8 +98,44 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /AI &amp; Automation/);
   assert.match(html, /System Integration/);
   assert.match(html, /CRM Solutions/);
-  assert.match(html, /Case Studies/);
   assert.match(html, /Company/);
+
+  /* Clients: the one word in the bar that is both a link and a trigger. It is a
+     real anchor, so a click goes to the page, and it carries the panel's hooks
+     as well, so hovering it opens the seven sectors. Every other word is one or
+     the other and this is the only entry that has to be checked for both.
+
+     Picked apart rather than matched whole, because the two builds this repo
+     has do not agree on attribute order — `next dev` writes the class first and
+     the worker these tests load writes the href first. An assertion on the
+     whole tag passes under one and fails under the other while the markup is
+     correct in both. */
+  const clientsLink = html.match(/<a [^>]*>Clients<\/a>/)?.[0];
+  assert.ok(clientsLink, "Clients is not rendered as a link");
+  assert.match(clientsLink, /href="\/case-studies"/);
+  /* `nav-trigger` is what draws the chevron and turns it. The word has a panel
+     again, so the mark that says so is back with it — this is the visual half
+     of the check and it is the half that silently regresses. */
+  assert.match(clientsLink, /class="nav-link nav-trigger"/);
+  assert.match(clientsLink, /data-nav-trigger="true"/);
+  assert.match(clientsLink, /aria-controls="desktop-mega-menu"/);
+  assert.match(clientsLink, /aria-expanded="false"/);
+  /* One element, not two: a half conversion would leave the button standing
+     beside the link and the word would open a panel on a press as well as go to
+     a page. */
+  assert.doesNotMatch(html, /<button[^>]*>Clients<\/button>/);
+  assert.doesNotMatch(html, /Case Studies/);
+  /* The panel it replaced held one ArvenaAI anchor pointing at a section on no
+     page. PRODUCT.md forbids ArvenaAI being written as a delivered client
+     outcome, so it must not come back pointing at /case-studies either. */
+  assert.doesNotMatch(html, /arvena-ai-case-study/);
+  /* Mobile stays a link even though the entry now has children, because the
+     children are a hover affordance and there is no hovering on a phone. A tap
+     means what a click means on the bar: the page. */
+  const clientsMobile = html.match(/<a ([^>]*)><span>Clients<\/span>/)?.[1];
+  assert.ok(clientsMobile, "Clients is not a link in the mobile index");
+  assert.match(clientsMobile, /href="\/case-studies"/);
+  assert.match(clientsMobile, /class="mobile-menu__index-link"/);
   assert.match(html, /Hire us/);
   assert.match(html, /Start a project/);
   assert.match(html, /class="pixel-arrow /);
@@ -127,6 +165,9 @@ test("server-renders the Mardal homepage", async () => {
     ["one", "two", "three", "four", "one"],
   );
   assert.match(html, /Built across industries/);
+  /* The seven sectors are declared once now and read by both this section and
+     the header's Clients panel. The descriptor is what proves this section
+     still gets the whole entry rather than only the name the menu needs. */
   assert.match(html, /Physical stores, e-commerce businesses/);
 
   // Products: three names, each over its own drawing in bars.
@@ -249,17 +290,19 @@ test("server-renders the Mardal homepage", async () => {
     html,
     /class="site-footer__detail-value">.{0,400}?href="mailto:info@mardal\.co"/s,
   );
-  // The footer renders the site's menu less Case Studies: Services, Products,
-  // Company. The header still offers Case Studies and the footer does not —
-  // put in, then taken back out on 2026-08-09, because its one entry is a dead
-  // anchor to a case study that does not exist and a column of its own made
-  // that more visible rather than less. This assertion is what stops the two
-  // menus drifting on the count alone: it said 4 until the worker these tests
-  // load was actually rebuilt — `1fbc8cf` took Solutions out of the menu and
-  // the number was never followed down here, but the artifact predated that
-  // commit, so it went on passing against a menu that no longer existed.
+  // The footer renders the menu's groups: Services, Products, Company. Clients
+  // is not one — a column here is a heading over a list and it has no list, so
+  // the footer filters on that rather than on its name now. It was put in, then
+  // taken back out on 2026-08-09, when it was still a panel whose one entry was
+  // a dead anchor and a column made that more visible rather than less; it is
+  // now a plain link in the header and still earns no column. This assertion is
+  // what stops the two menus drifting on the count alone: it said 4 until the
+  // worker these tests load was actually rebuilt — `1fbc8cf` took Solutions out
+  // of the menu and the number was never followed down here, but the artifact
+  // predated that commit, so it went on passing against a menu that no longer
+  // existed.
   assert.equal((html.match(/class="site-footer__group"/g) ?? []).length, 3);
-  assert.doesNotMatch(html, /site-footer__group-title">Case Studies/);
+  assert.doesNotMatch(html, /site-footer__group-title">Clients/);
   // The ring alone, cropped from the wordmark rather than a second asset.
   assert.match(html, /class="site-footer__mark"/);
   // The bar field, traced: 22 bars, every one 10 wide, on three spans — nine
@@ -641,15 +684,18 @@ test("the ends of the run wrap rather than offering nothing", async () => {
   );
 });
 
-/* The Case Studies page, which is a hero and nothing else yet — the same order
-   the Blog was built in. Two of these assertions are about the opening; the
-   third is the one that matters. */
-test("server-renders the Case Studies hero", async () => {
+/* The Clients page, which is a hero and nothing else yet — the same order the
+   Blog was built in. Two of these assertions are about the opening; the third
+   is the one that matters. Still served at /case-studies: the hero's drawing is
+   generated from that slug, so the route was left alone when the word was
+   changed. */
+test("server-renders the Clients hero", async () => {
   const response = await render("/case-studies");
   assert.equal(response.status, 200);
 
   const html = await response.text();
-  assert.match(html, /<title>Case Studies — Mardal<\/title>/i);
+  /* The tab has to say what was clicked to get here. */
+  assert.match(html, /<title>Clients — Mardal<\/title>/i);
 
   // Authored as two explicit line spans, so the break falls in one place.
   assert.match(html, /class="service-hero__title-line">Systems we built</);
@@ -678,10 +724,95 @@ test("server-renders the Case Studies hero", async () => {
   }
 
   /* ArvenaAI is an unreleased in-house product and PRODUCT.md forbids writing
-     it as a delivered client outcome. It belongs under Products; the menu's
-     dead ArvenaAI case-study anchor must not follow the page here. */
+     it as a delivered client outcome. It belongs under Products; the dead
+     ArvenaAI case-study anchor the menu used to carry must not follow the page
+     here now that the menu comes straight to it. */
   assert.doesNotMatch(html, /arvena-ai-case-study/);
+
+  /* The header on this page points at the page it is on, and says so. */
+  const clientsLink = html.match(/<a [^>]*>Clients<\/a>/)?.[0];
+  assert.ok(clientsLink, "Clients is not rendered as a link");
+  assert.match(clientsLink, /aria-current="page"/);
 
   assert.match(html, /class="site-nav"/);
   assert.match(html, /<footer class="site-footer"/);
+});
+
+/* The sector filter, which is the answer to "choosing Finance should not mean
+   coming back to the header to change your mind": one page, seven views, and
+   the view chosen on the SERVER so the first paint is already the right one.
+   These assert the server half — that /case-studies/finance arrives filtered
+   rather than arriving whole and correcting itself in the browser. */
+test("filters the Clients page by sector, server-side", async () => {
+  const all = await (await render("/case-studies")).text();
+  const finance = await (await render("/case-studies/finance")).text();
+  const publicSector = await (
+    await render("/case-studies/public-sector")
+  ).text();
+
+  const cards = (html) => (html.match(/class="clients-card"/g) ?? []).length;
+  /* Matched across the class list rather than against one exact string — All
+     carries a modifier of its own — and reaching through to the label span,
+     since the word is wrapped now: the span is what travels when a sector is
+     chosen, so the button holds no text of its own to match on. */
+  const lit = (html) =>
+    html.match(
+      /clients-filter__item[^"]*is-current"[\s\S]*?clients-filter__label">([^<]*)/,
+    )?.[1];
+
+  /* Unfiltered is every entry, and the word lit in the row says so. */
+  assert.equal(lit(all), "All");
+  assert.equal(cards(all), 8);
+
+  /* All closes the row rather than opening it: the seven sectors are a list,
+     and the way out of one of them is not the eighth member of that list. This
+     asserts the order, because it is a decision and not an accident of how the
+     array happens to be written. */
+  const order = [
+    ...all.matchAll(/class="clients-filter__label">([^<]*)/g),
+  ].map((match) => match[1]);
+  assert.equal(order.at(-1), "All");
+  assert.equal(order.at(0), "Finance");
+  assert.equal(order.length, 8);
+
+  /* Filtered is a subset, and only that sector survives — the count and the
+     labels both, since a filter that changed the count while leaving a stray
+     card from another sector would pass on the count alone. */
+  assert.equal(lit(finance), "Finance");
+  assert.equal(cards(finance), 2);
+  const labels = [
+    ...finance.matchAll(/class="clients-card__sector">([^<]*)/g),
+  ].map((match) => match[1]);
+  assert.deepEqual([...new Set(labels)], ["Finance"]);
+
+  /* A sector with nothing in it is a screen, not a blank: the same empty state
+     the Blog index shows, the bars standing in for writing that is genuinely
+     not there. Every sector is in this state until the entries are written —
+     this one is only the first to prove it renders. */
+  assert.equal(lit(publicSector), "Public Sector");
+  assert.equal(cards(publicSector), 0);
+  assert.match(publicSector, /class="clients-empty__title"/);
+  assert.match(publicSector, /Nothing published yet\./);
+
+  /* The sector leads the tab, because a shared link shows the tab and the
+     sector is why it was shared. */
+  assert.match(finance, /<title>Finance — Clients — Mardal<\/title>/i);
+
+  /* A sector that does not exist is a wrong address, not an empty filter. */
+  assert.equal((await render("/case-studies/nonsense")).status, 404);
+
+  /* **Still no client named, on the filtered routes too.** The assertion above
+     covers /case-studies alone; these are seven more pages that could carry a
+     name, and the entries on them are the likeliest place for one to arrive. */
+  for (const client of [
+    "EN NUR",
+    "Spitex",
+    "Stolzbau",
+    "Henor",
+    "ANDI SPORT",
+    "Jetonikeramika",
+  ]) {
+    assert.doesNotMatch(finance, new RegExp(client, "i"), `${client} named`);
+    assert.doesNotMatch(all, new RegExp(client, "i"), `${client} named`);
+  }
 });
