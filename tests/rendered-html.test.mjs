@@ -697,15 +697,26 @@ test("server-renders the Clients hero", async () => {
   /* The tab has to say what was clicked to get here. */
   assert.match(html, /<title>Clients — Mardal<\/title>/i);
 
-  // Authored as two explicit line spans, so the break falls in one place.
-  assert.match(html, /class="service-hero__title-line">Systems we built</);
-  assert.match(html, /class="service-hero__title-line">and handed over\.</);
+  /* Two authored line spans, so the break falls where it was chosen rather than
+     wherever the measure happens to run out. The words are the owner's and they
+     turn the page around: "Systems we built / and handed over." was written
+     from Mardal's side, this is written from the reader's. */
+  assert.match(html, /class="service-hero__title-line">Customer</);
+  assert.match(html, /class="service-hero__title-line">stories</);
+  assert.equal(
+    (html.match(/class="service-hero__title-line"/g) ?? []).length,
+    2,
+  );
+  assert.doesNotMatch(html, /Systems we built|and handed over/);
   assert.match(html, /What each one replaced, what it does now/);
 
-  /* The drawing is generated, not a sixth PNG: no mask image is cut for this
-     route and none should ever be added. */
-  assert.match(html, /service-hero__pattern--drawn/);
-  assert.match(html, /class="service-hero__drawing"/);
+  /* No artwork in this opening, which makes it the only hero on the site
+     without one — the five service pages mask a PNG and the Blog draws the
+     vector. Owner's call. Asserted rather than left to the eye because the
+     hero's layout now depends on it: the heading's measure and the column the
+     support line stands in were both set by where the drawing was. */
+  assert.doesNotMatch(html, /service-hero__pattern/);
+  assert.doesNotMatch(html, /class="service-hero__drawing"/);
 
   /* **No client is named, and none may be until the owner says so.**
      PRODUCT.md records that the delivered archive may be described as Mardal's
@@ -750,7 +761,11 @@ test("filters the Clients page by sector, server-side", async () => {
     await render("/case-studies/public-sector")
   ).text();
 
-  const cards = (html) => (html.match(/class="clients-card"/g) ?? []).length;
+  /* Matched to the end of the class name rather than the end of the attribute:
+     a card with a story behind it carries a modifier too, and pinning this to
+     the bare `class="clients-card"` stopped counting it the moment the first
+     story existed. */
+  const cards = (html) => (html.match(/class="clients-card[" ]/g) ?? []).length;
   /* Matched across the class list rather than against one exact string — All
      carries a modifier of its own — and reaching through to the label span,
      since the word is wrapped now: the span is what travels when a sector is
@@ -781,9 +796,66 @@ test("filters the Clients page by sector, server-side", async () => {
   assert.equal(lit(finance), "Finance");
   assert.equal(cards(finance), 2);
   const labels = [
-    ...finance.matchAll(/class="clients-card__sector">([^<]*)/g),
+    ...finance.matchAll(/class="clients-card__title">([^<]*)/g),
   ].map((match) => match[1]);
   assert.deepEqual([...new Set(labels)], ["Finance"]);
+
+  /* Every card carries a picture in a box of the same shape. Four tints cycled
+     by position, so no plate sits under its own colour — the tint is what
+     stands in the box while a picture is in flight and what is left if one
+     never arrives. */
+  assert.equal((all.match(/class="clients-card__plate"/g) ?? []).length, 8);
+  assert.equal((all.match(/class="clients-card__art"/g) ?? []).length, 8);
+
+  /* **The pictures are placeholders on a third party's server and must not
+     ship.** This is the assertion that makes that impossible to forget: it
+     fails the build the day someone tries to publish this page with stock
+     frames still in it, which is exactly when nobody is reading comments.
+     Delete it in the same commit that puts real screenshots in. */
+  assert.equal((all.match(/https:\/\/picsum\.photos\//g) ?? []).length, 8);
+  /* Decorative, so every one of them is silent to a screen reader: they are
+     photographs of nothing to do with the work. */
+  assert.doesNotMatch(all, /class="clients-card__art"[^>]*alt="[^"]+"/);
+  const tints = [...all.matchAll(/clients-card__plate" data-tint="(\w+)"/g)].map(
+    (match) => match[1],
+  );
+  assert.deepEqual(tints.slice(0, 5), ["one", "two", "three", "four", "one"]);
+
+  /* No project name anywhere on a card. A project's name is its client's, and
+     the sector heads the card precisely so nothing has to stand in for one —
+     `[Project 01]` was the placeholder that used to, and a bracket must never
+     reach a page. */
+  assert.doesNotMatch(all, /\[Project/);
+
+  /* Two fields a card, in this order: who it was for, then what it was. */
+  const fields = [...all.matchAll(/<dt>([^<]*)<\/dt>/g)].map((m) => m[1]);
+  assert.deepEqual(fields.slice(0, 2), ["Client", "Description"]);
+  assert.equal(fields.length, 16);
+  /* The three they replaced are gone rather than left rendering beside them. */
+  assert.doesNotMatch(all, /<dt>(Replaced|Does now|Client owns)<\/dt>/);
+
+  /* **One card is a link, and only one.** The pilot story is the only entry
+     with a page behind it; the other seven go nowhere on purpose, because a
+     card that looks like a link and answers with an empty page is worse than a
+     card that never offered. This is what stops the next story being wired up
+     by adding a route and forgetting the index, or the reverse. */
+  /* Read off the whole tag rather than assuming class comes before href: the
+     two builds this repo has disagree on attribute order, and `next dev` writes
+     one way while the worker these tests load writes the other. */
+  const links = [...all.matchAll(/<a ([^>]*clients-card__link[^>]*)>/g)]
+    .map((match) => match[1].match(/href="([^"]*)"/)?.[1])
+    .filter(Boolean);
+  assert.deepEqual(links, [
+    "/case-studies/healthcare/healthcare-office-website",
+  ]);
+
+  /* **The Client field is the one this page may not fill.** PRODUCT.md records
+     that per-client sign-off for naming those companies publicly was never
+     recorded, so the slot stays bracketed — this is the assertion that catches a
+     real name being typed into the likeliest place on the whole site for one to
+     appear. The named-client loop below covers the seven the archive holds; this
+     covers the field itself being filled with anything at all. */
+  assert.match(all, /<dt>Client<\/dt><dd>\[Client name\]<\/dd>/);
 
   /* A sector with nothing in it is a screen, not a blank: the same empty state
      the Blog index shows, the bars standing in for writing that is genuinely
@@ -815,4 +887,81 @@ test("filters the Clients page by sector, server-side", async () => {
     assert.doesNotMatch(finance, new RegExp(client, "i"), `${client} named`);
     assert.doesNotMatch(all, new RegExp(client, "i"), `${client} named`);
   }
+});
+
+/* The pilot story — the page a card opens, and the only one there is. What is
+   being judged is the shape; the words in it are slots. */
+test("server-renders the one customer story", async () => {
+  const path = "/case-studies/healthcare/healthcare-office-website";
+  const response = await render(path);
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+
+  /* The tab is the whole title on one line — a heading may be two, a title may
+     not, and a shared link shows the title. */
+  assert.match(
+    html,
+    /<title>A website for a healthcare office — Mardal<\/title>/i,
+  );
+
+  /* Authored line spans, so the heading breaks where it was chosen. */
+  assert.match(html, /class="service-hero__title-line">A website for a</);
+  assert.match(html, /class="service-hero__title-line">healthcare office</);
+
+  /* The three questions the index has promised since the hero was written, at
+     length rather than in a column. */
+  for (const heading of [
+    "What it replaced",
+    "What it does now",
+    "What the client owns",
+  ]) {
+    assert.match(html, new RegExp(`class="story__heading">${heading}<`));
+  }
+
+  /* The way back, and both halves of it: leaving a story should offer the
+     sector it sits in as well as the whole index. */
+  assert.match(html, /href="\/case-studies"/);
+  assert.match(html, /href="\/case-studies\/healthcare"/);
+
+  /* **Still no client named, on the page most likely to name one.** A story is
+     where a name wants to go — it is a page about one customer — so this is the
+     assertion that matters most on this route. */
+  for (const client of [
+    "EN NUR",
+    "Spitex",
+    "Stolzbau",
+    "Henor",
+    "ANDI SPORT",
+    "Jetonikeramika",
+  ]) {
+    assert.doesNotMatch(html, new RegExp(client, "i"), `${client} named`);
+  }
+  assert.match(html, /<dt>Client<\/dt><dd>\[Client name\]<\/dd>/);
+
+  /* **The pictures are stock and must not ship** — same guard the index
+     carries: this fails the build the day the page is published with them.
+     Counted as distinct URLs, not as occurrences: this page is server-rendered,
+     so the RSC payload after the markup repeats every src and three pictures
+     read as ten. */
+  const shots = new Set(
+    [...html.matchAll(/https:\/\/picsum\.photos\/seed\/([a-z-]+)/g)].map(
+      (match) => match[1],
+    ),
+  );
+  assert.equal(shots.size, 3);
+
+  /* Exactly one story exists. Any other address under a sector is a wrong
+     address, not an unwritten page. */
+  assert.equal(
+    (await render("/case-studies/healthcare/not-a-story")).status,
+    404,
+  );
+  assert.equal(
+    (await render("/case-studies/finance/healthcare-office-website")).status,
+    404,
+  );
+
+  assert.match(html, /class="site-nav"/);
+  assert.match(html, /<footer class="site-footer"/);
 });

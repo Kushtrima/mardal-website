@@ -1,7 +1,6 @@
 import { Container } from "../layout/Container";
 import { SiteFooter } from "../layout/SiteFooter";
 import { SiteHeader } from "../layout/SiteHeader";
-import { BlogPattern } from "../blog/BlogPattern";
 import { ClientsIndex } from "./ClientsIndex";
 import { SectionEnter } from "../motion/SectionEnter";
 import { ServicePageEntry } from "../services/ServicePageEntry";
@@ -60,47 +59,51 @@ export function ClientsPage({ sector }: { sector: string }) {
               </h1>
             </div>
 
-            {/* Drawn, not masked. The five service heroes each carry a PNG of
-                the redaction language and the Blog carries the vector of it;
-                this page takes the generated one, so there is no sixth image
-                to cut and the drawing belongs to the route the way a piece's
-                drawing belongs to its slug. Seeded "case-studies", so it is
-                this page's permanently and no other page can land on it — and
-                the sector routes seed from the same string, so filtering never
-                redraws the hero.
+            {/* No artwork. Every other hero on the site carries one — the five
+                service pages mask a PNG of the redaction language and the Blog
+                draws the vector — and this one carried a generated plate seeded
+                from its slug. Owner took it out.
 
-                BlogPattern is the site's drawing generator rather than anything
-                to do with the blog — it is only shelved under components/blog
-                because that is where it was first needed. Left where it is: a
-                move is a refactor and this is not one. */}
-            <div
-              className="service-hero__pattern service-hero__pattern--drawn"
-              aria-hidden="true"
-              data-service-hero-pattern
-            >
-              <BlogPattern
-                slug={caseStudies.slug}
-                density="plate"
-                className="service-hero__drawing"
-              />
+                What it leaves is the reason the rest of this hero moves: the
+                drawing held the right half of the opening and the title's
+                measure reserved 30rem for it. With the box gone the words take
+                the room instead — the heading is no longer cut short of a
+                picture that is not there, and the support line and the way in
+                stand where it stood. */}
+
+            {/* The sentence and the way in, held together instead of placed
+                separately. On the service pages they are the two ends of the
+                hero's bottom row, and that only works while there is artwork
+                between them; here they are one block standing where the drawing
+                stood, so they need one box rather than two grid areas that
+                happen to line up.
+
+                It is the box that moves to the right edge — the words inside it
+                stay set to the left, as they were. Shrink-wrapped to its
+                longest line, so "right" means the writing ends on the edge
+                rather than a wide box ending there with the text stopping short
+                inside it.
+
+                ServicePageEntry finds both by their data attributes with a
+                descendant query, so wrapping them changes nothing it does. */}
+            <div className="service-hero__aside">
+              <p className="service-hero__support" data-service-hero-support>
+                {caseStudies.support}
+              </p>
+
+              <a
+                className="service-hero__cta"
+                href={products.ctaHref}
+                data-service-hero-cta
+              >
+                {caseStudies.heroCta}
+                <PixelArrow
+                  className="service-hero__cta-arrow"
+                  direction="up-right"
+                  size="small"
+                />
+              </a>
             </div>
-
-            <p className="service-hero__support" data-service-hero-support>
-              {caseStudies.support}
-            </p>
-
-            <a
-              className="service-hero__cta"
-              href={products.ctaHref}
-              data-service-hero-cta
-            >
-              {caseStudies.heroCta}
-              <PixelArrow
-                className="service-hero__cta-arrow"
-                direction="up-right"
-                size="small"
-              />
-            </a>
           </Container>
 
           {/* The same dissolve the other heroes leave on: a blur boundary

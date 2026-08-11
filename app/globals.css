@@ -5499,6 +5499,97 @@ video {
 
 /* -------------------------------- Clients --------------------------------- */
 
+/* The largest heading on the site, and the copy is what paid for it. The old
+   one spent two lines and 33 characters on the measure; "Customer / stories"
+   spends two lines and 8, so the room the words gave back goes into the size
+   rather than being left as air beside them.
+
+   Written as a clamp here and not lifted into :root, which is the one place
+   this file's own rule about tokens is deliberately not followed. A token is
+   for a value more than one thing reads; this is one heading on one page,
+   standing a step above --text-hero because it is the only heading on the site
+   with two words and a whole opening to itself. Putting it in :root would
+   invite a second page to reach for it, and the next page to want it will have
+   different words.
+
+   What stops it is the page, not the measure, and that was worth measuring
+   rather than assuming. This serif draws "Customer" at about 0.39em a
+   character, not the 0.56 a grotesque would — at 116px the word came to 360px
+   against the 760 the artwork leaves, so the line had over half its measure
+   spare and the width was never going to be the thing that ran out. What runs
+   out is height: the support line sits under this, and two lines of it at 160px
+   close most of the gap that was there at 116.
+
+   So the ceiling is set from the vertical, and the floor keeps it above the
+   display size on a phone, where the artwork drops away and the measure is the
+   page.
+
+   Scoped to this page. The five service heroes and the Blog are two- and
+   three-line headings of ordinary length and are unchanged. */
+.service-page--case-studies .service-hero__title {
+  /* The measure was min(21ch, the room left before the artwork), and the second
+     term reserved 30rem for a drawing this page no longer has. With the picture
+     gone the only thing that should bound the heading is the column it stands
+     in, which the grid already sets — so the cap comes off rather than being
+     recalculated around a box that is not there. */
+  max-width: none;
+  font-size: clamp(3.5rem, 11vw, 10rem);
+}
+
+/* The support line and the way in, standing where the drawing stood.
+   They were the two ends of the hero's bottom row — the sentence at the left
+   margin and the link pushed to the right — which is the arrangement the five
+   service pages still use, and it only reads as an arrangement while there is
+   artwork between them holding the middle. With that gone they were two things
+   at opposite edges of an empty row.
+
+   `width: fit-content` is the whole of how this sits on the right edge without
+   the text being turned over to face it. Given the column's full width the box
+   ended at 1312 while its longest line stopped at 1263, so the writing read as
+   short of the edge by 49px — right-aligning the type would have closed that
+   and was the wrong fix, because it re-sets three lines of prose to be read
+   from a ragged left. Shrunk to its longest line the box IS the writing, and
+   putting the box on the edge puts the writing there. */
+.service-page--case-studies .service-hero__aside {
+  z-index: 1;
+  display: flex;
+  grid-column: 7 / -1;
+  grid-row: 2 / -1;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: end;
+  justify-self: end;
+  /* Shrink-wrapped to the sentence, which is capped on the sentence itself —
+     `ch` is a unit of the element that reads it, and 26ch here is 26 characters
+     of the block's inherited 18px rather than of the 40px the sentence is set
+     in. Measured: it came out at 293px against the 519 the same number gives on
+     the paragraph, and the line broke into four. A child's max-width is
+     accounted for in the parent's fit-content, so capping it below and
+     shrink-wrapping here gives the block the width of the sentence. */
+  width: fit-content;
+}
+
+.service-page--case-studies .service-hero__support {
+  /* Wider than the 16ch the service pages hold it to: there it is a fragment
+     beside a picture, here it is the only prose in the opening and it carries
+     the whole promise of the page. */
+  max-width: 26ch;
+  /* Owner's 20px. The block is set to its bottom edge, so space added under the
+     sentence lifts the sentence and leaves the way in where it is. Margin
+     rather than a transform: ServicePageEntry animates these on arrival and
+     would overwrite one. */
+  margin-bottom: 20px;
+}
+
+/* Under the sentence and on its left edge. Both are reset from the base rule,
+   which places this as a grid item at the far right of the hero's last row —
+   inside the block those become an instruction to push it to the right-hand
+   edge of the column, which is the one place it must not be. */
+.service-page--case-studies .service-hero__cta {
+  align-self: flex-start;
+  justify-self: auto;
+}
+
 /* The same block the Blog index is: the hero dissolves into it and it carries
    the page from there. Identical padding and ground, because these two are the
    site's only two indexes and a reader arriving at either should not be able to
@@ -5685,56 +5776,128 @@ video {
   display: flex;
 }
 
+/* No min-height any more. It was holding the card open around a one-word title
+   and a mark; the plate is most of the card's height now and sets it, so a
+   forced minimum would only reopen the dead band under the facts. */
 .clients-card {
   position: relative;
   display: flex;
   width: 100%;
-  min-height: clamp(20rem, 30vw, 26rem);
   flex-direction: column;
-  padding: clamp(1.35rem, 1.9vw, 1.85rem);
+  padding: clamp(0.9rem, 1.2vw, 1.15rem);
   overflow: hidden;
   border-radius: var(--shape-md);
   background: var(--surface-raised);
 }
 
-/* The sector, and it is the only label on the card. It sits above the title
-   because it is the thing the filter above just acted on: with Finance chosen
-   every card repeats it, which is the confirmation, and with All chosen it is
-   how you read the list. */
-.clients-card__sector {
-  margin: 0;
-  color: var(--ink-grey);
-  font-size: var(--text-fine);
-  letter-spacing: 0.08em;
-  line-height: 1;
-  text-transform: uppercase;
+/* The picture. A flat panel in one of the four tints with the entry's own plate
+   drawn on it — this site's own artwork rather than a photograph, because it
+   has no photography and will not carry stock.
+
+   The box is the plate's own 242x136 and must stay that: the drawing is
+   preserveAspectRatio="xMidYMid meet", so any other ratio letterboxes it into a
+   band of nothing rather than filling. A real screenshot dropped in here later
+   inherits the same box and the grid does not move. */
+.clients-card__plate {
+  position: relative;
+  aspect-ratio: 242 / 136;
+  overflow: hidden;
+  border-radius: calc(var(--shape-md) - 0.35rem);
+  background: var(--plate-tint);
 }
 
+/* The shade the sector is read against, and it is on the picture rather than on
+   the word. A text-shadow would do the same job and announce it — the word
+   would carry a halo it does not have anywhere else on this site, and type is
+   set flat here. Darkening the top of the photograph instead leaves the word
+   exactly as it is set.
+
+   Mixed from --canvas rather than typed as a black, so it is the page's own
+   ground being turned up rather than a colour invented for this rule. It runs
+   out by 58% because the sector sits in the top left and nothing else on the
+   plate needs holding down; a scrim over the whole picture would be a filter on
+   the artwork rather than a bed for one word. */
+.clients-card__plate::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--canvas) 52%, transparent) 0%,
+    color-mix(in srgb, var(--canvas) 22%, transparent) 28%,
+    transparent 58%
+  );
+  content: "";
+  pointer-events: none;
+}
+
+/* Cover, not contain: the box is 16:9 and so is what is asked for, but a real
+   screenshot later will not be, and a picture that letterboxes itself into a
+   band of tint is worse than one cropped to the box it was given.
+   `fill` is kept for the drawn plate this displaced — swap the img back for a
+   BlogPattern and the rule still colours it. */
+.clients-card__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  fill: var(--plate-bar);
+}
+
+/* The four, and the deeper shade of each for the bars — the pairing the hero
+   field and the homepage boxes already use, so a plate here is the same object
+   those are. Cycled by position, so no card sits under its own colour. */
+.clients-card__plate[data-tint="one"] {
+  --plate-tint: var(--tint-lilac);
+  --plate-bar: var(--tint-lilac-bar);
+}
+
+.clients-card__plate[data-tint="two"] {
+  --plate-tint: var(--tint-butter);
+  --plate-bar: var(--tint-butter-bar);
+}
+
+.clients-card__plate[data-tint="three"] {
+  --plate-tint: var(--tint-mint);
+  --plate-bar: var(--tint-mint-bar);
+}
+
+.clients-card__plate[data-tint="four"] {
+  --plate-tint: var(--tint-sky);
+  --plate-bar: var(--tint-sky-bar);
+}
+
+/* The sector, heading the card. It was a small tracked label over a bracketed
+   project name; the name is gone — a project's name is its client's, and that
+   is the decision nobody has made — so the sector takes the head of the card in
+   the title face rather than repeating itself in two sizes. */
+/* Top left of the picture, above the shade that holds it. Absolute rather than
+   in flow, so the plate keeps its 242x136 whatever the sector is called and a
+   two-word one like Public Sector cannot push the photograph taller than its
+   neighbours. */
 .clients-card__title {
-  margin: clamp(0.7rem, 1.6vh, 1rem) 0 0;
+  position: absolute;
+  z-index: 2;
+  top: clamp(0.75rem, 1.1vw, 1.05rem);
+  left: clamp(0.85rem, 1.2vw, 1.15rem);
+  max-width: calc(100% - 2 * clamp(0.85rem, 1.2vw, 1.15rem));
+  margin: 0;
   color: var(--ink);
   font-family: var(--type-title);
-  font-size: clamp(1.75rem, 2.1vw, 2.125rem);
+  font-size: clamp(1.5rem, 1.8vw, 1.875rem);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-tight);
   line-height: 1.06;
   text-wrap: balance;
 }
 
-.clients-card__mark {
-  display: block;
-  width: clamp(7rem, 9vw, 9.25rem);
-  height: auto;
-  margin-top: clamp(1.15rem, 2.6vh, 1.6rem);
-  fill: var(--ink-grey);
-  opacity: 0.7;
-}
-
 /* Dropped to the foot, so a row of cards agrees along its bottom edge however
    long the titles run — the same margin-top: auto the blog card is built on. */
 .clients-card__facts {
   margin: auto 0 0;
-  padding-top: clamp(1.5rem, 4vh, 2.5rem);
+  padding-top: clamp(1rem, 2.4vh, 1.5rem);
+  padding-inline: clamp(0.45rem, 0.7vw, 0.7rem);
+  padding-bottom: clamp(0.35rem, 0.8vh, 0.6rem);
 }
 
 /* Label and answer on one line, the label held to a fixed measure so the three
@@ -5757,7 +5920,12 @@ video {
 
 .clients-card__fact dt {
   flex: none;
-  width: 7rem;
+  /* Measured, not guessed: "DESCRIPTION" is the longest of the two at 86px, and
+     the track was 112 — 26px of empty column taken off a description that only
+     had 149 to wrap in. 5.75rem leaves the label six pixels of slack and gives
+     the rest back to the words. Widen it if a longer label is ever added; a
+     label that wraps costs more than the line it saves. */
+  width: 5.75rem;
   color: var(--ink-grey);
   font-size: var(--text-fine);
   letter-spacing: 0.06em;
@@ -5771,6 +5939,36 @@ video {
   font-size: var(--text-copy);
   line-height: 1.5;
   text-wrap: pretty;
+}
+
+/* A card with a story behind it. The link sits on the heading — one target, one
+   thing for a screen reader to announce — and is stretched over the card by the
+   pseudo-element, so the whole panel is clickable without eight nested links
+   fighting for the same rectangle. */
+.clients-card--linked {
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.clients-card__link::after {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  content: "";
+}
+
+/* The card answers, not a cursor decoration: the picture lifts out of the shade
+   it is read through and the panel comes up a step. Content responding to the
+   pointer is the one hover language this site has. */
+.clients-card--linked:hover {
+  background: var(--surface-raised-strong, rgb(255 255 255 / 8%));
+}
+
+.clients-card--linked .clients-card__plate::after {
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.clients-card--linked:hover .clients-card__plate::after {
+  opacity: 0.55;
 }
 
 /* Every sector's state today, and the Blog's empty state exactly — the bars
@@ -5815,6 +6013,207 @@ video {
   font-size: var(--text-copy);
   line-height: 1.6;
   opacity: 0.72;
+}
+
+/* ---------------------------- Clients: one story -------------------------- */
+
+/* The trail, and the heading under it. Small, tracked and grey — the voice this
+   site gives its labels — so it sits over the title without competing with it.
+   Two links rather than one: all the stories, and the sector this one is in,
+   because leaving a story should put you back among the ones like it. */
+.story-hero__trail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(0.5rem, 1vw, 0.8rem);
+  margin: 0 0 clamp(1.1rem, 2.5vh, 1.75rem);
+  color: var(--ink-grey);
+  font-size: var(--text-small);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.story-hero__back {
+  color: inherit;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.story-hero__back:hover,
+.story-hero__back:focus-visible {
+  color: var(--ink);
+}
+
+/* A step under the index's heading. "Customer stories" is the department and
+   this is one item in it, so it cannot be set at the same size — but it is
+   still the opening of a page, so it keeps the display size the service heroes
+   use rather than dropping to a section heading. */
+.service-page--story .service-hero__title {
+  max-width: 18ch;
+  font-size: var(--text-heading-xl);
+}
+
+.service-page--story .service-hero__aside {
+  z-index: 1;
+  display: flex;
+  grid-column: 7 / -1;
+  grid-row: 2 / -1;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: end;
+  justify-self: end;
+  width: fit-content;
+}
+
+.service-page--story .service-hero__support {
+  max-width: 26ch;
+  margin-bottom: 20px;
+}
+
+.service-page--story .service-hero__cta {
+  align-self: flex-start;
+  justify-self: auto;
+}
+
+.story {
+  padding-block: 0 clamp(4rem, 12vh, 9rem);
+  color: var(--service-ink);
+  background: var(--service-surface);
+}
+
+/* The work at a size you can read it at, which is the first thing a story has
+   that a card cannot show. 16:9 and cropped to it for the same reason the cards
+   are: a real screenshot will not match the box, and letterboxing it into a
+   band of ground is worse than cropping. */
+.story__cover {
+  overflow: hidden;
+  border-radius: var(--shape-md);
+  background: var(--surface-raised);
+}
+
+.story__cover-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+/* The facts beside the reading, not buried in it: they are what a reader scans
+   before deciding to read. One column at the narrow end, where a rail is not a
+   rail. */
+.story__body {
+  display: grid;
+  align-items: start;
+  gap: clamp(1.75rem, 3.5vw, 3.25rem);
+  margin-top: clamp(2rem, 6vh, 3.5rem);
+  grid-template-columns: clamp(11rem, 18vw, 16rem) minmax(0, 1fr);
+}
+
+.story__facts {
+  margin: 0;
+}
+
+.story__fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-top: clamp(0.7rem, 1.6vh, 0.95rem);
+  margin-top: clamp(0.7rem, 1.6vh, 0.95rem);
+  border-top: 1px solid var(--line-soft);
+}
+
+.story__fact:first-child {
+  padding-top: 0;
+  margin-top: 0;
+  border-top: 0;
+}
+
+.story__fact dt {
+  color: var(--ink-grey);
+  font-size: var(--text-fine);
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.story__fact dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-copy);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.story__sections {
+  display: grid;
+  gap: clamp(2rem, 5vh, 3rem);
+}
+
+.story__heading {
+  margin: 0 0 clamp(0.6rem, 1.4vh, 0.9rem);
+  color: var(--ink);
+  font-family: var(--type-display);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.1;
+}
+
+.story__copy {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--ink-grey);
+  font-size: var(--text-copy);
+  /* Reading leading, as the article body uses. */
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* Two more of the work. This is the only page on the site where the pictures
+   are the argument rather than the texture, so they get a row of their own. */
+.story__gallery {
+  display: grid;
+  margin: clamp(2.5rem, 7vh, 4.5rem) 0 0;
+  padding: 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+  gap: clamp(0.75rem, 1.2vw, 1.15rem);
+  list-style: none;
+}
+
+.story__shot {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--shape-md);
+  object-fit: cover;
+  background: var(--surface-raised);
+}
+
+/* Out the way you came in. A story that ends with nothing under it ends the
+   visit; the Blog closes the same way. */
+.story__out {
+  margin: clamp(2.5rem, 7vh, 4rem) 0 0;
+  padding-top: clamp(1.25rem, 3vh, 2rem);
+  border-top: 1px solid var(--line-soft);
+}
+
+.story__out-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  color: var(--ink);
+  font-family: var(--type-display);
+  font-size: var(--service-text-action);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: 1;
+}
+
+@media (max-width: 64rem) {
+  .story__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 /* ----------------------------- Blog: one piece ---------------------------- */

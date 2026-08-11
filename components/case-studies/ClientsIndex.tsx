@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BlogPattern } from "../blog/BlogPattern";
+import Link from "next/link";
 import { ClientsPin } from "./ClientsPin";
 import { Container } from "../layout/Container";
 import { RedactedLines } from "../home/RedactedLines";
@@ -11,6 +11,15 @@ import {
   clientEntries,
 } from "../../content/case-studies";
 import { industries } from "../../content/home";
+
+/* The four, cycled. Named here rather than set as a colour on the element,
+   because the render test fails the build on a server-rendered `style=` — the
+   card carries which of the four it is and globals.css owns what that means.
+
+   Four against a grid that is three cards wide at full width and two below
+   that: on both, the card under any card is a different colour, which is the
+   rule the coloured boxes on the homepage were built to. */
+const TINTS = ["one", "two", "three", "four"] as const;
 
 /**
  * The Clients index: seven sectors as a filter over one list, rather than seven
@@ -145,40 +154,90 @@ export function ClientsIndex({ initialSector }: { initialSector: string }) {
               </div>
             ) : (
               <ul className="clients-grid">
-                {shown.map((entry) => (
+                {shown.map((entry, index) => (
                   <li key={entry.slug}>
-                    <article className="clients-card">
-                      <p className="clients-card__sector">
-                        {sectorTitle(entry.sector)}
-                      </p>
+                    {/* A card is a link only where there is a story behind it,
+                        which today is one of the eight. The other seven are
+                        articles and go nowhere, on purpose: a card that looks
+                        like a link and answers with an empty page is worse than
+                        a card that never offered. */}
+                    <article
+                      className={`clients-card${
+                        "story" in entry ? " clients-card--linked" : ""
+                      }`}
+                    >
+                      {/* The picture. Stock frames for now, at the owner's ask,
+                          so the card can be judged against real photography —
+                          see content/case-studies.ts for why they must not
+                          ship. The box is the one thing here that is permanent:
+                          242x136, so a screenshot of the delivered system drops
+                          straight in later without the grid moving.
 
-                      <h3 className="clients-card__title">{entry.title}</h3>
+                          The tint stays under the image rather than being
+                          dropped with the drawing. It is what stands in the box
+                          while a remote frame is still in flight, and what is
+                          left there if it never arrives — a card whose picture
+                          fails should be a coloured panel, not a broken one.
 
-                      {/* The entry's own mark, from its own slug, the way a
-                          blog card takes one from its piece. Nothing to choose
-                          per entry and no two alike. */}
-                      <BlogPattern
-                        slug={entry.slug}
-                        className="clients-card__mark"
-                      />
+                          Decorative, so alt is empty: these photographs are of
+                          nothing to do with the work, and describing one to a
+                          screen reader would be describing a placeholder. */}
+                      <div
+                        className="clients-card__plate"
+                        data-tint={TINTS[index % TINTS.length]}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          className="clients-card__art"
+                          src={entry.image}
+                          alt=""
+                          width="640"
+                          height="360"
+                          loading="lazy"
+                          decoding="async"
+                        />
 
-                      {/* The hero's three promises, answered in order. A list
-                          of pairs rather than three paragraphs, because a
-                          reader comparing two entries is comparing the same
-                          three questions and the answers should line up down
-                          the page. */}
+                        {/* The sector, standing on the picture rather than
+                            under it. There is no project name to put here —
+                            the name would be the client's, and that is the
+                            decision nobody has made.
+
+                            It reads against whatever photograph lands behind
+                            it because the picture is darkened under it, not
+                            because the word carries a shadow of its own: a
+                            shadowed word is legible and looks it, and this
+                            site sets type flat everywhere else. */}
+                        {/* Where a story exists the heading carries the link,
+                            and the stylesheet stretches that link over the
+                            whole card: one target, one place for a screen
+                            reader to find it, and the whole card clickable the
+                            way a card should be. */}
+                        <h3 className="clients-card__title">
+                          {"story" in entry ? (
+                            <Link
+                              className="clients-card__link"
+                              href={`/case-studies/${entry.sector}/${entry.slug}`}
+                            >
+                              {sectorTitle(entry.sector)}
+                            </Link>
+                          ) : (
+                            sectorTitle(entry.sector)
+                          )}
+                        </h3>
+                      </div>
+
+                      {/* Who it was for, then what it was. A list of pairs
+                          rather than two paragraphs, because a reader comparing
+                          two entries is comparing the same two questions and
+                          the answers should line up down the page. */}
                       <dl className="clients-card__facts">
                         <div className="clients-card__fact">
-                          <dt>{caseStudies.fields.replaced}</dt>
-                          <dd>{entry.replaced}</dd>
+                          <dt>{caseStudies.fields.client}</dt>
+                          <dd>{entry.client}</dd>
                         </div>
                         <div className="clients-card__fact">
-                          <dt>{caseStudies.fields.now}</dt>
-                          <dd>{entry.now}</dd>
-                        </div>
-                        <div className="clients-card__fact">
-                          <dt>{caseStudies.fields.owns}</dt>
-                          <dd>{entry.owns}</dd>
+                          <dt>{caseStudies.fields.description}</dt>
+                          <dd>{entry.description}</dd>
                         </div>
                       </dl>
                     </article>
