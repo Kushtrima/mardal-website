@@ -909,9 +909,10 @@ test("server-renders the one customer story", async () => {
   assert.match(html, /class="service-hero__title-line">A website for a</);
   assert.match(html, /class="service-hero__title-line">healthcare office</);
 
-  /* Two columns: the record down the left, the reading down the right. The
-     three states run in the order the hero has promised since it was written. */
-  assert.match(html, /class="story-layout"/);
+  /* The record across the page under the opening, the reading below it. It was
+     a rail down the left held against the scroll; asserting the layout element
+     is gone is what stops the pin being reinstated with nothing to hold. */
+  assert.doesNotMatch(html, /class="story-layout"/);
   assert.match(html, /class="story-record"/);
   assert.match(html, /class="story-reading"/);
   for (const heading of [
@@ -919,22 +920,60 @@ test("server-renders the one customer story", async () => {
     "What it does now",
     "What the client owns",
   ]) {
-    assert.match(html, new RegExp(`class="story-part__heading">${heading}<`));
+    assert.match(html, new RegExp(`class="story-index__title">${heading}<`));
   }
-  assert.equal((html.match(/class="story-part"/g) ?? []).length, 3);
 
-  /* The record comes before the reading in the document, not only to its left.
-     A reader on a phone — where the columns stack and nothing is pinned — gets
-     who it was for before what happened, which is the same order. */
-  assert.ok(
-    html.indexOf('class="story-record"') < html.indexOf('class="story-reading"'),
-    "the record must come before the reading",
+  /* Three entries. Matched to the end of the class NAME rather than the
+     attribute: a modifier on the element would break a match pinned to the bare
+     class, which is a trap this file has been caught by three times — the
+     linked client card, the sector filter, and the accordion this index
+     replaced. */
+  assert.equal((html.match(/class="story-index__entry[" ]/g) ?? []).length, 3);
+
+  /* Numbered, and the number is decoration for the sequence rather than
+     content: it is hidden from a screen reader, which reads the three headings
+     in order and gets the sequence from that. */
+  assert.deepEqual(
+    [...html.matchAll(/class="story-index__number"[^>]*>([^<]*)/g)].map(
+      (m) => m[1],
+    ),
+    ["01", "02", "03"],
   );
+  /* The titles stay <h2>: they are the section headings of this page, which is
+     why the number sits beside one in a div rather than the pair being a
+     paragraph. */
+  assert.equal((html.match(/<h2 class="story-index__title">/g) ?? []).length, 3);
 
-  /* Pictures between the passages, not collected at either end, and not on the
-     last one: what the client owns is a list of holdings, which is not a thing
-     a photograph can show. */
-  assert.equal((html.match(/class="story-part__shot"/g) ?? []).length, 2);
+  /* **Nothing opens, and nothing is hidden.** The index does not collapse — the
+     bars travel between two piles and every reading is at full height between
+     them the whole time. So the served markup carries no open/shut state at
+     all, and a reader with no JavaScript, a crawler, and anyone with reduced
+     motion get the same three readings in the same order. The assertion is here
+     because the shape this replaced DID hide them, and reinstating a collapse
+     without meaning to would show up as nothing on the page. */
+  assert.doesNotMatch(html, /story-index[^"]*is-open/);
+  assert.match(html, /class="story-index__copy">\[What the office was working/);
+
+  /* **Three paragraphs and exactly one picture in every entry.** Two other
+     arrangements were built and rejected on the page, and both are pinned here
+     rather than left to drift back: an entry carrying two pictures, which made
+     itself half as long again as its neighbours, and an entry carrying none,
+     which became a band of text across the width. The counts are what catch
+     either one returning. */
+  assert.equal((html.match(/class="story-index__copy"/g) ?? []).length, 9);
+  assert.equal((html.match(/class="story-index__shot"/g) ?? []).length, 3);
+  for (const shot of html.matchAll(
+    /class="story-index__shot">(.*?)<\/figure>/g,
+  )) {
+    assert.equal(
+      (shot[1].match(/<img/g) ?? []).length,
+      1,
+      "a picture column holds one frame, never a stack",
+    );
+  }
+  /* No entry carries a modifier — the three are the same shape, which is the
+     thing that took two rejections to settle. */
+  assert.doesNotMatch(html, /class="story-index__entry [a-z-]/);
 
   /* The way back, and both halves of it: leaving a story should offer the
      sector it sits in as well as the whole index. */
@@ -963,7 +1002,32 @@ test("server-renders the one customer story", async () => {
       (match) => match[1],
     ),
   );
-  assert.equal(shots.size, 3);
+  assert.equal(shots.size, 5);
+
+  /* The plate under the record: square, and inside the same column the record
+     is ruled to. Order asserted because it is the argument — the record says
+     what the job was, the plate shows it, the reading explains it. */
+  /* Three paragraphs about the client company, in one row above the plate, and
+     no headings over them. They were three sections about Mardal, which could
+     carry real prose; about the client they are slots, because the office
+     cannot be named and nothing about it is written down anywhere. */
+  assert.equal((html.match(/class="story-about__copy"/g) ?? []).length, 3);
+  const about = html.slice(
+    html.indexOf('class="story-about"'),
+    html.indexOf('class="story-plate"'),
+  );
+  assert.doesNotMatch(about, /<h[1-6]/);
+  /* Every one of the three is still a bracket. This is the assertion that
+     catches a plausible description of a healthcare practice being written in —
+     which would read perfectly and be an invention. */
+  assert.equal((about.match(/\[/g) ?? []).length, 3);
+
+  assert.match(html, /class="story-plate"/);
+  assert.ok(
+    html.indexOf('class="story-record"') < html.indexOf('class="story-plate"') &&
+      html.indexOf('class="story-plate"') < html.indexOf('class="story-reading"'),
+    "the plate belongs between the record and the reading",
+  );
 
   /* The right half of the opening carries a picture, behind the words rather
      than beside them — the heading, the lede and the way in all keep their

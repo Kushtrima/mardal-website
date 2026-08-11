@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ClientsPin } from "./ClientsPin";
 import { StoryHeroShade } from "./StoryHeroShade";
+import { StorySteps } from "./StorySteps";
 import { Container } from "../layout/Container";
 import { SiteFooter } from "../layout/SiteFooter";
 import { SiteHeader } from "../layout/SiteHeader";
@@ -149,70 +149,90 @@ export function ClientsStory() {
           />
         </section>
 
-        {/* The record down the left, the reading down the right. The rail is
-            held against the scroll rather than travelling with it — a reader
-            three paragraphs into what the system replaced should still be able
-            to see who it was for without going back up for it.
+        {/* The record across the page, under the opening, and the reading
+            below it. It was a rail down the left held against the scroll —
+            owner's change. A row states the job once, at the top, the way a
+            record should be read: at a glance, before the account rather than
+            beside it.
 
-            Held by ClientsPin, which is the sector index's pin with its
-            selectors passed in: `position: sticky` cannot do this while
-            ScrollSmoother owns the scroll, and that mechanism was already
-            written and proved in a browser once. */}
+            No pin here any more. The rail was held because a reader three
+            paragraphs down could otherwise no longer see who it was for; a row
+            that is read and passed has nothing to hold. ClientsPin stays where
+            it was written and the sector index still uses it. */}
         <section className="story" data-route-section>
-          <ClientsPin
-            section=".story"
-            layout=".story-layout"
-            rail=".story-record"
-            body=".story-reading"
-          />
-
           <Container data-enter data-enter-mode="fade">
-            <div className="story-layout">
-              <dl className="story-record">
-                {pilotStory.facts.map((fact) => (
-                  <div className="story-record__fact" key={fact.label}>
-                    <dt>{fact.label}</dt>
-                    <dd>{fact.value}</dd>
-                  </div>
-                ))}
-              </dl>
+            <dl className="story-record">
+              {pilotStory.facts.map((fact) => (
+                <div className="story-record__fact" key={fact.label}>
+                  <dt>{fact.label}</dt>
+                  <dd>{fact.value}</dd>
+                </div>
+              ))}
+            </dl>
 
-              <div className="story-reading">
-                {pilotStory.passages.map((passage) => (
-                  <section className="story-part" key={passage.id}>
-                    <h2 className="story-part__heading">{passage.heading}</h2>
-                    <p className="story-part__copy">{passage.body}</p>
+            {/* Three short paragraphs about the client company, in one row
+                above the plate. No headings — three labels over three
+                thirty-word paragraphs is more label than paragraph, and the row
+                is one statement in three parts rather than three sections.
 
-                    {"image" in passage && passage.image ? (
-                      <figure className="story-part__shot">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={passage.image}
-                          alt=""
-                          width="1600"
-                          height="1000"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      </figure>
-                    ) : null}
-                  </section>
-                ))}
-
-                {/* Out the way you came in, at the foot of the reading rather
-                    than under both columns — it belongs to the column that
-                    ends, and the rail does not end, it is released. */}
-                <p className="story-out">
-                  <Link className="story-out__link" href="/case-studies">
-                    {pilotStory.backLabel}
-                    <PixelArrow
-                      className="story-out__arrow"
-                      direction="up-right"
-                      size="small"
-                    />
-                  </Link>
+                Every one is a slot, and has to be: the office cannot be named
+                until sign-off exists, and nothing about it is written down
+                anywhere this repo can reach. */}
+            <div className="story-about">
+              {pilotStory.about.map((paragraph) => (
+                <p className="story-about__copy" key={paragraph}>
+                  {paragraph}
                 </p>
-              </div>
+              ))}
+            </div>
+
+            {/* The plate. Big, but stopped at the container the record is ruled
+                to rather than run to the window's edges — the record above it
+                and the reading below both stop there, and a picture that breaks
+                that line makes the two of them look inset rather than making
+                itself look large.
+
+                Square corners. Everything else on this site that carries a
+                radius is a card or a panel — a thing with edges of its own. A
+                plate is a window onto the work, and a rounded window is a card
+                with a photograph in it. */}
+            <figure className="story-plate">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="story-plate__art"
+                src={pilotStory.plate}
+                alt=""
+                width="2000"
+                height="1125"
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+
+            {/* The three states as a numbered index that un-stacks on the way
+                down: the whole list waits piled at the foot of the window and
+                empties into a pile at the top, one entry per reading, with the
+                picture beside it. The owner sent ref.digital/work/sopfeu for
+                this and that section was read before this was rebuilt — nothing
+                in it opens, which turns out to be the point of it. The finding
+                is written up in StorySteps.tsx.
+
+                Better for these three than the accordion it replaced: the order
+                is the argument here, and a list that is whole from the first
+                moment states the order before it states anything else. */}
+            <StorySteps />
+
+            <div className="story-reading">
+              <p className="story-out">
+                <Link className="story-out__link" href="/case-studies">
+                  {pilotStory.backLabel}
+                  <PixelArrow
+                    className="story-out__arrow"
+                    direction="up-right"
+                    size="small"
+                  />
+                </Link>
+              </p>
             </div>
           </Container>
         </section>

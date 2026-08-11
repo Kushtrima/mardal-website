@@ -6165,39 +6165,28 @@ video {
   background: var(--service-surface);
 }
 
-/* The record and the reading. The first track is a definite width and that is
-   load-bearing: ClientsPin lifts the rail out of flow to hold it against the
-   scroll, and a track sized to its content would collapse the moment the
-   content left it, taking the reading across the page with it. The same lesson
-   the sector index taught. */
-.story-layout {
-  display: grid;
-  align-items: start;
-  gap: clamp(2rem, 4.5vw, 4rem);
-  grid-template-columns: clamp(10rem, 16vw, 14rem) minmax(0, 1fr);
-}
+/* Across the page, under the opening. It was a rail down the left held against
+   the scroll — owner's change. A row states the job once and is passed, which is
+   how a record is actually read: at a glance, before the account rather than
+   beside it. No pin on this page any more; ClientsPin stays where it was
+   written and the sector index still uses it.
 
-/* Down the left, ruled between entries. Label over value rather than beside it:
-   the column is narrow and a bracketed value pushed onto a second line beside
-   its label reads as two separate facts. */
+   Ruled top and bottom so it reads as a record rather than as four headings.
+   Four equal tracks stated rather than auto-fit: auto-fit with a minmax laid six
+   tracks for four facts on the index once, and the two empty ones still took
+   their gap, so the row could not reach the edge it is ruled to. */
 .story-record {
+  display: grid;
   margin: 0;
-}
-
-.story-record__fact {
-  padding-top: clamp(0.7rem, 1.7vh, 1rem);
-  margin-top: clamp(0.7rem, 1.7vh, 1rem);
+  padding-block: clamp(1.1rem, 2.6vh, 1.6rem);
   border-top: 1px solid var(--line-soft);
-}
-
-.story-record__fact:first-child {
-  padding-top: 0;
-  margin-top: 0;
-  border-top: 0;
+  border-bottom: 1px solid var(--line-soft);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(1.25rem, 3vw, 2.5rem);
 }
 
 .story-record__fact dt {
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.45rem;
   color: var(--ink-grey);
   font-size: var(--text-fine);
   letter-spacing: 0.06em;
@@ -6213,30 +6202,29 @@ video {
   text-wrap: pretty;
 }
 
-/* The column that scrolls. */
-.story-reading {
-  min-width: 0;
+/* Three short paragraphs about the client company, in one row above the plate.
+   One statement in three parts rather than three sections, so there are no
+   headings over them and no rules between them — the columns are the division.
+
+   Equal thirds, stated rather than auto-fit: the three are read together and a
+   track that sized itself to its own text would make the shortest paragraph
+   look like the least important one. */
+.story-about {
+  display: grid;
+  margin: clamp(2.5rem, 7vh, 4rem) 0 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* Wide, and then wider. The three were 52px apart and read as one paragraph
+     broken twice rather than three standing beside each other; with no rule and
+     no heading between them the space is the only thing dividing them, so it
+     has to do the work a rule would. 52 to 91 to this.
+
+     The ceiling is set from the measure rather than from taste: each column is
+     about 60 characters here and holds three lines, and taking much more would
+     start breaking the paragraphs into four. */
+  gap: clamp(2.5rem, 9vw, 11rem);
 }
 
-.story-part + .story-part {
-  margin-top: clamp(2.75rem, 8vh, 4.5rem);
-}
-
-.story-part__heading {
-  margin: 0 0 clamp(0.7rem, 1.6vh, 1rem);
-  color: var(--ink);
-  font-family: var(--type-display);
-  font-size: var(--text-heading);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1.1;
-}
-
-/* The reading colour and leading the article body uses, not the grey the labels
-   wear — these paragraphs are the whole verbal argument of the page. Measure
-   held inside the 65-75 a paragraph wants. */
-.story-part__copy {
-  max-width: 68ch;
+.story-about__copy {
   margin: 0;
   color: var(--ink-read, var(--ink));
   font-size: var(--text-copy);
@@ -6244,23 +6232,190 @@ video {
   text-wrap: pretty;
 }
 
-/* Set between the passages, where a picture shows what the paragraph above it
-   cannot say. The last state is a list of what the client holds, which is not a
-   thing a photograph can show, so it has none. */
-.story-part__shot {
-  margin: clamp(1.4rem, 3.5vh, 2rem) 0 0;
+/* The plate under the record: the biggest thing on the page, and held to the
+   same column everything else is. Not full-bleed — the record is ruled to the
+   container's edges and the reading sits inside them, so a picture that broke
+   the line would make those two look inset rather than making itself look
+   large.
+
+   Square. Every rounded thing on this site is a card or a panel, an object with
+   edges of its own; a plate is a window onto the work, and a rounded window is
+   a card with a photograph in it. */
+.story-plate {
+  margin: clamp(2.5rem, 7vh, 4rem) 0 0;
   overflow: hidden;
-  border-radius: var(--shape-md);
   background: var(--surface-raised);
 }
 
-.story-part__shot img {
+.story-plate__art {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 8 / 5;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
 }
+
+/* Under the record. The copy keeps its own measure, so a wider column does not
+   become a wider line. */
+.story-reading {
+  min-width: 0;
+  margin-top: clamp(2.5rem, 7vh, 4rem);
+}
+
+/* The three states as a ruled index that un-stacks: the whole list is present
+   from the first moment, piled at the foot of the window, and it empties one
+   entry at a time into a second pile at the top. See StorySteps.tsx — the two
+   anchors are computed there, because ScrollSmoother makes `position: sticky`
+   impossible on this site. Everything here is the resting layout, which is what
+   a reader with no motion and a reader on a phone both get. */
+.story-index {
+  margin-top: clamp(2.5rem, 7vh, 4rem);
+}
+
+.story-index__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Title bar and reading in the left column, the picture beside both. The row
+   track is `1fr` so the reading's row takes whatever the entry's height leaves
+   it — which is what gives the picture spanning both rows a definite height to
+   fill, rather than a circular one.
+
+   The minimum height is the travel. Each bar rides its own entry from the foot
+   pile to the top pile, so an entry shorter than a screen would hand the reader
+   two entries at once and none of the order. */
+.story-index__entry {
+  display: grid;
+  min-height: clamp(26rem, 76vh, 44rem);
+  gap: 0 clamp(1.5rem, 5vw, 5rem);
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.story-index__entry:last-child {
+  border-bottom: 1px solid var(--ink);
+}
+
+/* The travelling box. Opaque to the page's own black, so a bar resting in
+   either pile covers the reading passing under it — a translucent one would let
+   two paragraphs show through each other, which is the single thing that would
+   make the piles look like a fault rather than a mechanism.
+
+   The rules are the page's own ink rather than the hairline the rest of this
+   site draws at 16%. Owner's call, and it changes what the list is: at full
+   strength the entries read as a ruled index — a thing with rows — rather than
+   as three paragraphs with faint separators between them. */
+.story-index__bar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: baseline;
+  padding-block: clamp(0.9rem, 2.2vh, 1.25rem);
+  border-top: 1px solid var(--ink);
+  background: var(--canvas);
+  gap: clamp(1rem, 2.5vw, 2.25rem);
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* Descending, so a bar still travelling passes UNDER the pile it is joining
+   rather than over the top of it. Three entries, three values — a rule per
+   entry is longer than a formula and it is also the only version that says out
+   loud how many there are. */
+.story-index__entry:nth-child(2) .story-index__bar {
+  z-index: 2;
+}
+
+.story-index__entry:nth-child(3) .story-index__bar {
+  z-index: 1;
+}
+
+/* Held to a fixed measure so every title starts at the same place across the
+   column, whatever the number beside it. */
+.story-index__number {
+  flex: none;
+  width: 2ch;
+  color: var(--ink-grey);
+  font-size: var(--text-fine);
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+}
+
+.story-index__title {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--type-display);
+  font-size: clamp(1.1rem, 1.5vw, 1.5rem);
+  font-weight: var(--weight-heading);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+/* At the FOOT of its entry rather than tucked under its own title, which is
+   where the reference puts it and it took watching this run to see why. A
+   reading set directly under the bar rides up with it and has gone past the top
+   of the window by the time that bar arrives in the top pile — so the title
+   lands held and clear with nothing beside it, and the writing it belongs to
+   was readable only on the way in. Set at the end, it comes up into the open
+   band between the two piles while its own title is already held above it. */
+.story-index__text {
+  align-self: end;
+  padding-block: clamp(1.25rem, 3.5vh, 2rem);
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.story-index__copy {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--ink-read, var(--ink));
+  font-size: var(--text-copy);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.story-index__copy + .story-index__copy {
+  margin-top: clamp(1rem, 2.6vh, 1.5rem);
+}
+
+/* Down the whole entry, beside the bar as well as the reading — the bar only
+   covers its own column, so a picture that started under the title would leave
+   a band of nothing beside every rule. Square corners, like the plate above.
+
+   One frame, filling that height. A pair stacked here was built and taken out
+   again: two pictures at their own aspect came to 879px against the 618 of a
+   single one, so the entry holding them was half as long again as its
+   neighbours and the section stopped reading as a list of three. Owner's call,
+   and the measurement is why it was the right one. */
+.story-index__shot {
+  margin: 0;
+  overflow: hidden;
+  background: var(--surface-raised);
+  grid-column: 2;
+  grid-row: 1 / -1;
+}
+
+.story-index__shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* A `--quiet` variant lived here for an entry with no picture: the reading ran
+   across the whole width as two paragraphs side by side. It went when the third
+   passage was given a frame like the other two, and it is not left in — a rule
+   set no markup reaches is untested by construction, and the next person to
+   read this file would take it for a state the section can be in.
+
+   Worth keeping the one fact it cost a build to learn, in case that variant is
+   ever wanted again: **do not change the entry's columns to do it.** The bar is
+   a grid item of the entry, so a one-column entry makes that bar wider than the
+   ones above it and the pile sits ragged against the window's edge. Change only
+   what is inside the row. */
 
 /* At the foot of the reading rather than under both columns: it belongs to the
    column that ends, and the rail does not end, it is released. */
@@ -6282,28 +6437,51 @@ video {
   line-height: 1;
 }
 
-/* The complement of this query is read back in ClientsPin through matchMedia:
-   the rail is only held against the scroll while there is a column beside it to
-   hold it against. Stacked, the record is a block above the reading and pinning
-   it would park it over the thing it describes. */
+/* Two across on a tablet, one on a phone: four bracketed values side by side at
+   30rem is four columns of two words each. */
 @media (max-width: 64rem) {
-  .story-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .story-record {
-    display: grid;
-    padding-bottom: clamp(1.25rem, 3vh, 2rem);
-    border-bottom: 1px solid var(--line-soft);
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(1rem, 3vw, 1.6rem);
+    row-gap: clamp(1.1rem, 3vh, 1.6rem);
   }
 
-  .story-record__fact,
-  .story-record__fact:first-child {
-    padding-top: 0;
-    margin-top: 0;
-    border-top: 0;
+  /* One under the next. Three paragraphs across a tablet is three columns of
+     four words. */
+  .story-about {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.1rem, 3vh, 1.6rem);
+  }
+
+  /* One column, and no piles — a pile of full-width bars at the foot of a
+     phone is a third of the screen spent on furniture. The bars stay in flow
+     and the entry keeps its order: title, reading, picture. Its minimum height
+     comes off with them; without the travel there is nothing for the room to
+     be for.
+
+     StorySteps stops transforming below this same width, read back through
+     matchMedia as its exact complement. */
+  .story-index__entry {
+    min-height: 0;
+    gap: 0;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+  }
+
+  .story-index__bar,
+  .story-index__text {
+    grid-column: 1;
+  }
+
+  .story-index__shot {
+    margin-bottom: clamp(1.5rem, 4vh, 2.25rem);
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .story-index__shot img {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 8 / 5;
   }
 }
 
