@@ -909,15 +909,32 @@ test("server-renders the one customer story", async () => {
   assert.match(html, /class="service-hero__title-line">A website for a</);
   assert.match(html, /class="service-hero__title-line">healthcare office</);
 
-  /* The three questions the index has promised since the hero was written, at
-     length rather than in a column. */
+  /* Two columns: the record down the left, the reading down the right. The
+     three states run in the order the hero has promised since it was written. */
+  assert.match(html, /class="story-layout"/);
+  assert.match(html, /class="story-record"/);
+  assert.match(html, /class="story-reading"/);
   for (const heading of [
     "What it replaced",
     "What it does now",
     "What the client owns",
   ]) {
-    assert.match(html, new RegExp(`class="story__heading">${heading}<`));
+    assert.match(html, new RegExp(`class="story-part__heading">${heading}<`));
   }
+  assert.equal((html.match(/class="story-part"/g) ?? []).length, 3);
+
+  /* The record comes before the reading in the document, not only to its left.
+     A reader on a phone — where the columns stack and nothing is pinned — gets
+     who it was for before what happened, which is the same order. */
+  assert.ok(
+    html.indexOf('class="story-record"') < html.indexOf('class="story-reading"'),
+    "the record must come before the reading",
+  );
+
+  /* Pictures between the passages, not collected at either end, and not on the
+     last one: what the client owns is a list of holdings, which is not a thing
+     a photograph can show. */
+  assert.equal((html.match(/class="story-part__shot"/g) ?? []).length, 2);
 
   /* The way back, and both halves of it: leaving a story should offer the
      sector it sits in as well as the whole index. */
@@ -937,19 +954,23 @@ test("server-renders the one customer story", async () => {
   ]) {
     assert.doesNotMatch(html, new RegExp(client, "i"), `${client} named`);
   }
-  assert.match(html, /<dt>Client<\/dt><dd>\[Client name\]<\/dd>/);
-
-  /* **The pictures are stock and must not ship** — same guard the index
-     carries: this fails the build the day the page is published with them.
-     Counted as distinct URLs, not as occurrences: this page is server-rendered,
-     so the RSC payload after the markup repeats every src and three pictures
-     read as ten. */
+  /* **The pictures are stock and must not ship** — the same guard the index
+     carries, which fails the build the day this page is published with them
+     still in it. Counted as distinct seeds: this route is server-rendered, so
+     the RSC payload after the markup repeats every src. */
   const shots = new Set(
     [...html.matchAll(/https:\/\/picsum\.photos\/seed\/([a-z-]+)/g)].map(
       (match) => match[1],
     ),
   );
   assert.equal(shots.size, 3);
+
+  /* The right half of the opening carries a picture, behind the words rather
+     than beside them — the heading, the lede and the way in all keep their
+     places over it, and the menu stays white because the picture is darkened
+     under it rather than the type being recoloured. */
+  assert.match(html, /class="story-hero__art"/);
+  assert.match(html, /class="story-hero__art-image"/);
 
   /* Exactly one story exists. Any other address under a sector is a wrong
      address, not an unwritten page. */

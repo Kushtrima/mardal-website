@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { ClientsPin } from "./ClientsPin";
+import { StoryHeroShade } from "./StoryHeroShade";
 import { Container } from "../layout/Container";
 import { SiteFooter } from "../layout/SiteFooter";
 import { SiteHeader } from "../layout/SiteHeader";
@@ -11,18 +13,25 @@ import { industries, products } from "../../content/home";
 /**
  * One customer's story — the page a card on the index opens.
  *
+ * Two columns, owner's shape: the record down the left, the reading down the
+ * right. The rail is held against the scroll rather than travelling with it,
+ * which is the whole point of putting it there — a reader three paragraphs into
+ * what the system replaced can still see who it was for.
+ *
+ * Four bodies were built under this hero before this one and each was rejected:
+ * a cover with a text block and a gallery, an image essay of alternating
+ * plates, a staged sequence down a ruled spine, and then nothing at all. They
+ * are in the history if any is ever wanted back.
+ *
  * A pilot, and the only one: seven more cards go nowhere on purpose, because
- * nowhere is where they should go until someone has written them. What is being
- * judged here is the shape, not the words.
+ * nowhere is where they should go until someone has written them.
  *
- * Built on the same bones as the index it came from. The opening is the site's
- * editorial hero with the same `data-service-hero-*` hooks, so it arrives and
- * dissolves the way every other page here does, and it carries no artwork for
- * the same reason the index no longer does — the picture on this page is the
- * work itself.
+ * Built on the same bones as the index it came from. `service-hero` and its
+ * `data-service-hero-*` hooks are the site's editorial page opening, and
+ * ServicePageEntry drives them, so this arrives and dissolves the way every
+ * other page here does. No artwork, for the same reason the index has none.
  *
- * A server component throughout. There is no state on this page: it is a page
- * of writing about one job.
+ * A server component throughout. There is no state on this page.
  */
 export function ClientsStory() {
   const sector = industries.find(
@@ -98,6 +107,36 @@ export function ClientsStory() {
             </div>
           </Container>
 
+          {/* The right half of the opening, running the full height of the
+              window rather than starting under the bar: the header is a sibling
+              above this section, so this is pulled up by exactly the height
+              that sibling occupies and the menu ends up standing on the
+              picture.
+
+              Outside the Container, the way the blur and the fade are, so it
+              reaches the window's edge instead of stopping at a gutter. Behind
+              everything — the intro and the aside both carry z-index 1 and this
+              carries none — so the heading, the lede and the way in keep their
+              places over it. */}
+          <div className="story-hero__art" aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="story-hero__art-image"
+              src={pilotStory.heroImage}
+              alt=""
+              width="1200"
+              height="1600"
+            />
+
+            {/* Nothing at rest. StoryHeroShade brings this up the foot of the
+                picture as the page is scrolled — the one moment cover is
+                actually needed, which is where the image meets the page below
+                it rather than where a reader first looks at it. */}
+            <span className="story-hero__shade" />
+          </div>
+
+          <StoryHeroShade />
+
           <div
             className="service-hero__blur"
             aria-hidden="true"
@@ -110,83 +149,74 @@ export function ClientsStory() {
           />
         </section>
 
-        <section className="story" data-route-section>
-          <Container data-enter data-enter-mode="fade">
-            {/* The cover, full width of the column. It is the first thing a
-                story has that an index card cannot show: the work at a size you
-                can read it at. */}
-            <div className="story__cover">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                className="story__cover-art"
-                src={pilotStory.cover}
-                alt=""
-                width="1600"
-                height="900"
-              />
-            </div>
+        {/* The record down the left, the reading down the right. The rail is
+            held against the scroll rather than travelling with it — a reader
+            three paragraphs into what the system replaced should still be able
+            to see who it was for without going back up for it.
 
-            <div className="story__body">
-              {/* The facts, down the left, held against the reading. They are
-                  what a reader scans before deciding to read — who, what
-                  sector, what job, when it left — and they belong beside the
-                  writing rather than buried in it. */}
-              <dl className="story__facts">
+            Held by ClientsPin, which is the sector index's pin with its
+            selectors passed in: `position: sticky` cannot do this while
+            ScrollSmoother owns the scroll, and that mechanism was already
+            written and proved in a browser once. */}
+        <section className="story" data-route-section>
+          <ClientsPin
+            section=".story"
+            layout=".story-layout"
+            rail=".story-record"
+            body=".story-reading"
+          />
+
+          <Container data-enter data-enter-mode="fade">
+            <div className="story-layout">
+              <dl className="story-record">
                 {pilotStory.facts.map((fact) => (
-                  <div className="story__fact" key={fact.label}>
+                  <div className="story-record__fact" key={fact.label}>
                     <dt>{fact.label}</dt>
                     <dd>{fact.value}</dd>
                   </div>
                 ))}
               </dl>
 
-              {/* The three questions the index has been promising since the
-                  hero was written. On a card they are one line each; this is
-                  where they are actually answered. */}
-              <div className="story__sections">
-                {pilotStory.sections.map((section) => (
-                  <section className="story__section" key={section.id}>
-                    <h2 className="story__heading">{section.heading}</h2>
-                    <p className="story__copy">{section.body}</p>
+              <div className="story-reading">
+                {pilotStory.passages.map((passage) => (
+                  <section className="story-part" key={passage.id}>
+                    <h2 className="story-part__heading">{passage.heading}</h2>
+                    <p className="story-part__copy">{passage.body}</p>
+
+                    {"image" in passage && passage.image ? (
+                      <figure className="story-part__shot">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={passage.image}
+                          alt=""
+                          width="1600"
+                          height="1000"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </figure>
+                    ) : null}
                   </section>
                 ))}
+
+                {/* Out the way you came in, at the foot of the reading rather
+                    than under both columns — it belongs to the column that
+                    ends, and the rail does not end, it is released. */}
+                <p className="story-out">
+                  <Link className="story-out__link" href="/case-studies">
+                    {pilotStory.backLabel}
+                    <PixelArrow
+                      className="story-out__arrow"
+                      direction="up-right"
+                      size="small"
+                    />
+                  </Link>
+                </p>
               </div>
             </div>
-
-            {/* Two more of the work. A story earns more than one picture — it
-                is the only page on this site where the pictures are the
-                argument rather than the texture. */}
-            <ul className="story__gallery">
-              {pilotStory.gallery.map((image) => (
-                <li key={image}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    className="story__shot"
-                    src={image}
-                    alt=""
-                    width="1200"
-                    height="900"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </li>
-              ))}
-            </ul>
-
-            {/* Out the way you came in. A story that ends with nothing under it
-                ends the visit — the Blog closes the same way. */}
-            <p className="story__out">
-              <Link className="story__out-link" href="/case-studies">
-                {pilotStory.backLabel}
-                <PixelArrow
-                  className="story__out-arrow"
-                  direction="up-right"
-                  size="small"
-                />
-              </Link>
-            </p>
           </Container>
         </section>
+
       </main>
 
       <SiteFooter />

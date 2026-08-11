@@ -5,7 +5,12 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /**
- * Holds the sector index in place while the work is scrolled past it.
+ * Holds a rail in place while the column beside it is scrolled past.
+ *
+ * Two callers: the sector index on /case-studies, and the record rail on a
+ * story page. The selectors are props with the index's own as defaults, so the
+ * mechanism below — which is the interesting part, and the part that took a
+ * browser to get right — is written once.
  *
  * `position: sticky` cannot do this here, and this is the second place on the
  * site to find that out — see ProductsPin, which holds the products heading the
@@ -36,9 +41,19 @@ const HEADER_CLEARANCE = 88;
  */
 const TWO_COLUMN = "(min-width: 64.0625rem)";
 
-export function ClientsPin() {
+export function ClientsPin({
+  section: sectionSelector = ".clients-index",
+  layout: layoutSelector = ".clients-layout",
+  rail: railSelector = ".clients-filter",
+  body: bodySelector = ".clients-work",
+}: {
+  section?: string;
+  layout?: string;
+  rail?: string;
+  body?: string;
+} = {}) {
   useEffect(() => {
-    const section = document.querySelector<HTMLElement>(".clients-index");
+    const section = document.querySelector<HTMLElement>(sectionSelector);
     if (!section) return;
 
     gsap.registerPlugin(ScrollTrigger);
@@ -49,9 +64,9 @@ export function ClientsPin() {
       if (context) return;
 
       context = gsap.context(() => {
-        const layout = document.querySelector<HTMLElement>(".clients-layout");
-        const filter = document.querySelector<HTMLElement>(".clients-filter");
-        const work = document.querySelector<HTMLElement>(".clients-work");
+        const layout = document.querySelector<HTMLElement>(layoutSelector);
+        const filter = document.querySelector<HTMLElement>(railSelector);
+        const work = document.querySelector<HTMLElement>(bodySelector);
         if (!layout || !filter || !work) return;
 
         ScrollTrigger.create({
@@ -96,7 +111,7 @@ export function ClientsPin() {
     const observer = new ResizeObserver(() => {
       if (twoColumn.matches) ScrollTrigger.refresh();
     });
-    const work = document.querySelector<HTMLElement>(".clients-work");
+    const work = document.querySelector<HTMLElement>(bodySelector);
     if (work) observer.observe(work);
 
     twoColumn.addEventListener("change", sync);
@@ -107,7 +122,7 @@ export function ClientsPin() {
       twoColumn.removeEventListener("change", sync);
       teardown();
     };
-  }, []);
+  }, [sectionSelector, layoutSelector, railSelector, bodySelector]);
 
   return null;
 }

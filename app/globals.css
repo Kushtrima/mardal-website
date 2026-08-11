@@ -6052,6 +6052,91 @@ video {
   font-size: var(--text-heading-xl);
 }
 
+/* The right half of the opening.
+   Pulled up by the header's own height — the same expression .site-header uses
+   for its top padding plus the bar's height — because the header is a sibling
+   above this section and the picture is meant to run behind the menu rather
+   than start under it. Written as the expression rather than a number so the
+   two cannot drift; .service-hero__inner already names the same sum. */
+/* The bar's ground, taken off on this page only.
+   `.site-header` paints an opaque black at z-index 5 and sits above this
+   section, so the picture's top hundred pixels were being covered by it — the
+   box reached the top of the window all along and the header was painted over
+   it. Transparent here costs nothing: the left half of the bar still stands on
+   the page's own black, which is the same colour it was painting. */
+.service-page--story .site-header {
+  background: transparent;
+}
+
+.story-hero__art {
+  position: absolute;
+  top: calc(
+    -1 * (clamp(1rem, 4.5vh, 4.5rem) + clamp(3.45rem, 4.5vw, 3.9rem))
+  );
+  right: calc(-1 * var(--page-gutter));
+  bottom: 0;
+  left: 50%;
+  overflow: hidden;
+}
+
+/* Thirty per cent transparent, evenly, across the whole frame — which on this
+   page's black ground is a flat thirty per cent darker. It replaces the two
+   gradients that came off: those covered the picture hardest exactly where the
+   menu and the lede stand and left the middle clear, and this treats every part
+   of the frame the same.
+
+   On the image rather than a layer over it: a sheet on top would also sit over
+   the shade that comes up on scroll and dilute it, and one of the two would
+   always be fighting the other. */
+.story-hero__art-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+}
+
+/* Nothing over the picture at rest. It carried a gradient at both ends — heavy
+   at the top so the menu could be read on it, heavy at the foot for the lede —
+   and the owner took both off: the opening is meant to be the photograph when
+   you arrive at it.
+
+   **The trade that buys is worth stating.** The menu and the lede are white and
+   now stand on whatever the picture opens with. On this frame they hold; on a
+   brighter one they will not, and the answer then is a darker frame rather than
+   the gradient coming back.
+
+   What is left is the foot, and only once the page is moving — see
+   StoryHeroShade. The edge where the picture meets the page below it is the one
+   place cover is doing a job rather than protecting type. */
+.story-hero__shade {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--canvas) 34%, transparent) 46%,
+    color-mix(in srgb, var(--canvas) 82%, transparent) 100%
+  );
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Stacked, the picture is a band across the top of the opening rather than a
+   half of it — a half-width column on a phone is a stripe. */
+@media (max-width: 64rem) {
+  .story-hero__art {
+    left: calc(-1 * var(--page-gutter));
+    bottom: auto;
+    height: 42svh;
+  }
+}
+
 .service-page--story .service-hero__aside {
   z-index: 1;
   display: flex;
@@ -6080,55 +6165,39 @@ video {
   background: var(--service-surface);
 }
 
-/* The work at a size you can read it at, which is the first thing a story has
-   that a card cannot show. 16:9 and cropped to it for the same reason the cards
-   are: a real screenshot will not match the box, and letterboxing it into a
-   band of ground is worse than cropping. */
-.story__cover {
-  overflow: hidden;
-  border-radius: var(--shape-md);
-  background: var(--surface-raised);
-}
-
-.story__cover-art {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-}
-
-/* The facts beside the reading, not buried in it: they are what a reader scans
-   before deciding to read. One column at the narrow end, where a rail is not a
-   rail. */
-.story__body {
+/* The record and the reading. The first track is a definite width and that is
+   load-bearing: ClientsPin lifts the rail out of flow to hold it against the
+   scroll, and a track sized to its content would collapse the moment the
+   content left it, taking the reading across the page with it. The same lesson
+   the sector index taught. */
+.story-layout {
   display: grid;
   align-items: start;
-  gap: clamp(1.75rem, 3.5vw, 3.25rem);
-  margin-top: clamp(2rem, 6vh, 3.5rem);
-  grid-template-columns: clamp(11rem, 18vw, 16rem) minmax(0, 1fr);
+  gap: clamp(2rem, 4.5vw, 4rem);
+  grid-template-columns: clamp(10rem, 16vw, 14rem) minmax(0, 1fr);
 }
 
-.story__facts {
+/* Down the left, ruled between entries. Label over value rather than beside it:
+   the column is narrow and a bracketed value pushed onto a second line beside
+   its label reads as two separate facts. */
+.story-record {
   margin: 0;
 }
 
-.story__fact {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  padding-top: clamp(0.7rem, 1.6vh, 0.95rem);
-  margin-top: clamp(0.7rem, 1.6vh, 0.95rem);
+.story-record__fact {
+  padding-top: clamp(0.7rem, 1.7vh, 1rem);
+  margin-top: clamp(0.7rem, 1.7vh, 1rem);
   border-top: 1px solid var(--line-soft);
 }
 
-.story__fact:first-child {
+.story-record__fact:first-child {
   padding-top: 0;
   margin-top: 0;
   border-top: 0;
 }
 
-.story__fact dt {
+.story-record__fact dt {
+  margin-bottom: 0.4rem;
   color: var(--ink-grey);
   font-size: var(--text-fine);
   letter-spacing: 0.06em;
@@ -6136,7 +6205,7 @@ video {
   text-transform: uppercase;
 }
 
-.story__fact dd {
+.story-record__fact dd {
   margin: 0;
   color: var(--ink);
   font-size: var(--text-copy);
@@ -6144,13 +6213,17 @@ video {
   text-wrap: pretty;
 }
 
-.story__sections {
-  display: grid;
-  gap: clamp(2rem, 5vh, 3rem);
+/* The column that scrolls. */
+.story-reading {
+  min-width: 0;
 }
 
-.story__heading {
-  margin: 0 0 clamp(0.6rem, 1.4vh, 0.9rem);
+.story-part + .story-part {
+  margin-top: clamp(2.75rem, 8vh, 4.5rem);
+}
+
+.story-part__heading {
+  margin: 0 0 clamp(0.7rem, 1.6vh, 1rem);
   color: var(--ink);
   font-family: var(--type-display);
   font-size: var(--text-heading);
@@ -6159,46 +6232,45 @@ video {
   line-height: 1.1;
 }
 
-.story__copy {
-  max-width: 62ch;
+/* The reading colour and leading the article body uses, not the grey the labels
+   wear — these paragraphs are the whole verbal argument of the page. Measure
+   held inside the 65-75 a paragraph wants. */
+.story-part__copy {
+  max-width: 68ch;
   margin: 0;
-  color: var(--ink-grey);
+  color: var(--ink-read, var(--ink));
   font-size: var(--text-copy);
-  /* Reading leading, as the article body uses. */
-  line-height: 1.6;
+  line-height: 1.65;
   text-wrap: pretty;
 }
 
-/* Two more of the work. This is the only page on the site where the pictures
-   are the argument rather than the texture, so they get a row of their own. */
-.story__gallery {
-  display: grid;
-  margin: clamp(2.5rem, 7vh, 4.5rem) 0 0;
-  padding: 0;
-  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
-  gap: clamp(0.75rem, 1.2vw, 1.15rem);
-  list-style: none;
-}
-
-.story__shot {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 4 / 3;
+/* Set between the passages, where a picture shows what the paragraph above it
+   cannot say. The last state is a list of what the client holds, which is not a
+   thing a photograph can show, so it has none. */
+.story-part__shot {
+  margin: clamp(1.4rem, 3.5vh, 2rem) 0 0;
+  overflow: hidden;
   border-radius: var(--shape-md);
-  object-fit: cover;
   background: var(--surface-raised);
 }
 
-/* Out the way you came in. A story that ends with nothing under it ends the
-   visit; the Blog closes the same way. */
-.story__out {
+.story-part__shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 8 / 5;
+  object-fit: cover;
+}
+
+/* At the foot of the reading rather than under both columns: it belongs to the
+   column that ends, and the rail does not end, it is released. */
+.story-out {
   margin: clamp(2.5rem, 7vh, 4rem) 0 0;
   padding-top: clamp(1.25rem, 3vh, 2rem);
   border-top: 1px solid var(--line-soft);
 }
 
-.story__out-link {
+.story-out__link {
   display: inline-flex;
   align-items: center;
   gap: 0.55em;
@@ -6210,8 +6282,33 @@ video {
   line-height: 1;
 }
 
+/* The complement of this query is read back in ClientsPin through matchMedia:
+   the rail is only held against the scroll while there is a column beside it to
+   hold it against. Stacked, the record is a block above the reading and pinning
+   it would park it over the thing it describes. */
 @media (max-width: 64rem) {
-  .story__body {
+  .story-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .story-record {
+    display: grid;
+    padding-bottom: clamp(1.25rem, 3vh, 2rem);
+    border-bottom: 1px solid var(--line-soft);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 3vw, 1.6rem);
+  }
+
+  .story-record__fact,
+  .story-record__fact:first-child {
+    padding-top: 0;
+    margin-top: 0;
+    border-top: 0;
+  }
+}
+
+@media (max-width: 30rem) {
+  .story-record {
     grid-template-columns: minmax(0, 1fr);
   }
 }

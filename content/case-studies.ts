@@ -199,42 +199,52 @@ export const pilotStory = {
 
   lede: "[One line: what the office needed, and what was built for it.]",
 
-  cover: "https://picsum.photos/seed/mardal-healthcare-cover/1600/900",
-
-  /* The facts, in the order a reader asks for them: who it was for, what
-     sector, what the job was, when it left. Every value is a slot. */
+  /* The record, and it lives down the left of the page rather than in a row
+     across it. Everything a reader checks before deciding to read: who it was
+     for, what sector, what was built, what work it was, when it left.
+     Every value is a slot. Client is the one that cannot be filled at all until
+     per-client sign-off exists. */
   facts: [
     { label: "Client", value: "[Client name]" },
     { label: "Sector", value: "Healthcare" },
     { label: "Work", value: "[What was built]" },
+    { label: "Services", value: "[Which of the five]" },
     { label: "Handed over", value: "[Month, year]" },
   ],
 
-  /* The three questions the whole page exists to answer, and the same three the
-     hero has been promising: what it replaced, what it does now, what the
-     client owns. On a card they are one line each; here they have room. */
-  sections: [
+  /* The reading, down the right. Three states in the order the hero has been
+     promising since it was written — what it replaced, what it does now, what
+     the client owns — with the pictures set between them rather than collected
+     at either end.
+
+     `image` is optional on purpose. A picture belongs where it shows something
+     the paragraph beside it cannot say, and the last state is a list of what
+     the client holds, which is not a thing a photograph can show. */
+  passages: [
     {
       id: "replaced",
       heading: "What it replaced",
-      body: "[What the office was working with before, and what about it did not work.]",
+      body: "[What the office was working with before. Two or three sentences on the state of things — where the information lived, who had to touch it, and what a patient had to do to get an answer. State it, do not complain about it.]",
+      image: "https://picsum.photos/seed/mardal-healthcare-a/1600/1000",
     },
     {
       id: "now",
       heading: "What it does now",
-      body: "[What the site does for the office and for the people who visit it.]",
+      body: "[What the site does for the office and for the people who visit it. Name the things that changed for someone outside the building, not the technology that changed inside it.]",
+      image: "https://picsum.photos/seed/mardal-healthcare-b/1600/1000",
     },
     {
       id: "owns",
       heading: "What the client owns",
-      body: "[The source, the content, the domain, the hosting — named, because handover is the part of this the positioning argues about.]",
+      body: "[Named one by one — the repository and who holds it, the domain and the DNS, the hosting account and the bill, the content and who can change it without calling anyone. Handover is the part of the positioning that actually argues, so this stage is a list rather than a promise.]",
     },
   ],
 
-  gallery: [
-    "https://picsum.photos/seed/mardal-healthcare-a/1200/900",
-    "https://picsum.photos/seed/mardal-healthcare-b/1200/900",
-  ],
+  /* The right half of the opening. Stock, like every other picture on this page
+     and under the same guard — the real one is a shot of the delivered site.
+     Cut tall rather than wide: it fills a half-window column, so a landscape
+     frame would crop to its middle strip and lose whatever it was of. */
+  heroImage: "https://picsum.photos/seed/mardal-healthcare-hero/1200/1600",
 
   backLabel: "All customer stories",
   cta: "Get in touch",
