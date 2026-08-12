@@ -6661,8 +6661,14 @@ video {
 
    Behind `prefers-reduced-motion` with the rest of the page's movement: with no
    motion asked for, the resting layout is the same three sections in the same
-   order, which is the same trade StorySteps makes. */
-@media (max-width: 48rem) and (prefers-reduced-motion: no-preference) {
+   order, which is the same trade StorySteps makes.
+
+   47.9375rem and not 48, which is the exact complement of the `min-width: 48rem`
+   SmoothScroll creates itself on — the same care TWO_COLUMN takes over the other
+   breakpoint. Written as 48 these overlapped on one pixel, and on that pixel the
+   smoother is running while these bars are sticky, which is the one combination
+   that drifts. */
+@media (max-width: 47.9375rem) and (prefers-reduced-motion: no-preference) {
   .story-index__entry {
     display: contents;
   }
