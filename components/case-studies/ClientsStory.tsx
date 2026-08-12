@@ -43,8 +43,11 @@ export function ClientsStory() {
       <SectionEnter />
       <ServicePageEntry />
 
+      {/* `--clients` is the section and `--story` is this kind of page in it.
+          The phone heading rule is written against the first, so every story
+          written after this one is sized by carrying the class. */}
       <main
-        className="service-page service-page--story"
+        className="service-page service-page--clients service-page--story"
         id="main-content"
         data-service-page
       >

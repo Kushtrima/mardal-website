@@ -32,8 +32,12 @@ export function ClientsPage({ sector }: { sector: string }) {
       <SectionEnter />
       <ServicePageEntry />
 
+      {/* `--clients` is the section, `--case-studies` is this page in it. The
+          first is what the stylesheet's phone heading rule is written against,
+          so a new page under /case-studies inherits it by carrying the class
+          rather than by having a rule added for it. */}
       <main
-        className="service-page service-page--case-studies"
+        className="service-page service-page--clients service-page--case-studies"
         id="main-content"
         data-service-page
       >

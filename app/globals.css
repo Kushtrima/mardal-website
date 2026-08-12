@@ -5592,7 +5592,27 @@ video {
      in, which the grid already sets — so the cap comes off rather than being
      recalculated around a box that is not there. */
   max-width: none;
-  font-size: clamp(3.5rem, 11vw, 10rem);
+  /* The floor, not the slope, is what a phone gets: 11vw is only about 43px at
+     390 wide, so every phone reads the first term and nothing else. It was
+     3.5rem and the heading came out at 56px — smaller in absolute terms than
+     this page wants, on the one page whose desktop heading is set at double
+     every other hero's slope.
+     5.5rem, and the ceiling on it is measured rather than picked. `Customer` is
+     the longer of the two authored lines and sets 2.886em of width, so at 88px
+     it runs 254 of the 288 a 320px window leaves and 254 of 358 at 390 — full
+     on the smallest screen sold, comfortable on the common ones.
+     Raised as the floor rather than as a phone override on purpose: the two
+     terms cross at an 800px window, so this is one continuous curve and the
+     desktop size is untouched — and it meets the phone rule's own ceiling at
+     the same 88px, so there is no step at the breakpoint either. */
+  font-size: clamp(5.5rem, 11vw, 10rem);
+
+  /* The two facts the section's phone rule needs about this page's copy:
+     `Customer` is the longer of the two authored lines at 3.218em, and 5.5rem
+     is as large as it should go — the same 88px the line above settles at, so
+     the two sides of the breakpoint agree. */
+  --hero-line: 3.218;
+  --hero-max: 5.5rem;
 }
 
 /* The support line and the way in, standing where the drawing stood.
@@ -6120,6 +6140,18 @@ video {
 .service-page--story .service-hero__title {
   max-width: 18ch;
   font-size: var(--text-heading-xl);
+
+  /* What the section's phone rule needs about this page's copy: `healthcare
+     office` is the longer of the two authored lines at 5.542em. The ceiling is
+     4rem rather than the index's 5.5 — this heading is a sentence where that one
+     is two words, and 64px is where it stops filling the column and starts
+     running out of it.
+
+     A story with different lines re-measures the first number. Leave both off
+     and the defaults are 5.6em and 4rem, which is close enough to this page that
+     nothing has to be written for an ordinary title. */
+  --hero-line: 5.542;
+  --hero-max: 4rem;
 }
 
 /* The right half of the opening.
@@ -6275,27 +6307,75 @@ video {
     color: var(--ink);
   }
 
-  /* The title, taken off the desktop size on a phone.
-     It was reading small for a reason worth recording: the shared phone rule
-     sizes every hero title at clamp(40px, 10.6vw, 56px), but
-     `.service-page--story .service-hero__title` is two classes to its one, so the
-     desktop token won at every width — and that token's 5.6vw slope does not pass
-     its own 40px floor until about a 714px window. So this heading sat at a flat
-     40px across the whole phone range while every other hero on the site grew.
+  /* ── Every Clients hero on a phone, sized from its own copy ──
+     The index, all seven sectors, and every story written after them. Owner
+     asked for it as a section rule rather than a page one, so a new sub-page is
+     sized by carrying `service-page--clients` and nothing else has to be added.
+     Deliberately not the five service heroes, the Blog or the home page.
 
-     11.5vw against the shared rule's 10.6: the longest authored line here is
-     `healthcare office` at 17 characters, where the longest on any service hero
-     is `Keep your business` at 18 — and this one is the narrower set of letters
-     of the two, with an l, a t, two f's and an i in it. The slope is the fit: an
-     authored line must never wrap, because where the line turns is a decision
-     about the copy. Check that first if this number is ever raised.
+     **The size cannot be one number, and that is the whole design of this rule.**
+     An authored line must never wrap — where a heading turns is a decision about
+     the copy — so the largest size a page can take is its column divided by the
+     width of its longest line. `Customer` is 3.218em and `healthcare office` is
+     5.542em, so at a 390px window one page can hold 111px and the other 65. A
+     shared number is either too small for the first or breaks the second.
 
-     `max-width` off with it. 18ch is a desktop measure, and on a phone the
-     container is already the narrower limit — leaving it in only risks turning a
-     line the copy did not turn. */
-  .service-page--story .service-hero__title {
+     So the rule divides rather than declares: the column, less a margin, over
+     the line it has to hold. The page contributes one measured fact about its
+     own copy and the arithmetic is here, once.
+
+     **Adding a page:** set `--hero-line` on it to the width of its longest
+     authored line in em, measured rather than guessed —
+
+       const s = document.createElement('span');
+       Object.assign(s.style, {position:'absolute', visibility:'hidden',
+         whiteSpace:'nowrap', font: getComputedStyle(title).font});
+       s.style.fontSize = '100px'; s.textContent = 'the longest line';
+       document.body.append(s); s.getBoundingClientRect().width / 100;
+
+     Set nothing and it takes 5.6, which is a sentence-length line and about what
+     a story title runs to — safe for anything at or under that, and a page with
+     a longer line than 5.6em must set its own or it will turn.
+
+     `96cqi` and not 100: the last four per cent is the margin between filling
+     the column and touching the gutter. `cqi` reads `.service-hero__inner`,
+     which is the column itself, so this follows the gutter at every width
+     without restating it.
+
+     Checked by rendering, not by arithmetic — one line box per span at 320, 375,
+     390, 430 and 600 for both pages.
+
+     `max-width` comes off with it: 18ch and 21ch are desktop measures, and here
+     the column is already the narrower of the two — leaving them in only risks
+     turning a line the copy did not turn. */
+  .service-page--clients .service-hero__title {
     max-width: none;
-    font-size: clamp(44px, 11.5vw, 56px);
+    font-size: clamp(
+      3rem,
+      calc(96cqi / var(--hero-line, 5.6)),
+      var(--hero-max, 4rem)
+    );
+  }
+
+  /* **The heading was never getting the column the rule above hands it**, and
+     the cause was one desktop line leaking down here. Both Clients pages place
+     their aside at `grid-column: 7 / -1`, which is right on the 12-column grid
+     they were written for. This width replaces that grid with two columns — so
+     column 7 does not exist, and asking for it builds four implicit ones. They
+     are empty and 0px wide, but their gaps are not: measured at a 390px window
+     the tracks came out `278px 0 0 0 0 0`, four dead gaps taking 64px of a
+     358px row.
+     Then the second half of it, which is the part that actually turned the
+     lines: a negative grid line counts back through the EXPLICIT grid only, so
+     the intro's own `1 / -1` stops at the second column and it was laid out in
+     294px while the row was 358. `A website for a` needs 299 and `healthcare
+     office` needs 327 — so a heading that fits its column on paper broke into
+     four lines on the page.
+     Put back on the row it belongs to. The aside carries nothing in flow at this
+     width — the lede and the way in are both absolute — so it costs no height,
+     and the intro gets the whole 358 back. */
+  .service-page--clients .service-hero__aside {
+    grid-column: 1 / -1;
   }
 }
 
