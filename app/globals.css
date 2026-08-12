@@ -6241,10 +6241,20 @@ video {
   gap: clamp(2.5rem, 9vw, 11rem);
 }
 
+/* Set on --text-body, not the --text-copy the rest of the site's paragraphs
+   take. Owner's call, 2026-08-12: this row is read as the opening statement of a
+   story rather than as supporting copy beside something else, and at the copy
+   size it sat a step under the page it opens.
+
+   The knock-on to know before touching the gap above: a column here is about 60
+   characters at the copy size and the gap's ceiling was set from that, to keep
+   each paragraph at three lines. Two more pixels is roughly six characters a
+   line off every column, so the longest of the three can turn a fourth. If they
+   have to agree at three, the gap is where it is bought back — not this rule. */
 .story-about__copy {
   margin: 0;
   color: var(--ink-read, var(--ink));
-  font-size: var(--text-copy);
+  font-size: var(--text-body);
   line-height: 1.65;
   text-wrap: pretty;
 }
@@ -6385,11 +6395,25 @@ video {
   grid-row: 2;
 }
 
+/* The reading, on --text-body with the row above it. This is the one block on
+   the page that is genuinely long-form, and it was set two pixels under the
+   Blog's own reading while doing the same job — the Blog was raised for exactly
+   this reason and this had been left behind.
+
+   It shortens the line rather than lengthening it, which is the opposite of what
+   raising type usually does here: the column is fixed by the grid, so the same
+   width now holds fewer characters — about seventy-two at a 1440 window against
+   the eighty-odd it was running, which is where the Blog's measure landed.
+
+   `62ch` stays as the cap for wide windows only. It is not the constraint at
+   normal widths and it must not be read as the measure: this face's zero is half
+   again its average letter, so 62ch is nearer eighty-two characters than
+   sixty-two. Set a measure here in rem if it ever has to be exact. */
 .story-index__copy {
   max-width: 62ch;
   margin: 0;
   color: var(--ink-read, var(--ink));
-  font-size: var(--text-copy);
+  font-size: var(--text-body);
   line-height: 1.65;
   text-wrap: pretty;
 }
