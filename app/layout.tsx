@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { RouteTransition } from "../components/motion/RouteTransition";
 import { SmoothScroll } from "../components/motion/SmoothScroll";
 
 export const metadata: Metadata = {
@@ -29,6 +30,12 @@ export default function RootLayout({
         <div id="smooth-wrapper">
           <div id="smooth-content">{children}</div>
         </div>
+
+        {/* Fades `#smooth-content` between routes and renders nothing itself.
+            Outside the wrapper because it is a listener rather than a thing on
+            the page, and because a component that fades that element must not be
+            inside it. */}
+        <RouteTransition />
 
         <SmoothScroll />
       </body>

@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import gsap from "gsap";
+import { BLUR, IN, OUT } from "../../lib/page-transition";
 import { ClientsPin } from "./ClientsPin";
 import { Container } from "../layout/Container";
 import { RedactedLines } from "../home/RedactedLines";
@@ -64,7 +66,30 @@ export function ClientsIndex({ initialSector }: { initialSector: string }) {
      move things, and this only has to not be looked at. */
   const [open, setOpen] = useState(false);
 
+  /**
+   * Which sector the WORK is showing, as opposed to which one is chosen.
+   *
+   * They are the same value a moment apart, and the moment is the point. Owner
+   * asked for the page transition's own movement on these links too, so the
+   * cards leave and different cards arrive rather than being replaced between
+   * two frames — and something has to hold the old list while it goes.
+   *
+   * **The mark is not made to wait for it.** `sector` changes on the press, so
+   * the rule draws and the word steps aside immediately; this follows a fade
+   * later and only the grid answers to it. Held the other way round — one state
+   * for both — the index sat dead for half a second after every press, which is
+   * the whole feel of the thing gone to buy a transition on the part nobody was
+   * looking at.
+   */
+  const [listed, setListed] = useState<string>(initialSector);
+  const workRef = useRef<HTMLDivElement>(null);
+  /** The work is on screen before it is ever swapped, so the arrival below must
+   *  not run for the list the page was served with. */
+  const firstRef = useRef(true);
+
   function choose(next: string) {
+    if (next === sector) return;
+
     setSector(next);
 
     /* Shut behind the choice. On the wide page nothing closes because nothing
@@ -77,18 +102,78 @@ export function ClientsIndex({ initialSector }: { initialSector: string }) {
        along a filter is not moving through the site: a reader who has run
        across five sectors should get back where they came from with one press
        of Back rather than six, and none of those five should have re-run the
-       page's entry animation. */
+       page's entry animation.
+
+       RouteTransition sees this as a path change and deliberately ignores it —
+       it only answers to a click it took the default action from, or to the
+       history buttons. It used to answer to any path change, and every press
+       here blurred the whole page out and back. */
     window.history.replaceState(
       null,
       "",
       next === ALL_SECTORS ? "/case-studies" : `/case-studies/${next}`,
     );
+
+    const work = workRef.current;
+    const noMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (!work || noMotion) {
+      setListed(next);
+      return;
+    }
+
+    gsap.fromTo(
+      work,
+      { filter: "blur(0px)" },
+      {
+        opacity: 0,
+        filter: `blur(${BLUR}px)`,
+        duration: OUT,
+        ease: "power2.in",
+        /* Not clickable while it is leaving: a card still takes a press at
+           opacity 0, and the one under the finger is about to be a different
+           card. */
+        pointerEvents: "none",
+      },
+    );
+
+    /* Swapped on a timer rather than on the tween finishing, for the reason the
+       page transition pushes its route on one: GSAP's ticker sleeps while the
+       tab is hidden, and a list that only changes when a tween completes would
+       simply never change for anyone who pressed and looked away. */
+    window.setTimeout(() => setListed(next), OUT * 1000);
   }
 
+  /* The work arriving. Down and up rather than up from wherever the outgoing
+     half reached, so the rise is the same length every time. */
+  useEffect(() => {
+    if (firstRef.current) {
+      firstRef.current = false;
+      return;
+    }
+
+    const work = workRef.current;
+    if (!work) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    gsap.set(work, { opacity: 0, filter: `blur(${BLUR}px)` });
+    gsap.to(work, {
+      opacity: 1,
+      filter: "blur(0px)",
+      duration: IN,
+      ease: "power2.out",
+      /* Handed back rather than set, so nothing of this is left on the column
+         between filters. */
+      clearProps: "pointerEvents,filter",
+    });
+  }, [listed]);
+
   const shown =
-    sector === ALL_SECTORS
+    listed === ALL_SECTORS
       ? clientEntries
-      : clientEntries.filter((entry) => entry.sector === sector);
+      : clientEntries.filter((entry) => entry.sector === listed);
 
   const sectorTitle = (id: string) =>
     industries.find((industry) => industry.id === id)?.title ?? id;
@@ -199,7 +284,11 @@ export function ClientsIndex({ initialSector }: { initialSector: string }) {
             </div>
           </div>
 
-          <div className="clients-work">
+          {/* The column that answers the index, and the only thing a filter
+              moves. Fading the whole page here would be fading the words being
+              pressed — which is what happened while RouteTransition took a
+              rewritten address for a navigation. */}
+          <div className="clients-work" ref={workRef}>
             {shown.length === 0 ? (
               /* A sector with nothing in it, which today is every sector — the
                  bars stand in for writing that is genuinely not there, exactly

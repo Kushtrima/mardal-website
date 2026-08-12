@@ -359,6 +359,22 @@ video {
   outline-offset: 4px;
 }
 
+/* ---------------------------- Between pages ------------------------------- */
+
+/* Nothing is drawn between two pages, and there used to be.
+ *
+ * A `position: fixed` veil closed over the page and opened on the other side,
+ * and it was rejected on sight for a reason worth leaving here: the veil was
+ * `var(--canvas)`, and this canvas is black. A black sheet closing over a black
+ * page is not a sheet — it is the content disappearing, a pause, and different
+ * content, which reads as the page stalling rather than turning.
+ *
+ * So the page itself carries the transition instead, and it needs no rules of
+ * its own: RouteTransition fades `#smooth-content` and hands the property back
+ * when it has finished. **Opacity is the only property that may be touched on
+ * that element** — ScrollSmoother writes its transform on every frame, so
+ * anything positional there is two things fighting over one property. */
+
 /* ------------------------------ Hover mark -------------------------------- */
 
 /* Anything hoverable takes the finger. */
