@@ -5733,42 +5733,36 @@ video {
   color: var(--ink);
 }
 
-/* Stacked, the index goes back to being a block of words above the work rather
-   than a column beside it — a 9rem rail on a phone is not a rail. */
-/* The complement of this query is read back in ClientsPin through matchMedia:
+/* Stacked: the index goes above the work rather than beside it, because a 9rem
+   rail on a phone is not a rail. **It stays standing up, and only the column it
+   sat in goes away.**
+
+   It was laid down into a wrapping row here, and that row was the whole reason
+   this stood up in the first place — arrived at again from the narrow end.
+   Eight words across a phone break three and five with `All` orphaned on the end
+   of the second line, and the shape reads as a toolbar, which this site does not
+   have. Worse, laying it down cost it three of its four ways of marking a
+   choice: the rule could not be drawn and the word could not step aside, because
+   across a line a word that travels lands on its neighbour, and `All` lost the
+   rule that makes it the foot of an index rather than an eighth sector. What was
+   left was ink alone — which is `a lit word`, one of the three treatments tried
+   and rejected before the column was arrived at. Owner caught it on the page.
+
+   Standing, all four come back untouched and nothing is width-specific any more:
+   down a column there is nowhere for a travelling word to go but right.
+
+   What it costs, stated: eight rows is about 320px of index before the first
+   card on a phone. That is the price of an index that is whole — the argument
+   the column was built on is that every other sector is on screen the whole
+   time. It also buys the one thing the row could not: a full-width row is a
+   real tap target, where a word in a wrapped line is a word-sized one.
+
+   The complement of this query is read back in ClientsPin through matchMedia:
    the index is only held against the scroll while there is a column of work
    beside it to hold it against. Change the width here and change it there. */
 @media (max-width: 64rem) {
   .clients-layout {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .clients-filter {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: clamp(0.9rem, 3vw, 1.5rem);
-  }
-
-  .clients-filter__item {
-    width: auto;
-  }
-
-  /* No rule and no step across a line: a word that travels lands on the one
-     beside it. Ink alone marks the choice at this width, which is what the row
-     always had to fall back on. */
-  .clients-filter__item::before {
-    content: none;
-  }
-
-  .clients-filter__item.is-current .clients-filter__label {
-    transform: none;
-  }
-
-  .clients-filter__item--all {
-    margin-top: 0;
-    padding-top: 0;
-    border-top: 0;
-    margin-left: clamp(0.4rem, 1.4vw, 1rem);
   }
 }
 
