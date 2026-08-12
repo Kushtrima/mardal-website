@@ -315,12 +315,17 @@ test("server-renders the Mardal homepage", async () => {
   assert.equal((footerBars[0].match(/y="0" width="10" height="99"/g) ?? []).length, 9);
   assert.equal((footerBars[0].match(/y="99" width="10" height="99"/g) ?? []).length, 10);
   assert.equal((footerBars[0].match(/y="0" width="10" height="198"/g) ?? []).length, 3);
-  // 13 in the three menu groups — five Services, three Products, five Company —
+  // 12 in the three menu groups — five Services, three Products, four Company —
   // the email and the phone in the details block, and the three legal links in
   // the foot. The address is not a link and the social marks are not links yet.
-  // Briefly 19 while Case Studies had a column down here, and 25 before
-  // `1fbc8cf` took Solutions out of the menu.
-  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 18);
+  // Was 18 until Team came out of Company on 2026-08-12, 19 while Case Studies
+  // had a column down here, and 25 before `1fbc8cf` took Solutions out.
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 17);
+  // **Team is gone from every menu, not just this one.** The header panels and
+  // this footer all read the same array, so an entry that survived in one of
+  // them would mean something had been copied that should have been shared.
+  assert.doesNotMatch(html, />Team</);
+  assert.doesNotMatch(html, /href="#team"/);
   assert.doesNotMatch(html, /site-footer__column/);
   // The mark sits under the rule now, with the way back up opposite it, and
   // the year and the legal links below them.

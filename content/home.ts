@@ -163,8 +163,17 @@ export const menu = [
     description: "Meet the people, thinking, and culture behind our work.",
     href: "#company",
     items: [
+      /* `Team` was here and is gone — owner's call, 2026-08-12: the people go
+         inside About rather than standing as an entry of their own. It is the
+         right way round for what there is to say. PRODUCT.md records a core of
+         roughly two to five with real roles that may be published, and no names
+         supplied — a page for that is a page with one paragraph on it, and a
+         menu entry pointing at it promises more than About would.
+
+         Nothing else moves. Both menus and the footer read this array, so the
+         entry leaves all three at once, and the assertions that count them are
+         followed down in the same commit. */
       { label: "About", href: "#about" },
-      { label: "Team", href: "#team" },
       /* The one Company entry with a page of its own. The rest still point at
          the homepage until they have one. */
       { label: "Blog", href: "/blog" },
