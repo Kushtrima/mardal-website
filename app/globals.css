@@ -3525,6 +3525,25 @@ video {
     gap: clamp(1.5rem, 4cqi, 2.25rem);
   }
 
+  /* The row stops reserving height for a button that is no longer drawn in it.
+   *
+   * The way back up stands beside the last menu now, a good 90px above this
+   * row, but it is still IN the row — that is deliberate, so that moving it
+   * cannot disturb anything else — and an in-flow box holds its space whatever
+   * it is drawn over. So the row was keeping 2.25rem of nothing under the rule,
+   * and the contact block sat that much further down than it reads.
+   *
+   * Exactly the disc's own height, so the two are the same number said twice
+   * and neither can drift. Measured at a 340px panel: the rule-to-EMAIL gap
+   * goes 91 → 55, against 48 from the last menu link down to the rule, so the
+   * rule now sits about evenly between what it separates.
+   *
+   * **Not on the wide panel.** Up there this row's height is what holds the bar
+   * field off the panel's foot — shorten it and the field rises with it. */
+  .site-footer__meta {
+    margin-bottom: -2.25rem;
+  }
+
   .site-footer__panel > .site-footer__details {
     position: static;
     width: 100%;
@@ -3791,29 +3810,57 @@ video {
 
 }
 
-/* No way back up on a phone.
+/* The way back up is on every width and every pointer, phones included —
+ * owner's call, 2026-08-12, reversing what was here.
  *
- * The rule it sat on stays: that is what separates the menus from the contact
- * block, and it was carrying the link rather than belonging to it.
+ * Two rules used to take it away: one on a phone-width panel, one on a touch
+ * screen of any width, on the argument that the scroll gesture and the
+ * browser's own tap-the-clock already get you there. The second half of that
+ * does not hold — tapping the clock is an iOS habit, and it is not a gesture on
+ * Android or inside the in-app browser most links are opened in. And the panel
+ * is the longest thing on the site: on a phone the menus, the contact block and
+ * the legal line stack into roughly two screens of footer, which is exactly
+ * where a reader is furthest from the top and least able to guess the way back.
  *
- * Written twice because the two cases cannot be said in one breath — a
- * phone-width panel, and a touch screen of any width, where the scroll
- * gesture and the browser's own tap-the-clock already get you there. A narrow
- * window on a desktop has neither and keeps the link.
- *
- * Below the rule that lays the link out rather than above it. Both of these
- * are a single class, the same as that one, so the only thing that decides
- * between them is which comes last — a container query brings no weight of
- * its own, and put first these lost. */
-@container footer-panel (max-width: 34rem) {
-  .site-footer__top-link {
-    display: none;
+ * Nothing is added to the markup for it. The link was always rendered and only
+ * hidden, so it comes back where it was written: the right end of the row under
+ * the rule, lifted clear of the bar field by its own offset. */
+
+/* One thing does change for touch, and it is the target rather than the mark.
+ * The disc is 2.25rem — under the 44px a finger is drawn against — and this
+ * pseudo-element already exists to extend the hit area past the border. Taken
+ * from 2px to 4px a side it reaches 44 without the disc growing, so the button
+ * is the same size it is on a desktop and easier to hit than it looks. */
+@media (hover: none) {
+  .site-footer__top-link::after {
+    inset: -0.25rem;
   }
 }
 
-@media (hover: none) {
+/* On a stacked panel it stands ABOVE the rule, beside the last menu, in the
+ * column of nothing the menus leave to the right of Company. Owner placed it
+ * there. Under the rule it was sitting in the gap between the menus and the
+ * contact block, which is the one part of that panel meant to be empty.
+ *
+ * **Only the drawn position moves.** It stays relative and it stays in the row,
+ * so the row's height, the rule it draws and every gap under it are exactly
+ * what they were — the spacing on this panel is not this button's business.
+ * Absolute was tried and reverted for that reason: taking the disc out of flow
+ * emptied the row and pulled the contact block up 36px with it.
+ *
+ * The number is the sum of what it has to clear, not a nudge: the row's own
+ * padding-top (1.25rem), plus the disc's own 2.25rem, plus 2.4375rem of air
+ * above the rule. Measured at 32px of clearance on a 340px panel, which is the
+ * second of two settings — 44 was a touch high against Careers.
+ *
+ * **After the base rule, and that is load-bearing.** Both are one class and a
+ * container query brings no weight of its own, so the only thing deciding
+ * between them is which comes last. Written above it — where the rest of the
+ * narrow-panel rules live — this one silently lost, which is exactly the trap
+ * the note on the old `display: none` block was left here to warn about. */
+@container footer-panel (max-width: 58rem) {
   .site-footer__top-link {
-    display: none;
+    bottom: 5.9375rem;
   }
 }
 
