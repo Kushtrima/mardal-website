@@ -304,6 +304,18 @@ html {
      reads as stutter. */
   scroll-behavior: auto;
   background: var(--canvas);
+  /* Here rather than on `body`, and the move is load-bearing rather than tidy.
+     A non-visible value on one axis computes the other to `auto`, so
+     `overflow-x: hidden` on the BODY quietly makes the body a scroll container
+     — and a `position: sticky` element then measures itself against the body,
+     which never scrolls, so nothing sticks. That is a real cost below 48rem,
+     where ScrollSmoother does not run and the story index is held by sticky.
+     On `html` the value propagates to the viewport and the root is then treated
+     as visible, so nothing becomes a scroll box and sticky has the viewport to
+     measure against. The clipping is identical, which is all the rest of the
+     site asks of it — see the note on the service-hero rule that walks off the
+     right edge. */
+  overflow-x: hidden;
 }
 
 body {
@@ -316,7 +328,6 @@ body {
   line-height: var(--leading-body);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
 button,
@@ -1363,7 +1374,8 @@ video {
      give. The container hugs the gutter until the viewport passes its cap, so
      a flat 40px walks this line off the right edge on anything under about a
      1000px window — 7px off at 834, 16px at 606, clipped rather than scrolled
-     because the body hides overflow-x. */
+     because the root clips overflow-x. (On `html`, not `body`; the rule moved
+     so that `position: sticky` could work on a phone — see it for why.) */
   left: min(40px, calc(var(--page-gutter) - 0.5rem));
   grid-column: 10 / -1;
   align-self: start;
@@ -6563,14 +6575,23 @@ video {
     gap: clamp(1.1rem, 3vh, 1.6rem);
   }
 
-  /* One column, and no piles — a pile of full-width bars at the foot of a
-     phone is a third of the screen spent on furniture. The bars stay in flow
-     and the entry keeps its order: title, reading, picture. Its minimum height
-     comes off with them; without the travel there is nothing for the room to
-     be for.
+  /* One column, in the entry's own order: title, reading, picture.
 
-     StorySteps stops transforming below this same width, read back through
-     matchMedia as its exact complement. */
+     No piles at this width, and the reason is the layout rather than taste. The
+     two piles work on two columns because an entry is `min-height: 76vh` with
+     its reading dropped to the foot, so a bar in transit crosses an empty band
+     with the picture standing beside it. In one column there is no band: a bar
+     between the piles crosses the reading itself, and the reader watches the
+     text go by through the space between the two stacks. Tried on 2026-08-12
+     and taken straight back out.
+
+     Below 48rem the section gets held titles a different way — see the block
+     under this one. Between the two widths it is a plain stack, which is what
+     it has always been.
+
+     The minimum height comes off with the piles: its job is to buy travel, and
+     with nothing travelling a floor set in vh only opens a band of nothing
+     under the shortest entry. */
   .story-index__entry {
     min-height: 0;
     gap: 0;
@@ -6593,6 +6614,98 @@ video {
     height: auto;
     min-height: 0;
     aspect-ratio: 8 / 5;
+  }
+}
+
+/* The same two piles a desktop gets — the whole index at the foot of the window
+   to begin with, emptying one entry at a time into a pile at the top — but held
+   by the browser rather than by JavaScript. Owner's call, 2026-08-12: this is
+   the behaviour, at every width.
+
+   ── Why sticky is allowed here and nowhere else on this site ──
+   Four components carry a comment saying `position: sticky` is impossible here,
+   because ScrollSmoother moves the page by transforming its content inside a
+   wrapper that never scrolls, so a sticky element has no scroll to measure
+   itself against. All four are right, and all four are describing the desktop:
+   SmoothScroll does not create the smoother below 48rem — the mobile menu is
+   `position: fixed` and the smoother would pin it to the page rather than the
+   screen — so at this width the browser owns the scroll again and sticky is
+   simply available.
+
+   It is also the only version that will sit still. The JavaScript one was run
+   here on 2026-08-12 and taken out the same hour: every bar is a transform
+   written a frame behind the compositor, and the foot pile is measured off
+   `window.innerHeight`, which on a phone is not a fixed line at all — it moves
+   as the address bar collapses. Sticky has neither problem, because nothing is
+   being computed per frame.
+
+   ── The two lines each bar answers to ──
+   `top` and `bottom` on the same element, which is what makes it sticky twice
+   over: while its reading is still ahead the bar is held against the foot line,
+   once it has been read it is held against the top one, and in between it
+   travels with its own reading. The offsets step by one bar height, so the
+   three tile exactly in both piles — the foot pile shrinks from its own top as
+   entries leave it, the top pile grows downward, and neither ever opens a gap
+   for the reading to show through.
+
+   ── `display: contents`, which is the load-bearing line ──
+   A sticky element is held within its containing block. With the entry still
+   generating a box, each bar's containing block is its own entry, so a bar
+   would be released the moment its section ended and the top pile would come
+   apart one bar at a time instead of accumulating. Taking the entry's box away
+   makes the LIST the containing block for all three, which is what the JS
+   version clamps to by hand. Nothing about the order changes: the entry's three
+   children lay out in the list's block flow in DOM order — bar, reading,
+   picture — which is what the one-column grid above was producing anyway.
+
+   The cost, stated: the `li` stops being a list item on some screen readers.
+   That is survivable here and only here, because the sequence on this list is
+   carried by its three `h2`s rather than by the list — see the note on the bar
+   in StorySteps, where the numbers are already `aria-hidden` for the same
+   reason. It also takes the closing rule off the last entry, so that is put
+   back on the picture below.
+
+   Behind `prefers-reduced-motion` with the rest of the page's movement: with no
+   motion asked for, the resting layout is the same three sections in the same
+   order, which is the same trade StorySteps makes. */
+@media (max-width: 48rem) and (prefers-reduced-motion: no-preference) {
+  .story-index__entry {
+    display: contents;
+  }
+
+  /* Measured by StorySteps and written onto the list, because the height of a
+     bar is a font's line box plus two clamps and is not worth computing twice.
+     The fallback is that measurement at a 390px window, so the piles are within
+     a pixel even if the script never runs. */
+  .story-index__bar {
+    position: sticky;
+    top: var(--pile-head);
+    bottom: var(--pile-foot);
+  }
+
+  /* Three entries, three rules — the same choice the z-index ladder above makes.
+     A formula would be shorter and would stop saying out loud how many there
+     are, which is the thing that has to be checked when a fourth story is
+     written. */
+  .story-index__entry:nth-child(1) .story-index__bar {
+    --pile-head: 0px;
+    --pile-foot: calc(2 * var(--story-bar, 3.45rem));
+  }
+
+  .story-index__entry:nth-child(2) .story-index__bar {
+    --pile-head: var(--story-bar, 3.45rem);
+    --pile-foot: var(--story-bar, 3.45rem);
+  }
+
+  .story-index__entry:nth-child(3) .story-index__bar {
+    --pile-head: calc(2 * var(--story-bar, 3.45rem));
+    --pile-foot: 0px;
+  }
+
+  /* The rule that closed the list, moved off the entry that no longer has a box
+     and onto the last thing in it. */
+  .story-index__entry:last-child .story-index__shot {
+    border-bottom: 1px solid var(--ink);
   }
 }
 

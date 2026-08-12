@@ -67,11 +67,29 @@ import { pilotStory } from "../../content/case-studies";
 const HEAD_CLEARANCE = 0;
 const FOOT_CLEARANCE = 0;
 
-/** Exactly the complement of the stylesheet's `max-width: 64rem`, read back
+/** Where the JavaScript version of the piles runs, which is not where the piles
+ *  run. Exactly the complement of the stylesheet's `max-width: 64rem`, read back
  *  through matchMedia in the same units — the fault ProductsPin carries a
- *  comment about. Below it the entries are one column with the reading under
- *  its own title, and there are no piles: a pile of full-width bars on a phone
- *  is a third of the screen spent on furniture. */
+ *  comment about.
+ *
+ *  **The same two piles run below 48rem, in the stylesheet, out of
+ *  `position: sticky`** — the whole index at the foot to begin with, emptying
+ *  into a pile at the top one entry at a time. Same behaviour, different
+ *  machinery, and the machinery has to differ: sticky is impossible up here
+ *  because ScrollSmoother owns the scroll, and this file is unusable down there
+ *  because it is not. Both halves of that were learnt on 2026-08-12, the second
+ *  by shipping it — a bar held from JavaScript is a transform written a frame
+ *  behind the compositor, and the foot line is `window.innerHeight`, which on a
+ *  phone moves as the address bar collapses. It read as drifting, which it was.
+ *
+ *  What this file still does at every width is measure: `--story-bar` goes onto
+ *  the list from `measure()` below, and the sticky offsets downstairs are built
+ *  out of it.
+ *
+ *  Between the two widths — 48 to 64rem — there are no piles at all. The layout
+ *  is one column there and the smoother is still running, so neither mechanism
+ *  is available: this one has no second column for a travelling bar to cross,
+ *  and that one has no scroll of its own to measure against. */
 const TWO_COLUMN = "(min-width: 64.0625rem)";
 
 export function StorySteps() {
@@ -109,6 +127,18 @@ export function StorySteps() {
           natural.push(box.top - top);
           heights.push(box.height);
         }
+
+        /* Handed to the stylesheet, which builds the same two piles out of
+           `position: sticky` below 48rem — see the rule beside it for why that
+           width does it in CSS and this one cannot. One value rather than three:
+           the offsets step by a bar, and the tallest is the one that must not be
+           overlapped. Three unequal bars would leave the shorter ones a hair
+           apart in the pile, which only happens if a title wraps, which none of
+           these three do at a phone's width. */
+        list.style.setProperty(
+          "--story-bar",
+          `${Math.max(...heights).toFixed(2)}px`,
+        );
       };
 
       /** Height of the bars before index `i` — the depth of the top pile once
@@ -120,6 +150,9 @@ export function StorySteps() {
         heights.slice(i).reduce((sum, height) => sum + height, 0);
 
       const place = () => {
+        /* Everything back where the stylesheet put it below the breakpoint. The
+           sticky rule down there is the browser's job and this must not be
+           writing a transform over the top of it. */
         if (!wide.matches) {
           gsap.set(bars, { y: 0 });
           return;
