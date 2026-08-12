@@ -6144,13 +6144,25 @@ video {
   pointer-events: none;
 }
 
-/* Stacked, the picture is a band across the top of the opening rather than a
-   half of it — a half-width column on a phone is a stripe. */
+/* Stacked, the picture takes the whole opening rather than half of it — a
+   half-width column on a phone is a stripe.
+
+   It ran as a 42svh band across the top and the owner took it to full. The
+   opening is a whole screen less the bar, so a band of that height spent the
+   middle of a phone on black and drew a hard edge across it, with the lede and
+   the way in standing at the foot on nothing. Full, what a reader arrives at is
+   the frame — which is what the right half is on a desktop, where the lede and
+   the CTA already stand on the picture.
+
+   Only `left` moves, and that is deliberate: the top offset and `bottom: 0` come
+   from the base rule, so the picture answers to the hero's own box on a phone
+   exactly as it does on a desktop rather than carrying a height of its own that
+   has to be kept in step with it. It also puts the scroll shade back where it
+   was designed to work — the foot of the picture is the edge where the page
+   below begins again, not a line across the middle of the screen. */
 @media (max-width: 64rem) {
   .story-hero__art {
     left: calc(-1 * var(--page-gutter));
-    bottom: auto;
-    height: 42svh;
   }
 }
 
@@ -6174,6 +6186,64 @@ video {
 .service-page--story .service-hero__cta {
   align-self: flex-start;
   justify-self: auto;
+}
+
+/* Phone only: the lede stands off the right edge with the way in under it, and
+   both are read up from the corner rather than across the foot.
+
+   The shared mobile rule parks the lede bottom-left and the CTA bottom-right, so
+   the two were meeting in the middle of the last line — the lede ran to within a
+   few pixels of `Get in touch` and the foot read as one line of two different
+   things. Right is where the pair already sits on a desktop, where the aside
+   holds them in the last column.
+
+   Lifted by enough to clear what is under it and no more: the CTA is 20px on a
+   flat line plus its own 0.2rem block padding, so it stands about 27 off the
+   foot, and 2.6rem here puts the lede's last line about 15 clear of its top.
+   That is the number to change if the CTA's size ever does. */
+@media (max-width: 48rem) {
+  .service-page--story .service-hero__support {
+    right: 0;
+    left: auto;
+    margin-bottom: 2.6rem;
+    text-align: right;
+  }
+
+  /* The trail in the page's own white on a phone, not the grey it takes
+     everywhere else. Grey is the site's label voice and it is right on a desktop,
+     where the trail stands on the page's black beside the picture. On a phone the
+     picture is the whole opening and the trail stands on the photograph — grey
+     against a pale sky is the weakest thing on the screen, and it is the one line
+     that says where you are.
+
+     Set on the paragraph so both links take it: they carry `color: inherit`, and
+     hover still resolves to the same ink. */
+  .story-hero__trail {
+    color: var(--ink);
+  }
+
+  /* The title, taken off the desktop size on a phone.
+     It was reading small for a reason worth recording: the shared phone rule
+     sizes every hero title at clamp(40px, 10.6vw, 56px), but
+     `.service-page--story .service-hero__title` is two classes to its one, so the
+     desktop token won at every width — and that token's 5.6vw slope does not pass
+     its own 40px floor until about a 714px window. So this heading sat at a flat
+     40px across the whole phone range while every other hero on the site grew.
+
+     11.5vw against the shared rule's 10.6: the longest authored line here is
+     `healthcare office` at 17 characters, where the longest on any service hero
+     is `Keep your business` at 18 — and this one is the narrower set of letters
+     of the two, with an l, a t, two f's and an i in it. The slope is the fit: an
+     authored line must never wrap, because where the line turns is a decision
+     about the copy. Check that first if this number is ever raised.
+
+     `max-width` off with it. 18ch is a desktop measure, and on a phone the
+     container is already the narrower limit — leaving it in only risks turning a
+     line the copy did not turn. */
+  .service-page--story .service-hero__title {
+    max-width: none;
+    font-size: clamp(44px, 11.5vw, 56px);
+  }
 }
 
 .story {
