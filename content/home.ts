@@ -306,6 +306,22 @@ export const solutions = {
      Clients panel is built from the same list, so a sector cannot be renamed in
      one place and not the other. */
   items: industries,
+  /* The way on from the run, and it now goes somewhere. It read `Explore` and
+     pointed at `#contact` — seven sectors naming an audience and then sending
+     you to an email address, because when it was written there was nowhere else
+     to be sent.
+
+     `All` is doing work in the label rather than decorating it: every name above
+     it goes to that sector's own page now, so this is the one that does not
+     narrow. It is also the word the Clients index already uses at the foot of
+     its own list for exactly this job, which is why it is that word and not
+     `Explore everything`.
+
+     Here rather than in the component because copy lives in content — and note
+     `products.cta` is a different label with its own history. The two have
+     drifted once already and there is an assertion holding them apart. */
+  cta: "Explore All",
+  ctaHref: "/case-studies",
 } as const;
 
 export const products = {

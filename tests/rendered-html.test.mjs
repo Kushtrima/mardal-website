@@ -195,6 +195,41 @@ test("server-renders the Mardal homepage", async () => {
     3,
   );
   assert.doesNotMatch(html, /class="product__cta" href="[^"]*">Get in touch/);
+
+  /* **The seven industries go somewhere now, one page each.** They were a
+     button the scrollbar had taken the job from, then a plain word with no
+     destination at all; each is a link to its own sector on the Clients page.
+     Read off the whole tag rather than assuming attribute order — the two
+     builds this repo has disagree on it, and `next dev` writes one way while
+     the worker these tests load writes the other.
+
+     The order is asserted with them: the sectors are declared once at the top
+     of content/home.ts and this run, the header panel and the Clients index are
+     all built from that one array, so a sector reordered in the declaration and
+     not here would mean something had been copied that should have been
+     shared. */
+  const industryLinks = [...html.matchAll(/<a ([^>]*industries-item[^>]*)>/g)]
+    .map((match) => match[1].match(/href="([^"]*)"/)?.[1])
+    .filter(Boolean);
+  assert.deepEqual(industryLinks, [
+    "/case-studies/finance",
+    "/case-studies/healthcare",
+    "/case-studies/manufacturing",
+    "/case-studies/automotive",
+    "/case-studies/retail",
+    "/case-studies/logistics",
+    "/case-studies/public-sector",
+  ]);
+
+  /* And the one that does not narrow. `Explore` pointing at `#contact` was the
+     only destination this run had before the Clients page existed — seven
+     sectors naming an audience and then handing you an email address. Both
+     halves are pinned: the label, and that the dead anchor is gone. */
+  const explore = html.match(/<a ([^>]*industries-explore[^>]*)>([^<]*)/);
+  assert.ok(explore, "the way on from the industries run is missing");
+  assert.match(explore[1], /href="\/case-studies"/);
+  assert.match(explore[2], /Explore All/);
+  assert.doesNotMatch(html, /industries-explore[^>]*href="#contact"/);
   assert.equal(
     (html.match(/class="[^"]*product__arrow[^"]*"/g) ?? []).length,
     3,

@@ -2658,9 +2658,10 @@ video {
 
 /* The film holds the whole list back and brings one name forward, so the ring
    keeps the attention rather than the type. */
-/* No longer a target. The scrollbar alone brings an industry forward, so the
-   pointer has nothing to offer here and must not say otherwise: a hand on a
-   word that cannot be pressed is a promise the page does not keep. */
+/* A target again, and this time it keeps its promise: each name goes to that
+   sector's own page. It was neither for a while — first a button the scrollbar
+   had taken the job from, then a plain word — and the note here said the
+   pointer must not offer what the page could not do. It can now. */
 .industries-item {
   padding: 0;
   border: 0;
@@ -2670,6 +2671,18 @@ video {
   /* Slow and even: one industry hands over to the next while the run is
      watched, so the change should read as a fade rather than a switch. */
   transition: opacity var(--duration-handover) var(--ease-handover);
+}
+
+/* Under the hand it comes up far enough to be read, and no further. The run
+   still owns which industry is forward — a pointer crossing the list on its way
+   somewhere else must not walk it — so this lifts the one word rather than
+   changing the state, and lets go the moment the pointer does. Keyboard needs
+   no equivalent: focus moves the run itself, because someone arriving there has
+   chosen that name rather than passed over it. */
+@media (hover: hover) {
+  .industries-item:hover {
+    opacity: 0.6;
+  }
 }
 
 .industries-item__name {

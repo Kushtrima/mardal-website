@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Container } from "../layout/Container";
@@ -261,18 +262,33 @@ export function IndustriesSection() {
             <ul className="industries-list" ref={listRef}>
               {solutions.items.map((industry, index) => (
                 <li key={industry.id}>
-                  {/* Not a control any more. The scrollbar alone brings an
-                      industry forward, so there is nothing here to press: a
-                      button that answers to nothing is a trap for anyone
-                      arriving on it by keyboard. It keeps its id, which the
-                      menu still points at. */}
-                  {/* data-cursor is gone with the interaction. It is the hook
-                      for the hover mark and for the finger cursor, and both
-                      would now be promising something the word cannot do. */}
-                  <div
+                  {/* A link now, to that sector's own page — owner's call. It
+                      was a plain `div` and the note here said why: it had been
+                      a button, the run took the scrollbar over, and a control
+                      that answers to nothing is a trap for anyone arriving on
+                      it by keyboard. That argument was about a control with
+                      nowhere to go. These have somewhere to go, so the trap is
+                      gone and `data-cursor` comes back with the destination —
+                      it is the hook for the finger and the hover mark, and both
+                      are now telling the truth.
+
+                      It keeps its id, which the menu still points at.
+
+                      `onFocus` is the part that is not decoration. Six of the
+                      seven are dimmed almost to the ground while the run is on
+                      another one, so a keyboard reaching a link it cannot read
+                      would be the same trap coming back through the other door.
+                      Focus brings the industry forward, exactly as the scroll
+                      does — and the scroll takes it back on the next update,
+                      which is right: the run owns the index, this only borrows
+                      it while someone is standing on a name. */}
+                  <Link
                     className={`industries-item industries-item--${TINTS[index % TINTS.length]}`}
+                    href={`/case-studies/${industry.id}`}
                     id={industry.id}
                     data-active={index === activeIndex}
+                    data-cursor
+                    onFocus={() => setActiveIndex(index)}
                   >
                     <span className="industries-item__name">
                       {/* A rule out to the left of the name, shown only on the
@@ -288,7 +304,7 @@ export function IndustriesSection() {
                     <span className="industries-item__note">
                       {industry.descriptor}
                     </span>
-                  </div>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -299,14 +315,17 @@ export function IndustriesSection() {
                 carries the indent that puts the list where it is — placed as a
                 grid row it landed 286px to the left of the names, level with
                 nothing at all. */}
-            <a className="industries-explore" href="#contact">
-              Explore
+            {/* The one that does not narrow: the seven names above it each go
+                to their own sector, so this goes to all of them. It pointed at
+                `#contact` while the Clients page did not exist. */}
+            <Link className="industries-explore" href={solutions.ctaHref}>
+              {solutions.cta}
               <PixelArrow
                 className="industries-explore__arrow"
                 direction="up-right"
                 size="small"
               />
-            </a>
+            </Link>
           </div>
         </Container>
       </div>
