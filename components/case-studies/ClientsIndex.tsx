@@ -50,8 +50,28 @@ const TINTS = ["one", "two", "three", "four"] as const;
 export function ClientsIndex({ initialSector }: { initialSector: string }) {
   const [sector, setSector] = useState<string>(initialSector);
 
+  /* Shut, and only where the stylesheet acts on it. Three arrangements of these
+     eight words were built and rejected on the page — a wrapping row, one tall
+     column, two columns of four — and the fourth would have been another
+     arrangement. What every one of them has in common is that a phone spends a
+     screen on an index before it reaches a card, so this one stops showing all
+     eight at once instead of laying them out again.
+
+     The state is carried at every width and read at one: on the wide page the
+     rail is always open and this does nothing, which is why there is no width
+     in this file. The stylesheet owns where it applies, the way ClientsPin and
+     StorySteps own theirs — except those two have to read a width because they
+     move things, and this only has to not be looked at. */
+  const [open, setOpen] = useState(false);
+
   function choose(next: string) {
     setSector(next);
+
+    /* Shut behind the choice. On the wide page nothing closes because nothing
+       was open; on a phone the index has done its job the moment a sector is
+       picked, and leaving it standing would put the answer below the question
+       again. */
+    setOpen(false);
 
     /* replaceState rather than pushState, and rather than a router push. Moving
        along a filter is not moving through the site: a reader who has run
@@ -100,41 +120,83 @@ export function ClientsIndex({ initialSector }: { initialSector: string }) {
             a line, where a word that travels lands on its neighbour. Down a
             column there is nowhere for it to go but right. */}
         <div className="clients-layout">
+          {/* The state is carried on the holder rather than on the index, so the
+              stylesheet can open a row around it: the two are a grid and its
+              track, and a track is the one thing that can be animated from
+              nothing to the height of whatever is standing in it. */}
           <div
-            className="clients-filter"
-            role="group"
-            aria-label={caseStudies.filterLabel}
+            className="clients-filter-holder"
+            data-open={open ? "true" : "false"}
           >
-            {industries.map((industry) => (
-              <button
-                className={`clients-filter__item${
-                  sector === industry.id ? " is-current" : ""
-                }`}
-                key={industry.id}
-                type="button"
-                aria-pressed={sector === industry.id}
-                onClick={() => choose(industry.id)}
-              >
-                <span className="clients-filter__label">{industry.title}</span>
-              </button>
-            ))}
+            {/* The index, shut, on a phone. It names where you are rather than
+                what it does — a reader who has chosen Healthcare is told
+                Healthcare, and the mark beside it says there is more. `Sector`
+                or `Filter` over it would be a label on a control, and this site
+                labels nothing.
 
-            {/* All closes the index rather than opening it. At the top it read
+                A cross that closes to a dash, which is a mark this site already
+                owns and the smallest one that could carry it. Hidden from a
+                screen reader because `aria-expanded` says the same thing
+                properly, and drawn in the stylesheet rather than swapped here so
+                there is nothing to keep in step between the two states. */}
+            <button
+              className="clients-filter__toggle"
+              type="button"
+              aria-expanded={open}
+              aria-controls="clients-filter-index"
+              onClick={() => setOpen((wasOpen) => !wasOpen)}
+            >
+              <span className="clients-filter__toggle-label">
+                {sector === ALL_SECTORS
+                  ? caseStudies.filterAll
+                  : sectorTitle(sector)}
+              </span>
+              <span
+                className="clients-filter__toggle-mark"
+                aria-hidden="true"
+              />
+            </button>
+
+            <div
+              className="clients-filter"
+              id="clients-filter-index"
+              data-open={open ? "true" : "false"}
+              role="group"
+              aria-label={caseStudies.filterLabel}
+            >
+              {industries.map((industry) => (
+                <button
+                  className={`clients-filter__item${
+                    sector === industry.id ? " is-current" : ""
+                  }`}
+                  key={industry.id}
+                  type="button"
+                  aria-pressed={sector === industry.id}
+                  onClick={() => choose(industry.id)}
+                >
+                  <span className="clients-filter__label">
+                    {industry.title}
+                  </span>
+                </button>
+              ))}
+
+              {/* All closes the index rather than opening it. At the top it read
                 as a list that began with an eighth thing which is not a sector;
                 at the foot it reads as what it does — the way back out of
                 whichever one you are in. */}
-            <button
-              className={`clients-filter__item clients-filter__item--all${
-                sector === ALL_SECTORS ? " is-current" : ""
-              }`}
-              type="button"
-              aria-pressed={sector === ALL_SECTORS}
-              onClick={() => choose(ALL_SECTORS)}
-            >
-              <span className="clients-filter__label">
-                {caseStudies.filterAll}
-              </span>
-            </button>
+              <button
+                className={`clients-filter__item clients-filter__item--all${
+                  sector === ALL_SECTORS ? " is-current" : ""
+                }`}
+                type="button"
+                aria-pressed={sector === ALL_SECTORS}
+                onClick={() => choose(ALL_SECTORS)}
+              >
+                <span className="clients-filter__label">
+                  {caseStudies.filterAll}
+                </span>
+              </button>
+            </div>
           </div>
 
           <div className="clients-work">

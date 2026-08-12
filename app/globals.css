@@ -5800,29 +5800,43 @@ video {
   color: var(--ink);
 }
 
-/* Stacked: the index goes above the work rather than beside it, because a 9rem
-   rail on a phone is not a rail. **It stays standing up, and only the column it
-   sat in goes away.**
+/* The toggle exists only where the index is shut, which is only on a phone. On
+   the wide page the rail stands open beside the work and there is nothing to
+   open. */
+.clients-filter-holder {
+  min-width: 0;
+}
 
-   It was laid down into a wrapping row here, and that row was the whole reason
-   this stood up in the first place — arrived at again from the narrow end.
-   Eight words across a phone break three and five with `All` orphaned on the end
-   of the second line, and the shape reads as a toolbar, which this site does not
-   have. Worse, laying it down cost it three of its four ways of marking a
-   choice: the rule could not be drawn and the word could not step aside, because
-   across a line a word that travels lands on its neighbour, and `All` lost the
-   rule that makes it the foot of an index rather than an eighth sector. What was
-   left was ink alone — which is `a lit word`, one of the three treatments tried
-   and rejected before the column was arrived at. Owner caught it on the page.
+.clients-filter__toggle {
+  display: none;
+}
 
-   Standing, all four come back untouched and nothing is width-specific any more:
-   down a column there is nowhere for a travelling word to go but right.
+/* Stacked — and **the index is shut until it is asked for.**
 
-   What it costs, stated: eight rows is about 320px of index before the first
-   card on a phone. That is the price of an index that is whole — the argument
-   the column was built on is that every other sector is on screen the whole
-   time. It also buys the one thing the row could not: a full-width row is a
-   real tap target, where a word in a wrapped line is a word-sized one.
+   Three arrangements of these eight words were built and rejected on the page,
+   in this order: a wrapping row, one tall column, two columns of four. The row
+   is the toolbar the column was arrived at to avoid, and across a line it loses
+   three of the four ways a choice is marked — the rule cannot be drawn from the
+   left, the word cannot step aside without landing on its neighbour, and `All`
+   loses the rule that makes it the foot of an index rather than an eighth
+   sector. The tall column keeps all four and spends a full phone screen of grey
+   words before a reader reaches a card. Two columns halve that and it was still
+   a block of eight grey words over the work. Moving the column under the work
+   was tried too and rejected on position.
+
+   **So the fourth is not a fourth arrangement.** What the three share is that a
+   phone is shown all eight at once, in a section whose whole list is eight
+   cards — an index earns its place when it is shorter than the thing it indexes,
+   and here it is not. Shut, it costs one row: the sector you are in, and a mark
+   saying there is more. Open, it is the tall column exactly as it was, because
+   that shape was never wrong as a thing to open — only as a thing that is always
+   there.
+
+   `display` rather than a transform or `inert`: it takes the closed index out of
+   the tab order and out of the accessibility tree at exactly the widths this
+   query covers, with no width read in JavaScript to keep in step with this file.
+   The component carries `data-open` at every width and this is the only place
+   that looks at it.
 
    The complement of this query is read back in ClientsPin through matchMedia:
    the index is only held against the scroll while there is a column of work
@@ -5830,6 +5844,120 @@ video {
 @media (max-width: 64rem) {
   .clients-layout {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The row that stands in for the index. Set as one of its own entries rather
+     than as a control — same size, same rhythm, same left edge — so opening it
+     is the list growing out of the word rather than a panel arriving. Lit,
+     because it is where you are. */
+  .clients-filter__toggle {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: clamp(0.3rem, 0.9vh, 0.5rem) 0
+      clamp(0.65rem, 1.7vh, 0.95rem);
+    border: 0;
+    /* Ruled off while it is shut, in the site's own hairline, so the row reads
+       as a thing that is closed rather than as a heading standing on its own.
+       It is the same rule `All` draws at the foot of the open index — the index
+       is closed by a line at one end or the other whichever state it is in.
+
+       Kept as a border and turned transparent rather than removed when it
+       opens: the row holds its height either way, so opening the index moves
+       nothing above it. */
+    border-bottom: 1px solid var(--line-soft);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    font: inherit;
+    font-size: var(--text-body);
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    text-align: left;
+  }
+
+  .clients-filter__toggle[aria-expanded="true"] {
+    border-bottom-color: transparent;
+  }
+
+  /* The opening, and it is a grid track rather than a height.
+   *
+   * `display: none` cannot be transitioned and a height cannot be transitioned
+   * to `auto`, which is why an accordion is usually either instant or built on
+   * a magic max-height that is wrong the day a sector is added. A track can:
+   * the holder becomes two rows — the shut row, then the index — and the second
+   * runs `0fr` to `1fr`, which is nothing to exactly the height of whatever is
+   * standing in it, measured by the browser at every step.
+   *
+   * `overflow: hidden` on the index is what makes that a reveal rather than a
+   * squash: the words keep their own size and the track uncovers them.
+   *
+   * `visibility` is the half that is not decoration. Collapsed to nothing the
+   * index is still focusable and still read aloud, so it is hidden outright —
+   * and the delay is what sequences it: going out it waits for the track to
+   * close, coming in it does not wait at all. That is what `0s linear` with a
+   * delay buys, and it is why this can be one property rather than a callback.
+   *
+   * `--duration-handover` for both this and the mark, so the tap moves one
+   * thing at two ends rather than two things at two speeds. It is the token for
+   * a change that happens on its own while being watched, which is what an
+   * index unfolding is. */
+  .clients-filter-holder {
+    display: grid;
+    grid-template-rows: auto 0fr;
+    transition: grid-template-rows var(--duration-handover)
+      var(--ease-handover);
+  }
+
+  .clients-filter-holder[data-open="true"] {
+    grid-template-rows: auto 1fr;
+  }
+
+  .clients-filter {
+    min-height: 0;
+    padding-top: clamp(0.3rem, 0.9vh, 0.5rem);
+    overflow: hidden;
+    visibility: hidden;
+    transition: visibility 0s linear var(--duration-handover);
+  }
+
+  .clients-filter-holder[data-open="true"] .clients-filter {
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  /* A cross that closes to a dash — the site's own small mark, and the smallest
+     thing that could say `there is more here`. One bar lies flat and never
+     moves; the other stands and is scaled away when the index opens, so the
+     shut state is a cross and the open state is the rule the index draws
+     everywhere else. */
+  .clients-filter__toggle-mark {
+    position: relative;
+    flex: none;
+    width: var(--mark, 1.05rem);
+    height: var(--mark, 1.05rem);
+  }
+
+  .clients-filter__toggle-mark::before,
+  .clients-filter__toggle-mark::after {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: currentcolor;
+    content: "";
+    transition: transform var(--duration-handover) var(--ease-handover);
+  }
+
+  .clients-filter__toggle-mark::after {
+    transform: rotate(90deg);
+  }
+
+  .clients-filter__toggle[aria-expanded="true"] .clients-filter__toggle-mark::after {
+    transform: rotate(90deg) scaleX(0);
   }
 }
 
