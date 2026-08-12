@@ -11,6 +11,7 @@ import {
 import gsap from "gsap";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { MOBILE_MENU } from "../../lib/breakpoints";
 import { navTriggerIntent } from "../../lib/nav-keys";
 import { Button } from "../ui/Button";
 import { PixelArrow } from "../ui/PixelArrow";
@@ -542,20 +543,49 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     };
   }, [mobileMenuOpen]);
 
+  /**
+   * Drops the mobile menu's state the moment the mobile menu stops existing.
+   *
+   * **It asks the stylesheet's own question rather than a second one.** This used
+   * to watch `(min-width: 70.0625rem)` — 1121px, a number that appears nowhere in
+   * globals.css — while the stylesheet hands the navigation back to the bar at
+   * `(max-width: 64rem), (hover: none)`. Two ways that bit:
+   *
+   *   — Open the menu at 1000px on a mouse and widen to 1080. The stylesheet has
+   *     already taken the panel and its Close button off the screen; this guard
+   *     was still waiting for 1121, so `mobileMenuOpen` stayed true and the effect
+   *     above kept `document.body.style.overflow = "hidden"`. The page could not
+   *     be scrolled and nothing visible could release it — Escape only, which
+   *     nobody knows to press.
+   *   — Rotate an 11-inch iPad from portrait to landscape. That crosses 1121px, so
+   *     the old guard fired and force-closed the menu a reader had just opened —
+   *     on a device where the stylesheet keeps the mobile menu at every width,
+   *     because of `hover: none`, and it is the only navigation there is.
+   *
+   * Watching the menu's own query has neither problem and needs no complement to
+   * be computed — see lib/breakpoints.ts for why a complement cannot be written
+   * exactly.
+   */
   useEffect(() => {
-    const desktopViewport = window.matchMedia("(min-width: 70.0625rem)");
+    const mobileMenu = window.matchMedia(MOBILE_MENU);
 
-    function handleViewportChange(event: MediaQueryListEvent) {
-      if (event.matches) {
-        setMobileMenuOpen(false);
-        setMobileActiveMenu(null);
-      }
+    function sync() {
+      if (mobileMenu.matches) return;
+
+      /* The menu is gone from the page, so its state goes with it — including
+         the scroll lock, which is released by the effect above the moment this
+         turns false. */
+      setMobileMenuOpen(false);
+      setMobileActiveMenu(null);
     }
 
-    desktopViewport.addEventListener("change", handleViewportChange);
+    /* Once on mount as well as on change: a reader who lands wide with a stale
+       open state from a restored session should not be locked by it. */
+    sync();
+    mobileMenu.addEventListener("change", sync);
 
     return () => {
-      desktopViewport.removeEventListener("change", handleViewportChange);
+      mobileMenu.removeEventListener("change", sync);
     };
   }, []);
 

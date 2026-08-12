@@ -6914,10 +6914,16 @@ video {
    because ScrollSmoother moves the page by transforming its content inside a
    wrapper that never scrolls, so a sticky element has no scroll to measure
    itself against. All four are right, and all four are describing the desktop:
-   SmoothScroll does not create the smoother below 48rem — the mobile menu is
-   `position: fixed` and the smoother would pin it to the page rather than the
-   screen — so at this width the browser owns the scroll again and sticky is
-   simply available.
+   SmoothScroll only creates the smoother on `(min-width: 64.0625rem) and
+   (hover: hover)` — the exact complement of the query that puts the mobile menu
+   on screen, because that menu is `position: fixed` and the smoother would pin
+   it to the page rather than the screen. So at this width the browser owns the
+   scroll again and sticky is simply available.
+
+   That number was `48rem` here and in SmoothScroll itself until 2026-08-12, and
+   it was wrong in a way that cost a reader the page: the menu appears at 64rem
+   and on any touch device, so between 769 and 1024px — and on every tablet — the
+   smoother was running underneath a fixed panel it breaks.
 
    It is also the only version that will sit still. The JavaScript one was run
    here on 2026-08-12 and taken out the same hour: every bar is a transform
