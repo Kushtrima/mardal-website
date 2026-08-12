@@ -10,7 +10,7 @@
     "build": "next build",
     "build:worker": "vite build",
     "start": "next start",
-    "test": "npm run build:worker && node --test tests/rendered-html.test.mjs tests/wheel-gate.test.mjs tests/blog-pattern.test.mjs tests/nav-keys.test.mjs",
+    "test": "npm run build:worker && node --test tests/rendered-html.test.mjs tests/wheel-gate.test.mjs tests/blog-pattern.test.mjs tests/nav-keys.test.mjs tests/reduced-motion.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
   },

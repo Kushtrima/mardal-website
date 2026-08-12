@@ -16,6 +16,23 @@ const STACKED_QUERY =
  * Maps vertical page progress to a horizontal editorial journey on desktop.
  * Smartphones use a pinned vertical stack, while tablets and reduced-motion
  * users keep a native vertical document.
+ *
+ * **That last clause was untrue for two years of widths, and the stylesheet is
+ * what made it true.** A card rests at `opacity: 0; visibility: hidden`; the
+ * desktop run is what reveals them. `DESKTOP_QUERY` excludes anyone who has asked
+ * for no motion, so a reduced-motion reader on a wide window entered no branch
+ * that reveals anything — and the rules that put the cards back into flow were
+ * written under `max-width: 64rem`, so they did not reach that reader either.
+ * They saw the first card of twelve and nothing else, with the rest gone from the
+ * accessibility tree as well. `STACKED_QUERY` did match them, but its whole body
+ * is an IntersectionObserver that rewrites the current title and never touches a
+ * card.
+ *
+ * The un-stacking now answers to `(max-width: 64rem), (prefers-reduced-motion:
+ * reduce)` — see the block beside `.service-journey` in globals.css. **The two
+ * conditions have to stay complements:** a term added to `DESKTOP_QUERY` without
+ * the matching term there leaves a set of readers that neither the run nor the
+ * flow claims, which is exactly the shape of the bug that was here.
  */
 export function ServiceOfferingsScroll() {
   useEffect(() => {

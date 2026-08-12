@@ -7669,7 +7669,43 @@ video {
   .service-overview__copy:nth-child(3) {
     padding-left: clamp(1.5rem, 3vw, 2.5rem);
   }
+}
 
+/* ── The journey as a document rather than a held stage ──
+ *
+ * **This used to be part of the width query above, and that was a bug with a
+ * real cost.** A card's resting state is `opacity: 0; visibility: hidden` with
+ * only the first one shown — the pinned run on a wide window reveals them one at
+ * a time as it is scrolled, and these rules are what puts them back into
+ * ordinary flow when there is no run. Written as a width alone, "no run" meant
+ * "narrow", and it is not: `ServiceOfferingsScroll` will not build the run for a
+ * reader who has asked for no motion at ANY width. So a reduced-motion visitor on
+ * a laptop got the first card of twelve and nothing else — hidden from a screen
+ * reader too, since `visibility: hidden` takes an element out of the
+ * accessibility tree, and the category links above them jumped to elements that
+ * were not there. Eighteen cards on CRM Solutions, nine on System Integration.
+ *
+ * Two conditions on one rule set rather than a second copy of it: the same shape
+ * the mobile menu uses for the same reason (`max-width: 64rem`, `hover: none`).
+ * A duplicate would drift, and this block is ninety lines.
+ *
+ * What stays behind in the width query is everything that is genuinely about
+ * width — the hero's title and pattern, the overview's columns. Those must not
+ * reach a 1600px window just because someone turned motion off.
+ *
+ * **The condition here has to stay the complement of the one in
+ * `ServiceOfferingsScroll`.** `DESKTOP_QUERY` there is
+ * `(min-width: 64.0625rem) and (prefers-reduced-motion: no-preference)`; if that
+ * ever gains a term, this needs the same one, or the run and the flow will both
+ * think they own the same cards.
+ *
+ * Still open, and honest about it: a desktop reader whose JavaScript did not run
+ * has no preference set, so they still get one card. Fixing that means the hidden
+ * state cannot be the resting one — it would have to be applied by the script —
+ * and the cost is every visitor briefly seeing twelve cards stacked on top of
+ * each other before the script lands. That is a trade to make deliberately, not
+ * as a side effect of this. */
+@media (max-width: 64rem), (prefers-reduced-motion: reduce) {
   .service-journey {
     height: auto;
     min-height: 0;
