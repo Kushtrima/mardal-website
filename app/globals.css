@@ -6790,11 +6790,20 @@ video {
    what is inside the row. */
 
 /* At the foot of the reading rather than under both columns: it belongs to the
-   column that ends, and the rail does not end, it is released. */
+   column that ends, and the rail does not end, it is released.
+
+   **No rule over it** — owner's call, 2026-08-12, at every width. It carried the
+   site's hairline and it was the second line inside about sixty pixels: the
+   index already closes itself with a rule of its own under the last picture, so
+   this drew a faint one again just below it and the foot of the page read as two
+   endings rather than one.
+
+   The space stays. `padding-top` is left where it was so the row sits exactly
+   where it sat — what has gone is the line, not the gap it was drawn in, which
+   is what keeps this from being a re-spacing of the foot of the page. */
 .story-out {
   margin: clamp(2.5rem, 7vh, 4rem) 0 0;
   padding-top: clamp(1.25rem, 3vh, 2rem);
-  border-top: 1px solid var(--line-soft);
 }
 
 .story-out__link {
