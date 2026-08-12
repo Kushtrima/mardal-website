@@ -849,6 +849,17 @@ test("filters the Clients page by sector, server-side", async () => {
     "/case-studies/healthcare/healthcare-office-website",
   ]);
 
+  /* **The link opens on the picture, and that is a size, not a nesting taste.**
+     The stylesheet stretches this anchor over the whole card with `inset: 0`,
+     which measures from the nearest positioned ancestor. The anchor used to sit
+     inside `.clients-card__title` — absolutely positioned in the corner of the
+     picture, shrunk to the word in it — so the clickable area was the word while
+     the card's hover lit the whole panel. Markup is the only place that fact is
+     visible, so it is asserted here: the anchor must open directly on the plate,
+     and no anchor may appear inside a title. */
+  assert.match(all, /<a [^>]*clients-card__link[^>]*><div [^>]*clients-card__plate/);
+  assert.doesNotMatch(all, /clients-card__title[^>]*>\s*<a[\s>]/);
+
   /* **The Client field is the one this page may not fill.** PRODUCT.md records
      that per-client sign-off for naming those companies publicly was never
      recorded, so the slot stays bracketed — this is the assertion that catches a

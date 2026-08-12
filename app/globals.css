@@ -5941,14 +5941,31 @@ video {
   text-wrap: pretty;
 }
 
-/* A card with a story behind it. The link sits on the heading — one target, one
-   thing for a screen reader to announce — and is stretched over the card by the
-   pseudo-element, so the whole panel is clickable without eight nested links
-   fighting for the same rectangle. */
+/* A card with a story behind it. One link, wrapping the picture and named by
+   the heading inside it — one target and one thing for a screen reader to
+   announce — stretched over the card by the pseudo-element below, so the whole
+   panel is clickable without eight nested links fighting for one rectangle. */
 .clients-card--linked {
   transition: background var(--duration-fast) var(--ease-standard);
 }
 
+.clients-card__link {
+  display: block;
+}
+
+/* The hit area, and it is worth knowing what makes it the size it is: `inset: 0`
+   measures from the nearest POSITIONED ancestor, which is `.clients-card` only
+   because the anchor is a child of the card.
+
+   This rule was written when the anchor lived inside `.clients-card__title`, and
+   that heading is absolutely positioned over the corner of the picture and
+   shrinks to fit the word in it — so the rule resolved against the heading and
+   the target was the word `Healthcare`, while the hover below lit the whole
+   panel. Nothing about the rule looked wrong; the containing block was.
+
+   So: putting this link back inside anything positioned shrinks the card's
+   click target to that thing, silently. The render test asserts the anchor opens
+   on the plate for exactly this reason. */
 .clients-card__link::after {
   position: absolute;
   z-index: 3;

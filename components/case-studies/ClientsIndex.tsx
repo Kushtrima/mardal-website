@@ -154,95 +154,120 @@ export function ClientsIndex({ initialSector }: { initialSector: string }) {
               </div>
             ) : (
               <ul className="clients-grid">
-                {shown.map((entry, index) => (
-                  <li key={entry.slug}>
-                    {/* A card is a link only where there is a story behind it,
-                        which today is one of the eight. The other seven are
-                        articles and go nowhere, on purpose: a card that looks
-                        like a link and answers with an empty page is worse than
-                        a card that never offered. */}
-                    <article
-                      className={`clients-card${
-                        "story" in entry ? " clients-card--linked" : ""
-                      }`}
+                {shown.map((entry, index) => {
+                  /* The picture. Stock frames for now, at the owner's ask, so
+                     the card can be judged against real photography — see
+                     content/case-studies.ts for why they must not ship. The
+                     box is the one thing here that is permanent: 242x136, so a
+                     screenshot of the delivered system drops straight in later
+                     without the grid moving.
+
+                     The tint stays under the image rather than being dropped
+                     with the drawing. It is what stands in the box while a
+                     remote frame is still in flight, and what is left there if
+                     it never arrives — a card whose picture fails should be a
+                     coloured panel, not a broken one.
+
+                     Named here rather than written inline because where a
+                     story exists the whole plate goes inside the link, and the
+                     two branches must be the same picture. */
+                  const plate = (
+                    <div
+                      className="clients-card__plate"
+                      data-tint={TINTS[index % TINTS.length]}
                     >
-                      {/* The picture. Stock frames for now, at the owner's ask,
-                          so the card can be judged against real photography —
-                          see content/case-studies.ts for why they must not
-                          ship. The box is the one thing here that is permanent:
-                          242x136, so a screenshot of the delivered system drops
-                          straight in later without the grid moving.
-
-                          The tint stays under the image rather than being
-                          dropped with the drawing. It is what stands in the box
-                          while a remote frame is still in flight, and what is
-                          left there if it never arrives — a card whose picture
-                          fails should be a coloured panel, not a broken one.
-
-                          Decorative, so alt is empty: these photographs are of
+                      {/* Decorative, so alt is empty: these photographs are of
                           nothing to do with the work, and describing one to a
                           screen reader would be describing a placeholder. */}
-                      <div
-                        className="clients-card__plate"
-                        data-tint={TINTS[index % TINTS.length]}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        className="clients-card__art"
+                        src={entry.image}
+                        alt=""
+                        width="640"
+                        height="360"
+                        loading="lazy"
+                        decoding="async"
+                      />
+
+                      {/* The sector, standing on the picture rather than under
+                          it. There is no project name to put here — the name
+                          would be the client's, and that is the decision
+                          nobody has made.
+
+                          It reads against whatever photograph lands behind it
+                          because the picture is darkened under it, not because
+                          the word carries a shadow of its own: a shadowed word
+                          is legible and looks it, and this site sets type flat
+                          everywhere else. */}
+                      <h3 className="clients-card__title">
+                        {sectorTitle(entry.sector)}
+                      </h3>
+                    </div>
+                  );
+
+                  return (
+                    <li key={entry.slug}>
+                      {/* A card is a link only where there is a story behind
+                          it, which today is one of the eight. The other seven
+                          are articles and go nowhere, on purpose: a card that
+                          looks like a link and answers with an empty page is
+                          worse than a card that never offered. */}
+                      <article
+                        className={`clients-card${
+                          "story" in entry ? " clients-card--linked" : ""
+                        }`}
                       >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          className="clients-card__art"
-                          src={entry.image}
-                          alt=""
-                          width="640"
-                          height="360"
-                          loading="lazy"
-                          decoding="async"
-                        />
+                        {/* The link wraps the picture, and where it sits in
+                            this tree is the whole of how much of the card can
+                            be clicked — it is not a nesting preference.
 
-                        {/* The sector, standing on the picture rather than
-                            under it. There is no project name to put here —
-                            the name would be the client's, and that is the
-                            decision nobody has made.
+                            The stylesheet stretches this anchor over the card
+                            with an inset pseudo-element, and an inset
+                            pseudo-element measures from the nearest positioned
+                            ancestor. While the anchor sat inside the heading,
+                            that ancestor was the heading — which is absolutely
+                            positioned in the corner of the picture and shrinks
+                            to the word in it. So the target was the word
+                            `Healthcare`, on a card whose hover lights the
+                            whole panel. Out here the nearest positioned
+                            ancestor is the card, and the promise the hover
+                            makes is the one the pointer gets.
 
-                            It reads against whatever photograph lands behind
-                            it because the picture is darkened under it, not
-                            because the word carries a shadow of its own: a
-                            shadowed word is legible and looks it, and this
-                            site sets type flat everywhere else. */}
-                        {/* Where a story exists the heading carries the link,
-                            and the stylesheet stretches that link over the
-                            whole card: one target, one place for a screen
-                            reader to find it, and the whole card clickable the
-                            way a card should be. */}
-                        <h3 className="clients-card__title">
-                          {"story" in entry ? (
-                            <Link
-                              className="clients-card__link"
-                              href={`/case-studies/${entry.sector}/${entry.slug}`}
-                            >
-                              {sectorTitle(entry.sector)}
-                            </Link>
-                          ) : (
-                            sectorTitle(entry.sector)
-                          )}
-                        </h3>
-                      </div>
+                            Still one target and one thing to announce: the img
+                            is silent, so the link is named by the heading
+                            inside it exactly as it was when it was the
+                            heading's child. */}
+                        {"story" in entry ? (
+                          <Link
+                            className="clients-card__link"
+                            href={`/case-studies/${entry.sector}/${entry.slug}`}
+                          >
+                            {plate}
+                          </Link>
+                        ) : (
+                          plate
+                        )}
 
-                      {/* Who it was for, then what it was. A list of pairs
-                          rather than two paragraphs, because a reader comparing
-                          two entries is comparing the same two questions and
-                          the answers should line up down the page. */}
-                      <dl className="clients-card__facts">
-                        <div className="clients-card__fact">
-                          <dt>{caseStudies.fields.client}</dt>
-                          <dd>{entry.client}</dd>
-                        </div>
-                        <div className="clients-card__fact">
-                          <dt>{caseStudies.fields.description}</dt>
-                          <dd>{entry.description}</dd>
-                        </div>
-                      </dl>
-                    </article>
-                  </li>
-                ))}
+                        {/* Who it was for, then what it was. A list of pairs
+                            rather than two paragraphs, because a reader
+                            comparing two entries is comparing the same two
+                            questions and the answers should line up down the
+                            page. */}
+                        <dl className="clients-card__facts">
+                          <div className="clients-card__fact">
+                            <dt>{caseStudies.fields.client}</dt>
+                            <dd>{entry.client}</dd>
+                          </div>
+                          <div className="clients-card__fact">
+                            <dt>{caseStudies.fields.description}</dt>
+                            <dd>{entry.description}</dd>
+                          </div>
+                        </dl>
+                      </article>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
