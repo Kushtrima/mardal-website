@@ -124,6 +124,27 @@ test("server-renders the Mardal homepage", async () => {
      beside the link and the word would open a panel on a press as well as go to
      a page. */
   assert.doesNotMatch(html, /<button[^>]*>Clients<\/button>/);
+
+  /* **The panel is named by the word that opened it, and every trigger carries
+     the id that lets it.** One panel serves all four entries, so a reader who has
+     just moved focus into it is otherwise told nothing about which of the four
+     list they are standing in.
+     This is the static half of the keyboard fix — the half that can be asserted
+     from rendered HTML. The keys themselves are `lib/nav-keys.ts`, held by
+     tests/nav-keys.test.mjs, because a key handler leaves no trace in markup. */
+  for (const key of ["services", "products", "case-studies", "company"]) {
+    assert.match(
+      html,
+      new RegExp(`id="nav-trigger-${key}"`),
+      `${key} has no trigger id for the panel to be named by`,
+    );
+  }
+  const panel = html.match(/<div class="mega-menu"[^>]*>/)?.[0];
+  assert.ok(panel, "the shared panel is not rendered");
+  assert.match(panel, /aria-labelledby="nav-trigger-services"/);
+  /* Closed on arrival, and out of the tab order while it is — `inert` is what
+     stops a reader tabbing into a panel that is not on screen. */
+  assert.match(panel, /inert=""/);
   assert.doesNotMatch(html, /Case Studies/);
   /* The panel it replaced held one ArvenaAI anchor pointing at a section on no
      page. PRODUCT.md forbids ArvenaAI being written as a delivered client

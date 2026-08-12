@@ -6,10 +6,12 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import gsap from "gsap";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { navTriggerIntent } from "../../lib/nav-keys";
 import { Button } from "../ui/Button";
 import { PixelArrow } from "../ui/PixelArrow";
 import { Container } from "./Container";
@@ -43,6 +45,18 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
   const megaMenuWasOpenRef = useRef(false);
   const [activeMenu, setActiveMenu] = useState<NavigationKey>("services");
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  /**
+   * A request to put focus inside the panel, held until the panel is actually
+   * there to receive it.
+   *
+   * It cannot be done in the key handler. Opening the panel is a state change, so
+   * at the moment the key is pressed the panel may still be the closed one — and
+   * a closed panel is `inert`, which means `focus()` on anything inside it does
+   * nothing at all and fails silently. Held as state instead, the effect below
+   * runs after the commit that removed `inert`, which is the first moment the
+   * links exist and can take focus.
+   */
+  const [panelEntry, setPanelEntry] = useState<"first" | "last" | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileActiveMenu, setMobileActiveMenu] =
     useState<NavigationKey | null>(null);
@@ -390,6 +404,34 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     };
   }, [mobileActiveMenu, mobileDisplayMenu, mobileMenuOpen]);
 
+  /**
+   * Hands focus to the panel once the panel exists.
+   *
+   * Waits on `megaMenuOpen` as well as the request, because those two arrive in
+   * the same commit and the panel is `inert` until they do. `activeMenu` is a
+   * dependency for the case where the key opens a different entry than the one
+   * showing: the links are rebuilt for the new entry, and focus has to land in
+   * the list a reader asked for rather than the one that was up.
+   *
+   * `.mega-menu__link` is the entry list only — the panel's foot also holds the
+   * legal links and the way in, and `first` has to mean the first name in the
+   * menu rather than the first focusable thing in the box.
+   */
+  useEffect(() => {
+    if (!panelEntry || !megaMenuOpen) return;
+
+    const links = megaMenuRef.current?.querySelectorAll<HTMLElement>(
+      ".mega-menu__link",
+    );
+
+    /* Cleared either way. A request that cannot be met has to be dropped rather
+       than left standing, or the next unrelated render would spend it. */
+    setPanelEntry(null);
+    if (!links?.length) return;
+
+    (panelEntry === "first" ? links[0] : links[links.length - 1]).focus();
+  }, [panelEntry, megaMenuOpen, activeMenu]);
+
   useEffect(() => {
     function handlePointerDown(event: globalThis.PointerEvent) {
       if (
@@ -580,6 +622,34 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
               const reach = () =>
                 hasPanel ? openMegaMenu(item.key) : closeMegaMenu();
 
+              /* The keyboard's way into the panel, and the reason it needs one:
+                 the panel is shared and rendered after this whole list, so Tab
+                 from a trigger lands on the NEXT trigger, which opens its own
+                 panel on focus. A reader tabbing along the bar watched the list
+                 they wanted disappear before they could reach it, and only the
+                 last entry's panel — the one with nothing after it to tab to —
+                 was ever reachable. Five service-page links could not be got at
+                 from the header by keyboard at all.
+
+                 Which keys mean this lives in lib/nav-keys.ts with its own test,
+                 not here: it is the decision, and it includes one case with no
+                 symptom yet (an entry with no children must not swallow the key).
+
+                 The panel this focuses is already the right one — arriving at the
+                 word opened it — so this is a focus move and not an open. */
+              const onTriggerKeyDown = (
+                event: ReactKeyboardEvent<HTMLElement>,
+              ) => {
+                const intent = navTriggerIntent(event.key, hasPanel);
+                if (intent === "pass") return;
+
+                /* Only now. Taken earlier this would stop the page scrolling on
+                   every ArrowDown pressed anywhere on the bar. */
+                event.preventDefault();
+                openMegaMenu(item.key);
+                setPanelEntry(intent === "enter-first" ? "first" : "last");
+              };
+
               return (
                 <li key={item.key}>
                   {isPage ? (
@@ -601,7 +671,9 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                         pathname === item.href ? "page" : undefined
                       }
                       data-nav-trigger={hasPanel || undefined}
+                      id={hasPanel ? `nav-trigger-${item.key}` : undefined}
                       onFocus={reach}
+                      onKeyDown={onTriggerKeyDown}
                       onPointerEnter={(event) => {
                         if (event.pointerType === "mouse") reach();
                       }}
@@ -615,6 +687,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                       aria-expanded={megaMenuOpen && activeMenu === item.key}
                       aria-controls="desktop-mega-menu"
                       data-nav-trigger
+                      id={`nav-trigger-${item.key}`}
                       onClick={() => {
                         if (megaMenuOpen && activeMenu === item.key) {
                           setMegaMenuOpen(false);
@@ -624,6 +697,7 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                         openMegaMenu(item.key);
                       }}
                       onFocus={reach}
+                      onKeyDown={onTriggerKeyDown}
                       onPointerEnter={(event) => {
                         if (event.pointerType === "mouse") reach();
                       }}
@@ -650,11 +724,16 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
             {mobileMenuOpen ? "Close" : "Menu"}
           </button>
 
+          {/* Named by the word that opened it. One panel serves all four
+              entries, so without this a reader who has just moved focus into it
+              is told only "navigation" and has to infer which list they are
+              standing in from the links themselves. */}
           <div
             className="mega-menu"
             id="desktop-mega-menu"
             ref={megaMenuRef}
             aria-hidden={!megaMenuOpen}
+            aria-labelledby={`nav-trigger-${activeMenu}`}
             inert={megaMenuOpen ? undefined : true}
           >
             {/* The white, as its own layer. It used to be the panel's own
