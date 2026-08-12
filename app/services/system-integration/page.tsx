@@ -8,6 +8,7 @@ import { ServicePageMotion } from "../../../components/services/ServicePageMotio
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
 import { systemIntegration } from "../../../content/system-integration";
 import { products } from "../../../content/home";
+import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
   title: systemIntegration.title,
@@ -30,19 +31,7 @@ function ServiceWords({ className, text }: { className: string; text: string }) 
 }
 
 export default function SystemIntegrationPage() {
-  const serviceCards = systemIntegration.chapters.flatMap(
-    (chapter, groupIndex) =>
-      chapter.services.map((service, serviceIndex) => ({
-        ...service,
-        groupIndex,
-        serviceIndex,
-        copy:
-          serviceIndex === 0
-            ? `${chapter.description} ${service.copy}`
-            : service.copy,
-        capabilities: `${service.items.join(". ")}.`,
-      })),
-  );
+  const serviceCards = buildServiceCards(systemIntegration.chapters);
 
   return (
     <>

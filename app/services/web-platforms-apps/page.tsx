@@ -8,6 +8,7 @@ import { ServicePageMotion } from "../../../components/services/ServicePageMotio
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
 import { webPlatformsApps } from "../../../content/web-platforms-apps";
 import { products } from "../../../content/home";
+import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
   title: webPlatformsApps.title,
@@ -30,19 +31,7 @@ function ServiceWords({ className, text }: { className: string; text: string }) 
 }
 
 export default function WebPlatformsAppsPage() {
-  const serviceCards = webPlatformsApps.chapters.flatMap(
-    (chapter, groupIndex) =>
-      chapter.services.map((service, serviceIndex) => ({
-        ...service,
-        groupIndex,
-        serviceIndex,
-        copy:
-          serviceIndex === 0
-            ? `${chapter.description} ${service.copy}`
-            : service.copy,
-        capabilities: `${service.items.join(". ")}.`,
-      })),
-  );
+  const serviceCards = buildServiceCards(webPlatformsApps.chapters);
 
   return (
     <>

@@ -8,6 +8,7 @@ import { ServicePageMotion } from "../../../components/services/ServicePageMotio
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
 import { aiAutomation } from "../../../content/ai-automation";
 import { products } from "../../../content/home";
+import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
   title: aiAutomation.title,
@@ -36,15 +37,7 @@ function ServiceWords({ className, text }: { className: string; text: string }) 
  * and the two core service areas.
  */
 export default function AiAutomationPage() {
-  const serviceCards = aiAutomation.chapters.flatMap(
-    (chapter, groupIndex) =>
-      chapter.services.map((service, serviceIndex) => ({
-        ...service,
-        groupIndex,
-        serviceIndex,
-        capabilities: `${service.items.join(". ")}.`,
-      })),
-  );
+  const serviceCards = buildServiceCards(aiAutomation.chapters);
 
   return (
     <>

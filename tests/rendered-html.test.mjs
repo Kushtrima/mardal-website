@@ -481,12 +481,33 @@ test("server-renders the AI & Automation service page", async () => {
   // of it is left behind.
   assert.doesNotMatch(html, /service-banner/);
 
-  // The service journey renders every card in source order before motion is
-  // enhanced, so the content remains complete without client-side JavaScript.
+  /* The service journey renders every card in source order before motion is
+     enhanced, so the MARKUP is complete without client-side JavaScript.
+     Say markup and not page, because for a long time this comment was read as
+     the stronger claim and the stronger claim was false: a card rests at
+     `visibility: hidden` and something has to reveal it. On a wide window that
+     was the desktop run alone, which never builds for a reader who has asked for
+     no motion — so twelve cards were in the markup and one was on the screen.
+     What the rendered page shows is now held by tests/reduced-motion.test.mjs,
+     which reads the stylesheet, because no assertion on HTML can see it. */
   assert.match(html, /AI &amp; Automation Services/);
   assert.match(html, /AI Applications/);
   assert.match(html, /data-service-group-link="1"[^>]*>Automation</);
   assert.equal((html.match(/class="service-card"/g) ?? []).length, 12);
+
+  /* **A chapter's own words reach the page, folded into the first card it
+     opens.** These two strings rendered nowhere for as long as the five service
+     pages each built their cards with their own copy of one flatMap: three of the
+     five grew a branch that reads `chapter.description` and two never did, and
+     this is the page where that cost something — chapters two and three both
+     carry one. Held here rather than trusted to the shared builder, because the
+     symptom was invisible: the content was in a typed module, the page compiled,
+     and nothing said the field was inert. */
+  assert.match(html, /Connected workflows that reduce repetitive work/);
+  assert.match(
+    html,
+    /Advanced AI technologies for projects that need company knowledge/,
+  );
   assert.equal(
     (html.match(/data-service-group-link=/g) ?? []).length,
     3,

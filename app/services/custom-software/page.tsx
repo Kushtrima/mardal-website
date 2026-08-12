@@ -8,6 +8,7 @@ import { ServicePageMotion } from "../../../components/services/ServicePageMotio
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
 import { customSoftware } from "../../../content/custom-software";
 import { products } from "../../../content/home";
+import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
   title: customSoftware.title,
@@ -30,19 +31,7 @@ function ServiceWords({ className, text }: { className: string; text: string }) 
 }
 
 export default function CustomSoftwarePage() {
-  const serviceCards = customSoftware.chapters.flatMap(
-    (chapter, groupIndex) =>
-      chapter.services.map((service, serviceIndex) => ({
-        ...service,
-        groupIndex,
-        serviceIndex,
-        copy:
-          serviceIndex === 0
-            ? `${chapter.description} ${service.copy}`
-            : service.copy,
-        capabilities: `${service.items.join(". ")}.`,
-      })),
-  );
+  const serviceCards = buildServiceCards(customSoftware.chapters);
 
   return (
     <>

@@ -8,6 +8,7 @@ import { ServicePageMotion } from "../../../components/services/ServicePageMotio
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
 import { crmSolutions } from "../../../content/crm-solutions";
 import { products } from "../../../content/home";
+import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
   title: crmSolutions.title,
@@ -30,15 +31,7 @@ function ServiceWords({ className, text }: { className: string; text: string }) 
 }
 
 export default function CrmSolutionsPage() {
-  const serviceCards = crmSolutions.chapters.flatMap(
-    (chapter, groupIndex) =>
-      chapter.services.map((service, serviceIndex) => ({
-        ...service,
-        groupIndex,
-        serviceIndex,
-        capabilities: `${service.items.join(". ")}.`,
-      })),
-  );
+  const serviceCards = buildServiceCards(crmSolutions.chapters);
 
   return (
     <>
