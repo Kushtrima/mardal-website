@@ -2,10 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
-import { BLUR, IN, OUT } from "../../lib/page-transition";
+import { fadeIn, fadeOut, hide, OUT } from "../../lib/page-transition";
 
 /**
  * One transition between every page on the site: the page you are leaving
@@ -81,14 +80,26 @@ export function RouteTransition() {
    * which announce themselves through `popstate`. Anything else moves the address
    * and leaves the page alone, which is what a filter is.
    */
-  const armedRef = useRef(false);
+  const armedRef = useRef<"click" | "history" | null>(null);
+  /** The pending navigation, so Back can cancel it. */
+  const pushRef = useRef<number | undefined>(undefined);
 
   /* Back and Forward. There is no click to take, and by the time a browser says
      `popstate` the move has already happened — so there is nothing to fade out
      and the arrival below is the whole transition. */
   useEffect(() => {
     function onPop() {
-      armedRef.current = true;
+      armedRef.current = "history";
+
+      /* **And the click that is still leaving is called off.**
+         A press starts a fade and hands the route to a timer half a second
+         later. Press Back inside that half second — which is exactly when a
+         reader who has changed their mind does — and the timer still fires,
+         pushing them forward into the page they just turned away from. Two
+         navigations from one press, the second one nobody asked for. */
+      window.clearTimeout(pushRef.current);
+      pushRef.current = undefined;
+      leavingRef.current = null;
     }
 
     window.addEventListener("popstate", onPop);
@@ -140,29 +151,20 @@ export function RouteTransition() {
 
       event.preventDefault();
       leavingRef.current = window.location.pathname;
-      armedRef.current = true;
+      armedRef.current = "click";
 
       window.clearTimeout(timerRef.current);
       timerRef.current = window.setTimeout(() => {
         leavingRef.current = null;
-        gsap.to(content, { opacity: 1, duration: IN, clearProps: "pointerEvents" });
+        /* Disarmed as well as restored. The click armed the arrival and the
+           navigation never came, so leaving it armed spends this transition on
+           whatever moves the path next — which on the Clients page is a filter
+           press, not a navigation at all. */
+        armedRef.current = null;
+        fadeIn(content);
       }, STUCK_MS);
 
-      gsap.fromTo(
-        content,
-        { filter: "blur(0px)" },
-        {
-          opacity: 0,
-          filter: `blur(${BLUR}px)`,
-          duration: OUT,
-          ease: "power2.in",
-          /* Nothing is clickable on the way out. At opacity 0 the page is still
-             there and still takes a pointer, and a second click landing on a
-             page that has already left is how you get two navigations from one
-             gesture. */
-          pointerEvents: "none",
-        },
-      );
+      fadeOut(content);
 
       /* **The route is pushed on a timer, not on the tween finishing.**
        *
@@ -178,7 +180,10 @@ export function RouteTransition() {
        * guaranteed and the fade is what it should be — decoration over it. Timed
        * to the fade so the swap still happens behind a dark page when anyone is
        * actually looking. */
-      window.setTimeout(() => router.push(href), OUT * 1000);
+      pushRef.current = window.setTimeout(() => {
+        pushRef.current = undefined;
+        router.push(href);
+      }, OUT * 1000);
     }
 
     /* **Capture, and that one argument is the whole of whether this works.**
@@ -205,6 +210,7 @@ export function RouteTransition() {
     return () => {
       document.removeEventListener("click", onClick, true);
       window.clearTimeout(timerRef.current);
+      window.clearTimeout(pushRef.current);
     };
   }, [router]);
 
@@ -230,8 +236,9 @@ export function RouteTransition() {
    * of that would be two openings at once.
    */
   useEffect(() => {
-    if (!armedRef.current) return;
-    armedRef.current = false;
+    const arrivedBy = armedRef.current;
+    if (!arrivedBy) return;
+    armedRef.current = null;
 
     const content = document.querySelector<HTMLElement>("#smooth-content");
     if (!content) return;
@@ -240,38 +247,31 @@ export function RouteTransition() {
     leavingRef.current = null;
     window.clearTimeout(timerRef.current);
 
-    /* Top of the new page, and it has to go through the smoother: it owns the
-       scroll position while it runs, so setting the window's own leaves the two
-       disagreeing — the address moves and the page does not. Below 48rem there
-       is no smoother and the window is the answer again. */
-    const smoother = ScrollSmoother.get();
-    if (smoother) {
-      smoother.scrollTo(0, false);
-    } else {
-      window.scrollTo(0, 0);
+    /* **Only a click starts a page at the top.**
+       Going back is a return, not an arrival: the reader had a place on that page
+       and the browser is restoring it. This forced 0 whatever brought you here,
+       so every Back landed at the top of a page someone had already read half of
+       — the one thing Back exists to undo.
+
+       Through the smoother where there is one: it owns the scroll position while
+       it runs, so setting the window's own leaves the two disagreeing — the
+       address moves and the page does not. */
+    if (arrivedBy === "click") {
+      const smoother = ScrollSmoother.get();
+      if (smoother) {
+        smoother.scrollTo(0, false);
+      } else {
+        window.scrollTo(0, 0);
+      }
     }
 
     /* Down before up, and set rather than tweened. Arriving by Back there is
        nothing to fade out from, and arriving from a click the page is already
        here — either way this is the one line that makes the rise the same length
        every time instead of starting from wherever the outgoing half got to. */
-    gsap.set(content, { opacity: 0, filter: `blur(${BLUR}px)` });
+    hide(content);
 
-    gsap.to(content, {
-      opacity: 1,
-      filter: "blur(0px)",
-      duration: IN,
-      ease: "power2.out",
-      /* Given back rather than set, so the page returns to whatever the
-         stylesheet says rather than to values written here. A filter left on the
-         wrapper would sit under every page from then on. */
-      clearProps: "pointerEvents,filter",
-      /* Everything that measured itself against the old page measures again once
-         the new one is up. The pinned runs and both story piles are
-         ScrollTriggers, and one built while the page was at opacity 0 has read
-         the right layout at the wrong scroll. */
-      onComplete: () => ScrollTrigger.refresh(),
-    });
+    fadeIn(content).eventCallback("onComplete", () => ScrollTrigger.refresh());
   }, [pathname]);
 
   return null;

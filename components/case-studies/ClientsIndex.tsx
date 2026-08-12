@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import gsap from "gsap";
-import { BLUR, IN, OUT } from "../../lib/page-transition";
+import { fadeIn, fadeOut, hide, OUT } from "../../lib/page-transition";
 import { ClientsPin } from "./ClientsPin";
 import { Container } from "../layout/Container";
 import { RedactedLines } from "../home/RedactedLines";
@@ -124,20 +123,7 @@ export function ClientsIndex({ initialSector }: { initialSector: string }) {
       return;
     }
 
-    gsap.fromTo(
-      work,
-      { filter: "blur(0px)" },
-      {
-        opacity: 0,
-        filter: `blur(${BLUR}px)`,
-        duration: OUT,
-        ease: "power2.in",
-        /* Not clickable while it is leaving: a card still takes a press at
-           opacity 0, and the one under the finger is about to be a different
-           card. */
-        pointerEvents: "none",
-      },
-    );
+    fadeOut(work);
 
     /* Swapped on a timer rather than on the tween finishing, for the reason the
        page transition pushes its route on one: GSAP's ticker sleeps while the
@@ -158,16 +144,8 @@ export function ClientsIndex({ initialSector }: { initialSector: string }) {
     if (!work) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    gsap.set(work, { opacity: 0, filter: `blur(${BLUR}px)` });
-    gsap.to(work, {
-      opacity: 1,
-      filter: "blur(0px)",
-      duration: IN,
-      ease: "power2.out",
-      /* Handed back rather than set, so nothing of this is left on the column
-         between filters. */
-      clearProps: "pointerEvents,filter",
-    });
+    hide(work);
+    fadeIn(work);
   }, [listed]);
 
   const shown =
