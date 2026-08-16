@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Container } from "../../components/layout/Container";
 import { SiteFooter } from "../../components/layout/SiteFooter";
 import { SiteHeader } from "../../components/layout/SiteHeader";
-import { BlogPattern } from "../../components/blog/BlogPattern";
 import { RedactedLines } from "../../components/home/RedactedLines";
 import { SectionEnter } from "../../components/motion/SectionEnter";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
@@ -153,34 +152,38 @@ export default function BlogPage() {
                 {blog.posts.map((post) => (
                   <li key={post.slug}>
                     <a className="blog-card" href={`/blog/${post.slug}`}>
-                      <h3 className="blog-card__title">{post.title}</h3>
+                      {/* No mark under the headline any more. A piece's drawing
+                          is drawn at plate size when the piece is opened; on the
+                          index it was a second, smaller copy of the same thing
+                          sitting under every title.
 
-                      {/* The piece's own mark, closing the headline. The same
-                          drawing the article opens on, at the density a mark
-                          can carry rather than shrunk to fit. Nothing to set
-                          per post: the slug decides it. */}
-                      <BlogPattern
-                        slug={post.slug}
-                        className="blog-card__mark"
-                      />
+                          What it stood in stays. The card holds a min-height and
+                          the foot is dropped to the bottom by `margin-top:
+                          auto`, so the title keeps the top, the foot keeps the
+                          bottom, and the space between them is the space it
+                          was — 81px at a 1358 window, mark or no mark. */}
+                      <h3 className="blog-card__title">{post.title}</h3>
 
                       <span className="blog-card__foot">
                         <span className="blog-card__thesis">{post.thesis}</span>
 
-                        {/* The byline closes the card, which is where the date
-                            now lives too: printing it here and again above the
-                            title would be the same fact twice on one card. */}
-                        <span className="blog-card__byline">
-                          <span className="blog-card__author">
-                            {post.author}
-                          </span>
-                          <span className="blog-card__stamp">
-                            <time dateTime={post.date}>
-                              {formatDate(post.date)}
-                            </time>
-                            <span aria-hidden="true">·</span>
-                            <span>{readingMinutes(post)} min read</span>
-                          </span>
+                        {/* When it was written and how long it takes, and no
+                            byline. Every piece here is by the same person, so a
+                            name on each card is the one fact on it a reader
+                            cannot act on — three cards saying it three times,
+                            in the place the date and the length had to share.
+                            It is a byline on the piece itself, where it is
+                            saying something.
+
+                            The day there is a second writer it belongs in THIS
+                            line, ahead of the date, rather than back on a row of
+                            its own. */}
+                        <span className="blog-card__stamp">
+                          <time dateTime={post.date}>
+                            {formatDate(post.date)}
+                          </time>
+                          <span aria-hidden="true">·</span>
+                          <span>{readingMinutes(post)} min read</span>
                         </span>
                       </span>
                     </a>

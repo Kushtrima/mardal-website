@@ -56,24 +56,40 @@ test("every published piece draws its own pattern", async () => {
 
   const html = await response.text();
   const published = slugs(html);
-  const marks = drawings(html, "blog-card__mark");
 
   assert.ok(published.size >= 3, "expected the index to list the pieces");
+
+  /* The index draws nothing of its own. Every card used to close its headline
+     with the piece's drawing at mark density — the same picture the piece opens
+     on, one size down — and it has been taken off: the drawing belongs to the
+     piece, and the reader meets it there. Asserted rather than assumed, so that
+     it stays off. */
   assert.equal(
-    marks.size,
-    published.size,
-    `${published.size} pieces but ${marks.size} distinct drawings — two pieces share one`,
+    drawings(html, "blog-card__mark").size,
+    0,
+    "a card is drawing a mark again",
   );
 
-  /* A drawing that came out nearly empty is a pattern that failed rather than
-     a pattern that is sparse. */
-  for (const mark of marks) {
-    const rectangles = [...mark.matchAll(/<rect/g)].length;
-    assert.ok(
-      rectangles >= 6,
-      `a mark drew only ${rectangles} rectangles`,
-    );
+  /* The promise moved with the drawing. It is the plates that have to differ
+     now, and there is one to a piece, so every piece is rendered and they are
+     compared as a set — two pieces that drew the same thing collapse into one
+     entry and fail the count, exactly as two identical marks used to. */
+  const plates = new Set();
+
+  for (const slug of published) {
+    const piece = await render(`/blog/${slug}`);
+    assert.equal(piece.status, 200, `/blog/${slug} did not render`);
+
+    const [plate] = drawings(await piece.text(), "blog-art");
+    assert.ok(plate, `/blog/${slug} opened on no drawing at all`);
+    plates.add(plate);
   }
+
+  assert.equal(
+    plates.size,
+    published.size,
+    `${published.size} pieces but ${plates.size} distinct drawings — two pieces share one`,
+  );
 });
 
 test("a piece opens on its own drawing, at plate size", async () => {
