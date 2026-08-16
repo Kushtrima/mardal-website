@@ -141,14 +141,25 @@ export function Hero() {
           </span>
         </h1>
 
+        {/* Broken by hand to the bar's own measure. The block is as wide as its
+            longest line and its right edge is set to the bar's, so the
+            paragraph runs the same band the names above it run between — which
+            is what took it from four lines to three.
+
+            Spans rather than <br>, because the breaks have to be droppable: the
+            column the copy sits in below 64rem is narrower than any of these
+            lines, and a hard break there would walk the text off the page
+            instead of wrapping it. */}
         <p className="hero-copy" ref={copyRef}>
-          We build the platforms, apps, CRM
-          <br />
-          systems, custom software and
-          <br />
-          applied AI a business runs on,
-          <br />
-          and the integrations between them.
+          <span className="hero-copy__line">
+            We bring engineers, AI specialists, UX designers, and
+          </span>{" "}
+          <span className="hero-copy__line">
+            strategic thinkers together to design and build the platforms,
+          </span>{" "}
+          <span className="hero-copy__line">
+            software, and digital systems modern businesses depend on.
+          </span>
         </p>
       </Container>
 

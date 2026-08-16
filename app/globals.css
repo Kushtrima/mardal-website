@@ -129,23 +129,71 @@
   /* Running text, split from --text-body. The two were one size, but only
      thirteen of the thirty-six rules on that token are paragraphs: the rest
      are nav links, buttons, the header call to action and the small labels,
-     and those are read at a glance rather than along a line, so they keep 18
-     while the copy comes down. Change paragraph size here and nowhere else.
-     Fluid on the same slope as the size above it: 14 to 16 across the same
-     window range, so the two never drift apart as the page is resized. */
-  --text-copy: clamp(14px, calc(11.43px + 0.286vw), 16px);
+     and those are read at a glance rather than along a line. Change paragraph
+     size here and nowhere else.
+
+     14 to 16 for a while, and now back to where it started: 16 to 18, the whole
+     ramp lifted two pixels rather than tilted, so it still settles at the same
+     two window widths and still runs on the same 0.286vw slope as the size
+     above it. The two never drift apart as the page is resized — at the moment
+     they are the same size, which is what asking for 18px paragraphs means.
+
+     Written out rather than pointed at --text-body, even though the values are
+     identical today. The split is the whole reason this token exists: aliasing
+     it would mean the next change to labels silently moved every paragraph on
+     the site with it, which is the thing the split was made to stop. */
+  --text-copy: clamp(16px, calc(13.43px + 0.286vw), 18px);
   /* The home hero's own line, a step above the display size. It is the one
      heading on the site with a whole viewport to itself and nothing beside it
      to match, and at the shared size it read small against that much air. The
      middle term is set so it still settles at roughly 1280px, like the two
-     above it, and the floor is the same proportion up from theirs. */
-  --text-hero: clamp(48px, 6.5vw, 84px);
-  /* A fourth size, for the two places a line has to sit under the small size
-     without becoming unreadable: the legal line at the foot of the footer
-     panel, and the STATUS / FIELD / YEAR labels over the product facts. */
+     above it, and the floor is the same proportion up from theirs.
+
+     Stepped up twice, 84 to 100 to 110, and the whole clamp scaled with it both
+     times so it still settles at the same 1292px and still holds its floor from
+     the same 750px down. Width was never the constraint: at 84px "Innovation"
+     measured 291px inside the 861px its seven columns give it, so the line was
+     filling barely a third of its own column. At 110px it is 382px, and there
+     are still 479px spare.
+
+     What will eventually set the ceiling is the drop to the film. The title is
+     placed from the top of the hero and the bars are placed from its bottom, so
+     each pixel of type costs 1.88 of the gap between them — two lines at 0.94.
+     The squeeze is worst on a hero pinned to its 47rem floor, which is any
+     window under 752px tall, because the ink line then rises with the width
+     while the type does not. Even there this does not run out until about a
+     1830px window, against 2085px at the old size; at 1555 x 849 the last line
+     clears the ink by 135px. Measure the TEXT, not the h1: it is a grid item
+     and stretches to the row the copy beside it sets, so its box is some 50px
+     taller than the two lines in it. */
+  --text-hero: clamp(64px, 8.51vw, 110px);
+  /* A fourth size, for the places a line has to sit under the small size
+     without becoming unreadable: the STATUS / FIELD / YEAR labels over the
+     product facts, the fact terms on the client and story records, and the
+     numbers down the story index. The footer used to set two things in it and
+     no longer does — see the note on the size below. */
   --text-fine: 12px;
-  /* The footer's menu links, a step under the paragraph size. */
+  /* A step under the paragraph size. It was the footer's menu links, which are
+     now the paragraph size themselves — the footer reads as text rather than as
+     small print, and only its two eyebrows (the column heads and the EMAIL /
+     PHONE / ADDRESS labels) stay under it, which is what they use this for.
+     Otherwise it belongs to the blog and story bylines and stamps. */
   --text-small: 14px;
+  /* The bar's own size, a step above the paragraph. The rule at the top of this
+     block files navigation with the labels, and at 17.5px on a laptop — against
+     an 11rem wordmark and three centimetres of air between the words — the row
+     read as small print rather than as the way through the site.
+
+     A step up from the body and well short of a header, so the bar is still a
+     bar and not a menu written across the top of the page. Same shape as the
+     sizes above it, 19 to 22 between a 1024 and a 1600 window: 1024 is 64rem,
+     which is the width the bar itself appears at, so it starts growing the
+     moment there is a bar to grow. Below that the names are in the mobile sheet
+     and this is not read at all.
+
+     Everything the words wear is already sized in em — the chevron, its gap,
+     the tracking — so this one value carries all of it. */
+  --text-nav: clamp(19px, calc(13.67px + 0.52vw), 22px);
 
   /* One pixel-based scale for every service page. New service routes inherit
      these values instead of introducing smaller one-off type rules. */
@@ -919,7 +967,7 @@ video {
   color: inherit;
   cursor: pointer;
   font: inherit;
-  font-size: var(--text-body);
+  font-size: var(--text-nav);
   letter-spacing: -0.035em;
   line-height: 1;
   transition: color var(--duration-fast) var(--ease-standard);
@@ -1374,7 +1422,7 @@ video {
 .hero-copy {
   /* The three lines of it, and the air it keeps between itself and the first
      bar. The em is the copy's own size, so the height follows the type. */
-  --hero-copy-lines: calc(4 * var(--leading-body) * 1em);
+  --hero-copy-lines: calc(3 * var(--leading-body) * 1em);
   --hero-copy-clear: 2rem;
   /* Everything above the copy inside the hero, at its tallest: the header's
      own padding, the bar it sits on, and the padding at the top of the
@@ -1384,26 +1432,63 @@ video {
   --hero-copy-above: calc(
     clamp(1rem, 4.5vh, 4.5rem) + 4.1rem + clamp(5.5rem, 12vh, 10rem)
   );
+  /* The same, plus the title the paragraph now starts under: two lines of it,
+     at the leading they are set in. Only the guard below reads this — the
+     alignment itself is done by the grid and needs no number at all. */
+  --hero-copy-top: calc(
+    var(--hero-copy-above) + 2 * var(--leading-heading-xl) * var(--text-hero)
+  );
 
   position: relative;
-  /* A 40px nudge past the container, but never further than the gutter has to
-     give. The container hugs the gutter until the viewport passes its cap, so
-     a flat 40px walks this line off the right edge on anything under about a
-     1000px window — 7px off at 834, 16px at 606, clipped rather than scrolled
-     because the root clips overflow-x. (On `html`, not `body`; the rule moved
-     so that `position: sticky` could work on a phone — see it for why.) */
-  left: min(40px, calc(var(--page-gutter) - 0.5rem));
-  grid-column: 10 / -1;
+  /* The paragraph is set to the bar's own band: the same right edge the last
+     name ends on, and — because the lines are broken to fill it — a left edge
+     that lands on the first one.
+
+     It used to be a fixed column with a 40px nudge past the container, which
+     put it neither under the names nor inside the page: the block began some
+     190px right of "Services" and its right edge stood 32px PAST the container,
+     the only thing on the page to break that line. (The nudge was capped
+     against the gutter because a flat 40px walked it off the right edge below
+     about a 1000px window.)
+
+     Two declarations replace all of that, and neither needs a number:
+     `justify-self: end` puts the block's right edge on the container's, and the
+     margin then pulls it in by the bar's own right padding — 0.4rem, from
+     .site-nav — so the two edges agree exactly at every width. The width is the
+     longest line rather than a column, so the band is set by the text, and the
+     line was broken to measure the same 500-odd pixels the four names occupy.
+     They drift by a pixel or two as the window moves, since the names run on
+     --text-nav and the copy on --text-copy, but the block cannot overflow
+     anything: it grows leftward, into the empty middle of the hero. */
+  justify-self: end;
+  width: fit-content;
+  /* Line 8, not 7. The title is `1 / span 7`, so it ends ON line 8 — ask for 7
+     and this overlaps it, which auto-placement resolves by dropping the whole
+     paragraph into a second row, 200px down the page and straight through the
+     bars. The column only has to be wide enough to hold the block; where the
+     block actually sits is `justify-self` and the margin below. */
+  grid-column: 8 / -1;
+  /* Its own row, so the paragraph begins on the title's bottom edge. Row 1
+     holds nothing but the title and is therefore exactly as tall as its two
+     lines, which makes row 2 start where they stop — at every width, and at
+     whatever --text-hero is set to next, with no offset to keep in step by
+     hand. It replaces a clamp(7rem, 19vh, 15.5rem) that landed the paragraph
+     somewhere near the middle of the title and moved with the window height
+     rather than with the type. */
+  grid-row: 2;
   align-self: start;
-  margin: 0;
-  /* Where it would like to sit, or as low as the bars leave room for —
-     whichever is higher. Above about 1330 wide the first term always wins and
-     nothing is taken away; through the band below it the copy rises with the
-     line rather than crossing it. */
+  margin: 0 0.4rem 0 0;
+  /* Nothing, until the bars would be under it.
+     Sitting on the title's foot is what this wants; the term only comes out
+     negative on a window short and wide enough for the ink line to have climbed
+     into the paragraph, and there the alignment has to give way — a line of
+     copy standing on the film is worse than one standing a little high. It is a
+     min against zero rather than the old min against a wish, because the wish
+     is now the grid's and cannot be written as a length. */
   margin-top: min(
-    calc(clamp(7rem, 19vh, 15.5rem) - 15px),
+    0px,
     calc(
-      var(--hero-ink) - var(--hero-copy-above) - var(--hero-copy-lines) -
+      var(--hero-ink) - var(--hero-copy-top) - var(--hero-copy-lines) -
         var(--hero-copy-clear)
     )
   );
@@ -1414,6 +1499,13 @@ video {
   font-size: var(--text-copy);
   font-weight: var(--weight-heading);
   line-height: var(--leading-body);
+}
+
+/* One line each, which is what makes the block's width the longest line's
+   width. Below 64rem they go back to being ordinary inline text and the
+   paragraph wraps to whatever column it has — see the rule that does it. */
+.hero-copy__line {
+  display: block;
 }
 
 /* The film is framed 1920 x 1400 and its bars start just over half way down
@@ -3269,12 +3361,11 @@ video {
 .site-footer__group-title {
   margin: 0 0 1rem;
   color: var(--accent-contrast);
-  font-size: var(--text-fine);
+  font-size: var(--text-small);
 }
 
 .site-footer__links {
   display: grid;
-  gap: 0.45rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -3282,7 +3373,7 @@ video {
 
 .site-footer__link {
   position: relative;
-  font-size: var(--text-small);
+  font-size: var(--text-body);
   letter-spacing: -0.02em;
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
@@ -3389,7 +3480,7 @@ video {
 
 .site-footer__detail-label {
   color: var(--accent-contrast);
-  font-size: var(--text-fine);
+  font-size: var(--text-small);
   letter-spacing: var(--tracking-wide);
   line-height: 1.3;
   text-transform: uppercase;
@@ -3397,7 +3488,7 @@ video {
 
 .site-footer__detail-value {
   margin: 0;
-  font-size: var(--text-small);
+  font-size: var(--text-body);
   line-height: 1.35;
 }
 
@@ -3440,7 +3531,7 @@ video {
 
 /* Pinned to the foot of the panel, and stopping where the bar field starts —
    the field takes the right 58.4%, so this takes what is left of the bottom
-   edge. On one line, which is what the smaller size buys. */
+   edge. */
 /* Selected through the panel so it outranks the rule that gives every other
    child `position: relative` to sit above the bars — that rule is two classes
    deep and would otherwise win. */
@@ -3450,12 +3541,23 @@ video {
   bottom: clamp(1.5rem, 3%, 2.5rem);
   left: clamp(2rem, 4.5%, 3.25rem);
   display: flex;
-  flex-wrap: nowrap;
+  /* It used to be told never to wrap, on the grounds that the small size kept
+     it to one line. At the paragraph size it no longer does: the four items
+     measure 497px against the 497px this box is given at a 1400 window, and
+     every window narrower than that takes the box away faster than the fluid
+     type gives it back — 487 into 447 at 1280. Nowrap there does not keep the
+     line, it just runs the small print out over the bar field.
+     So it is allowed to fold instead, and it folds UPWARD: the box is pinned by
+     its bottom edge with no top, and there are 52px of clear panel between the
+     details block and this row for a second line to rise into. `white-space`
+     stays, so the folding happens between the items and never inside "© 2026
+     Mardal". */
+  flex-wrap: wrap;
   gap: clamp(0.65rem, 1.3vw, 1.25rem);
   align-items: baseline;
   /* The links in this row carry the menu's link class and its size, so the
      year is set to match rather than sitting a size under them. */
-  font-size: var(--text-small);
+  font-size: var(--text-body);
   white-space: nowrap;
 }
 
@@ -3519,10 +3621,21 @@ video {
   margin-top: clamp(2.5rem, 6vh, 5rem);
 }
 
-/* The lists space themselves on the links' own boxes, so the gaps come in by
-   the amount the padding added. */
+/* The air between one link and the next, and the only place it is set — the
+   rule that lays these lists out states no gap of its own.
+
+   It was zero, on the reasoning that the links space themselves on their own
+   boxes. They do not: the padding above is cancelled by a negative margin of
+   exactly the same size, by design, so the box contributes nothing and the run
+   was spaced at one line-height flat — 22.66px of step under 17.43px of text,
+   with the em boxes of consecutive lines touching. At 14px that read as a tight
+   list; at the paragraph size it read as one word stacked on another.
+
+   0.75rem takes the step to about 34px, a little under twice the type. It does
+   not close the overlap between the tap targets — those are 45px tall and would
+   need a 22px gap to stand clear of each other — but it halves it. */
 .site-footer__links {
-  gap: 0;
+  gap: 0.75rem;
 }
 
 .site-footer__legal,
@@ -4129,8 +4242,38 @@ video {
     grid-column: 1 / span 8;
   }
 
+  /* Back to a column, because there is no bar left to line up with: the names
+     are in the mobile sheet from here down and the header carries the Menu
+     button instead. Four columns is narrower than any one of the hand-broken
+     lines, so the breaks are dropped and the paragraph wraps to the column —
+     which takes five lines at the top of this range, hence the reservation.
+     Over-reserving only ever holds the copy higher than it had to be; under it
+     is what lets a line cross the bars. */
   .hero-copy {
+    --hero-copy-lines: calc(5 * var(--leading-body) * 1em);
+
+    width: auto;
+    justify-self: stretch;
     grid-column: 9 / -1;
+    /* Back beside the title rather than under it. The second row is what puts
+       the paragraph on the title's bottom edge, and that reading only works
+       while the two stand side by side with room to spare; here the copy is
+       four columns wide and dropping it a row would leave a narrow stack far
+       down the right of the screen. So it returns to row 1 — and with it, to
+       the offset it used to be placed by. */
+    grid-row: auto;
+    margin-right: 0;
+    margin-top: min(
+      calc(clamp(7rem, 19vh, 15.5rem) - 15px),
+      calc(
+        var(--hero-ink) - var(--hero-copy-above) - var(--hero-copy-lines) -
+          var(--hero-copy-clear)
+      )
+    );
+  }
+
+  .hero-copy__line {
+    display: inline;
   }
 
   .why-intro {
@@ -4338,8 +4481,6 @@ video {
      broken by hand in the markup; at the floor size they each fit a 320px
      screen with room to spare, so nothing has to constrain them. */
 
-  /* The 40px nudge is a desktop nicety; at this width it walks the line off
-     the right edge. */
   .hero-copy {
     /* Here the copy follows the title down the page instead of sitting beside
        it, so everything above it is the header, the padding, and two lines of
@@ -4349,7 +4490,6 @@ video {
         var(--text-hero)
     );
 
-    left: 0;
     margin-top: min(
       calc(2.75rem - 15px),
       calc(

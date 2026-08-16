@@ -55,8 +55,12 @@ test("server-renders the Mardal homepage", async () => {
   /* The support line, from the hero rather than the meta description — the two
      say different things now, and matching on the shared words passed without
      ever reaching the hero. */
-  assert.match(html, /platforms, apps, CRM/);
-  assert.match(html, /integrations between them/);
+  /* Hand-broken lines, each matched whole. Nothing here may span two of them:
+     a phrase that crosses a break is a phrase that fails the next time the copy
+     is re-broken to fit the bar, without anything being wrong. */
+  assert.match(html, /We bring engineers, AI specialists, UX designers, and/);
+  assert.match(html, /strategic thinkers together to design and build the platforms,/);
+  assert.match(html, /software, and digital systems modern businesses depend on\./);
   assert.match(html, /class="hero-field__box"/);
   /* Server-rendered in the two-band field, the pose the cycle hands over to
      the lattice from. */
