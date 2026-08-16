@@ -149,24 +149,27 @@
      middle term is set so it still settles at roughly 1280px, like the two
      above it, and the floor is the same proportion up from theirs.
 
-     Stepped up twice, 84 to 100 to 110, and the whole clamp scaled with it both
-     times so it still settles at the same 1292px and still holds its floor from
-     the same 750px down. Width was never the constraint: at 84px "Innovation"
-     measured 291px inside the 861px its seven columns give it, so the line was
-     filling barely a third of its own column. At 110px it is 382px, and there
-     are still 479px spare.
+     Stepped up three times, 84 to 100 to 110 to 120, and the whole clamp scaled
+     with it each time so it still settles at the same 1292px and still holds its
+     floor from the same 750px down. Width was never the constraint: at 84px
+     "Innovation" measured 291px inside the 861px its seven columns give it, so
+     the line was filling barely a third of its own column. At 120px it is 416px,
+     and there are still 445px spare.
 
      What will eventually set the ceiling is the drop to the film. The title is
      placed from the top of the hero and the bars are placed from its bottom, so
      each pixel of type costs 1.88 of the gap between them — two lines at 0.94.
      The squeeze is worst on a hero pinned to its 47rem floor, which is any
      window under 752px tall, because the ink line then rises with the width
-     while the type does not. Even there this does not run out until about a
-     1830px window, against 2085px at the old size; at 1555 x 849 the last line
-     clears the ink by 135px. Measure the TEXT, not the h1: it is a grid item
-     and stretches to the row the copy beside it sets, so its box is some 50px
-     taller than the two lines in it. */
-  --text-hero: clamp(64px, 8.51vw, 110px);
+     while the type does not.
+
+     What it costs now is not the title's own clearance but the paragraph's: the
+     copy starts on this type's bottom edge, so every pixel here pushes three
+     lines of it down the page as well. On a hero at its 47rem floor the copy's
+     guard begins pulling back up at about a 1390px window, against 1490 at
+     110px — the alignment is what gives way there, not the layout. At
+     1400 x 820 the paragraph still clears the ink line by 55px. */
+  --text-hero: clamp(70px, 9.28vw, 120px);
   /* A fourth size, for the places a line has to sit under the small size
      without becoming unreadable: the STATUS / FIELD / YEAR labels over the
      product facts, the fact terms on the client and story records, and the
