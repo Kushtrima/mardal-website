@@ -38,7 +38,7 @@ export default function CareersPage() {
         <SiteHeader />
 
         <section
-          className="service-hero"
+          className="service-hero service-hero--bare"
           aria-labelledby="careers-title"
           data-service-hero
         >

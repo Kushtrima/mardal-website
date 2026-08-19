@@ -165,8 +165,8 @@ test("the Careers opening is sized by two rules that meet", () => {
      row before, and is the whole 288 after. */
   assert.match(
     CSS,
-    /\.service-page--clients \.service-hero__aside,\s*\.service-page--placeholder \.service-hero__aside,\s*\.service-page--careers \.service-hero__aside \{\s*grid-column: 1 \/ -1;/,
-    "the pages sharing the Clients aside do not share its phone fix, so their headings lose width to implicit columns",
+    /\.service-hero--bare \.service-hero__aside \{\s*grid-column: 1 \/ -1;/,
+    "the bare hero does not put its aside back on the row it belongs to, so the heading loses width to implicit columns",
   );
 
   /* The phone rule only works if the two spans are separated. They are rendered
@@ -206,22 +206,22 @@ test("the Careers opening is sized by two rules that meet", () => {
   );
   assert.ok(phoneFoot, "no hero foot is brought back into flow on a phone");
 
-  /* All three families, not just the one the owner was looking at. The rule is
-     shared, and so was the bug: measured at 320px before the fix, the sentence
-     ended at 894px while the link began at 880 — on /case-studies, on every
-     sector route, and on all eleven unwritten pages. Only the Blog escaped, and
-     only because it does not use this aside.
+  /* Keyed on the modifier, not on a list of page names — which is the whole
+     point of `service-hero--bare` and the reason it exists. These rules began as
+     a list and grew a name per page, and the growth is where the bug came from:
+     Careers was given the aside rules and not the phone rule that belongs with
+     them, and the eleven unwritten pages inherited the gap without being added
+     to anything. Measured at 320px before the fix, the sentence ended at 894
+     against the link at 880, on every one of them.
 
      `position: static` is the line that would be lost first. Without it the two
      are still absolute and everything else here is inert. */
-  for (const family of ["clients", "placeholder", "careers"]) {
-    for (const part of ["support", "cta"]) {
-      assert.match(
-        phoneFoot.selector,
-        new RegExp(`\\.service-page--${family} \\.service-hero__${part}\\b`),
-        `--${family} heroes leave their ${part} absolute on a phone, where it overlaps the other`,
-      );
-    }
+  for (const part of ["support", "cta"]) {
+    assert.match(
+      phoneFoot.selector,
+      new RegExp(`\\.service-hero--bare \\.service-hero__${part}\\b`),
+      `the bare hero leaves its ${part} absolute on a phone, where it overlaps the other`,
+    );
   }
 
   /* And the way in ends on the same edge as the sentence. The shared rule sets
@@ -232,11 +232,24 @@ test("the Careers opening is sized by two rules that meet", () => {
     (r) => /align-self: flex-end/.test(r.body) && /service-hero__cta/.test(r.selector),
   );
   assert.ok(edge, "nothing puts the way in on the edge on a phone");
-  for (const family of ["clients", "placeholder", "careers"]) {
+  assert.match(
+    edge.selector,
+    /\.service-hero--bare \.service-hero__cta\b/,
+    "the way in does not end on the same edge as the sentence on a phone",
+  );
+
+  /* And every hero that needs it actually carries the class, which is the half
+     a selector cannot check. A page opts in by wearing it; a page that forgets
+     silently gets the service-page arrangement and its artwork-shaped hole. */
+  for (const file of [
+    "../components/case-studies/ClientsPage.tsx",
+    "../components/placeholder/PlaceholderPage.tsx",
+    "../app/careers/page.tsx",
+  ]) {
     assert.match(
-      edge.selector,
-      new RegExp(`\\.service-page--${family} \\.service-hero__cta\\b`),
-      `on --${family} the way in does not end on the same edge as the sentence`,
+      readFileSync(new URL(file, import.meta.url), "utf8"),
+      /className="service-hero service-hero--bare"/,
+      `${file} has a hero with no artwork that does not carry service-hero--bare`,
     );
   }
 });

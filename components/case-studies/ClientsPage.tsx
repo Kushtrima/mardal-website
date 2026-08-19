@@ -44,7 +44,7 @@ export function ClientsPage({ sector }: { sector: string }) {
         <SiteHeader />
 
         <section
-          className="service-hero"
+          className="service-hero service-hero--bare"
           aria-labelledby="case-studies-title"
           data-service-hero
         >

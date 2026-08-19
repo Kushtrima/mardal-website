@@ -43,7 +43,7 @@ export function PlaceholderPage({ page }: { page: PlaceholderKey }) {
         <SiteHeader />
 
         <section
-          className="service-hero"
+          className="service-hero service-hero--bare"
           aria-labelledby="placeholder-title"
           data-service-hero
         >

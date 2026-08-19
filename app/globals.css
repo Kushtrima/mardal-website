@@ -5785,31 +5785,48 @@ video {
   --hero-max: 5.5rem;
 }
 
-/* The support line and the way in, standing where the drawing stood.
+/* ── `service-hero--bare`: a hero with no artwork ──
 
-Three pages reach this now — Clients, which lost a generated plate; the
-   unwritten pages, which lost the redaction bars; and Careers, which was one of
-   those and was written without artwork because they had already lost theirs.
-   All three lost it to the same instruction, so they get the same arrangement
-   rather than three copies of it under different names. A fourth is the point
-   at which this selector list should become a modifier of its own.
+   ONE class, carried by the page, rather than a list of page names that has to
+   be extended. Add `service-hero--bare` beside `service-hero` on the section and
+   the whole arrangement below follows — the foot, the measure, the phone
+   layout. Nothing else has to be touched, here or anywhere.
 
-   They were the two ends of the hero's bottom row — the sentence at the left
-   margin and the link pushed to the right — which is the arrangement the five
-   service pages still use, and it only reads as an arrangement while there is
-   artwork between them holding the middle. With that gone they were two things
-   at opposite edges of an empty row.
+   It is written this way because the alternative already failed. These rules
+   began as `.service-page--case-studies …` and grew a name each time a page
+   needed them, and the growth is where the bugs came from: Careers was given the
+   aside rules and NOT the phone rule that belongs with them, and the eleven
+   unwritten pages inherited that same gap without anyone adding them to
+   anything. The sentence lay across the link on every one of them, measured at
+   320px — the support ending at 894 against the link beginning at 880 — and
+   nothing said so, because being in a list is not something a page can be
+   missing loudly.
+
+   Carrying it: ClientsPage, PlaceholderPage, and the Careers index. Not the
+   Blog, the five service pages or a story — those have artwork, and the base
+   rules are written for exactly that.
+
+   What it does NOT own is anything to do with the copy: how large a particular
+   heading is set, and where its lines break, stay with the page. See
+   `.service-page--case-studies .service-hero__title` and its Careers twin.
+
+   ── What the arrangement is ──
+
+   The support line and the way in, standing where the drawing stood. They were
+   the two ends of the hero's bottom row — the sentence at the left margin and
+   the link pushed to the right — which is the arrangement the five service pages
+   still use, and it only reads as an arrangement while there is artwork between
+   them holding the middle. With that gone they were two things at opposite edges
+   of an empty row.
 
    `width: fit-content` is the whole of how this sits on the right edge without
    the text being turned over to face it. Given the column's full width the box
    ended at 1312 while its longest line stopped at 1263, so the writing read as
-   short of the edge by 49px — right-aligning the type would have closed that
-   and was the wrong fix, because it re-sets three lines of prose to be read
-   from a ragged left. Shrunk to its longest line the box IS the writing, and
-   putting the box on the edge puts the writing there. */
-.service-page--case-studies .service-hero__aside,
-.service-page--placeholder .service-hero__aside,
-.service-page--careers .service-hero__aside {
+   short of the edge by 49px — right-aligning the type would have closed that and
+   was the wrong fix, because it re-sets three lines of prose to be read from a
+   ragged left. Shrunk to its longest line the box IS the writing, and putting
+   the box on the edge puts the writing there. */
+.service-hero--bare .service-hero__aside {
   z-index: 1;
   display: flex;
   grid-column: 7 / -1;
@@ -5828,9 +5845,7 @@ Three pages reach this now — Clients, which lost a generated plate; the
   width: fit-content;
 }
 
-.service-page--case-studies .service-hero__support,
-.service-page--placeholder .service-hero__support,
-.service-page--careers .service-hero__support {
+.service-hero--bare .service-hero__support {
   /* Wider than the 16ch the service pages hold it to: there it is a fragment
      beside a picture, here it is the only prose in the opening and it carries
      the whole promise of the page. */
@@ -5846,9 +5861,7 @@ Three pages reach this now — Clients, which lost a generated plate; the
    which places this as a grid item at the far right of the hero's last row —
    inside the block those become an instruction to push it to the right-hand
    edge of the column, which is the one place it must not be. */
-.service-page--case-studies .service-hero__cta,
-.service-page--placeholder .service-hero__cta,
-.service-page--careers .service-hero__cta {
+.service-hero--bare .service-hero__cta {
   align-self: flex-start;
   justify-self: auto;
 }
@@ -5863,8 +5876,7 @@ Three pages reach this now — Clients, which lost a generated plate; the
    The font-size is deliberately NOT taken with it. Clients doubles its hero
    because a two-word title is all that page opens with; this one has a name
    above it and a sentence below it, and stays at the site's big header. */
-.service-page--placeholder .service-hero__title,
-.service-page--careers .service-hero__title {
+.service-hero--bare .service-hero__title {
   max-width: none;
 }
 
@@ -7308,9 +7320,7 @@ Three pages reach this now — Clients, which lost a generated plate; the
      Put back on the row it belongs to. The aside carries nothing in flow at this
      width — the lede and the way in are both absolute — so it costs no height,
      and the intro gets the whole 358 back. */
-  .service-page--clients .service-hero__aside,
-  .service-page--placeholder .service-hero__aside,
-  .service-page--careers .service-hero__aside {
+  .service-hero--bare .service-hero__aside {
     grid-column: 1 / -1;
   }
 
@@ -7365,12 +7375,8 @@ Three pages reach this now — Clients, which lost a generated plate; the
      sentence over the way in. `position: static` is the whole of it — the rest
      is giving back what the base rule set while the two were absolute, which
      otherwise lingers. */
-  .service-page--clients .service-hero__support,
-  .service-page--clients .service-hero__cta,
-  .service-page--placeholder .service-hero__support,
-  .service-page--placeholder .service-hero__cta,
-  .service-page--careers .service-hero__support,
-  .service-page--careers .service-hero__cta {
+  .service-hero--bare .service-hero__support,
+  .service-hero--bare .service-hero__cta {
     position: static;
     right: auto;
     bottom: auto;
@@ -7383,15 +7389,11 @@ Three pages reach this now — Clients, which lost a generated plate; the
      — which is right on a desktop, where the block is wide and the two make a
      corner. On a phone the block is a line or three and that left the link
      floating 74 to 95px inside an edge everything else meets. */
-  .service-page--clients .service-hero__cta,
-  .service-page--placeholder .service-hero__cta,
-  .service-page--careers .service-hero__cta {
+  .service-hero--bare .service-hero__cta {
     align-self: flex-end;
   }
 
-  .service-page--clients .service-hero__aside,
-  .service-page--placeholder .service-hero__aside,
-  .service-page--careers .service-hero__aside {
+  .service-hero--bare .service-hero__aside {
     /* Every line ends on the right edge, so the ragged edge falls to the left
        and the block reads as set to that edge whether it is one line or four.
        Which is what `text-align` is for here — the box itself already spans the
@@ -7404,9 +7406,7 @@ Three pages reach this now — Clients, which lost a generated plate; the
     margin-bottom: clamp(1.5rem, 5vh, 3rem);
   }
 
-  .service-page--clients .service-hero__support,
-  .service-page--placeholder .service-hero__support,
-  .service-page--careers .service-hero__support {
+  .service-hero--bare .service-hero__support {
     margin-bottom: 0.9rem;
   }
 
