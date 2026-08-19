@@ -901,7 +901,14 @@ video {
   gap: clamp(1.25rem, 2.6vw, 3.25rem);
   align-items: center;
   min-height: clamp(3.45rem, 4.5vw, 3.9rem);
-  padding: 0.3rem 0.4rem 0.3rem clamp(0.8rem, 1vw, 1.05rem);
+  /* No left padding, and that is an alignment rather than a preference: the
+     wordmark has to start on the same vertical as the hero title under it, and
+     both the bar and the page column already begin at `--page-gutter`. Any
+     padding here is added to that gutter and to nothing else, so the mark sat 9
+     to 17px inside every heading on the site — measured at a 1440 window, the
+     logo at 54px against the page column at 40. The bar keeps its right and
+     vertical padding. */
+  padding: 0.3rem 0.4rem 0.3rem 0;
   border: 0;
   border-radius: var(--shape-md);
   /* No slab. The bar sits straight on the page, so the padding and the radius
@@ -943,7 +950,10 @@ video {
 }
 
 .brand-logo {
-  width: clamp(9.5rem, 10.5vw, 11.25rem);
+  /* Up a step on the owner's ask: 152–180px was the range, 168–200 is this one.
+     The brand column's floor is 13rem, so 200px still stands inside the track
+     it is given rather than pushing the names along the bar. */
+  width: clamp(10.5rem, 11.5vw, 12.5rem);
   height: auto;
   /* The wordmark is a flat black SVG, so it is crushed to a silhouette and
      flipped rather than recoloured — the same pair the footer mark uses, one
@@ -4022,7 +4032,8 @@ video {
   .site-nav {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.65rem;
-    padding: 0.65rem;
+    /* Left off, so the wordmark keeps the page column. See the base rule. */
+    padding: 0.65rem 0.65rem 0.65rem 0;
   }
 
   .nav-list {
@@ -4453,15 +4464,21 @@ video {
   .site-nav {
     grid-template-columns: minmax(0, 1fr) auto;
     min-height: 3.15rem;
-    padding: 0.55rem;
+    /* Left off, so the wordmark keeps the page column. See the base rule. */
+    padding: 0.55rem 0.55rem 0.55rem 0;
   }
 
   .brand {
-    max-width: 9rem;
+    /* Grows with the mark inside it. Left at 9rem this would have clipped the
+       wordmark rather than shown it larger. */
+    max-width: 11rem;
   }
 
   .brand-logo {
-    width: 7.4rem;
+    /* 118px to 144px. Measured against the track it stands in: at a 320px
+       window the brand column comes out near 180px after the gutter, the bar's
+       own padding, the gap and the Menu button. */
+    width: 9rem;
   }
 
   .mobile-menu-toggle {
