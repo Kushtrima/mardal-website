@@ -17,6 +17,13 @@ export function ServicePageEntry() {
     const hero = document.querySelector<HTMLElement>("[data-service-hero]");
     if (!hero) return;
 
+    /* Only the unwritten pages carry one — see PlaceholderPage. Every other
+       hero here is named by its own heading and has nothing to put above it, so
+       this is queried the way the blur and the fade below are: a hero without
+       one simply does not get the tween. */
+    const eyebrow = hero.querySelector<HTMLElement>(
+      "[data-service-hero-eyebrow]",
+    );
     const title = hero.querySelector<HTMLElement>(
       "[data-service-hero-title]",
     );
@@ -27,7 +34,7 @@ export function ServicePageEntry() {
       "[data-service-hero-support]",
     );
     const cta = hero.querySelector<HTMLElement>("[data-service-hero-cta]");
-    const targets = [title, pattern, support, cta].filter(
+    const targets = [eyebrow, title, pattern, support, cta].filter(
       (target): target is HTMLElement => target !== null,
     );
 
@@ -42,6 +49,20 @@ export function ServicePageEntry() {
       const timeline = gsap.timeline({
         defaults: { ease: "power3.out" },
       });
+
+      /* With the title, not before it. The two are one block — the name of the
+         page and the sentence it stands over — and an eyebrow already sitting
+         there while the heading is still uncovering reads as a label the page
+         arrived around rather than as part of it. It settles first because it
+         is one short line and the heading is a clip reveal of two. */
+      if (eyebrow) {
+        timeline.fromTo(
+          eyebrow,
+          { autoAlpha: 0, y: 18 },
+          { autoAlpha: 1, duration: 0.66, y: 0 },
+          0,
+        );
+      }
 
       if (title) {
         timeline.fromTo(

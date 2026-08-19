@@ -5275,6 +5275,14 @@ video {
   transform: translateY(50px);
 }
 
+/* The name of the page, standing over a heading that is the same on all twelve
+   unwritten pages. `.eyebrow` carries the treatment — muted, uppercase, set at
+   the paragraph size like every other small line on this site — and this adds
+   only the air under it, which the shared class has no business knowing. */
+.service-hero__eyebrow {
+  margin-bottom: clamp(0.85rem, 1.1vw, 1.15rem);
+}
+
 .service-hero__title {
   /* Wide enough that every authored line span sits on one line -- the longest
      is 20.9ch -- while the second term keeps the heading clear of the pattern,
