@@ -1,6 +1,7 @@
 /** Cloudflare Worker entry point for the vinext-starter template. */
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import { setWorkerEnv } from "../lib/worker-env";
 
 /* Declared here rather than taken from @cloudflare/workers-types, the same way
    ExecutionContext below already is. That package is a single global
@@ -15,6 +16,7 @@ interface Fetcher {
 interface Env {
   ASSETS: Fetcher;
   DB: Cloudflare.Env["DB"];
+  CV?: Cloudflare.Env["CV"];
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -37,6 +39,12 @@ interface ExecutionContext {
 
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    /* Handed down rather than imported. A route handler that reaches for
+       `cloudflare:workers` itself puts that specifier in the bundle, and plain
+       Node — which every test here loads the bundle with — cannot resolve it.
+       See lib/worker-env.ts. */
+    setWorkerEnv(env);
+
     const url = new URL(request.url);
 
     if (url.pathname === "/_vinext/image") {

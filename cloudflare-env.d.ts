@@ -6,6 +6,12 @@
 declare namespace Cloudflare {
   interface Env {
     DB: import("@cloudflare/workers-types").D1Database;
+    /* Where a job application's CV is put. Optional, and that is the whole
+       point: `.openai/hosting.json` has `"r2": null`, so vite.config.ts creates
+       no bucket and this is undefined at runtime. The apply endpoint checks for
+       it and tells the applicant to email instead rather than accepting a file
+       it has nowhere to keep. Set `"r2": "CV"` to switch it on. */
+    CV?: import("@cloudflare/workers-types").R2Bucket;
   }
 }
 
