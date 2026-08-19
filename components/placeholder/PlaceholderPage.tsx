@@ -13,9 +13,10 @@ import {
 /**
  * A page that exists before its writing does.
  *
- * Twelve routes render this and differ by one word, which is the whole reason
- * it is a component rather than twelve near-identical files: the day one of
- * them is written, its route file stops calling this and nothing else moves.
+ * Eleven routes render this and differ by one word, which is the whole reason
+ * it is a component rather than eleven near-identical files: the day one of
+ * them is written, its route file stops calling this and nothing else moves —
+ * which Careers did first, on 2026-08-19, taking the count from twelve.
  *
  * Built on the same bones as every other page here. `service-hero` and its
  * `data-service-hero-*` hooks are the site's editorial page opening rather than
@@ -48,7 +49,7 @@ export function PlaceholderPage({ page }: { page: PlaceholderKey }) {
         >
           <Container className="service-hero__inner">
             <div className="service-hero__intro">
-              {/* The one line that tells the twelve apart. Every other page on
+              {/* The one line that tells the eleven apart. Every other page on
                   the site is named by its own heading; these share one, so the
                   name has to be said somewhere, and the eyebrow is where this
                   site already says a small thing above a big one.

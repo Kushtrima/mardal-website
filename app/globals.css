@@ -5787,10 +5787,12 @@ video {
 
 /* The support line and the way in, standing where the drawing stood.
 
-   Two pages reach this now — Clients, which lost a generated plate, and the
-   twelve unwritten pages, which lost the redaction bars — and they lost them to
-   the same instruction, so they get the same arrangement rather than a second
-   copy of it under another name.
+Three pages reach this now — Clients, which lost a generated plate; the
+   unwritten pages, which lost the redaction bars; and Careers, which was one of
+   those and was written without artwork because they had already lost theirs.
+   All three lost it to the same instruction, so they get the same arrangement
+   rather than three copies of it under different names. A fourth is the point
+   at which this selector list should become a modifier of its own.
 
    They were the two ends of the hero's bottom row — the sentence at the left
    margin and the link pushed to the right — which is the arrangement the five
@@ -5806,7 +5808,8 @@ video {
    from a ragged left. Shrunk to its longest line the box IS the writing, and
    putting the box on the edge puts the writing there. */
 .service-page--case-studies .service-hero__aside,
-.service-page--placeholder .service-hero__aside {
+.service-page--placeholder .service-hero__aside,
+.service-page--careers .service-hero__aside {
   z-index: 1;
   display: flex;
   grid-column: 7 / -1;
@@ -5826,7 +5829,8 @@ video {
 }
 
 .service-page--case-studies .service-hero__support,
-.service-page--placeholder .service-hero__support {
+.service-page--placeholder .service-hero__support,
+.service-page--careers .service-hero__support {
   /* Wider than the 16ch the service pages hold it to: there it is a fragment
      beside a picture, here it is the only prose in the opening and it carries
      the whole promise of the page. */
@@ -5843,7 +5847,8 @@ video {
    inside the block those become an instruction to push it to the right-hand
    edge of the column, which is the one place it must not be. */
 .service-page--case-studies .service-hero__cta,
-.service-page--placeholder .service-hero__cta {
+.service-page--placeholder .service-hero__cta,
+.service-page--careers .service-hero__cta {
   align-self: flex-start;
   justify-self: auto;
 }
@@ -5858,8 +5863,616 @@ video {
    The font-size is deliberately NOT taken with it. Clients doubles its hero
    because a two-word title is all that page opens with; this one has a name
    above it and a sentence below it, and stays at the site's big header. */
-.service-page--placeholder .service-hero__title {
+.service-page--placeholder .service-hero__title,
+.service-page--careers .service-hero__title {
   max-width: none;
+}
+
+/* Careers takes the opening at a size of its own — owner's call, and the page
+   is built for it: no artwork, no eyebrow, and a hero holding one sentence.
+   Clients does the same thing for the same reason.
+
+   Not Clients' number, though. That rule runs to 10rem because `Customer` is
+   3.218em wide and a 12-column intro will take it at any size the page wants.
+   The longest line here is `with the right team.` at 6.506em — twice the
+   measure — so the same 160px would run 1041px into a 900px column and turn a
+   line the copy turned on purpose.
+
+   6.5rem is where that stops being true with room over. There was a tight band
+   at 768–1024px, where the intro dropped to seven of twelve columns while the
+   slope was still climbing, and the slope was tuned around it — that band is
+   gone: the intro takes the whole column now (rule below), so nothing between
+   the breakpoint and the cap binds. Measured at a 1440 window the line renders
+   674px in 1360.
+
+   Two rules rather than one, which is the exception on this site and not a
+   habit: a phone gets its own, because the authored break cannot be large in a
+   288px column and giving it up is a decision that belongs to that width alone.
+   See the 48rem query. The two meet at 72px so the heading does not step
+   backwards crossing between them. */
+/* The whole column, at every width. The eight-column intro exists to keep a
+   heading clear of the 30rem pattern against the right edge, and this hero has
+   no pattern — the aside below it is on its own row, so nothing is beside the
+   title to leave room for. Without this the heading was reading at 544px on a
+   1024 window while 944 stood empty beside it, and it turned lines the copy had
+   turned on purpose. */
+.service-page--careers .service-hero__intro {
+  grid-column: 1 / -1;
+}
+
+/* Floor measured, not chosen. The longest authored line is 7.03em, and the
+   narrowest case is a 320px window, where the column is 288px — so anything
+   over 40px turns it. 2.25rem leaves 35px of that column spare, which is the
+   margin a font loading late needs.
+
+   It was 3.25rem for one commit and wrapped both lines on every phone. The
+   check that missed it only went down to 768px, because above that the answer
+   had been the same at every width and I stopped. */
+.service-page--careers .service-hero__title {
+  /* The slope is set by where this rule STARTS, not by where it ends. Below
+     48rem the phone rule runs to 4.5rem, so at 768px the heading is 72px; at
+     7.2vw this rule opened at 55px and the heading stepped backwards by 17px
+     crossing its own breakpoint. 9.4vw meets it: 72.3px at 769, against 72 at
+     768.
+
+     Floor and ceiling both stay. The floor never binds now — the phone rule
+     owns everything below 768 — and is kept as the thing that catches a future
+     breakpoint change rather than letting the heading collapse. */
+  font-size: clamp(2.25rem, 9.4vw, 6.5rem);
+}
+
+/* ── Careers: the open roles ──
+
+   A record rather than a set of cards. Three panels side by side is a card
+   grid, and a card grid is one of this site's standing rejections — it is the
+   arrangement any competitor could paste in unchanged. So the roles are ruled
+   rows: a row states the opening once and is passed, which is how a listing is
+   actually read.
+
+   Three columns, and each is one question. What the role is called and the two
+   facts known about it; what the work is; and the way in. The rule between rows
+   is the only division — no boxes, no fills, nothing enclosing them.
+
+   Ruled top on every row and bottom on the list, so the last opening closes
+   instead of running out. */
+.careers-roles {
+  /* The same ground and foot as the site's other two indexes, the Blog and
+     Clients. A reader arriving at any of the three should not be able to tell
+     they were built weeks apart. */
+  padding-block: 0 clamp(4rem, 12vh, 9rem);
+  color: var(--service-ink);
+  background: var(--service-surface);
+}
+
+.role-list {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--line-soft);
+  list-style: none;
+}
+
+.role {
+  display: grid;
+  padding-block: clamp(1.75rem, 4vh, 2.75rem);
+  border-top: 1px solid var(--line-soft);
+  grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) auto;
+  gap: clamp(1.25rem, 3vw, 3rem);
+  align-items: start;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+/* The row acknowledging the pointer, which is the site's own answer to a hover
+   — the content responds, rather than a decoration chasing the cursor. The rule
+   is the row's only drawn part, so it is the part that answers. */
+@media (hover: hover) {
+  .role:hover {
+    border-top-color: var(--line);
+  }
+}
+
+.role__title {
+  margin: 0;
+  font-family: var(--type-title);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: var(--leading-heading);
+}
+
+.role__facts {
+  display: grid;
+  margin: clamp(1rem, 2.2vh, 1.5rem) 0 0;
+  gap: 0.7rem;
+}
+
+/* The same treatment the story record gives a fact: the label small, tracked
+   and grey, the value in the reading size. Two of them, because two are all
+   that is known — see content/careers.ts. */
+.role__fact dt {
+  margin-bottom: 0.3rem;
+  color: var(--ink-grey);
+  font-size: var(--text-fine);
+  letter-spacing: var(--tracking-wide);
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.role__fact dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-copy);
+  line-height: 1.5;
+}
+
+.role__copy {
+  /* Capped on the prose rather than on the column: at a wide window the middle
+     track runs past a comfortable measure, and a paragraph read across 90
+     characters is read twice. */
+  max-width: 52ch;
+  margin: 0;
+  color: var(--ink-read);
+  font-size: var(--text-copy);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.role__more {
+  display: inline-flex;
+  gap: 0.55em;
+  align-items: center;
+  justify-self: end;
+  font-family: var(--type-display);
+  font-size: var(--service-text-action);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: 1;
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+/* The row is the link, so the row is what answers: the label takes the accent
+   wherever inside it the pointer happens to be, rather than only when it is on
+   the two words themselves. */
+@media (hover: hover) {
+  .role:hover .role__more {
+    color: var(--accent-strong);
+  }
+}
+
+/* The third column is the first to go. It holds two words, and the row needs
+   its width for the name and the prose long before it needs it for them. */
+@media (max-width: 64rem) {
+  .role {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  }
+
+  .role__more {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+  }
+}
+
+/* ── One role, opened ──
+
+   Two columns: what the role is, held still, and what the work is, moving. The
+   left is pinned by RolePin rather than by `position: sticky`, which cannot
+   work on a page ScrollSmoother is translating — the pin is switched on and off
+   at the same width the columns collapse at, and 64rem below is that width.
+
+   No `service-hero` on this page, alone on the site. The rail is the opening;
+   a hero would state the role's name across the top and the rail would state it
+   again a screen lower. */
+.role-page {
+  padding-block: clamp(3rem, 9vh, 6.5rem) clamp(4rem, 12vh, 9rem);
+  color: var(--service-ink);
+  background: var(--service-surface);
+}
+
+/* Two columns and nothing above them. The role's name and the sentence about it
+   are each the first thing in their own column, so they start on the same line
+   at every width with nothing arranging it.
+
+   It took three grid areas to say that for one commit: an "Open roles" link sat
+   inside the rail and pushed the name a line down, so the link was given a row
+   of its own. The owner then deleted the link, which is the better version of
+   the same fix — the alignment is now a consequence of there being nothing
+   there rather than of a row holding a place for something. */
+.role-page__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+  column-gap: clamp(2rem, 6vw, 5rem);
+  align-items: start;
+}
+
+/* Its own height and no more. The pin holds this element, and a rail stretched
+   to the height of the writing beside it would have nothing left to hold. */
+.role-page__rail {
+  grid-column: 1;
+  align-self: start;
+}
+
+.role-page__body {
+  grid-column: 2;
+}
+
+.role-page__title {
+  max-width: 14ch;
+  margin: 0;
+  font-family: var(--type-title);
+  font-size: var(--text-heading-xl);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-heading-xl);
+}
+
+/* Under the name and above the way in, ruled off from both: the facts are a
+   different kind of statement from either and the rules say so without a
+   heading over them. */
+.role-page__facts {
+  margin-block: clamp(1.5rem, 3.5vh, 2.25rem);
+  padding-block: clamp(1.1rem, 2.6vh, 1.6rem);
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.role-page__apply {
+  display: inline-flex;
+  gap: 0.55em;
+  align-items: center;
+  font-family: var(--type-display);
+  font-size: var(--service-text-action);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: 1;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .role-page__apply:hover {
+    color: var(--accent-strong);
+  }
+}
+
+/* The line the page opens on, set at the header size so the reading column has
+   an opening of its own rather than beginning mid-paragraph beside a heading
+   that belongs to the other column. */
+.role-page__lede {
+  max-width: 30ch;
+  margin: 0;
+  font-family: var(--type-title);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: var(--leading-heading);
+}
+
+.role-section {
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+}
+
+.role-section__title {
+  margin: 0 0 clamp(0.75rem, 1.8vh, 1.1rem);
+  color: var(--ink-grey);
+  font-size: var(--text-fine);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--tracking-wide);
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.role-section__copy {
+  max-width: 62ch;
+  margin: 0 0 1em;
+  color: var(--ink-read);
+  font-size: var(--text-copy);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.role-section__copy:last-child {
+  margin-bottom: 0;
+}
+
+/* The one block on the page that takes something in, so it is ruled off from
+   the writing above it the way the facts are from the name. */
+.role-section--apply {
+  margin-top: clamp(3rem, 8vh, 5rem);
+  padding-top: clamp(2rem, 5vh, 3rem);
+  border-top: 1px solid var(--line-soft);
+}
+
+/* ── The application form ──
+
+   Fields on the site's own ground rather than in boxes: a hairline under each
+   one, which is the same mark the records above use, and the label above it in
+   the small tracked caps every label here is set in. A bordered box per field
+   would be the one arrangement on this page belonging to no other.
+
+   Rebuilt once, on the owner: "make this part more clear". Three things were
+   not, and the fixes are all here — a row per field saying whether it has to be
+   filled in, a CV control that is this site's rather than the browser's, and
+   spacing that puts each hint nearer the field it describes than the next one. */
+.apply-form {
+  margin-top: clamp(1.5rem, 4vh, 2.5rem);
+}
+
+.apply-form__grid {
+  display: grid;
+  max-width: 44rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Row gap deliberately larger than the column gap, and larger than anything
+     inside a field. The hints used to read as belonging to the field under
+     them, which is a spacing fault rather than a wording one: they sat 8px
+     below their own rule and 20px above the next label. Proximity is the fix —
+     nothing here says "this hint is mine" except being closer to it. */
+  gap: clamp(2.25rem, 5vh, 3.25rem) clamp(1.25rem, 3vw, 2rem);
+}
+
+.apply-field--wide {
+  grid-column: 1 / -1;
+}
+
+/* Label left, whether it is required right, on one row above every control —
+   so the answer is in the same place five times rather than in a sentence
+   above the form that asks the reader to count. */
+.apply-field__head {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.apply-field__label {
+  color: var(--ink-grey);
+  font-size: var(--text-fine);
+  letter-spacing: var(--tracking-wide);
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+/* Quieter than the label it sits opposite: it is the same word on most of the
+   fields and must not be read before them. Required and optional are told apart
+   by weight rather than by colour, so the distinction survives being printed,
+   dimmed, or looked at by someone who does not separate reds from greys. */
+.apply-field__tag {
+  color: var(--ink-grey);
+  font-size: var(--text-fine);
+  letter-spacing: var(--tracking-wide);
+  line-height: 1.4;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.apply-field__tag[data-required="true"] {
+  font-weight: var(--weight-strong);
+  opacity: 0.85;
+}
+
+.apply-field__input {
+  width: 100%;
+  padding: 0.55rem 0 0.6rem;
+  border: 0;
+  border-bottom: 1px solid var(--line-soft);
+  border-radius: 0;
+  color: var(--ink);
+  font-family: var(--type-body);
+  font-size: var(--text-copy);
+  line-height: 1.5;
+  background: transparent;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.apply-field__input:focus {
+  border-bottom-color: var(--accent);
+  outline: none;
+}
+
+/* Well under the value it stands in for. At full strength `https://` read as a
+   URL somebody had already typed, which is the one thing a placeholder must
+   never look like. */
+.apply-field__input::placeholder {
+  color: var(--ink-grey);
+  opacity: 0.55;
+}
+
+.apply-field__textarea {
+  resize: vertical;
+}
+
+/* ── The CV control ──
+
+   The native one is `Choose File` in the browser's own font and size, with
+   `No file chosen` beside it — two pieces of chrome from a different design on
+   a page that sets every other letter itself.
+
+   The input is still the real `<input type="file">`. It is clipped by
+   `.visually-hidden` rather than removed, because `display: none` takes an
+   element off the keyboard along with the screen, and the file picker is one of
+   the few controls a reader genuinely cannot work around. The label opens it by
+   `for`, and the focus ring below is what makes that safe. */
+.apply-file {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 1.1rem;
+  align-items: center;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.apply-file__button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--line-soft);
+  color: var(--ink);
+  font-family: var(--type-body);
+  font-size: var(--text-body);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .apply-file__button:hover {
+    border-color: var(--line);
+    color: var(--accent-strong);
+  }
+}
+
+/* The input carries the focus and cannot be seen, so the label wears its ring.
+   Without this the control is reachable by keyboard and gives no sign of it,
+   which is worse than not being reachable at all. */
+.apply-file__input:focus-visible + .apply-file__button {
+  border-color: var(--focus);
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* The chosen file's name, or the fact that there is none. Dimmed while it is
+   the second, at full ink once there is a real name to read — so the state is
+   legible at a glance rather than by reading the sentence. */
+.apply-file__name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--ink-grey);
+  font-size: var(--text-copy);
+  line-height: 1.5;
+}
+
+.apply-file__name[data-chosen="true"] {
+  color: var(--ink);
+}
+
+/* Against its own field: 0.55rem below the rule it belongs to, against the
+   2.25rem-plus that now separates one field from the next. */
+.apply-field__hint {
+  margin: 0.55rem 0 0;
+  color: var(--ink-grey);
+  font-size: var(--text-fine);
+  line-height: 1.45;
+}
+
+/* The same line, saying why instead of what. It replaces the hint rather than
+   appearing under it, so nothing moves when a file is refused and there are
+   never two rules about the same field on screen at once. */
+.apply-field__hint[data-error="true"] {
+  color: var(--accent-strong);
+}
+
+.apply-form__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  align-items: center;
+  margin-top: clamp(2rem, 5vh, 3rem);
+}
+
+.apply-form__submit {
+  display: inline-flex;
+  gap: 0.55em;
+  align-items: center;
+  padding: 0.75rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  color: var(--ink);
+  font-family: var(--type-display);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .apply-form__submit:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent-strong);
+  }
+}
+
+.apply-form__submit:disabled {
+  color: var(--ink-grey);
+  cursor: progress;
+}
+
+/* Beside the button that was pressed, and empty until there is something to
+   say — an element holding a line for a message that has not happened yet
+   pushes the form around when it does. */
+.apply-form__status {
+  margin: 0;
+  color: var(--ink-read);
+  font-size: var(--text-copy);
+  line-height: 1.5;
+}
+
+.apply-form__status:empty {
+  display: none;
+}
+
+.apply-form__status[data-state="sent"] {
+  color: var(--accent-strong);
+}
+
+@media (max-width: 64rem) {
+  /* The rail stops being a column and becomes the top of the page. RolePin
+     tears the pin down at this width for the same reason: a pinned rail with
+     its own body underneath it would hold a heading over its own text. */
+  .role-page__layout {
+    grid-template-columns: minmax(0, 1fr);
+    /* Stacked, so the two run down one column and a row gap is needed — side by
+       side there is none, because nothing is above anything. */
+    row-gap: clamp(2rem, 5vh, 3rem);
+  }
+
+  .role-page__body {
+    grid-column: 1;
+  }
+
+  .role-page__title {
+    max-width: 20ch;
+  }
+
+  .role-page__lede {
+    max-width: 40ch;
+  }
+}
+
+@media (max-width: 48rem) {
+  .apply-form__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 48rem) {
+  .role {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1rem, 3vw, 1.5rem);
+  }
+
+  .role__more {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 0;
+  }
+
+  /* Side by side on a phone: two stacked labels cost a third of the row's
+     height for eight words. */
+  .role__facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .role__copy {
+    max-width: none;
+  }
 }
 
 /* The same block the Blog index is: the hero dissolves into it and it carries
@@ -6695,8 +7308,114 @@ video {
      Put back on the row it belongs to. The aside carries nothing in flow at this
      width — the lede and the way in are both absolute — so it costs no height,
      and the intro gets the whole 358 back. */
-  .service-page--clients .service-hero__aside {
+  .service-page--clients .service-hero__aside,
+  .service-page--placeholder .service-hero__aside,
+  .service-page--careers .service-hero__aside {
     grid-column: 1 / -1;
+  }
+
+  /* ── The Careers opening on a phone ──
+
+     Owner asked for it bigger here, and the authored break is what was stopping
+     it. `with the right team.` is 6.505em, and a 320px window leaves a 288px
+     column, so holding that break caps the heading at 44px however much room
+     the page has otherwise. Measured, not estimated.
+
+     So the break is given up at this width and only at this width. The spans go
+     inline, the browser balances what it makes of the sentence, and the size is
+     free to be what the column can hold — the longest WORD is 1.851em, which
+     puts the real ceiling at 155px rather than 44.
+
+     This is a deliberate exception to the rule that a break on this site is a
+     decision. It is worth stating why: the desktop break is a composition, and
+     there is no two-line composition of this sentence that is large on a 288px
+     column. `balance` is what keeps the result from being a decision nobody
+     made — it evens the lines rather than filling the first and orphaning the
+     last.
+
+     The separator between the two spans is a leading space in the markup rather
+     than a pseudo-element here: `::after` content is not in `textContent`, so
+     nothing that reads the page can tell whether the words are joined, and the
+     first version of this shipped `startswith` with every measurement passing.
+     A real space collapses to nothing when the spans are blocks again. */
+  .service-page--careers .service-hero__title {
+    font-size: clamp(3.5rem, 17vw, 4.5rem);
+    text-wrap: balance;
+  }
+
+  .service-page--careers .service-hero__title-line {
+    display: inline;
+  }
+
+  /* ── The foot of an artwork-less hero on a phone ──
+
+     Owner asked for this on Careers and then on Clients: put the support line
+     on the right, and lift it off the bottom. It is one fix and it belongs to
+     every page carrying the shared aside, so it is written once here.
+
+     What it corrects is a real collision, not a preference. The base phone rule
+     pins the support to the bottom-LEFT and the way in to the bottom-RIGHT —
+     a pair that frames the artwork standing between them on a service page.
+     These heroes have no artwork, and the sentence is capped at a measure meant
+     to clear one, so on Clients and on the eleven unwritten pages it ran the
+     full width of a 320px screen and OVERLAPPED the link: measured, the
+     sentence's foot at 894px against the link's head at 880.
+
+     The phone gets what the desktop already has: one block on the right, the
+     sentence over the way in. `position: static` is the whole of it — the rest
+     is giving back what the base rule set while the two were absolute, which
+     otherwise lingers. */
+  .service-page--clients .service-hero__support,
+  .service-page--clients .service-hero__cta,
+  .service-page--placeholder .service-hero__support,
+  .service-page--placeholder .service-hero__cta,
+  .service-page--careers .service-hero__support,
+  .service-page--careers .service-hero__cta {
+    position: static;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    margin: 0;
+  }
+
+  /* On the edge with the sentence, not under its left end. The shared rule sets
+     `align-self: flex-start` so the way in sits under the START of the sentence
+     — which is right on a desktop, where the block is wide and the two make a
+     corner. On a phone the block is a line or three and that left the link
+     floating 74 to 95px inside an edge everything else meets. */
+  .service-page--clients .service-hero__cta,
+  .service-page--placeholder .service-hero__cta,
+  .service-page--careers .service-hero__cta {
+    align-self: flex-end;
+  }
+
+  .service-page--clients .service-hero__aside,
+  .service-page--placeholder .service-hero__aside,
+  .service-page--careers .service-hero__aside {
+    /* Every line ends on the right edge, so the ragged edge falls to the left
+       and the block reads as set to that edge whether it is one line or four.
+       Which is what `text-align` is for here — the box itself already spans the
+       row, because a sentence this long has nothing to shrink-wrap to. */
+    align-items: flex-end;
+    text-align: right;
+    /* The lift. The hero pays no bottom padding at this width, so without it
+       the block sits on the last pixel of the screen — which on a phone is also
+       where the home indicator is. */
+    margin-bottom: clamp(1.5rem, 5vh, 3rem);
+  }
+
+  .service-page--clients .service-hero__support,
+  .service-page--placeholder .service-hero__support,
+  .service-page--careers .service-hero__support {
+    margin-bottom: 0.9rem;
+  }
+
+  .service-page--careers .service-hero__support {
+    /* Careers only. The base rule holds the sentence to 11ch to keep it clear
+       of artwork; without one, that measure broke this short sentence into
+       three lines against the edge. The Clients sentence is 66 characters and
+       needs the width it already has. */
+    max-width: 20ch;
   }
 }
 

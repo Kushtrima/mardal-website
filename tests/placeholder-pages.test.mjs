@@ -1,10 +1,15 @@
 /**
- * The twelve pages that exist as an address before they exist as writing.
+ * The eleven pages that exist as an address before they exist as writing.
  *
  * Every word in the header and the footer used to promise a page; four of them
  * pointed at nothing at all and five only scrolled the homepage, which from any
  * other page meant nothing happened. Each one is a route now, and behind it a
  * page that says so.
+ *
+ * Twelve until 2026-08-19, when Careers was written and left the set. The row
+ * for it came out of the table below and tests/careers.test.mjs took over —
+ * a page graduating out of here is the point of the arrangement, and the count
+ * moving is how it is noticed.
  *
  * The copy is written out here rather than imported from
  * `content/placeholders.ts`, deliberately: a test that reads the same module
@@ -85,13 +90,6 @@ const pages = [
     support: "The people and the thinking behind the work.",
     cta: "Why Mardal",
     ctaHref: "/#company",
-  },
-  {
-    path: "/careers",
-    label: "Careers",
-    support: "Roles will be posted here as they open.",
-    cta: "Get in touch",
-    ctaHref: "mailto:info@mardal.co",
   },
   {
     path: "/contact",
@@ -206,8 +204,8 @@ test("the unwritten heroes carry no artwork", async () => {
      literal. That is exactly why this is asserted rather than left to whoever
      reads the component next: it is a decision that reads as an omission.
 
-     Checked on all twelve, because the pull is to put it back on the four that
-     were not named. */
+     Checked on all of them, because the pull is to put it back on the ones the
+     owner did not name. */
   for (const page of pages) {
     const html = await (await render(page.path)).text();
 

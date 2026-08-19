@@ -1,7 +1,7 @@
 /**
  * The pages that exist as an address before they exist as writing.
  *
- * Every word in the header and the footer now goes to a page. Twelve of those
+ * Every word in the header and the footer now goes to a page. Eleven of those
  * pages have not been written yet, and until today each of them was an anchor:
  * `#privacy` and `#careers` pointed at nothing at all, and `#products`,
  * `#company` and the three product anchors only scrolled the homepage — from
@@ -15,13 +15,18 @@
  *
  * They shared a fourth for a day: the redaction bars, each page drawing its own
  * part of them. Owner took the artwork out at Products and Company, so it is
- * out on all twelve — it was one picture on one component, and half of them
- * keeping it would have been twelve pages that no longer agree.
+ * out on all of them — it was one picture on one component, and half of them
+ * keeping it would have been a set of pages that no longer agree.
  *
  * Copy only. The page itself is `components/placeholder/PlaceholderPage.tsx`,
  * and the route files under `app/` are four lines each, so replacing one of
  * these with the real page means deleting an entry here and writing that route
  * — nothing else on the site has to be touched.
+ *
+ * Careers went that way first, 2026-08-19: it left this module for
+ * `content/careers.ts` and `app/careers/page.tsx`, and the count below went
+ * from twelve to eleven. `PlaceholderKey` is derived from these keys, so
+ * removing one makes the compiler find every reference to it.
  */
 
 import { contactEmail } from "./home";
@@ -34,7 +39,7 @@ import { contactEmail } from "./home";
 export const placeholderTitleLines = ["Working", "on it."] as const;
 
 export type Placeholder = {
-  /** The small line above the heading — which page this is. Without it twelve
+  /** The small line above the heading — which page this is. Without it eleven
    *  pages would be indistinguishable from one another. */
   readonly label: string;
   /** `<title>`, which the root layout completes as "%s — Mardal". */
@@ -54,9 +59,9 @@ const getInTouch = {
 } as const;
 
 /**
- * Keyed by route, and the keys are read by the test that walks all twelve.
+ * Keyed by route, and the keys are read by the test that walks all eleven.
  * `/products/arvena-ai` is written `products/arvena-ai` — the leading slash is
- * added where it is needed rather than stored twelve times.
+ * added where it is needed rather than stored eleven times.
  */
 export const placeholders = {
   products: {
@@ -116,16 +121,6 @@ export const placeholders = {
     support: "The people and the thinking behind the work.",
     cta: "Why Mardal",
     ctaHref: "/#company",
-  },
-  careers: {
-    label: "Careers",
-    title: "Careers",
-    description: "Roles at Mardal.",
-    /* No count, no dates and no departments. PRODUCT.md records a core of
-       roughly two to five and nothing about hiring, and a page that invents a
-       number is worse than a page with a gap. */
-    support: "Roles will be posted here as they open.",
-    ...getInTouch,
   },
   contact: {
     label: "Contact",
