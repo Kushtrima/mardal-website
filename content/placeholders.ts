@@ -13,6 +13,11 @@
  * reader actually needs: which page this is, what it will hold, and where the
  * nearest real thing is today.
  *
+ * They shared a fourth for a day: the redaction bars, each page drawing its own
+ * part of them. Owner took the artwork out at Products and Company, so it is
+ * out on all twelve — it was one picture on one component, and half of them
+ * keeping it would have been twelve pages that no longer agree.
+ *
  * Copy only. The page itself is `components/placeholder/PlaceholderPage.tsx`,
  * and the route files under `app/` are four lines each, so replacing one of
  * these with the real page means deleting an entry here and writing that route
@@ -41,11 +46,6 @@ export type Placeholder = {
   /** The way out, and the point of the page: the nearest real thing today. */
   readonly cta: string;
   readonly ctaHref: string;
-  /** Slides the window down the redaction drawing, so the twelve are not
-   *  twelve copies of one picture. Kept small on purpose: the drawing ends at
-   *  y=336 and the window is 336 tall, so an offset of N leaves the last N
-   *  pixels of the box empty. See RedactedLines. */
-  readonly patternOffset: number;
 };
 
 const getInTouch = {
@@ -66,7 +66,6 @@ export const placeholders = {
     support: "The products we are building for ourselves.",
     cta: "See the products",
     ctaHref: "/#products",
-    patternOffset: 0,
   },
   "products/arvena-ai": {
     label: "Arvena AI",
@@ -75,7 +74,6 @@ export const placeholders = {
     support: "Applied AI for mental-health support.",
     cta: "See the products",
     ctaHref: "/#products",
-    patternOffset: 3,
   },
   "products/ftesa": {
     label: "Ftesa.co",
@@ -84,7 +82,6 @@ export const placeholders = {
     support: "Digital invitations, personal to every guest.",
     cta: "See the products",
     ctaHref: "/#products",
-    patternOffset: 6,
   },
   "products/ihrauto": {
     label: "Ihrauto",
@@ -93,7 +90,6 @@ export const placeholders = {
     support: "Workshop operations, from booking to invoice.",
     cta: "See the products",
     ctaHref: "/#products",
-    patternOffset: 9,
   },
   services: {
     label: "Services",
@@ -104,7 +100,6 @@ export const placeholders = {
        so the way out of the index that has not been written is into them. */
     cta: "See a service page",
     ctaHref: "/services/ai-automation",
-    patternOffset: 12,
   },
   company: {
     label: "Company",
@@ -113,7 +108,6 @@ export const placeholders = {
     support: "Who we are and how we work.",
     cta: "Why Mardal",
     ctaHref: "/#company",
-    patternOffset: 15,
   },
   about: {
     label: "About",
@@ -122,7 +116,6 @@ export const placeholders = {
     support: "The people and the thinking behind the work.",
     cta: "Why Mardal",
     ctaHref: "/#company",
-    patternOffset: 18,
   },
   careers: {
     label: "Careers",
@@ -133,7 +126,6 @@ export const placeholders = {
        number is worse than a page with a gap. */
     support: "Roles will be posted here as they open.",
     ...getInTouch,
-    patternOffset: 21,
   },
   contact: {
     label: "Contact",
@@ -143,7 +135,6 @@ export const placeholders = {
        and the address, and it is under this page too. */
     support: "Email, phone and address are in the footer.",
     ...getInTouch,
-    patternOffset: 24,
   },
   privacy: {
     label: "Privacy",
@@ -151,7 +142,6 @@ export const placeholders = {
     description: "How Mardal handles personal data.",
     support: "How personal data is handled here.",
     ...getInTouch,
-    patternOffset: 27,
   },
   terms: {
     label: "Terms",
@@ -159,7 +149,6 @@ export const placeholders = {
     description: "The terms this site is used under.",
     support: "The terms this site is used under.",
     ...getInTouch,
-    patternOffset: 30,
   },
   cookies: {
     label: "Cookies",
@@ -167,7 +156,6 @@ export const placeholders = {
     description: "What this site stores, and why.",
     support: "What this site stores, and why.",
     ...getInTouch,
-    patternOffset: 33,
   },
 } as const satisfies Record<string, Placeholder>;
 

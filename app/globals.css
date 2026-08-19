@@ -5786,6 +5786,12 @@ video {
 }
 
 /* The support line and the way in, standing where the drawing stood.
+
+   Two pages reach this now — Clients, which lost a generated plate, and the
+   twelve unwritten pages, which lost the redaction bars — and they lost them to
+   the same instruction, so they get the same arrangement rather than a second
+   copy of it under another name.
+
    They were the two ends of the hero's bottom row — the sentence at the left
    margin and the link pushed to the right — which is the arrangement the five
    service pages still use, and it only reads as an arrangement while there is
@@ -5799,7 +5805,8 @@ video {
    and was the wrong fix, because it re-sets three lines of prose to be read
    from a ragged left. Shrunk to its longest line the box IS the writing, and
    putting the box on the edge puts the writing there. */
-.service-page--case-studies .service-hero__aside {
+.service-page--case-studies .service-hero__aside,
+.service-page--placeholder .service-hero__aside {
   z-index: 1;
   display: flex;
   grid-column: 7 / -1;
@@ -5818,7 +5825,8 @@ video {
   width: fit-content;
 }
 
-.service-page--case-studies .service-hero__support {
+.service-page--case-studies .service-hero__support,
+.service-page--placeholder .service-hero__support {
   /* Wider than the 16ch the service pages hold it to: there it is a fragment
      beside a picture, here it is the only prose in the opening and it carries
      the whole promise of the page. */
@@ -5834,9 +5842,24 @@ video {
    which places this as a grid item at the far right of the hero's last row —
    inside the block those become an instruction to push it to the right-hand
    edge of the column, which is the one place it must not be. */
-.service-page--case-studies .service-hero__cta {
+.service-page--case-studies .service-hero__cta,
+.service-page--placeholder .service-hero__cta {
   align-self: flex-start;
   justify-self: auto;
+}
+
+/* The same removal Clients made, for the same reason and not for the same
+   gain. The base measure is `min(21ch, 100cqw - 30rem - 2rem)`, and its second
+   term reserves 30rem for a drawing these pages no longer have. "Working" and
+   "on it." are far too short to reach either bound, so nothing on the page
+   moves — the cap comes off because it is a reservation for a picture that is
+   gone, not because the heading was being cut short by it.
+
+   The font-size is deliberately NOT taken with it. Clients doubles its hero
+   because a two-word title is all that page opens with; this one has a name
+   above it and a sentence below it, and stays at the site's big header. */
+.service-page--placeholder .service-hero__title {
+  max-width: none;
 }
 
 /* The same block the Blog index is: the hero dissolves into it and it carries

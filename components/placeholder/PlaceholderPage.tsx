@@ -1,7 +1,6 @@
 import { Container } from "../layout/Container";
 import { SiteFooter } from "../layout/SiteFooter";
 import { SiteHeader } from "../layout/SiteHeader";
-import { RedactedLines } from "../home/RedactedLines";
 import { SectionEnter } from "../motion/SectionEnter";
 import { ServicePageEntry } from "../services/ServicePageEntry";
 import { PixelArrow } from "../ui/PixelArrow";
@@ -78,45 +77,46 @@ export function PlaceholderPage({ page }: { page: PlaceholderKey }) {
               </h1>
             </div>
 
-            {/* The redaction bars, doing here what they do on the Blog's empty
-                state and for the same reason. Everywhere else on this site they
-                are decoration standing in for writing; on these twelve pages
-                they stand in for writing that is genuinely not there yet, which
-                is the one place the motif is literal rather than decorative.
+            {/* No artwork. These carried the redaction bars — the one place on
+                the site where that motif is literal rather than decorative,
+                since the pages genuinely are writing that is not there yet.
+                Owner took it out, at Products and Company.
 
-                Each page slides the window down the drawing, so twelve pages
-                are not twelve copies of one picture. */}
-            <div
-              className="service-hero__pattern service-hero__pattern--lines"
-              aria-hidden="true"
-              data-service-hero-pattern
-            >
-              <RedactedLines
-                className="service-hero__lines"
-                offset={content.patternOffset}
-              />
+                Which is the second time this hero has lost its picture: Clients
+                did, and everything below is the arrangement that came out of
+                it. The support line and the way in were the two ends of the
+                bottom row, the sentence at the left margin and the link pushed
+                to the right, and that only reads as an arrangement while there
+                is a drawing between them holding the middle. With it gone they
+                were two things at opposite edges of an empty row, so they are
+                one block standing where the drawing stood.
+
+                ServicePageEntry finds both by their data attributes with a
+                descendant query, so wrapping them changes nothing it does — and
+                it skips the pattern tween on a hero that has none. */}
+            <div className="service-hero__aside">
+              <p className="service-hero__support" data-service-hero-support>
+                {content.support}
+              </p>
+
+              {/* The point of the page. A reader who wanted Products and was
+                  told it is being written has been given nothing unless they
+                  are also told where the products are today — so this goes to
+                  the nearest real thing rather than to a generic call to
+                  action. */}
+              <a
+                className="service-hero__cta"
+                href={content.ctaHref}
+                data-service-hero-cta
+              >
+                {content.cta}
+                <PixelArrow
+                  className="service-hero__cta-arrow"
+                  direction="up-right"
+                  size="small"
+                />
+              </a>
             </div>
-
-            <p className="service-hero__support" data-service-hero-support>
-              {content.support}
-            </p>
-
-            {/* The point of the page. A reader who wanted Products and was told
-                it is being written has been given nothing unless they are also
-                told where the products are today — so this goes to the nearest
-                real thing rather than to a generic call to action. */}
-            <a
-              className="service-hero__cta"
-              href={content.ctaHref}
-              data-service-hero-cta
-            >
-              {content.cta}
-              <PixelArrow
-                className="service-hero__cta-arrow"
-                direction="up-right"
-                size="small"
-              />
-            </a>
           </Container>
 
           {/* The same dissolve the other heroes leave on: a blur boundary

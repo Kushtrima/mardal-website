@@ -43,7 +43,6 @@ const pages = [
     support: "The products we are building for ourselves.",
     cta: "See the products",
     ctaHref: "/#products",
-    offset: 0,
   },
   {
     path: "/products/arvena-ai",
@@ -51,7 +50,6 @@ const pages = [
     support: "Applied AI for mental-health support.",
     cta: "See the products",
     ctaHref: "/#products",
-    offset: 3,
   },
   {
     path: "/products/ftesa",
@@ -59,7 +57,6 @@ const pages = [
     support: "Digital invitations, personal to every guest.",
     cta: "See the products",
     ctaHref: "/#products",
-    offset: 6,
   },
   {
     path: "/products/ihrauto",
@@ -67,7 +64,6 @@ const pages = [
     support: "Workshop operations, from booking to invoice.",
     cta: "See the products",
     ctaHref: "/#products",
-    offset: 9,
   },
   {
     path: "/services",
@@ -75,7 +71,6 @@ const pages = [
     support: "The five ways we work, gathered in one place.",
     cta: "See a service page",
     ctaHref: "/services/ai-automation",
-    offset: 12,
   },
   {
     path: "/company",
@@ -83,7 +78,6 @@ const pages = [
     support: "Who we are and how we work.",
     cta: "Why Mardal",
     ctaHref: "/#company",
-    offset: 15,
   },
   {
     path: "/about",
@@ -91,7 +85,6 @@ const pages = [
     support: "The people and the thinking behind the work.",
     cta: "Why Mardal",
     ctaHref: "/#company",
-    offset: 18,
   },
   {
     path: "/careers",
@@ -99,7 +92,6 @@ const pages = [
     support: "Roles will be posted here as they open.",
     cta: "Get in touch",
     ctaHref: "mailto:info@mardal.co",
-    offset: 21,
   },
   {
     path: "/contact",
@@ -107,7 +99,6 @@ const pages = [
     support: "Email, phone and address are in the footer.",
     cta: "Get in touch",
     ctaHref: "mailto:info@mardal.co",
-    offset: 24,
   },
   {
     path: "/privacy",
@@ -115,7 +106,6 @@ const pages = [
     support: "How personal data is handled here.",
     cta: "Get in touch",
     ctaHref: "mailto:info@mardal.co",
-    offset: 27,
   },
   {
     path: "/terms",
@@ -123,7 +113,6 @@ const pages = [
     support: "The terms this site is used under.",
     cta: "Get in touch",
     ctaHref: "mailto:info@mardal.co",
-    offset: 30,
   },
   {
     path: "/cookies",
@@ -131,7 +120,6 @@ const pages = [
     support: "What this site stores, and why.",
     cta: "Get in touch",
     ctaHref: "mailto:info@mardal.co",
-    offset: 33,
   },
 ];
 
@@ -209,34 +197,43 @@ test("every unwritten page is a page", async () => {
   }
 });
 
-test("the twelve share a heading and not a drawing", async () => {
-  const drawings = new Set();
+test("the unwritten heroes carry no artwork", async () => {
+  /* Owner's call, looking at Products and Company: the redaction bars come out.
 
+     They were not arbitrary — everywhere else on this site that drawing is
+     decoration standing in for writing, and on these twelve it stood in for
+     writing that is genuinely not there, which is the one place the motif is
+     literal. That is exactly why this is asserted rather than left to whoever
+     reads the component next: it is a decision that reads as an omission.
+
+     Checked on all twelve, because the pull is to put it back on the four that
+     were not named. */
   for (const page of pages) {
     const html = await (await render(page.path)).text();
 
-    /* The redaction bars, doing literally here what they stand in for
-       everywhere else on this site. Each page slides the window down the
-       drawing by its own amount, so twelve pages are not twelve prints of one
-       picture — and the offsets stay small because the drawing ends at y=336
-       and a larger one would leave the foot of the box empty. */
-    const viewBox = html.match(/viewBox="0 (\d+) 716 336"/);
-    assert.ok(viewBox, `${page.path} draws no bars`);
-    assert.equal(
-      Number(viewBox[1]),
-      page.offset,
-      `${page.path} draws the wrong part of the page`,
+    assert.doesNotMatch(
+      html,
+      /service-hero__pattern/,
+      `${page.path} has artwork in its hero again`,
     );
-    assert.ok(page.offset <= 33, `${page.path} would leave the foot of the box empty`);
+    assert.doesNotMatch(
+      html,
+      /service-hero__lines|viewBox="0 \d+ 716 336"/,
+      `${page.path} is drawing the redaction bars again`,
+    );
 
-    drawings.add(viewBox[1]);
+    /* And what replaced it. The support line and the way in were the two ends
+       of the hero's bottom row, which only reads as an arrangement while there
+       is a drawing between them — the same thing Clients found when its plate
+       came out, which is why both pages now share these rules. Losing the block
+       would put them back at opposite edges of an empty row and nothing above
+       would notice. */
+    assert.match(
+      html,
+      /class="service-hero__aside"/,
+      `${page.path} leaves its foot at two opposite edges`,
+    );
   }
-
-  assert.equal(
-    drawings.size,
-    pages.length,
-    `${pages.length} pages but ${drawings.size} distinct drawings`,
-  );
 });
 
 test("no link on the site points at an anchor its page has not got", async () => {
