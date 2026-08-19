@@ -79,10 +79,10 @@ export const menu = [
     label: "Services",
     eyebrow: "Mardal Services",
     description: "Build, connect, and automate the systems behind your growth.",
-    href: "#services",
+    href: "/services",
     items: [
-      /* Service pages link directly; the remaining services still point at
-         the boxes on the homepage that name them. */
+      /* All five are written, and each has a page of its own. The word above
+         them goes to /services, which is not — see content/placeholders.ts. */
       { label: "AI & Automation", href: "/services/ai-automation" },
       { label: "System Integration", href: "/services/system-integration" },
       { label: "CRM Solutions", href: "/services/crm-solutions" },
@@ -104,11 +104,11 @@ export const menu = [
     label: "Products",
     eyebrow: "Mardal Products",
     description: "Focused digital products designed and built by Mardal.",
-    href: "#products",
+    href: "/products",
     items: [
-      { label: "Arvena AI", href: "#arvena-ai" },
-      { label: "Ftesa.co", href: "#ftesa" },
-      { label: "Ihrauto", href: "#ihrauto" },
+      { label: "Arvena AI", href: "/products/arvena-ai" },
+      { label: "Ftesa.co", href: "/products/ftesa" },
+      { label: "Ihrauto", href: "/products/ihrauto" },
     ],
   },
   /* The only entry in the bar that is both a page and a list. `href` is a route
@@ -161,7 +161,7 @@ export const menu = [
     label: "Company",
     eyebrow: "Inside Mardal",
     description: "Meet the people, thinking, and culture behind our work.",
-    href: "#company",
+    href: "/company",
     items: [
       /* `Team` was here and is gone — owner's call, 2026-08-12: the people go
          inside About rather than standing as an entry of their own. It is the
@@ -173,12 +173,13 @@ export const menu = [
          Nothing else moves. Both menus and the footer read this array, so the
          entry leaves all three at once, and the assertions that count them are
          followed down in the same commit. */
-      { label: "About", href: "#about" },
-      /* The one Company entry with a page of its own. The rest still point at
-         the homepage until they have one. */
+      { label: "About", href: "/about" },
+      /* Blog is the one of the four that is written. About, Careers and
+         Contact are addresses with a placeholder behind them; so is the word
+         Company above them. See content/placeholders.ts. */
       { label: "Blog", href: "/blog" },
-      { label: "Careers", href: "#careers" },
-      { label: "Contact", href: "#contact" },
+      { label: "Careers", href: "/careers" },
+      { label: "Contact", href: "/contact" },
     ],
   },
 ] as const;
@@ -448,13 +449,14 @@ export const footer = {
   socialLabel: "Follow",
   social: ["instagram", "facebook", "linkedin"],
   /**
-   * The three a company site is expected to carry. None of them exists yet —
-   * they are written here as the anchors they will be, so the footer is not
-   * holding invented URLs.
+   * The three a company site is expected to carry. None of them is written
+   * yet, but each is a route now rather than a `#privacy` that resolved
+   * nowhere at all — the page behind it says so in the site's own voice
+   * instead of the link dying under the pointer. See content/placeholders.ts.
    */
   legal: [
-    { label: "Privacy", href: "#privacy" },
-    { label: "Terms", href: "#terms" },
-    { label: "Cookies", href: "#cookies" },
+    { label: "Privacy", href: "/privacy" },
+    { label: "Terms", href: "/terms" },
+    { label: "Cookies", href: "/cookies" },
   ],
 } as const;
