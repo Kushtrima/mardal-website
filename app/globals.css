@@ -248,6 +248,22 @@
      the tracking — so this one value carries all of it. */
   --text-nav: clamp(19px, calc(13.67px + 0.52vw), 22px);
 
+  /* ── The bar's two measurements, and why they are tokens ──
+     Six rules across the stylesheet already computed the header's height from
+     this same pair written out longhand — the mega menu's ground clears it,
+     `.service-hero__inner` sizes itself to `100svh` minus it, `.story-hero__art`
+     rises by it. Now that the bar is `position: fixed` a seventh thing depends
+     on it, `.header-space`, and it is the one that must never drift: it is the
+     room left behind in the page where the bar used to be. */
+  --header-pad-top: clamp(1rem, 4.5vh, 4.5rem);
+  --header-bar: clamp(3.45rem, 4.5vw, 3.9rem);
+  --header-space: calc(var(--header-pad-top) + var(--header-bar));
+
+  /* What the padding closes up to once the page has been scrolled. The bar is
+     over the page rather than on it by then, so the generous opening space
+     would only be a band of ground held over the reading. */
+  --header-pad-scrolled: clamp(0.5rem, 1.2vh, 0.9rem);
+
   /* One pixel-based scale for every service page. New service routes inherit
      these values instead of introducing smaller one-off type rules. */
   --service-text-support: clamp(30px, 2.7vw, 40px);
@@ -1026,9 +1042,84 @@ video {
 }
 
 .site-header {
+  /* Read by the bar's own padding and by the mega menu's offsets, which are
+     measured up from the nav to the top of the window. Both follow it, so the
+     panel still reaches the corner when the padding closes up on scroll. */
+  --header-pad: var(--header-pad-top);
+
+  position: fixed;
+  z-index: 60;
+  top: 0;
+  right: 0;
+  left: 0;
+  padding-top: var(--header-pad);
+  transition:
+    transform var(--duration-slow) var(--ease-standard),
+    padding-top var(--duration-slow) var(--ease-standard);
+}
+
+/* The ground, as a layer of its own rather than a background on the bar.
+   The bar is a grid whose children are turned over while the menu is open, and
+   painting it directly would put a second ground behind the menu's own white.
+   Held at 0 opacity at the top of the page, so there is nothing behind the
+   wordmark on a hero that was drawn without one. */
+.site-header::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: var(--canvas);
+  opacity: 0;
+  transition: opacity var(--duration-slow) var(--ease-standard);
+  pointer-events: none;
+}
+
+.site-header > * {
   position: relative;
-  z-index: 5;
-  padding-top: clamp(1rem, 4.5vh, 4.5rem);
+  z-index: 1;
+}
+
+/* Scrolled and asked for. The ground arrives, the opening space closes up, and
+   the bar stays where it is. */
+.site-header[data-header="shown"] {
+  --header-pad: var(--header-pad-scrolled);
+}
+
+.site-header[data-header="shown"]::before {
+  opacity: 1;
+}
+
+/* Scrolled and going down. Off the top by its own whole height — the padding
+   included, or the last of it would sit as a line along the top edge. */
+.site-header[data-header="hidden"] {
+  --header-pad: var(--header-pad-scrolled);
+  transform: translateY(-100%);
+}
+
+/* An open menu is a child of the bar, so the bar must not be mid-flight while
+   the menu is on screen — and the menu paints its own ground over all of this
+   anyway. */
+.site-header--mega-open,
+.site-header--mobile-menu-open {
+  transform: none;
+}
+
+/* The room the bar used to take up, in the page, exactly where it was.
+   `.hero` is `min-height: max(47rem, 100svh)` and the film inside it is placed
+   by ratios of that height, so the hero must not change size; the service
+   heroes size themselves to the viewport minus this same value. Both hold as
+   long as the space is identical to what the bar occupied. */
+.header-space {
+  height: var(--header-space);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The bar still hides and returns — that is navigation, not decoration — but
+     it does it between frames rather than sliding. */
+  .site-header,
+  .site-header::before {
+    transition: none;
+  }
 }
 
 .site-nav {
@@ -1223,7 +1314,7 @@ video {
      means clearing the bar's own padding as well as the header's: 0.3rem off
      the top and 0.4rem off the right, which is what left the ground 5px low and
      6px shy of the edge when only the header's padding was subtracted. */
-  top: calc(-1 * (clamp(1rem, 4.5vh, 4.5rem) + 0.3rem));
+  top: calc(-1 * (var(--header-pad) + 0.3rem));
   right: calc(-1 * (var(--page-gutter) + 0.4rem));
   /* Out past the links by --menu-ground, and padded back in by the same amount
      so the names stay on the nav's own left edge. That leaves a band of ground
@@ -1241,10 +1332,7 @@ video {
      then the space the reference leaves before the first name. The right and
      bottom bring the legal line back to the page's own margins, since the
      ground itself runs past them to the window's edge. */
-  padding: calc(
-      clamp(1rem, 4.5vh, 4.5rem) + clamp(3.45rem, 4.5vw, 3.9rem) +
-        clamp(1.75rem, 5vh, 3.5rem)
-    )
+  padding: calc(var(--header-space) + clamp(1.75rem, 5vh, 3.5rem))
     calc(var(--page-gutter) + 0.4rem) clamp(1.25rem, 3.5vh, 2.5rem)
     var(--menu-ground);
   overflow: hidden;
@@ -1677,7 +1765,7 @@ video {
      upper bound only ever holds the copy a little higher than it had to be,
      where a lower one would let it touch. */
   --hero-copy-above: calc(
-    clamp(1rem, 4.5vh, 4.5rem) + 4.1rem + clamp(5.5rem, 12vh, 10rem)
+    var(--header-pad-top) + 4.1rem + clamp(5.5rem, 12vh, 10rem)
   );
   /* The same, plus the title the paragraph now starts under: two lines of it,
      at the leading they are set in. Only the guard below reads this — the
@@ -5529,9 +5617,7 @@ video {
 }
 
 .service-hero__inner {
-  --service-header-height: calc(
-    clamp(1rem, 4.5vh, 4.5rem) + clamp(3.45rem, 4.5vw, 3.9rem)
-  );
+  --service-header-height: var(--header-space);
 
   position: relative;
   display: grid;
@@ -7333,9 +7419,7 @@ video {
 
 .story-hero__art {
   position: absolute;
-  top: calc(
-    -1 * (clamp(1rem, 4.5vh, 4.5rem) + clamp(3.45rem, 4.5vw, 3.9rem))
-  );
+  top: calc(-1 * var(--header-space));
   right: calc(-1 * var(--page-gutter));
   bottom: 0;
   left: 50%;

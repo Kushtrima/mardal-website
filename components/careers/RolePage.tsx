@@ -1,6 +1,6 @@
 import { Container } from "../layout/Container";
 import { SiteFooter } from "../layout/SiteFooter";
-import { SiteHeader } from "../layout/SiteHeader";
+import { HeaderSpace } from "../layout/HeaderSpace";
 import { SectionEnter } from "../motion/SectionEnter";
 import { PixelArrow } from "../ui/PixelArrow";
 import { ApplyForm } from "./ApplyForm";
@@ -35,7 +35,7 @@ export function RolePage({ role }: { role: Role }) {
         id="main-content"
         data-service-page
       >
-        <SiteHeader />
+        <HeaderSpace />
 
         <section className="role-page" aria-labelledby="role-title">
           <Container>

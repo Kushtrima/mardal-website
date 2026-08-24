@@ -3,12 +3,11 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { Container } from "../layout/Container";
-import { SiteHeader } from "../layout/SiteHeader";
+import { HeaderSpace } from "../layout/HeaderSpace";
 import { HeroField } from "./HeroField";
 
 export function Hero() {
   const heroRef = useRef<HTMLElement>(null);
-  const navigationRef = useRef<HTMLElement>(null);
   const copyRef = useRef<HTMLParagraphElement>(null);
   const linesRef = useRef<HTMLDivElement>(null);
   const linesBlurRef = useRef<HTMLDivElement>(null);
@@ -29,12 +28,7 @@ export function Hero() {
 
     if (reducedMotion) {
       gsap.set(
-        [
-          navigationRef.current,
-          copyRef.current,
-          linesRef.current,
-          "[data-hero-line]",
-        ],
+        [copyRef.current, linesRef.current, "[data-hero-line]"],
         { clearProps: "all" },
       );
       return;
@@ -78,13 +72,12 @@ export function Hero() {
     };
 
     const context = gsap.context(() => {
+      /* The bar's own beat used to open this timeline. It is rendered in the
+         root layout now, outside the scroll wrapper so it can be fixed, and it
+         runs the same movement itself — so the lines start where they used to
+         start relative to it, at 0.75 - 0.35 = 0.4s. */
       gsap
         .timeline({ defaults: { ease: "power3.out" } })
-        .from(navigationRef.current, {
-          autoAlpha: 0,
-          duration: 0.75,
-          y: -24,
-        })
         .from(
           "[data-hero-line]",
           {
@@ -92,7 +85,7 @@ export function Hero() {
             stagger: 0.09,
             yPercent: 115,
           },
-          "-=0.35",
+          0.4,
         )
         .from(
           copyRef.current,
@@ -129,7 +122,7 @@ export function Hero() {
 
   return (
     <section className="hero" aria-labelledby="hero-title" ref={heroRef}>
-      <SiteHeader ref={navigationRef} />
+      <HeaderSpace />
 
       <Container className="hero-content">
         <h1 className="hero-title" id="hero-title">

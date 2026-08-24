@@ -93,6 +93,40 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /class="recommendation-wall recommendation-wall--front"/);
   assert.match(html, /card-icons\/recommendations\.png/);
 
+  /* **The bar is outside `#smooth-wrapper`, and that is load-bearing.**
+     ScrollSmoother writes a transform on `#smooth-content` every frame, and a
+     transform makes its element the containing block for any `fixed`
+     descendant — so a header inside the wrapper is fixed to the CONTENT and
+     scrolls away with it. That is precisely the bug this change fixed, and it
+     comes back silently: the markup still renders, the stylesheet still says
+     `position: fixed`, and nothing looks wrong until you scroll.
+
+     Order in the document is the whole assertion. There is no attribute for
+     "not inside the wrapper" — only that the header closes before the wrapper
+     opens. */
+  const headerAt = html.indexOf('<header class="site-header"');
+  const wrapperAt = html.indexOf('id="smooth-wrapper"');
+  assert.ok(headerAt !== -1, "the site header is not rendered");
+  assert.ok(wrapperAt !== -1, "the smooth wrapper is not rendered");
+  assert.ok(
+    headerAt < wrapperAt,
+    "the site header is inside #smooth-wrapper, where position: fixed cannot work",
+  );
+
+  /* One bar for the site, rendered by the root layout. Twelve pages used to
+     render their own, and a page that kept its copy would put two on screen. */
+  assert.equal((html.match(/class="site-header/g) ?? []).length, 1);
+
+  /* The resting state is server-rendered. Without it the stylesheet's `top`
+     rules do not match on the first paint and the bar arrives already wearing
+     its scrolled ground. */
+  assert.match(html, /<header class="site-header" data-header="top">/);
+
+  /* And the room it left behind. `.hero` is sized in `svh` with the film inside
+     it placed by ratios of that height, so the page's top must measure exactly
+     what it did when the bar stood in it. */
+  assert.equal((html.match(/class="header-space"/g) ?? []).length, 1);
+
   // Header — the desktop panel is its list and nothing else now: the eyebrow
   // and the sentence under it are gone, and so are the 01-07 counters, since
   // both restated what the word you clicked already said.

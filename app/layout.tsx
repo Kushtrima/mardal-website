@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SiteHeader } from "../components/layout/SiteHeader";
 import { RouteTransition } from "../components/motion/RouteTransition";
 import { SmoothScroll } from "../components/motion/SmoothScroll";
 
@@ -57,6 +58,18 @@ export default function RootLayout({
         />
       </head>
       <body>
+        {/* **Outside the wrapper, and that is the whole reason it is here.**
+            ScrollSmoother translates `#smooth-content` on every frame, and a
+            transform makes its element the containing block for any `fixed`
+            descendant — so a fixed bar inside the wrapper is fixed to the
+            content and scrolls away with it, which is exactly what it used to
+            do. Out here it is fixed to the window and can hide and return.
+
+            One header for the whole site, rather than the twelve places that
+            each rendered their own. Each of those now renders `<HeaderSpace />`
+            in its place to keep the room the bar took up in the page. */}
+        <SiteHeader />
+
         {/* ScrollSmoother scrolls this content itself rather than letting the
             browser do it, so it has to own a wrapper of its own. Without the
             plugin running these are two ordinary divs and the page scrolls

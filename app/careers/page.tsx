@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "../../components/layout/Container";
 import { SiteFooter } from "../../components/layout/SiteFooter";
-import { SiteHeader } from "../../components/layout/SiteHeader";
+import { HeaderSpace } from "../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../components/motion/SectionEnter";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
 import { PixelArrow } from "../../components/ui/PixelArrow";
@@ -35,7 +35,7 @@ export default function CareersPage() {
         id="main-content"
         data-service-page
       >
-        <SiteHeader />
+        <HeaderSpace />
 
         <section
           className="service-hero service-hero--bare"

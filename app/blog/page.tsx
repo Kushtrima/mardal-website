@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "../../components/layout/Container";
 import { SiteFooter } from "../../components/layout/SiteFooter";
-import { SiteHeader } from "../../components/layout/SiteHeader";
+import { HeaderSpace } from "../../components/layout/HeaderSpace";
 import { RedactedLines } from "../../components/home/RedactedLines";
 import { SectionEnter } from "../../components/motion/SectionEnter";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
@@ -36,7 +36,7 @@ export default function BlogPage() {
         id="main-content"
         data-service-page
       >
-        <SiteHeader />
+        <HeaderSpace />
 
         <section
           className="service-hero"

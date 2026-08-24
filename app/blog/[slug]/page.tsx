@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Container } from "../../../components/layout/Container";
 import { SiteFooter } from "../../../components/layout/SiteFooter";
-import { SiteHeader } from "../../../components/layout/SiteHeader";
+import { HeaderSpace } from "../../../components/layout/HeaderSpace";
 import { BlogPattern } from "../../../components/blog/BlogPattern";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { PixelArrow } from "../../../components/ui/PixelArrow";
@@ -71,7 +71,7 @@ export default async function BlogPostPage({
       <SectionEnter />
 
       <main className="service-page blog-post" id="main-content">
-        <SiteHeader />
+        <HeaderSpace />
 
         <article className="blog-article">
           <Container className="blog-article__inner">

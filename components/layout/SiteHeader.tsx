@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  forwardRef,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -12,6 +11,7 @@ import gsap from "gsap";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MOBILE_MENU } from "../../lib/breakpoints";
+import { HEADER_AT_REST, nextHeaderState } from "../../lib/header-reveal";
 import { navTriggerIntent } from "../../lib/nav-keys";
 import { Button } from "../ui/Button";
 import { PixelArrow } from "../ui/PixelArrow";
@@ -32,12 +32,10 @@ type NavigationKey = (typeof menu)[number]["key"];
  */
 const KEEP_OPEN_PADDING = 24;
 
-export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
-  _props,
-  navigationRef,
-) {
+export function SiteHeader() {
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
+  const navigationRef = useRef<HTMLElement>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const megaMenuGroundRef = useRef<HTMLDivElement>(null);
   const mobileIndexRef = useRef<HTMLDivElement>(null);
@@ -590,6 +588,108 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
     };
   }, []);
 
+  /**
+   * The bar's own opening.
+   *
+   * This used to belong to the Hero, which rendered the header and animated it
+   * as the first beat of the homepage timeline. The header is rendered once in
+   * the root layout now and the Hero cannot reach it, so the movement comes
+   * with it — same numbers, so the homepage opens exactly as it did.
+   *
+   * `gsap.from` and not `to`: the bar is in the server-rendered HTML at its
+   * resting values, so a reader whose JavaScript never arrives gets a bar
+   * rather than an invisible one. Reduced motion skips it outright.
+   */
+  useLayoutEffect(() => {
+    if (!navigationRef.current) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const animation = gsap.from(navigationRef.current, {
+      autoAlpha: 0,
+      duration: 0.75,
+      ease: "power3.out",
+      y: -24,
+    });
+
+    return () => {
+      animation.revert();
+    };
+  }, []);
+
+  /**
+   * Hide going down, come back going up.
+   *
+   * ── Why `window.scrollY` and not the smoother ──
+   * ScrollSmoother eases the CONTENT towards the real scroll position; it does
+   * not take the scroll position over. The document still scrolls natively and
+   * `scrollY` is still the truth, which is the same thing the Hero reads for
+   * its own blur. What the smoother does change is the shape of the signal —
+   * see HEADER_DIRECTION_DEADZONE.
+   *
+   * ── Why the state is an attribute and the movement is CSS ──
+   * Three things move together here: the bar slides off, its ground fades in,
+   * and its top padding closes up. Written as a tween that is three properties
+   * to keep in step from JavaScript; written as `data-header` it is one
+   * attribute and the stylesheet holds the choreography — including switching
+   * all of it off under `prefers-reduced-motion`, which a tween would have to
+   * be taught separately.
+   *
+   * ── An open menu pins it ──
+   * The panel is a child of the bar. Sliding the bar away while its own menu is
+   * open would take the menu with it, so an open menu holds the bar wherever it
+   * is and nothing moves until it closes.
+   */
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+
+    let reading = { ...HEADER_AT_REST, lastY: window.scrollY };
+    let frame = 0;
+
+    const read = () => {
+      frame = 0;
+      const next = nextHeaderState(reading, window.scrollY);
+      if (next.state !== reading.state) header.dataset.header = next.state;
+      reading = next;
+    };
+
+    /* Coalesced to one read a frame. The smoother fires scroll continuously
+       while it eases, and the work here touches layout. */
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(read);
+    };
+
+    /* Told, rather than inferred: an open menu pins the bar on screen from the
+       effect below, and this is how the reading agrees with what is painted. */
+    const onPinned = () => {
+      reading = { ...reading, state: "shown", travel: 0 };
+    };
+
+    read();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    header.addEventListener("mardal:header-shown", onPinned);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      header.removeEventListener("mardal:header-shown", onPinned);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  /* Held open by its own panel. Separate from the effect above so the listener
+     is not town down and rebuilt every time a menu opens. */
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    if (!megaMenuOpen && !mobileMenuOpen) return;
+    if (header.dataset.header === "hidden") header.dataset.header = "shown";
+    /* The reveal effect keeps its own reading and only writes on a change, so
+       without this it still believes the bar is hidden and the next frame of
+       scrolling puts it back. */
+    header.dispatchEvent(new CustomEvent("mardal:header-shown"));
+  }, [megaMenuOpen, mobileMenuOpen]);
+
   return (
     <header
       /* The open menu is a white ground, and the bar is drawn ON it from the
@@ -601,6 +701,10 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
         mobileMenuOpen ? " site-header--mobile-menu-open" : ""
       }${megaMenuOpen ? " site-header--mega-open" : ""}`}
       ref={headerRef}
+      /* The resting state, rendered rather than set on mount: the stylesheet
+         keys the bar's ground and padding off this attribute, so a bar that
+         arrives without one paints the scrolled treatment for a frame. */
+      data-header="top"
       onPointerEnter={clearCloseTimer}
       onPointerLeave={(event) => {
         if (event.pointerType === "mouse") scheduleMegaMenuClose();
@@ -1018,4 +1122,4 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
       </div>
     </header>
   );
-});
+}

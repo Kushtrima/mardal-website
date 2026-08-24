@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Fragment } from "react";
 import { Container } from "../../../components/layout/Container";
 import { SiteFooter } from "../../../components/layout/SiteFooter";
-import { SiteHeader } from "../../../components/layout/SiteHeader";
+import { HeaderSpace } from "../../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
@@ -49,7 +49,7 @@ export default function AiAutomationPage() {
         id="main-content"
         data-service-page
       >
-        <SiteHeader />
+        <HeaderSpace />
 
         <section
           className="service-hero"

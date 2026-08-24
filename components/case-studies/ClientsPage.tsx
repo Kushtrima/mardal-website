@@ -1,6 +1,6 @@
 import { Container } from "../layout/Container";
 import { SiteFooter } from "../layout/SiteFooter";
-import { SiteHeader } from "../layout/SiteHeader";
+import { HeaderSpace } from "../layout/HeaderSpace";
 import { ClientsIndex } from "./ClientsIndex";
 import { SectionEnter } from "../motion/SectionEnter";
 import { ServicePageEntry } from "../services/ServicePageEntry";
@@ -41,7 +41,7 @@ export function ClientsPage({ sector }: { sector: string }) {
         id="main-content"
         data-service-page
       >
-        <SiteHeader />
+        <HeaderSpace />
 
         <section
           className="service-hero service-hero--bare"
