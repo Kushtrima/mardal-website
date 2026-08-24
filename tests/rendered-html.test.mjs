@@ -129,6 +129,42 @@ test("server-renders the Mardal homepage", async () => {
      a page. */
   assert.doesNotMatch(html, /<button[^>]*>Clients<\/button>/);
 
+  /* **The other three go nowhere on a press.** Owner's call, 2026-08-24: they
+     open their lists and that is all they do. Each still has a real route
+     behind it, so nothing about `content/home.ts` shows this — the entries
+     carry `panelOnly` and the bar reads it — and if that field were dropped
+     they would quietly become links again with every test but this one green.
+
+     Asserted both ways round on purpose. The button proves the word still opens
+     its panel; the absent anchor proves the link is gone. Checking only the
+     first would pass with a link sitting beside a button. */
+  for (const label of ["Services", "Products", "Company"]) {
+    const trigger = html.match(new RegExp(`<button ([^>]*)>${label}</button>`))?.[1];
+    assert.ok(trigger, `${label} is not a button in the desktop bar`);
+    assert.match(trigger, /class="nav-link nav-trigger"/);
+    assert.match(trigger, /aria-controls="desktop-mega-menu"/);
+    assert.doesNotMatch(
+      html,
+      new RegExp(`<a [^>]*>${label}</a>`),
+      `${label} is still a link in the desktop bar`,
+    );
+
+    /* And the same on a phone, where the tap opens the detail screen. This is
+       the half that also fixed something: while these were links a tap went to
+       the placeholder page, so the five service pages under Services were in
+       the markup and reachable by no gesture at all. */
+    const mobile = html.match(
+      new RegExp(`<button ([^>]*)><span>${label}</span>`),
+    )?.[1];
+    assert.ok(mobile, `${label} is not a button in the mobile index`);
+    assert.match(mobile, /aria-controls="mobile-menu-detail"/);
+    assert.doesNotMatch(
+      html,
+      new RegExp(`<a [^>]*><span>${label}</span>`),
+      `${label} is still a link in the mobile index`,
+    );
+  }
+
   /* **The panel is named by the word that opened it, and every trigger carries
      the id that lets it.** One panel serves all four entries, so a reader who has
      just moved focus into it is otherwise told nothing about which of the four

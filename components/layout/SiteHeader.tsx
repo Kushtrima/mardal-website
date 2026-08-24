@@ -631,17 +631,19 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
 
           <ul className="nav-list">
             {menu.map((item) => {
-              /* Two questions, asked separately, both answered by the entry
-                 itself rather than by a flag set for the header's benefit.
+              /* Two questions, asked separately.
 
-                 A word whose href is a route has a page, so it is a link and
-                 clicking it goes there. A word with children has a panel, so
-                 hovering it opens them and it carries the chevron that says so.
-                 Services, Products and Company are the second without the first
-                 — their hrefs are anchors to sections that are not on the page —
-                 so they stay buttons, with nothing to navigate to and a panel to
-                 toggle. Clients is the first entry to be both. */
-              const isPage = item.href.startsWith("/");
+                 A word with children has a panel, so hovering it opens them and
+                 it carries the chevron that says so. A word is a LINK only if it
+                 both has a route and has not been marked `panelOnly` — the
+                 owner's call of 2026-08-24 that Services, Products and Company
+                 open their lists and go nowhere on a press.
+
+                 `panelOnly` is read here rather than inferred, because the fact
+                 the header needs is no longer visible in the href. All four
+                 entries point at real routes now; three of them are simply not
+                 meant to be pressed. Clients is the one that is both. */
+              const isPage = item.href.startsWith("/") && !item.panelOnly;
               const hasPanel = item.items.length > 0;
 
               /* Arriving at a word does the same thing whichever element it is:
@@ -861,21 +863,32 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
             >
               <ul className="mobile-menu__index-list">
                 {menu.map((item) => {
-                  /* Only the first of the bar's two questions is asked here,
-                     because the second one is about hovering and there is no
-                     hovering on a phone. A word with a page is a link to it and
-                     a tap goes there — which is what a tap on Clients means on
-                     the desktop bar too. Its seven sectors are a hover
-                     affordance and stay one; on this screen they are read on
-                     the homepage, in the section they belong to.
+                  /* The same question the bar asks, and it has to be the same
+                     question: a word the owner has said is not a destination is
+                     not one on a phone either. So `panelOnly` decides here too,
+                     and a tap on Services, Products or Company opens the screen
+                     behind the word instead of going to a page.
+
+                     **That is also how the five service pages became reachable
+                     on a phone again.** While those three were links, a tap went
+                     to the placeholder and the detail list under them could not
+                     be opened at all — the sub-pages were in the markup and
+                     behind no gesture. Clients stays a link: its seven sectors
+                     are a hover affordance, read on the homepage on this screen.
                      The index keeps its own mark either way, so the list still
-                     reads as one list — here the arrow means the page rather
-                     than the screen behind the word. */
-                  const isLink = item.href.startsWith("/");
+                     reads as one list — the arrow means the page for a link and
+                     the screen behind the word for the rest.
+
+                     A word with no link of its own is current when the page you
+                     are on is one of the pages behind it. That used to be
+                     spelled out for Services alone, which was correct while it
+                     was the only such word; now there are three, and Products
+                     and Company would silently have lost their mark. */
+                  const isLink = item.href.startsWith("/") && !item.panelOnly;
                   const isCurrent = isLink
                     ? pathname === item.href
-                    : item.key === "services" &&
-                      pathname.startsWith("/services");
+                    : pathname === item.href ||
+                      item.items.some((link) => pathname === link.href);
                   const className = `mobile-menu__index-link${
                     isCurrent ? " is-current" : ""
                   }`;

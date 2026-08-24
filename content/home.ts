@@ -80,9 +80,25 @@ export const menu = [
     eyebrow: "Mardal Services",
     description: "Build, connect, and automate the systems behind your growth.",
     href: "/services",
+    /* **The word opens the panel and goes nowhere.** Owner's call, 2026-08-24,
+       for Services, Products and Company alike: they are disclosures, not
+       destinations.
+
+       A separate field rather than blanking `href`, because the address is
+       still true — `/services` is a real route and the page behind it is real,
+       if only as a placeholder — and the header is not the only thing reading
+       this list. Emptying the href to make the word un-clickable would be
+       encoding a presentation choice as a missing fact.
+
+       Clients is the one entry that stays both, and carries `false` rather than
+       nothing so the field is a decision on every entry instead of an
+       exception someone has to notice is absent. */
+    panelOnly: true,
     items: [
-      /* All five are written, and each has a page of its own. The word above
-         them goes to /services, which is not — see content/placeholders.ts. */
+      /* All five are written, and each has a page of its own. /services is a
+         placeholder — see content/placeholders.ts — and since the word above
+         them no longer links to it, nothing in the header or the footer reaches
+         it any more. */
       { label: "AI & Automation", href: "/services/ai-automation" },
       { label: "System Integration", href: "/services/system-integration" },
       { label: "CRM Solutions", href: "/services/crm-solutions" },
@@ -105,6 +121,7 @@ export const menu = [
     eyebrow: "Mardal Products",
     description: "Focused digital products designed and built by Mardal.",
     href: "/products",
+    panelOnly: true,
     items: [
       { label: "Arvena AI", href: "/products/arvena-ai" },
       { label: "Ftesa.co", href: "/products/ftesa" },
@@ -141,6 +158,8 @@ export const menu = [
     eyebrow: "Mardal Clients",
     description: "The sectors we build for, and what each client owns.",
     href: "/case-studies",
+    /* The one word in the bar that still goes somewhere on a press. */
+    panelOnly: false,
     /* Each sector goes to the Clients page with itself already chosen, not to a
        run further down the homepage. That is the difference between a menu that
        sends you somewhere and one that only scrolls you, and it is why these
@@ -162,6 +181,7 @@ export const menu = [
     eyebrow: "Inside Mardal",
     description: "Meet the people, thinking, and culture behind our work.",
     href: "/company",
+    panelOnly: true,
     items: [
       /* `Team` was here and is gone — owner's call, 2026-08-12: the people go
          inside About rather than standing as an entry of their own. It is the
