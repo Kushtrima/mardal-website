@@ -2019,10 +2019,11 @@ video {
   overflow: hidden;
   border-radius: var(--shape-card);
   background: var(--surface);
-  /* On black the card is white and needs nothing to separate it. On white it is
-     a lavender panel a shade off the page, and the shadow is what makes that a
-     panel rather than a tint. */
-  box-shadow: var(--panel-shadow);
+  /* No shadow, either way up — owner's call, 2026-08-24. It carried
+     `var(--panel-shadow)`, which is nothing on the dark page and a real drop on
+     the light one, so this only ever showed in light mode. The tint is left to
+     be the whole of the separation, which is what `.difference-card` — the same
+     lavender panel further down the page — has always done. */
 }
 
 /* The label sits in the top-right corner, opposite the drawing. */
