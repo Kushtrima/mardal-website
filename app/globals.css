@@ -1425,25 +1425,48 @@ video {
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
-/* The same 1.4em box and 1.6 stroke as the social marks, so it belongs to the
-   one icon set the site has rather than starting a second. */
+/* The same 1.6 stroke as the social marks, so the ring belongs to the one icon
+   set the site has rather than starting a second.
+
+   A step larger than their 1.4em, and only because this glyph is denser than
+   they are: it sits in the legal line, which is set at the fine size, and eight
+   dots and a ring inside 1.4em of that put the dots under 2px — dust rather
+   than a drawing. At 1.5em they land just over 2px and the mark reads. */
 .theme-toggle__mark {
-  width: 1.4em;
-  height: 1.4em;
+  width: 1.5em;
+  height: 1.5em;
   flex: 0 0 auto;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.6;
 }
 
-.theme-toggle__mark-half {
+/* The rays are ink, not outline — at this size a stroked dot is a smudge with a
+   hole in it. Only the ring is drawn. */
+.theme-toggle__rays circle {
   fill: currentColor;
   stroke: none;
 }
 
 /* In the legal line the row is already four words long and closes with about
    40px to spare, so the control is the mark alone; the button keeps its label
-   for anything reading the page rather than looking at it. */
+   for anything reading the page rather than looking at it.
+
+   It sits in the row's own rhythm and takes no margin of its own. The hairline
+   is drawn on this element's left edge, so a margin here does not move the mark
+   away from the line — it moves the line away from the last word and drags the
+   mark right with it, which is the opposite of what it looks like it will do.
+
+   What it does need is the padding back. `--legal-gap` is the space before the
+   hairline and this is the space after it, and the two are the same number so
+   the line sits between the two things rather than beside one of them — but
+   `.theme-toggle` zeroes a button's padding, and being a later rule of equal
+   weight it was winning. The mark was standing hard against the line with two
+   pixels of its own bearing and nothing else. */
+.mega-menu__theme {
+  padding-left: var(--legal-gap);
+}
+
 .mega-menu__theme .theme-toggle__label {
   display: none;
 }

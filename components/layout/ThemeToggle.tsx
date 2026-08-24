@@ -56,11 +56,17 @@ function getServerSnapshot(): Theme | null {
   return null;
 }
 
-/* A circle with one half filled — the inversion stated rather than illustrated.
+/* A ring with eight dots around it — a sun, drawn in dots rather than in rays.
  *
- * A sun and a moon would be two drawings for one idea, and neither is in this
- * site's vocabulary. This is: a 24px line drawing at the same stroke weight as
- * the social marks, so it reads as part of the set.
+ * Dots rather than lines because that is already how this site draws a small
+ * mark: PixelArrow is a dot matrix, its dots are round by default, and the
+ * arrows beside every name in this same menu are built from them. A sun of
+ * strokes would have been a stock icon; a sun of dots belongs to the set.
+ *
+ * The eight are on a radius of 8 at the compass points, written out as rounded
+ * literals rather than generated. Geometry computed with Math.sin differs in the
+ * last digit between the server and the browser, and React reports that as a
+ * hydration mismatch — it has happened here before.
  *
  * The markup rendered on the server carries no theme in it. That is deliberate
  * — the server has no way to know which way the page will land, and a label or
@@ -114,10 +120,17 @@ export function ThemeToggle({
         focusable="false"
         viewBox="0 0 24 24"
       >
-        <circle cx="12" cy="12" r="8" />
-        {/* From the top of the circle to the bottom the long way round the
-            left, which closes as a filled semicircle against the outline. */}
-        <path className="theme-toggle__mark-half" d="M12 4A8 8 0 0 0 12 20Z" />
+        <circle cx="12" cy="12" r="3.6" />
+        <g className="theme-toggle__rays">
+          <circle cx="12" cy="4" r="1.35" />
+          <circle cx="17.66" cy="6.34" r="1.35" />
+          <circle cx="20" cy="12" r="1.35" />
+          <circle cx="17.66" cy="17.66" r="1.35" />
+          <circle cx="12" cy="20" r="1.35" />
+          <circle cx="6.34" cy="17.66" r="1.35" />
+          <circle cx="4" cy="12" r="1.35" />
+          <circle cx="6.34" cy="6.34" r="1.35" />
+        </g>
       </svg>
       <span className="theme-toggle__label">Theme</span>
     </button>
