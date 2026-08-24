@@ -243,7 +243,6 @@ test("the Careers opening is sized by two rules that meet", () => {
      silently gets the service-page arrangement and its artwork-shaped hole. */
   for (const file of [
     "../components/case-studies/ClientsPage.tsx",
-    "../components/placeholder/PlaceholderPage.tsx",
     "../app/careers/page.tsx",
   ]) {
     assert.match(
@@ -252,6 +251,21 @@ test("the Careers opening is sized by two rules that meet", () => {
       `${file} has a hero with no artwork that does not carry service-hero--bare`,
     );
   }
+
+  /* PlaceholderPage is the one that cannot be checked as a literal, because
+     since 2026-08-24 it decides: eleven of its twelve routes have no artwork
+     and wear the class, and UX/UI & Branding has a drawing and must not.
+     What is asserted here is that the class is still spelled correctly and
+     still tied to the absence of a pattern — the rendered result, on all
+     twelve, is tests/placeholder-pages.test.mjs. */
+  assert.match(
+    readFileSync(
+      new URL("../components/placeholder/PlaceholderPage.tsx", import.meta.url),
+      "utf8",
+    ),
+    /content\.pattern \? "" : " service-hero--bare"/,
+    "PlaceholderPage no longer wears service-hero--bare when it has no artwork",
+  );
 });
 
 test("three roles, each one a record and each one an address", async () => {

@@ -95,18 +95,27 @@ export const menu = [
        exception someone has to notice is absent. */
     panelOnly: true,
     items: [
-      /* All five are written, and each has a page of its own. /services is a
-         placeholder — see content/placeholders.ts — and since the word above
-         them no longer links to it, nothing in the header or the footer reaches
-         it any more. */
+      /* The order is the owner's, 2026-08-24, and so is the shape of the list:
+         System Integration deleted outright, UX/UI & Branding added at the top,
+         and Web Platforms & Apps renamed to Website & Apps with its route moved
+         to match.
+
+         Four of the five are written and have a page of their own. UX/UI &
+         Branding is an address with a placeholder behind it until the copy
+         arrives — see content/placeholders.ts, the same arrangement Company's
+         entries have. /services is a placeholder too, and since the word above
+         these no longer links to it, nothing in the header or the footer reaches
+         it any more.
+
+         This list is also the difference boxes' list and the footer's. Those
+         read the same order from `difference` below, which is kept in step with
+         this one by hand — a site that names its five services in two orders on
+         one page is the thing to avoid. */
+      { label: "UX/UI & Branding", href: "/services/ux-ui-branding" },
+      { label: "Website & Apps", href: "/services/website-apps" },
       { label: "AI & Automation", href: "/services/ai-automation" },
-      { label: "System Integration", href: "/services/system-integration" },
       { label: "CRM Solutions", href: "/services/crm-solutions" },
       { label: "Custom Software", href: "/services/custom-software" },
-      {
-        label: "Web Platforms & Apps",
-        href: "/services/web-platforms-apps",
-      },
     ],
   },
   /* Solutions is deliberately not here. The seven industries have no pages of
@@ -274,17 +283,26 @@ export const services = {
   title: "Services built around the way you work.",
   summary:
     "From applied AI to connected platforms, we remove friction, speed up delivery, and give teams room to grow.",
+  /* Read by `ServicesSection`, which no page renders — see the note on
+     `#services` being dead site-wide. Kept in step with the menu anyway: a list
+     of services that still names a deleted one is a trap for whoever revives
+     this, and it costs four lines to not set it. */
   items: [
+    {
+      id: "ux-ui-branding",
+      title: "UX/UI & Branding",
+      description: "Design and identity, made to be built.",
+    },
+    {
+      id: "web-platforms",
+      title: "Website & Apps",
+      description: "Fast, intuitive digital products built to grow.",
+    },
     {
       id: "ai-automation",
       title: "AI & Automation",
       description:
         "Turn repetitive work into intelligent, dependable workflows.",
-    },
-    {
-      id: "system-integration",
-      title: "System Integration",
-      description: "Make your tools, data, and teams work together as one.",
     },
     {
       id: "crm-solutions",
@@ -295,11 +313,6 @@ export const services = {
       id: "custom-software",
       title: "Custom Software",
       description: "Build the software your business actually needs.",
-    },
-    {
-      id: "web-platforms",
-      title: "Web Platforms & Apps",
-      description: "Fast, intuitive digital products built to grow.",
     },
   ],
 } as const;
@@ -316,15 +329,20 @@ export const difference = {
   titleLines: ["What Makes Us", "Different."],
   /** Two columns under the heading, set against the second and third box. */
   intro: [
-    "Five connected services. One team. Our designers, engineers and AI specialists work together across automation, CRM, custom software, web platforms, apps and system integration, from strategy to delivery.",
+    "Five connected services. One team. Our designers, engineers and AI specialists work together across design and branding, websites, apps, automation, CRM and custom software, from strategy to delivery.",
     "Instead of managing separate teams and disconnected tools, you get one partner that makes everything work together—helping your business move faster, adapt more easily and grow with less complexity.",
   ],
+  /* The menu's five, in the menu's order. The ids are NOT renamed with the
+     labels: they are the keys `lib/isometric.ts` draws each box from and the
+     anchors this section answers to, and renaming them would move two things
+     that have nothing to do with what the box is called. `web-platforms` is
+     the box now labelled Website & Apps. */
   items: [
+    { id: "ux-ui-branding", lines: ["UX/UI &", "Branding"] },
+    { id: "web-platforms", lines: ["Website", "& Apps"] },
     { id: "ai-automation", lines: ["AI &", "Automation"] },
-    { id: "system-integration", lines: ["System", "Integration"] },
     { id: "crm-solutions", lines: ["CRM", "Solutions"] },
     { id: "custom-software", lines: ["Custom", "Software"] },
-    { id: "web-platforms", lines: ["Web Platforms", "& Apps"] },
   ],
 } as const;
 

@@ -1,5 +1,5 @@
 /**
- * The eleven pages that exist as an address before they exist as writing.
+ * The twelve pages that exist as an address before they exist as writing.
  *
  * Every word in the header and the footer used to promise a page; four of them
  * pointed at nothing at all and five only scrolled the homepage, which from any
@@ -10,6 +10,13 @@
  * for it came out of the table below and tests/careers.test.mjs took over —
  * a page graduating out of here is the point of the arrangement, and the count
  * moving is how it is noticed.
+ *
+ * Back to twelve on 2026-08-24, going the other way: UX/UI & Branding is a new
+ * service the menu names and nobody has written yet. **The count is asserted
+ * below now, and it was added because this table did not notice.** The new page
+ * was live, in the menu, and rendering, and every test here passed without ever
+ * fetching it — a table of routes only covers the routes someone remembered to
+ * put in it.
  *
  * The copy is written out here rather than imported from
  * `content/placeholders.ts`, deliberately: a test that reads the same module
@@ -38,7 +45,14 @@ async function render(path) {
   );
 }
 
-const literal = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/** The table's strings as they reach the HTML, safe to put in a regex.
+ *
+ *  Two escapes, in this order. `&` first, because React writes it as `&amp;` in
+ *  text and in attributes, and no label had one until UX/UI & Branding arrived
+ *  and every assertion below missed it at once. Then the regex metacharacters,
+ *  which now include the ones the entity itself introduced. */
+const literal = (value) =>
+  value.replace(/&/g, "&amp;").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /** Route, the name it is given, what it says it will hold, and the way out. */
 const pages = [
@@ -119,9 +133,35 @@ const pages = [
     cta: "Get in touch",
     ctaHref: "mailto:info@mardal.co",
   },
+  /* The only service in this table. System Integration was deleted on
+     2026-08-24 and this took its place in the menu, so the list of five the
+     site names is four written pages and this one. */
+  {
+    path: "/services/ux-ui-branding",
+    label: "UX/UI & Branding",
+    support: "Design and identity, made to be built.",
+    cta: "See Website & Apps",
+    ctaHref: "/services/website-apps",
+    /* The only one with a drawing — see the artwork test below. */
+    pattern: "ux-ui-branding",
+  },
 ];
 
+/** Every key in `content/placeholders.ts` has a row above.
+ *
+ *  Counted rather than trusted. The table is written out by hand on purpose —
+ *  a test that imports the module the page reads asserts only that a file
+ *  equals itself — and the cost of that is a table that goes quietly out of
+ *  date, which it did the day this line was written. */
+const PLACEHOLDER_PAGES = 12;
+
 test("every unwritten page is a page", async () => {
+  assert.equal(
+    pages.length,
+    PLACEHOLDER_PAGES,
+    "a placeholder was added or written without this table following it",
+  );
+
   for (const page of pages) {
     const response = await render(page.path);
     assert.equal(response.status, 200, `${page.path} does not render`);
@@ -195,7 +235,7 @@ test("every unwritten page is a page", async () => {
   }
 });
 
-test("the unwritten heroes carry no artwork", async () => {
+test("the unwritten heroes carry no artwork, except the one service", async () => {
   /* Owner's call, looking at Products and Company: the redaction bars come out.
 
      They were not arbitrary — everywhere else on this site that drawing is
@@ -205,9 +245,58 @@ test("the unwritten heroes carry no artwork", async () => {
      reads the component next: it is a decision that reads as an omission.
 
      Checked on all of them, because the pull is to put it back on the ones the
-     owner did not name. */
+     owner did not name.
+
+     **And on 2026-08-24 he named one.** UX/UI & Branding is the only placeholder
+     that is a SERVICE: it stands in a list of five beside four written service
+     pages that each carry a drawing, so a bare hero there reads as the
+     unfinished one rather than as restraint. The rule is not "placeholders have
+     no artwork" any more, it is "these eleven have none and that one has this",
+     and both halves are asserted — an exception nobody can see the edge of is
+     how the other eleven quietly get their pictures back. */
+  let withArtwork = 0;
+
   for (const page of pages) {
     const html = await (await render(page.path)).text();
+
+    if (page.pattern) {
+      withArtwork += 1;
+      assert.match(
+        html,
+        new RegExp(`service-hero__pattern service-hero__pattern--${page.pattern}`),
+        `${page.path} has lost the artwork it is meant to carry`,
+      );
+      /* And it must NOT be laid out as a hero with an empty middle:
+         `service-hero--bare` gathers the foot to the right because there is no
+         drawing holding it, which is the wrong arrangement once there is. */
+      assert.doesNotMatch(
+        html,
+        /service-hero--bare/,
+        `${page.path} has artwork and the bare hero's layout at once`,
+      );
+
+      /* **And the foot must reach the grid, not a box inside it.** This shipped
+         broken once: dropping the `service-hero__aside` CLASS while leaving its
+         `<div>` in place handed the twelve-column placements — the sentence at
+         1-4, the way in at 9 to the end — to a wrapper that had none, and the
+         two of them shared one auto-placed cell. The sentence came out set one
+         word to a line, on top of the artwork.
+
+         Asserted as adjacency, because that is the only thing that tells the
+         two apart in the markup: with the wrapper gone the paragraph follows
+         the drawing directly. */
+      assert.doesNotMatch(
+        html,
+        /<div><p class="service-hero__support"/,
+        `${page.path} wraps its hero foot in a box with no placement`,
+      );
+      assert.match(
+        html,
+        /data-service-hero-pattern="true"><\/div><p class="service-hero__support"/,
+        `${page.path} does not put its hero foot straight into the grid`,
+      );
+      continue;
+    }
 
     assert.doesNotMatch(
       html,
@@ -232,6 +321,16 @@ test("the unwritten heroes carry no artwork", async () => {
       `${page.path} leaves its foot at two opposite edges`,
     );
   }
+
+  /* Exactly one exception, counted. Without this the test passes just as
+     happily with a drawing added to every row — each page would be checked
+     against its own `pattern` field and agree with itself, which is the failure
+     mode of every rule that carries its exception in the same table. */
+  assert.equal(
+    withArtwork,
+    1,
+    "the no-artwork rule has more than the one exception the owner named",
+  );
 });
 
 test("no link on the site points at an anchor its page has not got", async () => {

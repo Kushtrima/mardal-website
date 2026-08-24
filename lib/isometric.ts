@@ -172,16 +172,14 @@ const scenes = {
     block(1.15, 1.15, 0, 1, 1, 0.18),
     block(0.575, 0.575, 1.3, 1, 1, 1),
   ],
-  /** Four systems, joined on every side. */
-  "system-integration": [
-    block(0, 0, 0, 0.85, 0.85, 0.85),
-    block(1.95, 0, 0, 0.85, 0.85, 0.85),
-    block(0, 1.95, 0, 0.85, 0.85, 0.85),
-    block(1.95, 1.95, 0, 0.85, 0.85, 0.85),
-    block(0.8, 0.28, 0.32, 1.2, 0.3, 0.12),
-    block(0.8, 2.23, 0.32, 1.2, 0.3, 0.12),
-    block(0.28, 0.8, 0.32, 0.3, 1.2, 0.12),
-    block(2.23, 0.8, 0.32, 0.3, 1.2, 0.12),
+  /** A page laid out, and one piece of it lifted clear to be worked on. */
+  "ux-ui-branding": [
+    block(0, 0, 0, 2.5, 2.6, 0.16),
+    block(0.25, 0.25, 0.16, 1.05, 1.35, 0.12),
+    block(1.45, 0.25, 0.16, 0.8, 0.6, 0.12),
+    block(1.45, 1.0, 0.16, 0.8, 0.6, 0.12),
+    block(0.25, 1.75, 0.16, 2, 0.6, 0.12),
+    block(0.7, 0.9, 1.15, 1.3, 0.95, 0.16),
   ],
   /** Everything narrowing down to one place to work. */
   "crm-solutions": [
@@ -244,7 +242,7 @@ export type IsoSceneName = keyof typeof scenes;
 /** Describes the drawing rather than repeating the heading beside it. */
 export const isoSceneLabels: Record<IsoSceneName, string> = {
   "ai-automation": "Animated isometric tiles beneath a raised cube",
-  "system-integration": "Animated isometric blocks joined on every side",
+  "ux-ui-branding": "Animated isometric panels laid out on a sheet",
   "crm-solutions": "Animated isometric steps narrowing to one point",
   "custom-software": "Animated isometric blocks fitted to each other",
   "web-platforms": "Animated isometric tiled surface",

@@ -6,13 +6,13 @@ import { HeaderSpace } from "../../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
-import { systemIntegration } from "../../../content/system-integration";
+import { websiteApps } from "../../../content/website-apps";
 import { products } from "../../../content/home";
 import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
-  title: systemIntegration.title,
-  description: systemIntegration.description,
+  title: websiteApps.title,
+  description: websiteApps.description,
 };
 
 function ServiceWords({ className, text }: { className: string; text: string }) {
@@ -30,8 +30,8 @@ function ServiceWords({ className, text }: { className: string; text: string }) 
   );
 }
 
-export default function SystemIntegrationPage() {
-  const serviceCards = buildServiceCards(systemIntegration.chapters);
+export default function WebPlatformsAppsPage() {
+  const serviceCards = buildServiceCards(websiteApps.chapters);
 
   return (
     <>
@@ -39,7 +39,7 @@ export default function SystemIntegrationPage() {
       <ServicePageMotion />
 
       <main
-        className="service-page service-page--system-integration"
+        className="service-page service-page--website-apps"
         id="main-content"
         data-service-page
       >
@@ -47,17 +47,17 @@ export default function SystemIntegrationPage() {
 
         <section
           className="service-hero"
-          aria-labelledby="system-integration-title"
+          aria-labelledby="website-apps-title"
           data-service-hero
         >
           <Container className="service-hero__inner">
             <div className="service-hero__intro">
               <h1
                 className="service-hero__title"
-                id="system-integration-title"
+                id="website-apps-title"
                 data-service-hero-title
               >
-                {systemIntegration.heroTitleLines.map((line) => (
+                {websiteApps.heroTitleLines.map((line) => (
                   <span className="service-hero__title-line" key={line}>
                     {line}
                   </span>
@@ -66,13 +66,13 @@ export default function SystemIntegrationPage() {
             </div>
 
             <div
-              className="service-hero__pattern service-hero__pattern--system-integration"
+              className="service-hero__pattern service-hero__pattern--website-apps"
               aria-hidden="true"
               data-service-hero-pattern
             />
 
             <p className="service-hero__support" data-service-hero-support>
-              {systemIntegration.support}
+              {websiteApps.support}
             </p>
 
             <a
@@ -80,7 +80,7 @@ export default function SystemIntegrationPage() {
               href={products.ctaHref}
               data-service-hero-cta
             >
-              {systemIntegration.heroCta}
+              {websiteApps.heroCta}
               <PixelArrow
                 className="service-hero__cta-arrow"
                 direction="up-right"
@@ -108,7 +108,7 @@ export default function SystemIntegrationPage() {
 
         <section
           className="service-offerings"
-          aria-labelledby="system-integration-services-title"
+          aria-labelledby="website-apps-services-title"
           data-route-section
           data-enter-mode="fade"
           data-service-offerings
@@ -117,16 +117,16 @@ export default function SystemIntegrationPage() {
             <Container className="service-journey__layout">
               <h2
                 className="visually-hidden"
-                id="system-integration-services-title"
+                id="website-apps-services-title"
               >
-                System Integration Services
+                Website &amp; Apps Services
               </h2>
 
               <nav
                 className="service-journey__nav"
                 aria-label="Service categories"
               >
-                {systemIntegration.chapters.map((chapter, index) => (
+                {websiteApps.chapters.map((chapter, index) => (
                   <a
                     className={`service-journey__nav-link${
                       index === 0 ? " is-active" : ""
@@ -198,7 +198,7 @@ export default function SystemIntegrationPage() {
               <div className="service-journey__controls">
                 <a
                   className="service-journey__skip"
-                  href="#system-integration-cta"
+                  href="#website-apps-cta"
                   data-scroll-direct
                   data-scroll-duration="1.5"
                   data-scroll-ease="sine.in"
@@ -214,11 +214,11 @@ export default function SystemIntegrationPage() {
 
                 <a
                   className="service-journey__next"
-                  href={`#${systemIntegration.chapters[1].services[0].id}`}
+                  href={`#${websiteApps.chapters[1].services[0].id}`}
                   data-service-next-link
                 >
                   <span data-service-next-label>
-                    {systemIntegration.chapters[1].title}
+                    {websiteApps.chapters[1].title}
                   </span>
                   <PixelArrow
                     className="service-journey__next-arrow"
@@ -233,8 +233,8 @@ export default function SystemIntegrationPage() {
 
         <section
           className="service-cta"
-          id="system-integration-cta"
-          aria-labelledby="system-integration-cta-title"
+          id="website-apps-cta"
+          aria-labelledby="website-apps-cta-title"
           data-route-section
         >
           <Container>
@@ -245,13 +245,13 @@ export default function SystemIntegrationPage() {
             >
               <h2
                 className="service-cta__title"
-                id="system-integration-cta-title"
+                id="website-apps-cta-title"
               >
-                {systemIntegration.cta.title}
+                {websiteApps.cta.title}
               </h2>
 
               <a className="service-cta__link" href={products.ctaHref}>
-                {systemIntegration.cta.label}
+                {websiteApps.cta.label}
                 <PixelArrow className="service-cta__arrow" direction="up-right" size="small" />
               </a>
             </div>

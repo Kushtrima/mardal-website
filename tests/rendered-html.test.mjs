@@ -133,9 +133,32 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /mega-menu__(meta|eyebrow|description|number|view-all)/);
   assert.doesNotMatch(html, /Mardal Services/);
   assert.match(html, /class="mega-menu__links"/);
-  assert.match(html, /AI &amp; Automation/);
-  assert.match(html, /System Integration/);
-  assert.match(html, /CRM Solutions/);
+
+  /* **The five services, in the owner's order of 2026-08-24.** Read out of the
+     panel and compared as a list, because the names on their own passed while
+     the order was anything at all — and the order is the whole of what was
+     asked for. UX/UI & Branding is new and has a placeholder behind it; Website
+     & Apps is the renamed Web Platforms & Apps. */
+  const servicesPanel = html.match(/<ul class="mega-menu__links">[\s\S]*?<\/ul>/)?.[0];
+  assert.ok(servicesPanel, "the services panel is not rendered");
+  assert.deepEqual(
+    [...servicesPanel.matchAll(/class="mega-menu__label">([^<]*)</g)].map((m) => m[1]),
+    [
+      "UX/UI &amp; Branding",
+      "Website &amp; Apps",
+      "AI &amp; Automation",
+      "CRM Solutions",
+      "Custom Software",
+    ],
+  );
+
+  /* **System Integration was deleted outright, not hidden.** Owner's word, and
+     it took a route, a content module, an isometric scene, a hero pattern and a
+     homepage box with it. Asserted across the whole page rather than the panel,
+     because the box on the homepage and the footer's copy of this list were two
+     of the five places it lived. */
+  assert.doesNotMatch(html, /System Integration|system-integration/);
+  assert.doesNotMatch(html, /Web Platforms|web-platforms-apps/);
   assert.match(html, /Company/);
 
   /* Clients: the one word in the bar that is both a link and a trigger. It is a
@@ -717,54 +740,6 @@ test("server-renders the Custom Software service page", async () => {
   assert.doesNotMatch(html, /Custom software is built for a specific/);
 });
 
-test("server-renders the System Integration service page", async () => {
-  const response = await render("/services/system-integration");
-  assert.equal(response.status, 200);
-
-  const html = await response.text();
-  assert.match(html, /<title>System Integration — Mardal<\/title>/i);
-  assert.match(html, /class="service-hero__title"/);
-  assert.match(html, /Keep your business/);
-  assert.match(html, /in sync\./);
-  assert.match(html, /Connect your CRM, ERP, and business apps\./);
-  assert.match(
-    html,
-    /class="service-hero__pattern service-hero__pattern--system-integration"/,
-  );
-  assert.match(html, /System Integration Services/);
-  assert.match(html, /Business Integrations/);
-  assert.match(html, /App Connections/);
-  assert.match(html, /Integration Support/);
-  assert.equal((html.match(/class="service-card"/g) ?? []).length, 9);
-  assert.equal((html.match(/data-service-group-link=/g) ?? []).length, 3);
-  assert.match(
-    html,
-    /class="service-journey__skip" href="#system-integration-cta" data-scroll-direct="true" data-scroll-duration="1.5" data-scroll-ease="sine.in" data-scroll-preserve-view="true" data-service-skip="true"[^>]*>[\s\S]*?pixel-x[\s\S]*?Skip[\s\S]*?<\/a>/,
-  );
-  assert.match(html, /class="service-cta" id="system-integration-cta"/);
-  assert.match(html, /class="service-journey__controls"/);
-  assert.match(
-    html,
-    /class="service-cta__inner" data-enter="true" data-enter-mode="none"/,
-  );
-  assert.match(html, /CRM &amp; ERP/);
-  assert.match(html, /E-commerce &amp; Operations/);
-  assert.match(html, /Accounting &amp; Payments/);
-  assert.match(html, /Custom Connections/);
-  assert.match(html, /Communication Tools/);
-  assert.match(html, /Data Transfer &amp; Sync/);
-  assert.match(html, /Connect the systems used across sales, orders, inventory/);
-  assert.match(
-    html,
-    /<span data-service-word="true">Connect<\/span> <span data-service-word="true">the<\/span>/,
-  );
-  assert.match(html, /We connect websites, internal software, and specialist business apps/);
-  assert.match(html, /Microsoft Teams, and Slack/);
-  assert.match(html, /Information from older software is cleaned and moved into a new system/);
-  assert.match(html, /class="site-nav"/);
-  assert.match(html, /<footer class="site-footer"/);
-});
-
 test("server-renders the CRM Solutions service page", async () => {
   const response = await render("/services/crm-solutions");
   assert.equal(response.status, 200);
@@ -845,8 +820,25 @@ test("server-renders the CRM Solutions service page", async () => {
 test("the menu points at the service pages that exist", async () => {
   const html = await (await render()).text();
   assert.match(html, /href="\/services\/ai-automation"/);
-  assert.match(html, /href="\/services\/system-integration"/);
   assert.match(html, /href="\/services\/crm-solutions"/);
+  assert.match(html, /href="\/services\/website-apps"/);
+  assert.match(html, /href="\/services\/ux-ui-branding"/);
+
+  /* Not a list of strings — every href the panel carries is fetched. The old
+     version of this test asserted three literals and would have gone on passing
+     with the route renamed underneath it, which is exactly what happened to
+     `/services/web-platforms-apps`. */
+  const hrefs = [
+    ...html.matchAll(/class="mega-menu__link" href="(\/services\/[^"]+)"/g),
+  ].map((m) => m[1]);
+  assert.equal(hrefs.length, 5);
+  for (const href of hrefs) {
+    assert.equal(
+      (await render(href)).status,
+      200,
+      `${href} is in the menu and does not resolve`,
+    );
+  }
 });
 
 /* The block that closes a piece. It is the one part of the blog with logic in

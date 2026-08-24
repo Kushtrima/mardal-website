@@ -1,7 +1,7 @@
 /**
  * The pages that exist as an address before they exist as writing.
  *
- * Every word in the header and the footer now goes to a page. Eleven of those
+ * Every word in the header and the footer now goes to a page. Twelve of those
  * pages have not been written yet, and until today each of them was an anchor:
  * `#privacy` and `#careers` pointed at nothing at all, and `#products`,
  * `#company` and the three product anchors only scrolled the homepage — from
@@ -25,7 +25,8 @@
  *
  * Careers went that way first, 2026-08-19: it left this module for
  * `content/careers.ts` and `app/careers/page.tsx`, and the count below went
- * from twelve to eleven. `PlaceholderKey` is derived from these keys, so
+ * from twelve to eleven. UX/UI & Branding brought it back to twelve on
+ * 2026-08-24 — a service named in the menu with no copy written for it yet. `PlaceholderKey` is derived from these keys, so
  * removing one makes the compiler find every reference to it.
  */
 
@@ -51,6 +52,21 @@ export type Placeholder = {
   /** The way out, and the point of the page: the nearest real thing today. */
   readonly cta: string;
   readonly ctaHref: string;
+  /**
+   * The hero's drawing, as the modifier on `.service-hero__pattern`.
+   *
+   * **Optional, and almost always absent.** The owner took the artwork off
+   * these heroes on 2026-08-19 — "at products, at company we dont need that
+   * pattern design" — and a test holds it off all of them, because a missing
+   * picture reads as an omission and the reflex is to put it back.
+   *
+   * What changed on 2026-08-24 is that one of these is a SERVICE. UX/UI &
+   * Branding stands in a list of five beside four written service pages that
+   * each carry a drawing, and a bare hero there does not read as restraint, it
+   * reads as the one that is not finished. An index or a legal page has no such
+   * siblings, so those stay bare and this field stays undefined on them.
+   */
+  readonly pattern?: string;
 };
 
 const getInTouch = {
@@ -59,7 +75,7 @@ const getInTouch = {
 } as const;
 
 /**
- * Keyed by route, and the keys are read by the test that walks all eleven.
+ * Keyed by route, and the keys are read by the test that walks all twelve.
  * `/products/arvena-ai` is written `products/arvena-ai` — the leading slash is
  * added where it is needed rather than stored eleven times.
  */
@@ -101,10 +117,25 @@ export const placeholders = {
     title: "Services",
     description: "The five services Mardal offers, in one place.",
     support: "The five ways we work, gathered in one place.",
-    /* The five service pages are the one part of this site that is finished,
-       so the way out of the index that has not been written is into them. */
+    /* Four of the five service pages are written, which is the most finished
+       part of this site, so the way out of the index that has not been written
+       is into them. It was five until 2026-08-24: System Integration was
+       deleted and UX/UI & Branding took its place in the list, arriving as an
+       address before it arrives as writing — the entry directly below. */
     cta: "See a service page",
     ctaHref: "/services/ai-automation",
+  },
+  "services/ux-ui-branding": {
+    label: "UX/UI & Branding",
+    title: "UX/UI & Branding",
+    description: "Design and identity, made to be built.",
+    support: "Design and identity, made to be built.",
+    /* The nearest real thing today: Website & Apps opens on a design chapter,
+       which is the closest this site comes to saying what this page will. */
+    cta: "See Website & Apps",
+    ctaHref: "/services/website-apps",
+    /* The only placeholder with a drawing — see `pattern` on the type above. */
+    pattern: "ux-ui-branding",
   },
   company: {
     label: "Company",

@@ -7,14 +7,16 @@ import { PixelArrow } from "../ui/PixelArrow";
 import {
   placeholderTitleLines,
   placeholders,
+  type Placeholder,
   type PlaceholderKey,
 } from "../../content/placeholders";
 
 /**
  * A page that exists before its writing does.
  *
- * Eleven routes render this and differ by one word, which is the whole reason
- * it is a component rather than eleven near-identical files: the day one of
+ * Twelve routes render this and differ by one word — and, since 2026-08-24,
+ * by whether they carry a drawing. Which is the whole reason it is a component
+ * rather than twelve near-identical files: the day one of
  * them is written, its route file stops calling this and nothing else moves —
  * which Careers did first, on 2026-08-19, taking the count from twelve.
  *
@@ -28,7 +30,40 @@ import {
  * ServiceOfferingsScroll. There is no journey here, and no body at all.
  */
 export function PlaceholderPage({ page }: { page: PlaceholderKey }) {
-  const content = placeholders[page];
+  /* Widened to `Placeholder` on purpose. The record is `as const`, so each
+     entry's inferred type is its own literal shape and `pattern` exists only on
+     the one that declares it — reading it off the union is an error on the
+     other eleven. The declared type is where the field is optional, so that is
+     the type to read it through. */
+  const content: Placeholder = placeholders[page];
+
+  /* Declared once because it is rendered two ways — see the note at the foot of
+     the hero below. A fragment, so that when it goes straight into the grid it
+     adds no box of its own between the grid and its items. */
+  const foot = (
+    <>
+      <p className="service-hero__support" data-service-hero-support>
+        {content.support}
+      </p>
+
+      {/* The point of the page. A reader who wanted Products and was told it is
+          being written has been given nothing unless they are also told where
+          the products are today — so this goes to the nearest real thing rather
+          than to a generic call to action. */}
+      <a
+        className="service-hero__cta"
+        href={content.ctaHref}
+        data-service-hero-cta
+      >
+        {content.cta}
+        <PixelArrow
+          className="service-hero__cta-arrow"
+          direction="up-right"
+          size="small"
+        />
+      </a>
+    </>
+  );
 
   return (
     <>
@@ -43,7 +78,14 @@ export function PlaceholderPage({ page }: { page: PlaceholderKey }) {
         <HeaderSpace />
 
         <section
-          className="service-hero service-hero--bare"
+          /* `service-hero--bare` owns everything a hero without artwork needs:
+             the foot gathered on the right, the heading measure, the phone
+             layout. So the one placeholder that HAS artwork must not carry it,
+             or it would be laid out as though the middle were empty while a
+             drawing stood in it. */
+          className={`service-hero${
+            content.pattern ? "" : " service-hero--bare"
+          }`}
           aria-labelledby="placeholder-title"
           data-service-hero
         >
@@ -78,10 +120,27 @@ export function PlaceholderPage({ page }: { page: PlaceholderKey }) {
               </h1>
             </div>
 
-            {/* No artwork. These carried the redaction bars — the one place on
-                the site where that motif is literal rather than decorative,
-                since the pages genuinely are writing that is not there yet.
-                Owner took it out, at Products and Company.
+            {content.pattern ? (
+              /* **The exception, and there is one.** UX/UI & Branding is a
+                 service, standing in a list of five beside four written pages
+                 that each carry a drawing — so a bare hero there does not read
+                 as restraint, it reads as the unfinished one. Owner's call,
+                 2026-08-24; the drawing is the one System Integration left
+                 behind when it was deleted from that same list.
+
+                 Driven by the content entry rather than by the route, so the
+                 rule is stated where the other eleven state their absence. */
+              <div
+                className={`service-hero__pattern service-hero__pattern--${content.pattern}`}
+                aria-hidden="true"
+                data-service-hero-pattern
+              />
+            ) : null}
+
+            {/* No artwork on the rest. These carried the redaction bars — the
+                one place on the site where that motif is literal rather than
+                decorative, since the pages genuinely are writing that is not
+                there yet. Owner took it out, at Products and Company.
 
                 Which is the second time this hero has lost its picture: Clients
                 did, and everything below is the arrangement that came out of
@@ -95,29 +154,26 @@ export function PlaceholderPage({ page }: { page: PlaceholderKey }) {
                 ServicePageEntry finds both by their data attributes with a
                 descendant query, so wrapping them changes nothing it does — and
                 it skips the pattern tween on a hero that has none. */}
-            <div className="service-hero__aside">
-              <p className="service-hero__support" data-service-hero-support>
-                {content.support}
-              </p>
+            {/* **The wrapper is the arrangement, so on the page with a drawing
+                there must be NO wrapper — not a wrapper without its class.**
+                `.service-hero__inner` is a twelve-column grid and the base rules
+                place the sentence at columns 1-4 and the way in at 9 to the end,
+                both on the last row. Leaving a classless `<div>` around them
+                took those placements away from the two elements and gave the
+                DIV one auto-placed cell to share, which is how the sentence
+                ended up set one word to a line over the artwork.
 
-              {/* The point of the page. A reader who wanted Products and was
-                  told it is being written has been given nothing unless they
-                  are also told where the products are today — so this goes to
-                  the nearest real thing rather than to a generic call to
-                  action. */}
-              <a
-                className="service-hero__cta"
-                href={content.ctaHref}
-                data-service-hero-cta
-              >
-                {content.cta}
-                <PixelArrow
-                  className="service-hero__cta-arrow"
-                  direction="up-right"
-                  size="small"
-                />
-              </a>
-            </div>
+                So: gathered into the aside when there is no drawing, and
+                straight into the grid when there is.
+
+                ServicePageEntry finds both by their data attributes with a
+                descendant query, so it does not care which of the two it
+                gets. */}
+            {content.pattern ? (
+              foot
+            ) : (
+              <div className="service-hero__aside">{foot}</div>
+            )}
           </Container>
 
           {/* The same dissolve the other heroes leave on: a blur boundary

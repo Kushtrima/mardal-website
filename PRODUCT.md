@@ -15,11 +15,14 @@ segment the delivered archive actually reflects — Spitex Schwab AG (Swiss
 home-care), Stolzbau GmbH — rather than the sector-neutral audience the current
 site copy addresses.
 
-The buyer already runs real systems; this is not greenfield work. Integration
-copy assumes an existing "CRM, ERP, online store, accounting software, and
-business apps" (`content/system-integration.ts:6-7`); CRM copy assumes a company
-managing information "across spreadsheets, emails, documents, and individual
-employee notes" (`content/crm-solutions.ts:25`).
+The buyer already runs real systems; this is not greenfield work. CRM copy
+assumes a company managing information "across spreadsheets, emails, documents,
+and individual employee notes" (`content/crm-solutions.ts:25`). The clearest
+statement of this used to be the integration copy — an existing "CRM, ERP,
+online store, accounting software, and business apps" — but System Integration
+was deleted on 2026-08-24 and that assumption is now stated nowhere on the site.
+**Worth a decision: it is the truest sentence about who buys this, and it left
+with the page.**
 
 Two roles appear in the worked examples and both are real buyers:
 
@@ -145,11 +148,22 @@ holding only an orphan `node_modules`. Remote is
 ## Capabilities and Constraints
 
 **The offer is exactly five services**, named identically in navigation,
-homepage boxes and route folder names: AI & Automation, System Integration, CRM
-Solutions (to be renamed CRM Systems), Custom Software, Web Platforms & Apps.
+homepage boxes and route folder names. Changed by the owner on 2026-08-24 and
+now, in order: UX/UI & Branding, Website & Apps, AI & Automation, CRM Solutions
+(to be renamed CRM Systems), Custom Software.
 
-48 named capabilities exist, unevenly distributed — CRM 18, AI & Automation 12,
-System Integration 9, Custom Software 9, **Web Platforms & Apps 0**.
+- **System Integration was deleted outright** — page, copy, homepage box,
+  artwork and all.
+- **Web Platforms & Apps became Website & Apps**, and its route moved from
+  `/services/web-platforms-apps` to `/services/website-apps`. A permanent
+  redirect off the old path is in `next.config.ts`.
+- **UX/UI & Branding is named but not written.** It is a placeholder route, the
+  only service in `content/placeholders.ts`. **Four of the five services have
+  copy; this one is an address with a heading that says so.**
+
+39 named capabilities exist, unevenly distributed — CRM 18, AI & Automation 12,
+Custom Software 9, **Website & Apps 0**, **UX/UI & Branding 0**. The count was
+48 across five services before System Integration's 9 left with it.
 
 - **Custom Software is organised by client intention**, not technology: build
   for employees, build for customers, or improve software that already exists.
@@ -189,9 +203,10 @@ undecided; product IP ownership relative to the company is unrecorded.
 
 **Known broken or incomplete at time of writing:**
 
-- `/services/web-platforms-apps` is a hero-only stub and the one page that
-  renders no footer — contact details, nav columns and the `#contact` anchor do
-  not exist on that route, so the header CTA is dead.
+- `/services/website-apps` — recorded here when it was `web-platforms-apps` and
+  a hero-only stub with no footer. It has its four chapters and its footer now;
+  what has not changed is that none of its cards names a capability, which is
+  the **0** in the count above.
 - Navigation promises roughly four times more site than exists: 8 of 20 fragment
   links dead on the homepage, 18 of 24 on any service page.
 - `npm test` fails 2 of 5 on HEAD (stale assertions for renamed copy); two

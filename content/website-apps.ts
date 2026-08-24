@@ -1,7 +1,7 @@
 /**
- * Copy for the Web Platforms & Apps service page.
+ * Copy for the Website & Apps service page.
  *
- * Same shape as the other four service pages. Four chapters, each one an entry
+ * Same shape as the other three service pages. Four chapters, each one an entry
  * in the left-hand nav, and each holding only the services that belong to it:
  * design before the build, everything that runs in a browser, everything that
  * runs on a phone, and how AI is built into the product itself. Each service is
@@ -10,8 +10,12 @@
  * Launch and growth is deliberately one card inside Mobile Apps rather than a
  * chapter of its own.
  */
-export const webPlatformsApps = {
-  title: "Web Platforms & Apps",
+/* Renamed from Web Platforms & Apps on the owner's word, 2026-08-24, and the
+   route moved with it — see next.config.ts for the redirect off the old one.
+   The chapter titled "Web Platforms" below keeps its name: it is one chapter
+   inside this page and not the page. */
+export const websiteApps = {
+  title: "Website & Apps",
   description:
     "Websites, online stores, portals, and mobile apps, built for the people who use them.",
   /* Kept to the length the other service heroes use -- their first lines run
