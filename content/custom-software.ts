@@ -14,14 +14,6 @@ export const customSoftware = {
   ],
   support: "Custom apps, platforms, and tools made for your team.",
   heroCta: "Let’s build",
-  overview: {
-    title: "When standard software no longer fits",
-    columns: [
-      "Custom software is built for a specific business need. It is the right choice when ready-made products force your team into workarounds, leave important steps outside the system, or cannot support a new service.",
-      "We design internal tools, customer portals, web platforms, mobile apps, and operational systems around the people who will use them and the work they need to complete.",
-      "We can build a new product, replace older software, or extend what already exists. Each project covers planning, design, development, testing, launch, and ongoing improvement.",
-    ],
-  },
   chapters: [
     {
       id: "for-your-team",

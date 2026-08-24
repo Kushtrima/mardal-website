@@ -107,33 +107,6 @@ export default function CustomSoftwarePage() {
         </section>
 
         <section
-          className="service-overview"
-          aria-labelledby="custom-software-overview-title"
-          data-route-section
-        >
-          <Container
-            className="service-overview__inner"
-            data-enter
-            data-enter-mode="fade"
-          >
-            <h2
-              className="service-overview__title"
-              id="custom-software-overview-title"
-            >
-              {customSoftware.overview.title}
-            </h2>
-
-            <div className="service-overview__columns">
-              {customSoftware.overview.columns.map((column) => (
-                <p className="service-overview__copy" key={column}>
-                  {column}
-                </p>
-              ))}
-            </div>
-          </Container>
-        </section>
-
-        <section
           className="service-offerings"
           aria-labelledby="custom-software-services-title"
           data-service-offerings

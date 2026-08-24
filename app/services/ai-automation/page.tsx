@@ -115,30 +115,6 @@ export default function AiAutomationPage() {
         </section>
 
         <section
-          className="service-overview"
-          aria-labelledby="service-overview-title"
-          data-route-section
-        >
-          <Container
-            className="service-overview__inner"
-            data-enter
-            data-enter-mode="fade"
-          >
-            <h2 className="service-overview__title" id="service-overview-title">
-              {aiAutomation.overview.title}
-            </h2>
-
-            <div className="service-overview__columns">
-              {aiAutomation.overview.columns.map((column) => (
-                <p className="service-overview__copy" key={column}>
-                  {column}
-                </p>
-              ))}
-            </div>
-          </Container>
-        </section>
-
-        <section
           className="service-offerings"
           aria-labelledby="service-offerings-title"
           data-service-offerings

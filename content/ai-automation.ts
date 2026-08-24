@@ -10,14 +10,6 @@ export const aiAutomation = {
   lede: "Turn repetitive work into intelligent workflows.",
   support: "Build smarter operations with AI agents.",
   heroCta: "Let’s build",
-  overview: {
-    title: "AI designed around real business work",
-    columns: [
-      "We start by understanding how work moves through your business: where information enters, who handles it, what decisions are repeated, and where delays happen. Then we build AI and automation that fit directly into that process.",
-      "The result may be an assistant that answers customers, a workflow that processes documents, a voice agent that manages calls, or an automated system that moves work from one step to the next.",
-      "Each solution connects with the business systems, approved information, and digital tools your team already uses. We apply AI where it saves time, improves consistency, and makes work easier to manage.",
-    ],
-  },
   chapters: [
     {
       id: "ai-applications",

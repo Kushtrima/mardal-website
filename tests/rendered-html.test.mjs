@@ -485,6 +485,17 @@ test("server-renders the AI & Automation service page", async () => {
   // of it is left behind.
   assert.doesNotMatch(html, /service-banner/);
 
+  /* The three-column overview between the hero and the journey is gone, taken
+     out on the owner's word. It was the LAST of two — Custom Software carried
+     the other and lost it the same day — so `.service-overview` is now a block
+     no page renders, and its rules, its two media-query overrides and the
+     `--service-text-overview-title` token came out of the stylesheet with it.
+     Both halves are asserted here and on the Custom Software page below: the
+     markup, and the copy in `content/ai-automation.ts`, which was deleted so no
+     one re-renders a field that is still sitting in the module. */
+  assert.doesNotMatch(html, /service-overview/);
+  assert.doesNotMatch(html, /We start by understanding how work moves/);
+
   /* The service journey renders every card in source order before motion is
      enhanced, so the MARKUP is complete without client-side JavaScript.
      Say markup and not page, because for a long time this comment was read as
@@ -595,6 +606,27 @@ test("server-renders the AI & Automation service page", async () => {
   assert.match(html, /<footer class="site-footer"/);
   assert.match(html, /class="pixel-arrow /);
   assert.doesNotMatch(html, /[↗→←]/);
+});
+
+test("server-renders the Custom Software service page", async () => {
+  const response = await render("/services/custom-software");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /<title>Custom Software — Mardal<\/title>/i);
+  assert.match(html, /class="service-hero__title"/);
+  assert.match(html, /Build the software/);
+  assert.match(html, /your business actually needs\./);
+  assert.match(html, /Custom apps, platforms, and tools made for your team\./);
+  assert.equal((html.match(/class="service-card"/g) ?? []).length, 9);
+
+  /* The overview section is gone here as well, and this page is why the CSS
+     could go: it was the second and last renderer of `.service-overview`.
+     The page had NO test of its own before this one, so the section could have
+     come back on it and the suite would have stayed green. */
+  assert.doesNotMatch(html, /service-overview/);
+  assert.doesNotMatch(html, /When standard software no longer fits/);
+  assert.doesNotMatch(html, /Custom software is built for a specific/);
 });
 
 test("server-renders the System Integration service page", async () => {
