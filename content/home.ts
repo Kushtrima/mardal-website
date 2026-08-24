@@ -214,9 +214,19 @@ export const contactEmail = "info@mardal.co";
  * screen reader is given in place of that mark, since a CSS shape says nothing.
  */
 export const fusion = {
-  left: ["Artificial", "Intelligence"],
-  right: ["Human", "Creativity"],
-  spoken: "Artificial Intelligence plus Human Creativity",
+  /* Human Creativity reads first — owner's call, 2026-08-24, and the two
+     halves swapped rather than the component being taught which side to put
+     which on. The field names say where the words go and that is all the
+     header needs to know; nothing else on the site reads either of them, and
+     the stylesheet has no rule that treats one half differently from the
+     other. */
+  left: ["Human", "Creativity"],
+  right: ["Artificial", "Intelligence"],
+  /* The drawn plus is hidden from the accessible tree, so this is the whole of
+     what the heading is read as — it has to follow the eye's order, or a
+     screen reader is given the old sentence off a page that now says the
+     other. */
+  spoken: "Human Creativity plus Artificial Intelligence",
   copy:
     "We unite the power and precision of artificial intelligence with the imagination and originality of human creativity, creating technology that thinks smarter, feels more human, and unlocks new possibilities. Together, these strengths help us build solutions that solve challenges, transform how businesses work, and deliver lasting impact.",
 } as const;

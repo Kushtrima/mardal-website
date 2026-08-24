@@ -516,7 +516,25 @@ test("server-renders the Mardal homepage", async () => {
   // The plus is drawn, not typed, so it has to stay out of the accessible tree
   // and the heading has to carry its own spoken name in its place.
   assert.match(html, /class="fusion-plus"[^>]*aria-hidden="true"/);
-  assert.match(html, /aria-label="Artificial Intelligence plus Human Creativity"/);
+  /* **Which half is on which side, and the spoken name agreeing with it.**
+     Human Creativity reads first as of 2026-08-24. The drawn plus is hidden
+     from the accessible tree, so `aria-label` is the entire sentence a screen
+     reader gets — swap the visual order without it and the page says one thing
+     and is read as another, which no other assertion here would notice. */
+  assert.match(html, /aria-label="Human Creativity plus Artificial Intelligence"/);
+  /* The heading's CONTENT, with its opening tag cut off. Written against the
+     whole element this assertion is vacuous: `aria-label` sits in the tag and
+     already reads "Human Creativity plus Artificial Intelligence", so the
+     first "Human" it finds is in the attribute and the order always holds.
+     It passed with the halves swapped back — that is how this was found. */
+  const fusionWords = html.match(
+    /<h2 class="fusion-title"[^>]*>([\s\S]*?)<\/h2>/,
+  )?.[1];
+  assert.ok(fusionWords, "the fusion heading is not rendered");
+  assert.ok(
+    fusionWords.indexOf("Human") < fusionWords.indexOf("Artificial"),
+    "Artificial Intelligence is reading before Human Creativity",
+  );
 
   // The isometric drawings did not come back with the section.
   assert.doesNotMatch(html, /class="iso-art"/);
