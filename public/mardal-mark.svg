@@ -5,7 +5,24 @@
   viewBox="0 0 164 164"
   fill="none"
 >
-  <g fill="#fff">
+  <!--
+    The mark colours itself rather than shipping twice.
+
+    A favicon is drawn on the browser's chrome, not on the page, so what it has
+    to survive is the visitor's browser theme — which is a separate setting from
+    the one the site's own toggle moves. The white-only version this replaces
+    was invisible on a light tab strip, and had been for as long as it existed.
+
+    Ink by default, because the light tab strip is the one most people are
+    looking at; white only when the chrome is dark.
+  -->
+  <style>
+    .mark { fill: #08080a; }
+    @media (prefers-color-scheme: dark) {
+      .mark { fill: #ffffff; }
+    }
+  </style>
+  <g class="mark">
     <rect x="0" y="55.62" width="11.29" height="52.12" />
     <rect x="15.49" y="34.09" width="11.29" height="45.87" />
     <rect x="15.49" y="83.38" width="11.29" height="45.87" />

@@ -16,6 +16,7 @@ import { navTriggerIntent } from "../../lib/nav-keys";
 import { Button } from "../ui/Button";
 import { PixelArrow } from "../ui/PixelArrow";
 import { Container } from "./Container";
+import { ThemeToggle } from "./ThemeToggle";
 import { footer, menu } from "../../content/home";
 
 type NavigationKey = (typeof menu)[number]["key"];
@@ -813,6 +814,18 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
                     {link.label}
                   </a>
                 ))}
+
+                {/* Last in the legal line, which is the one row on the site
+                    that already draws its own separators: every sibling after
+                    the first takes a hairline before it, so this arrives with
+                    the divider it needs and nothing to add. It closes the menu
+                    like the links beside it — the page has just changed colour
+                    underneath, and holding the panel open over it hides the
+                    thing you pressed the button to see. */}
+                <ThemeToggle
+                  className="mega-menu__theme"
+                  onToggle={() => setMegaMenuOpen(false)}
+                />
               </div>
 
               {/* Moved off the bar. It stood there in white on the black
@@ -975,6 +988,19 @@ export const SiteHeader = forwardRef<HTMLElement>(function SiteHeader(
               size="small"
             />
           </Button>
+
+          {/* The mega menu is not rendered at this width, so the sheet carries
+              its own. Third child of a two-row grid: it takes an implicit auto
+              row and the scrolling index above it gives up the height, rather
+              than the sheet growing past the viewport. Outside both GSAP
+              timelines, like the call to action above it. */}
+          <ThemeToggle
+            className="mobile-menu__theme"
+            onToggle={() => {
+              setMobileMenuOpen(false);
+              setMobileActiveMenu(null);
+            }}
+          />
         </Container>
       </div>
     </header>

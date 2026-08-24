@@ -32,29 +32,61 @@
 /* -------------------------------------------------------------------------- */
 
 :root {
+  /* Both themes are live at once and this decides which half of every
+     light-dark() below is read. Two words rather than one, so a visitor whose
+     system is set to light gets the light page on the very first painted frame
+     with no script involved — which is the only way to avoid a black flash on
+     a page whose canvas is #000. The toggle overrides it by writing
+     [data-theme] on this element; see the two rules under the tokens.
+
+     It also hands the native UI to the browser: scrollbars, autofill, and the
+     form controls on the role pages, none of which had been told which ground
+     they were standing on. */
+  color-scheme: light dark;
+
   --font-geist: "Geist";
 
   /* Brand and semantic colors */
-  /* The page is black; the things that sit on it — the header, the mega menu
-     and the cards — keep the lavender they have always had, so they read as
-     lit panels on the page rather than as a second dark surface. Anything
-     sitting on that lavender re-derives dark ink locally; see the block below
-     the tokens. */
-  --canvas: #000000;
-  /* The card ground, and the fill the drawings ON those cards are masked and
-     lit with — .recurring-sphere__cover, .iso-block and the keyframes that
-     animate them all read this. White here rather than only on .why-card for
-     that reason: set the ground white on its own and every shape those drawings
-     paint in --surface would still be lavender, sitting on it. */
-  --surface: #ffffff;
-  /* A panel raised off the black rather than a second colour on it. The blog
+  /* Two themes, one line each: light-dark(LIGHT, DARK).
+
+     The site ships dark and that is still the brand. But the page was white
+     until the ground was turned over, and most of the light halves below are
+     the values it wore then — they never left the file, they moved down into
+     the block that keeps the mega menu and the cards light on a black page.
+     Restoring them is what light mode is.
+
+     Writing both values on one line is the whole defence against a half-flipped
+     page: a token that has not been given its second value is visible from
+     here, rather than from the browser three pages in. A new colour token that
+     follows the page takes this form or it is a bug. */
+  --canvas: light-dark(#ffffff, #000000);
+  /* The ground a panel sits on: the mega menu, the Why Mardal cards, the boxes.
+     On black it is white, because a lit panel is how those read against the
+     page. On white it steps down to the lavender it wore when the page was
+     white — white on white is not a panel.
+
+     This was the drawings' fill as well, and could not stay both: as a ground
+     it has to move with the theme, as a fill inside the art it must stay white
+     or every masked shape inverts. The art reads --art-surface now. */
+  --surface: light-dark(#efedf8, #ffffff);
+  /* The mega menu's own ground, split back off --surface because the menu is
+     the one panel that is white in both themes. On black that was never in
+     question. On white it has to be white too: a lavender sheet over a white
+     page reads as a colour rather than as a panel standing in front of the
+     page, and the separation is the shadow down its left edge instead. */
+  --menu-surface: #ffffff;
+  /* A panel raised off the page rather than a second colour on it. The blog
      cards are the whole reason it exists: a card has to be a surface you could
-     put your finger on, and on a page this dark that is a few percent of light
-     rather than a border. Kept as light-over-canvas so it holds if the canvas
-     ever moves. */
-  --surface-raised: rgb(255 255 255 / 5%);
-  --menu-surface: #efedf8;
-  --ink: #f2f1f5;
+     put your finger on, and that is a few percent of the opposite of the ground
+     rather than a border. It was written light-over-canvas with a note that it
+     would hold if the canvas ever moved — it would not have: five per cent
+     white over white is nothing. So the lift turns over with the page. */
+  --surface-raised: light-dark(rgb(8 8 10 / 5%), rgb(255 255 255 / 5%));
+  /* The same lift, harder, for the two card hovers. It was read once and never
+     defined anywhere, so its inline fallback had been doing the work in both
+     themes — named here so it turns over with everything else. */
+  --surface-raised-strong: light-dark(rgb(8 8 10 / 8%), rgb(255 255 255 / 8%));
+  --ink: light-dark(#08080a, #f2f1f5);
   /* Long-form reading ink, one step below --ink. Full --ink on a pure black
      ground haloes: the bloom around each stroke is bearable for a headline and
      tiring across nine hundred words, which is why every publication that is
@@ -62,28 +94,46 @@
      #d0d6e0). Set here rather than as an opacity so the value is a colour that
      can be checked, and so it does not fade whatever it sits on. 15.4:1 on
      --canvas. Body copy only; headings stay on --ink, and the tonal step
-     between them is the article's first level of hierarchy. */
-  --ink-read: #dcd9e4;
-  --ink-muted: #a09aad;
+     between them is the article's first level of hierarchy.
+
+     Halation is a light-on-dark problem and only that, so the light half does
+     not dim: dark ink on white does not bloom, and stepping it back off the
+     heading would cost the hierarchy without buying the eye anything. */
+  --ink-read: light-dark(#08080a, #dcd9e4);
+  --ink-muted: light-dark(#5e5a69, #a09aad);
   /* The same job as --ink-muted with the lavender taken out. --ink-muted is
      the page's tint carried down into a quiet ink, and it works on a word or
      two — on a label, a date and three lines of standfirst together it stops
-     reading as grey and starts reading as pink. Neutral, 7.5:1 on --canvas. */
-  --ink-grey: #9a9a9a;
-  --line: rgb(242 241 245 / 72%);
-  --line-soft: rgb(242 241 245 / 16%);
-  --accent: #a98ad6;
+     reading as grey and starts reading as pink. Neutral, 7.5:1 on --canvas.
+
+     Grey stays grey across the flip — no hue is added — but the value has to
+     mirror or it stops being readable: #9a9a9a is 7.46:1 on black and 2.81:1 on
+     white. #595959 is 7.00:1 on white, which is the same weight the other way
+     up. It carries sixteen rules: labels, stamps, fact terms, form labels and
+     hints, article meta, and the numbers down the story index. */
+  --ink-grey: light-dark(#595959, #9a9a9a);
+  --line: light-dark(rgb(8 8 10 / 72%), rgb(242 241 245 / 72%));
+  --line-soft: light-dark(rgb(8 8 10 / 16%), rgb(242 241 245 / 16%));
+  /* The accent as a mark and as small type. #a98ad6 is a light purple cut for
+     black and measures 2.88:1 on white; #8362b8 is the cut the panels have been
+     using all along, 4.77:1 on white. The large purple — the footer slab — is
+     deliberately NOT this token any more; it re-derives itself locally so the
+     one big brand colour on the site does not move between themes. */
+  --accent: light-dark(#8362b8, #a98ad6);
   --accent-soft: #6f5b93;
-  /* Lighter accent for small marks and art, now that the ground is black. */
-  --accent-strong: #c0a6e6;
-  --accent-contrast: #000000;
-  --focus: #b294e6;
+  /* Lighter accent for small marks and art on black; the darker cut of the same
+     purple on white, where a light one would disappear. */
+  --accent-strong: light-dark(#6f4fa7, #c0a6e6);
+  /* The ink that stands on an --accent fill, and it inverts with it: black on
+     the light purple, white on the dark one. */
+  --accent-contrast: light-dark(#ffffff, #000000);
+  --focus: light-dark(#6f4fa7, #b294e6);
   /* The canvas at partial strength, for the veil and the fade over the hero
-     bars — both follow the page, so both are black with the canvas.
+     bars — both follow the page, so both turn over with the canvas.
      --art-surface is the fill a card drawing sits at before it takes a tint;
-     it follows the cards, not the page, so it stays white. */
-  --canvas-veil: rgb(0 0 0 / 4%);
-  --canvas-fade: rgb(0 0 0 / 48%);
+     it follows the cards, not the page, so it stays white in both themes. */
+  --canvas-veil: light-dark(rgb(255 255 255 / 4%), rgb(0 0 0 / 4%));
+  --canvas-fade: light-dark(rgb(255 255 255 / 48%), rgb(0 0 0 / 48%));
   --art-surface: #ffffff;
 
   /* Card tints. Each is a flat panel colour and the deeper shade of itself the
@@ -279,6 +329,18 @@
   --radius-circle: 50%;
   --shadow-soft: 0 1rem 3rem rgb(21 21 21 / 8%);
   --shadow-accent: 0 0.75rem 2rem rgb(83 55 124 / 22%);
+  /* The mega menu's left edge, and only its left edge. The panel is white on a
+     white page, so the seam where it begins is the one thing telling you there
+     are two surfaces — a shadow all the way round would draw a box, which the
+     panel is not: it runs off the top, right and bottom of the window.
+
+     The negative spread is what keeps it to one side, and setting it equal to
+     the offset is what keeps it short. Offset 12 left, blur 24, spread -12: the
+     shadow rectangle lands exactly on the panel's own edge and only the blur
+     escapes it, so it reaches about 12px onto the page at the left and nothing
+     above, below or to the right. Enough to separate two whites at the seam and
+     not enough to read as a drop shadow under a floating card. */
+  --shadow-menu-edge: -0.75rem 0 1.5rem -0.75rem rgb(21 21 21 / 10%);
 
   /* Motion */
   --duration-fast: 180ms;
@@ -293,11 +355,79 @@
   --delay-cross: 800ms;
 }
 
-/* The page is black but three things on it are not: the header pill, the four
-   Why Mardal cards, and the five coloured boxes. Each re-derives the ink,
-   rules and accent it had when the whole page was white, rather than each
-   child overriding its own colour — so a light panel anywhere on the site
-   only has to join this list. */
+/* What the toggle writes, and the only thing it writes. Every colour token
+   above reads its half from `color-scheme`, so moving this one property on the
+   root turns the whole page over — there is no second palette to keep in step
+   and nothing to remember to update twice.
+
+   Attribute selectors rather than a `prefers-color-scheme` block on purpose.
+   The media queries in this file are parsed structurally by
+   tests/breakpoints.test.mjs and tests/reduced-motion.test.mjs, which count and
+   walk them; a theme query would be a third thing for them to step over for no
+   gain, since the bare :root above already follows the OS on its own. */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Three values that turn over with the page and are not colours, so
+   light-dark() cannot carry them and they need saying the long way.
+
+   They are the only reason this file has a colour-scheme query at all — the
+   palette above does not, and should not gain one. Because a declaration block
+   cannot be shared between a media query and a selector, the light values are
+   written twice: once for a visitor who has only their OS set, and once for a
+   visitor who has pressed the toggle. If you change one, change both.
+
+   --logo-filter: the wordmark is a flat black SVG, so it is crushed to a
+   silhouette rather than recoloured. On black it wants brightness(0) to make it
+   solid, then invert(1) to turn that white. On white the source art is already
+   the right colour and only needs flattening.
+
+   --panel-shadow: on black a card is lifted with a few percent of white, which
+   is a real edge. On white that lift is nearly nothing, so the panels need an
+   actual shadow — and one was left behind in the tokens from when the page was
+   white, drawn for exactly this.
+
+   --font-smoothing: antialiased thins the stems, which counteracts the bloom of
+   light type on a dark ground. Dark type on white does not bloom, and thinning
+   it there just makes it look underfed. */
+:root {
+  --logo-filter: brightness(0) invert(1);
+  --panel-shadow: none;
+  --menu-edge-shadow: none;
+  --font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --logo-filter: brightness(0);
+    --panel-shadow: var(--shadow-soft);
+    --menu-edge-shadow: var(--shadow-menu-edge);
+    --font-smoothing: auto;
+  }
+}
+
+:root[data-theme="light"] {
+  --logo-filter: brightness(0);
+  --panel-shadow: var(--shadow-soft);
+  --menu-edge-shadow: var(--shadow-menu-edge);
+  --font-smoothing: auto;
+}
+
+/* Whichever way the page is set, three things on it are always a light panel:
+   the mega menu, the four Why Mardal cards, and the five coloured boxes. Each
+   re-derives the ink, rules and accent that belong on a light ground, rather
+   than each child overriding its own colour — so a light panel anywhere on the
+   site only has to join this list.
+
+   These stay literal rather than becoming light-dark() pairs, and that is the
+   point of them: they do not follow the page, they are always the light half.
+   On the light page they agree with the root and the block is a no-op; on the
+   dark page they are what keeps the panels readable. */
 /* The header was on this list while its bar was a light slab. The bar is on the
    page's own black now, so it is not; the menu it opens is white again, so it
    is. Everything inside the menu — the names, the rule that marks one, the
@@ -307,7 +437,9 @@
 .why-card,
 .difference-card {
   --ink: #08080a;
+  --ink-read: #08080a;
   --ink-muted: #5e5a69;
+  --ink-grey: #595959;
   --line: rgb(8 8 10 / 72%);
   --line-soft: rgb(8 8 10 / 16%);
   --accent: #8362b8;
@@ -319,10 +451,20 @@
 
 /* The footer panel is a filled accent slab, and everything on it — the words,
    the link columns, the social marks and the bar field — is drawn in
-   --accent-contrast. The page sets that to black, and the footer no longer
-   overrides it to white, so the whole panel reads dark on the purple. The one
-   thing that does not follow the colour is the wordmark, which is a raster and
-   is driven by a filter instead; see .site-footer__mark img. */
+   --accent-contrast.
+
+   It is the one large purple on the site and it does not move between themes,
+   so it takes itself off the themed --accent and names both halves here. The
+   slab is the light lavender in either theme and the ink on it stays black:
+   7.29:1, which holds whichever way the page around it is set. Every child
+   reads these by inheritance, so nothing inside the panel had to change.
+
+   The one thing that does not follow the colour is the wordmark, which is a
+   raster and is driven by a filter instead; see .site-footer__mark img. */
+.site-footer__panel {
+  --accent: #a98ad6;
+  --accent-contrast: #000000;
+}
 
 @theme inline {
   --color-canvas: var(--canvas);
@@ -378,7 +520,7 @@ body {
   font-size: var(--text-body);
   line-height: var(--leading-body);
   text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: var(--font-smoothing);
 }
 
 button,
@@ -927,17 +1069,23 @@ video {
   z-index: 1;
 }
 
-/* Turned over while the menu is open, because they are standing on its white
+/* Turned over while the menu is open, because they are standing on its light
    ground. Only these two: the ground starts at the links, so the wordmark to
-   their left is still on the page's black and must not follow them.
+   their left is still on the page itself and must not follow them.
 
    The call to action inverts rather than dims. It is a filled shape, and on a
-   white ground a white fill is not a quiet button, it is no button — so the
-   fill takes the ink and the label takes the ground. */
+   light ground a light fill is not a quiet button, it is no button — so the
+   fill takes the ink and the label takes the ground.
+
+   Both values here are literal rather than light-dark() pairs, for the same
+   reason the panel block near the tokens is: the menu is a light surface in
+   either theme, so what stands on it is the light half in either theme. On the
+   light page these agree with the page and the rule costs nothing. */
 .site-header--mega-open .nav-list {
   /* The accent goes with the ink. The word that opened the menu is marked in
-     --accent, and the page's is #a98ad6 — a light purple cut for black, which
-     on white leaves the one word you need to find the faintest in the row. */
+     --accent, and the dark page's is #a98ad6 — a light purple cut for black,
+     which on this ground leaves the one word you need to find the faintest in
+     the row. */
   --accent: #8362b8;
 
   color: #08080a;
@@ -955,11 +1103,11 @@ video {
      it is given rather than pushing the names along the bar. */
   width: clamp(10.5rem, 11.5vw, 12.5rem);
   height: auto;
-  /* The wordmark is a flat black SVG, so it is crushed to a silhouette and
-     flipped rather than recoloured — the same pair the footer mark uses, one
-     step further. brightness(0) takes it to solid black whatever it was drawn
-     in, and invert(1) turns that white. */
-  filter: brightness(0) invert(1);
+  /* The wordmark is a flat black SVG, so it is crushed to a silhouette rather
+     than recoloured — the same trick the footer mark uses. Which silhouette
+     depends on the page, so the pair lives on --logo-filter with the other
+     values that turn over and are not colours. */
+  filter: var(--logo-filter);
 }
 
 .nav-list {
@@ -1101,6 +1249,18 @@ video {
     calc(var(--page-gutter) + 0.4rem) clamp(1.25rem, 3.5vh, 2.5rem)
     var(--menu-ground);
   overflow: hidden;
+  /* The left-edge shadow rides on this element rather than on the ground it
+     belongs to, and the reason is the clip above: a shadow cast by the ground
+     is a shadow cast by a child, and `overflow: hidden` cuts it off flush at
+     the seam it exists to draw. `overflow: clip` with a clip margin would let
+     it out, and does not survive the build — the compiler drops the margin and
+     writes the clip back to `hidden`.
+
+     Cast from the panel instead, where nothing clips it, and eased in over the
+     same six-tenths the ground takes to lighten so the shadow does not arrive
+     ahead of the surface casting it. Closing needs nothing: the panel's own
+     opacity goes to zero and takes the shadow with it. */
+  transition: box-shadow var(--duration-slow) var(--ease-standard);
   border: 0;
   border-radius: 0;
   /* No ground of its own: .mega-menu__ground carries the white so it can be
@@ -1120,8 +1280,16 @@ video {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: var(--surface);
+  background: var(--menu-surface);
   pointer-events: none;
+}
+
+/* Only while it is open, so the shadow eases in with the white rather than
+   standing there under a panel that has not arrived. On the dark page the
+   token is `none` and this rule costs nothing — a white sheet on black needs
+   no help being told apart from the page. */
+.site-header--mega-open .mega-menu {
+  box-shadow: var(--menu-edge-shadow);
 }
 
 /* Above the ground. Everything in the panel except the ground itself, which is
@@ -1234,6 +1402,50 @@ video {
 
 .mega-menu__legal-link {
   transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+/* The theme control. A button with nothing on it — no fill, no border, no size
+   of its own — because both places it sits are rows of words and it has to read
+   as one more of them rather than as a control dropped into a menu.
+
+   It carries no colour: the mark is drawn in currentColor, so it is ink on
+   whichever page it is standing on and turns over with everything else. That is
+   also the state indicator — the mark is dark on the light page and light on
+   the dark one, and the page itself is the rest of the feedback. */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+/* The same 1.4em box and 1.6 stroke as the social marks, so it belongs to the
+   one icon set the site has rather than starting a second. */
+.theme-toggle__mark {
+  width: 1.4em;
+  height: 1.4em;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+}
+
+.theme-toggle__mark-half {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* In the legal line the row is already four words long and closes with about
+   40px to spare, so the control is the mark alone; the button keeps its label
+   for anything reading the page rather than looking at it. */
+.mega-menu__theme .theme-toggle__label {
+  display: none;
 }
 
 @media (hover: hover) {
@@ -1785,6 +1997,10 @@ video {
   overflow: hidden;
   border-radius: var(--shape-card);
   background: var(--surface);
+  /* On black the card is white and needs nothing to separate it. On white it is
+     a lavender panel a shade off the page, and the shadow is what makes that a
+     panel rather than a tint. */
+  box-shadow: var(--panel-shadow);
 }
 
 /* The label sits in the top-right corner, opposite the drawing. */
@@ -1970,7 +2186,7 @@ video {
 }
 
 .recurring-sphere__cover {
-  fill: var(--surface);
+  fill: var(--art-surface);
 }
 
 .recurring-sphere {
@@ -1992,7 +2208,7 @@ video {
 }
 
 .recurring-sphere__fill {
-  fill: var(--surface);
+  fill: var(--art-surface);
   animation: recurring-ball-sequence 10s ease-in-out infinite;
   animation-delay: -0.8s;
 }
@@ -2133,7 +2349,7 @@ video {
 
   8%,
   76% {
-    fill: var(--surface);
+    fill: var(--art-surface);
   }
 
   82%,
@@ -2269,7 +2485,7 @@ video {
 .iso-block {
   --iso-delay: -1s;
 
-  color: var(--surface);
+  color: var(--art-surface);
   animation: iso-block-tint 15s ease-in-out infinite;
   animation-delay: var(--iso-delay);
 }
@@ -2300,7 +2516,7 @@ video {
 
 @keyframes iso-block-tint {
   0% {
-    color: var(--surface);
+    color: var(--art-surface);
   }
 
   5%,
@@ -2310,7 +2526,7 @@ video {
 
   25%,
   100% {
-    color: var(--surface);
+    color: var(--art-surface);
   }
 }
 
@@ -4048,14 +4264,20 @@ video {
     display: none;
   }
 
+  /* The sheet is the page, full-bleed — so it takes the page's own ground and
+     ink rather than the near-black and near-white it used to name here. Those
+     literals were written when the page underneath was white and the sheet was
+     the one dark thing on the site; on a light page they would have left the
+     whole phone navigation as a black slab over a white site, which is the
+     failure this whole pass exists to avoid. */
   .mobile-menu {
     position: fixed;
     inset: 0;
     z-index: 1;
     display: block;
     overflow: hidden;
-    background: #050505;
-    color: #f5f5f5;
+    background: var(--canvas);
+    color: var(--ink);
     opacity: 0;
     pointer-events: none;
     transform: translateY(-0.75rem);
@@ -4124,7 +4346,7 @@ video {
     padding: 0.15rem 0;
     border: 0;
     background: transparent;
-    color: #f5f5f5;
+    color: var(--ink);
     cursor: pointer;
     font: inherit;
     font-family: var(--type-display);
@@ -4139,7 +4361,7 @@ video {
   .mobile-menu__index-arrow {
     --pixel-arrow-gap: 2px;
 
-    color: #fff;
+    color: var(--ink);
   }
 
   .mobile-menu__index-link:hover,
@@ -4182,8 +4404,10 @@ video {
     padding-bottom: 0;
   }
 
+  /* Mixed from the ink rather than named as a near-white at 28%, so the rule
+     keeps exactly the weight it was drawn at while following the page over. */
   .mobile-menu__detail-list li + li {
-    border-top: 0.5px solid rgba(245, 245, 245, 0.28);
+    border-top: 0.5px solid color-mix(in srgb, var(--ink) 28%, transparent);
   }
 
   .mobile-menu__detail-link {
@@ -4192,7 +4416,7 @@ video {
     width: 100%;
     padding: clamp(0.55rem, 1.25vh, 0.75rem) 0 clamp(0.55rem, 1.25vh, 0.75rem)
       1.1rem;
-    color: #f5f5f5;
+    color: var(--ink);
     font-family: var(--type-display);
     font-size: clamp(1.6rem, 4.8vw, 2.5rem);
     font-weight: var(--weight-heading-xl);
@@ -4234,22 +4458,34 @@ video {
     font-size: clamp(1rem, 2.4vw, 1.2rem);
   }
 
+  /* Under the way in, at the foot of the sheet. It keeps its word here — there
+     is a whole row for it and nothing else competing, and on a phone a bare
+     mark at the bottom of a menu is a guess rather than a control. Aligned to
+     the same inside edge as the button above it so the two read as one stack. */
+  .mobile-menu__theme {
+    margin-top: clamp(0.75rem, 2vh, 1.15rem);
+    padding-inline: 1.15rem;
+    color: var(--ink);
+    font-size: var(--text-copy);
+  }
+
+  /* The bar while the sheet is open. It stands on the sheet, and the sheet is
+     the page's own ground now, so all three of these follow the page rather
+     than naming the near-black they used to. The logo needs no rule of its own
+     any more either: it is already on --logo-filter, and the ground it is
+     standing on is the same ground it was standing on before the sheet opened. */
   .site-header--mobile-menu-open {
-    background: #050505;
+    background: var(--canvas);
   }
 
   .site-header--mobile-menu-open .site-nav {
-    background: #050505;
-    color: #f5f5f5;
-  }
-
-  .site-header--mobile-menu-open .brand-logo {
-    filter: brightness(0) invert(1);
+    background: var(--canvas);
+    color: var(--ink);
   }
 
   .site-header--mobile-menu-open .mobile-menu-toggle {
-    border-color: rgba(255, 255, 255, 0.62);
-    color: #f5f5f5;
+    border-color: color-mix(in srgb, var(--ink) 62%, transparent);
+    color: var(--ink);
   }
 
   .hero-title {
@@ -5377,14 +5613,19 @@ video {
 
 /* Every service keeps the same artwork box and responsive dimensions while
    supplying its own geometry through a page-specific mask. */
+/* These two were the only patterns naming a colour instead of asking for one.
+   The butter is the same value the token holds, written out — nothing moves.
+   The mint was #ace5ca, which is not any of the four tints and not a fifth one
+   the site is allowed to have, so it joins the family its three siblings are
+   already in. */
 .service-hero__pattern--system-integration {
-  background: #f1ce6d;
+  background: var(--tint-butter-bar);
   -webkit-mask-image: url("/system-integration-pattern-v2.png");
   mask-image: url("/system-integration-pattern-v2.png");
 }
 
 .service-hero__pattern--crm-solutions {
-  background: #ace5ca;
+  background: var(--tint-mint-bar);
   -webkit-mask-image: url("/crm-solutions-pattern-v5.png");
   mask-image: url("/crm-solutions-pattern-v5.png");
 }
@@ -5587,6 +5828,9 @@ video {
   overflow: hidden;
   border-radius: var(--shape-md);
   background: var(--surface-raised);
+  /* None on the dark page, where the lift above is already an edge; a real
+     shadow on the light one, where it is not. See --panel-shadow. */
+  box-shadow: var(--panel-shadow);
   transition: background var(--duration-fast) var(--ease-standard);
 }
 
@@ -5676,7 +5920,7 @@ video {
   /* Colour and light only: these sit in a grid, so anything that moves shoves
      its neighbours. */
   .blog-card:hover {
-    background: rgb(255 255 255 / 8%);
+    background: var(--surface-raised-strong);
   }
 
   .blog-card:hover .blog-card__title {
@@ -6824,6 +7068,7 @@ video {
   overflow: hidden;
   border-radius: var(--shape-md);
   background: var(--surface-raised);
+  box-shadow: var(--panel-shadow);
 }
 
 /* The picture. A flat panel in one of the four tints with the entry's own plate
@@ -7013,7 +7258,7 @@ video {
    it is read through and the panel comes up a step. Content responding to the
    pointer is the one hover language this site has. */
 .clients-card--linked:hover {
-  background: var(--surface-raised-strong, rgb(255 255 255 / 8%));
+  background: var(--surface-raised-strong);
 }
 
 .clients-card--linked .clients-card__plate::after {
@@ -7532,6 +7777,7 @@ video {
   margin: clamp(2.5rem, 7vh, 4rem) 0 0;
   overflow: hidden;
   background: var(--surface-raised);
+  box-shadow: var(--panel-shadow);
 }
 
 .story-plate__art {
@@ -7695,6 +7941,7 @@ video {
   margin: 0;
   overflow: hidden;
   background: var(--surface-raised);
+  box-shadow: var(--panel-shadow);
   grid-column: 2;
   grid-row: 1 / -1;
 }
@@ -8489,16 +8736,18 @@ video {
   background: var(--service-surface);
 }
 
-/* The page's own black, not a near-black. #050505 predates the canvas going
-   fully black, and against #000 above it the seam showed as a grey band across
-   the foot of every service page. */
+/* The page's own ground, not a near-miss of it. A #050505 here predated the
+   canvas going fully black, and against the #000 above it the seam showed as a
+   grey band across the foot of every service page. The ink had been left behind
+   as a near-white when the background was moved onto the token — same seam, the
+   other way up, and on a light page it would have been off-white on white. */
 .service-page .service-cta,
 .service-page + .site-footer {
   background: var(--canvas);
 }
 
 .service-page .service-cta {
-  color: #f5f5f5;
+  color: var(--ink);
 }
 
 .service-cta__inner {
