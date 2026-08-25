@@ -5938,9 +5938,15 @@ video {
   overflow: hidden;
   border-radius: var(--shape-md);
   background: var(--surface-raised);
-  /* None on the dark page, where the lift above is already an edge; a real
-     shadow on the light one, where it is not. See --panel-shadow. */
-  box-shadow: var(--panel-shadow);
+  /* No shadow — owner's call, 2026-08-25, the same call he made on the Why
+     Mardal cards. It carried `var(--panel-shadow)`, which is nothing on the
+     dark page and a real drop on the light one, so it only ever showed in light
+     mode: the drop under these cards appeared the day the page's default did.
+
+     `--surface-raised` is left to be the whole of the separation. Two of the
+     four things that read `--panel-shadow` have now given it up; the remaining
+     two are the story plate and the story index's shot, both single large
+     images rather than a run of cards. */
   transition: background var(--duration-fast) var(--ease-standard);
 }
 
