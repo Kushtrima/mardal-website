@@ -7488,16 +7488,118 @@ video {
   font-size: clamp(18px, calc(15.43px + 0.286vw), 20px);
 }
 
-/* The picture dims a little with it. These two rules drove the shade that was
-   removed above — it sat at rest and deepened on hover — so what is left is the
-   dim without the wash: the photograph itself goes down, rather than something
-   pale being laid over it. */
-.clients-card--linked .clients-card__art {
-  transition: opacity var(--duration-base) var(--ease-standard);
-}
+/* **The picture darkens and a plus is drawn on it — owner's call, 2026-08-25.**
 
-.clients-card--linked:hover .clients-card__art {
-  opacity: 0.82;
+   It replaces a plain dim on the photograph. A dim says "something is
+   happening"; a plus says what: this one opens.
+
+   ── Two pseudo-elements, and which paints over which ──
+   `::before` is the wash and `::after` is the mark, because `::after` paints
+   over `::before` when both are positioned siblings — so the plus needs no
+   z-index fight with the thing it stands on. The plate is already
+   `position: relative` and clips to the picture's corners, so both are held to
+   the frame without either being told its size.
+
+   ── Only on the card that goes somewhere ──
+   `--linked` is one of the eight. The other seven are articles with nowhere
+   behind them, and a plus appearing under the pointer on those is the exact
+   promise this page refuses to make everywhere else — a card that looks like a
+   link and answers with an empty page.
+
+   ── Behind a hover query ──
+   On a touch screen `:hover` sticks after a tap, so without this the plus would
+   arrive on the card someone last pressed and stay there. */
+@media (hover: hover) {
+  /* **Both arrive slowly and evenly — owner's call, 2026-08-25.**
+
+     It was `--duration-base` on `--ease-standard`, and the ease is the reason
+     it snapped rather than the duration: `cubic-bezier(0.22, 1, 0.36, 1)` puts
+     most of the movement in the first quarter of the time, which is right for
+     something answering a press and wrong for something appearing under a
+     pointer that has only just arrived.
+
+     `--ease-handover` is the site's even curve — the one the mobile index
+     unfolds on — and `--duration-slow` gives it room to be seen. Together they
+     read as the card noticing rather than reacting. */
+  .clients-card--linked .clients-card__plate::before,
+  .clients-card--linked .clients-card__plate::after {
+    position: absolute;
+    opacity: 0;
+    transition:
+      opacity var(--duration-slow) var(--ease-handover),
+      background-size var(--duration-slow) var(--ease-handover);
+    content: "";
+    pointer-events: none;
+  }
+
+  /* Ink rather than plain black, at 90% — owner's call, 2026-08-25, up from 45.
+     At 45 the photograph was still the thing being looked at and the mark was
+     over it; at 90 the frame is nearly the ink itself and the plus is the only
+     thing in the box. Which is the right way round for what the hover means:
+     the card has stopped being a picture and become a way in.
+
+     Still ink and still short of solid. `--ink` is the colour everything else
+     on this page is drawn in, and the last tenth is what keeps a trace of the
+     photograph under it — a flat black panel would read as the picture having
+     failed to load rather than as the card answering. */
+  .clients-card--linked .clients-card__plate::before {
+    inset: 0;
+    background: rgb(8 8 10 / 90%);
+  }
+
+  /* Two hairlines crossing, drawn as backgrounds rather than as borders on a
+     box — a border would draw four sides and need three of them turned off.
+     Each gradient is a solid white painted into a strip one pixel wide or one
+     pixel tall, centred; together they are the cross.
+
+     Sized as a share of the picture with a floor and a ceiling, the way the
+     reference reads it: a little under half the frame across, square. */
+  .clients-card--linked .clients-card__plate::after {
+    top: 50%;
+    left: 50%;
+    width: clamp(3.5rem, 40%, 11rem);
+    aspect-ratio: 1;
+    /* **A small cross that grows into a big one — owner's call, 2026-08-25.**
+
+       Each arm is a white gradient painted into a strip one pixel wide or one
+       pixel tall, and it starts SHORT rather than absent: `1px 22%` and
+       `22% 1px`. So what fades in is already a plus, a quarter of its final
+       size, and what follows is the two arms running out to full length.
+
+       Starting at zero was the version before this and it is a different
+       gesture — nothing, then a line drawing itself. Starting small means the
+       mark is whole from the first frame and only its scale changes, which is
+       what was asked for.
+
+       Both arms grow from the middle in both directions at once, because
+       `background-position` is `center`. That is also what keeps the cross
+       exactly centred for free: neither line ever moves, it only gets longer.
+       No second element and no SVG — `background-size` is animatable, so one
+       box draws both.
+
+       The transform is the centring and nothing else. A quarter turn was tried
+       here and taken out; the arms extending is the movement, and a rotation
+       under it was a second thing happening at the same time. */
+    transform: translate(-50%, -50%);
+    background:
+      linear-gradient(#ffffff, #ffffff) center / 1px 22% no-repeat,
+      linear-gradient(#ffffff, #ffffff) center / 22% 1px no-repeat;
+  }
+
+  .clients-card--linked:hover .clients-card__plate::before,
+  .clients-card--linked:hover .clients-card__plate::after {
+    opacity: 1;
+  }
+
+  .clients-card--linked:hover .clients-card__plate::after {
+    background-size: 1px 100%, 100% 1px;
+    /* The ground first, then the mark on it. A tenth of a second is enough to
+       be an order rather than a stagger — both still finish together, because
+       the delay is inside the slower duration. Only on the way IN: leaving,
+       this rule stops applying and the two go at once, which is what leaving
+       should feel like. */
+    transition-delay: 100ms;
+  }
 }
 
 /* ---------------------------- Clients: one story -------------------------- */
