@@ -53,6 +53,31 @@ test("server-renders the Mardal homepage", async () => {
   // Hero
   assert.match(html, /Innovation/);
   assert.match(html, /lives here/);
+  /* ── What Makes Us Different: five boxes, five colours ──
+     This block was destroyed on 2026-08-25 along with the header assertions, in
+     the commit that replaced the Clients taxonomy, and its absence is why
+     giving the fifth box its own colour changed nothing in the suite. Rebuilt
+     here, for what the section is now rather than what it was.
+
+     **The tints are a list, not a modulo.** They cycled `one two three four
+     one` over five cards, so AI & Automation wore Branding's lilac — two
+     identical boxes two rows apart, which reads as an oversight rather than as
+     a rhythm. `--five` is `--tint-clay`, the owner's `#e76f51`.
+
+     Sliced to the first five, because the markup is followed by the RSC payload
+     and every class name appears in it twice. */
+  assert.match(html, /What Makes Us/);
+  assert.match(html, /Five connected services\. One team\./);
+  assert.equal((html.match(/class="difference-card /g) ?? []).length, 5);
+  assert.deepEqual(
+    [...html.matchAll(/difference-card--(\w+)/g)].map((m) => m[1]).slice(0, 5),
+    ["one", "two", "three", "four", "five"],
+  );
+  /* Five is the last of them. A sixth box would silently wear no tint at all —
+     `TINTS[index % TINTS.length]` would hand it "one" again, which is the bug
+     this whole change was about. */
+  assert.doesNotMatch(html, /difference-card--six/);
+
   /* **The seven industries are text, and only `Explore All` goes anywhere.**
 
      They have been three things: anchors to a run further down this page, which
@@ -753,9 +778,9 @@ test("server-renders the CRM Solution service page", async () => {
 test("the menu points at the service pages that exist", async () => {
   const html = await (await render()).text();
   assert.match(html, /href="\/services\/ai-automation"/);
-  assert.match(html, /href="\/services\/crm-solutions"/);
-  assert.match(html, /href="\/services\/website-apps"/);
-  assert.match(html, /href="\/services\/ux-ui-branding"/);
+  assert.match(html, /href="\/services\/crm-solution"/);
+  assert.match(html, /href="\/services\/websites"/);
+  assert.match(html, /href="\/services\/branding"/);
 
   /* Not a list of strings — every href the panel carries is fetched. The old
      version of this test asserted three literals and would have gone on passing

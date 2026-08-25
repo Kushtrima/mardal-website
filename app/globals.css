@@ -151,6 +151,24 @@
   --tint-mint-bar: #6fdd9f;
   --tint-sky: #b7dbf6;
   --tint-sky-bar: #8ec5ef;
+  /* **The fifth, added 2026-08-25 because there are five boxes and there were
+     four colours.** The run cycled `one two three four one`, so AI & Automation
+     wore Branding's lilac and the homepage showed five services in four
+     colours — two of them identical and not adjacent, which reads as an
+     oversight rather than as a pattern.
+
+     `#e76f51` is the owner's, used exactly as given. The panel is derived: hue
+     and saturation held, lightness set to 78, which is where this family's
+     panels sit — mint is 77 and butter 79. Deriving it the other way, from the
+     average gap between the four panels and their own bars, gives 71, and a
+     panel darker than every other one is the opposite of adapting to them.
+
+     The consequence, stated rather than hidden: this bar is 17 points of
+     lightness below its panel where the other four sit 7 to 12 below theirs, so
+     the marks read a little stronger here. That follows from the colour being
+     darker than any bar the set had, and the alternative was a darker card. */
+  --tint-clay: #f4ac9a;
+  --tint-clay-bar: #e76f51;
 
   /* Typography */
   --type-body: var(--font-geist), Arial, Helvetica, sans-serif;
@@ -3027,6 +3045,13 @@ video {
 .difference-card--three {
   --card-tint: var(--tint-mint);
   --card-tint-bar: var(--tint-mint-bar);
+}
+
+/* The fifth box. Four tints for five boxes meant the run repeated, and the
+   repeat landed on a card two rows from the one it matched. */
+.difference-card--five {
+  --card-tint: var(--tint-clay);
+  --card-tint-bar: var(--tint-clay-bar);
 }
 
 .difference-card--four {

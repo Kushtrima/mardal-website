@@ -7,7 +7,11 @@ import { difference } from "../../content/home";
  * so no box touches another of its own colour, beside it or above it. The
  * sixth cell of the grid is left empty.
  */
-const TINTS = ["one", "two", "three", "four", "one"] as const;
+/* One per box, and five of them since 2026-08-25. The last entry was "one" —
+   four tints cycled over five cards — so AI & Automation wore Branding's lilac.
+   Two identical cards that are not adjacent read as a mistake rather than as a
+   rhythm, which is why this is a list of five rather than a modulo of four. */
+const TINTS = ["one", "two", "three", "four", "five"] as const;
 
 export function DifferenceSection() {
   return (
