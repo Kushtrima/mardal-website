@@ -671,7 +671,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading-xl);
 }
 
@@ -695,7 +695,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading-xl);
 }
 
@@ -1777,7 +1777,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-hero);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading-xl);
 }
 
@@ -1997,7 +1997,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading-xl);
 }
 
@@ -2097,7 +2097,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading-xl);
 }
 
@@ -2233,7 +2233,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading);
   text-wrap: balance;
 }
@@ -2951,7 +2951,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading);
 }
 
@@ -3060,7 +3060,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading-xl);
 }
 
@@ -3480,7 +3480,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading-xl);
 }
 
@@ -3660,7 +3660,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading-xl);
 }
 
@@ -5703,7 +5703,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading-xl);
 }
 
@@ -5951,7 +5951,7 @@ video {
   font-family: var(--type-title);
   font-size: clamp(1.75rem, 2.1vw, 2.125rem);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: 1.06;
   text-wrap: balance;
   transition: color var(--duration-fast) var(--ease-standard);
@@ -6347,7 +6347,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading);
 }
 
@@ -6475,7 +6475,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading-xl);
 }
 
@@ -6516,7 +6516,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading);
   font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading);
 }
 
@@ -6975,14 +6975,21 @@ video {
   padding: clamp(0.3rem, 0.9vh, 0.5rem) 0;
   border: 0;
   background: transparent;
-  color: var(--ink-grey);
+  /* **Black, all of them — owner's call, 2026-08-25.** The unchosen seven were
+     `--ink-grey` and the chosen one went to `--ink`, so the mark was made
+     twice: a rule drawn from the left AND the word darkening. One of the two
+     had to go, and the rule is the one that says which of eight rather than
+     just "this one is different" — a reader glancing at the column sees where
+     the line is, not which grey is darker. */
+  color: var(--ink);
   cursor: pointer;
   font: inherit;
-  font-size: var(--text-body);
+  font-family: var(--type-body);
+  font-size: clamp(18px, calc(15.43px + 0.286vw), 20px);
   letter-spacing: -0.02em;
   line-height: 1.25;
   text-align: left;
-  transition: color var(--duration-fast) var(--ease-standard);
+  transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
 /* One hairline, in the colour of the word it belongs to — not a coloured bar.
@@ -7090,13 +7097,11 @@ video {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: clamp(0.3rem, 0.9vh, 0.5rem) 0
-      clamp(0.65rem, 1.7vh, 0.95rem);
+    padding: clamp(0.3rem, 0.9vh, 0.5rem) 0 clamp(0.65rem, 1.7vh, 0.95rem);
     border: 0;
     /* Ruled off while it is shut, in the site's own hairline, so the row reads
        as a thing that is closed rather than as a heading standing on its own.
-       It is the same rule `All` draws at the foot of the open index — the index
-       is closed by a line at one end or the other whichever state it is in.
+       It is the same rule `All` draws at the foot of the open index.
 
        Kept as a border and turned transparent rather than removed when it
        opens: the row holds its height either way, so opening the index moves
@@ -7106,7 +7111,8 @@ video {
     color: var(--ink);
     cursor: pointer;
     font: inherit;
-    font-size: var(--text-body);
+    font-family: var(--type-body);
+    font-size: clamp(18px, calc(15.43px + 0.286vw), 20px);
     letter-spacing: -0.02em;
     line-height: 1.25;
     text-align: left;
@@ -7120,7 +7126,7 @@ video {
    *
    * `display: none` cannot be transitioned and a height cannot be transitioned
    * to `auto`, which is why an accordion is usually either instant or built on
-   * a magic max-height that is wrong the day a sector is added. A track can:
+   * a magic max-height that is wrong the day an entry is added. A track can:
    * the holder becomes two rows — the shut row, then the index — and the second
    * runs `0fr` to `1fr`, which is nothing to exactly the height of whatever is
    * standing in it, measured by the browser at every step.
@@ -8339,7 +8345,7 @@ video {
   font-family: var(--type-title);
   font-size: clamp(2.25rem, 4vw, 3.5rem);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: 1.04;
   text-wrap: balance;
 }
@@ -8449,7 +8455,7 @@ video {
   font-family: var(--type-title);
   font-size: clamp(1.5rem, 0.9vw + 1.25rem, 2rem);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: 1.2;
   text-wrap: pretty;
 }
@@ -8556,7 +8562,7 @@ video {
   font-family: var(--type-title);
   font-size: clamp(1.375rem, 1.9vw, 1.75rem);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: 1.1;
   text-wrap: balance;
   transition: color var(--duration-fast) var(--ease-standard);
@@ -8692,7 +8698,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--service-text-card-title);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: 0.94;
 }
 
@@ -8888,7 +8894,7 @@ video {
   font-family: var(--type-title);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading-xl);
   white-space: pre-line;
 }
