@@ -44,7 +44,13 @@ const TWO_COLUMN = "(min-width: 64.0625rem)";
 export function ClientsPin({
   section: sectionSelector = ".clients-index",
   layout: layoutSelector = ".clients-layout",
-  rail: railSelector = ".clients-filter",
+  /* **The whole left column, not just the list.** It was `.clients-filter`,
+     which pinned the seven words and let the heading above them scroll away —
+     the owner asked on 2026-08-25 for "Selected work" to stick too, and the
+     heading sits outside the filter's holder because that holder is a two-row
+     grid on a phone and a third thing in it would be a third row. `.clients-rail`
+     is the box that holds both. */
+  rail: railSelector = ".clients-rail",
   body: bodySelector = ".clients-work",
 }: {
   section?: string;

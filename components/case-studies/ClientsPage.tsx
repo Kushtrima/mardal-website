@@ -11,12 +11,10 @@ import { products } from "../../content/home";
 /**
  * The Clients page: the hero, and the delivered work under it.
  *
- * Held here rather than in the route file because two routes render it —
- * `/case-studies` and `/case-studies/[sector]` — and they differ by one word.
- * The sector arrives already chosen, from the server, which is the whole reason
- * it is a route at all: the header's menu can send someone straight to Finance
- * and the first paint is Finance, with no flash of everything and no effect
- * reaching for the URL after the fact.
+ * One route renders it. Two did — `/case-studies` and `/case-studies/[sector]`,
+ * differing by which sector arrived already chosen — until the owner replaced
+ * the industry taxonomy on 2026-08-25. The seven sector routes went with it,
+ * and this stopped taking a prop.
  *
  * Built on the same bones as every other page here. `service-hero` and its
  * `data-service-hero-*` hooks are the site's editorial page opening rather than
@@ -26,7 +24,7 @@ import { products } from "../../content/home";
  * ServicePageEntry alone rather than ServicePageMotion, which would also bring
  * ServiceOfferingsScroll. There is no journey here.
  */
-export function ClientsPage({ sector }: { sector: string }) {
+export function ClientsPage() {
   return (
     <>
       <SectionEnter />
@@ -125,11 +123,11 @@ export function ClientsPage({ sector }: { sector: string }) {
           />
         </section>
 
-        {/* The work, and the seven sectors as a filter over it rather than as
-            seven pages to go between. See the component: the argument is that a
-            reader who chose Finance in the header should be able to change
-            their mind without going back to the header. */}
-        <ClientsIndex initialSector={sector} />
+        {/* Every entry, once, with a rail down the left saying what kind of
+            work this site holds. It was a filter over seven sectors; see the
+            component for what replaced it and why nothing in the rail is
+            pressable. */}
+        <ClientsIndex />
       </main>
 
       <SiteFooter />

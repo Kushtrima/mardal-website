@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 /**
  * One movement, three verbs, no copies.
  *
- * The page transition and the Clients filter make the same movement, and for a
+ * The page transition and the Clients filter made the same movement, and for a
  * while they shared the numbers but not the tweens — four hand-written copies of
  * two tweens. One of the four was incomplete in a way nothing could catch: the
  * page transition's stuck-navigation recovery restored `opacity` and never
@@ -15,6 +15,13 @@ import { readFileSync } from "node:fs";
  * It could not be caught because it is a runtime state on an element, invisible
  * to any assertion on markup and unreachable without a browser. What can be
  * checked is that nobody writes the tween themselves any more.
+ *
+ * Two consumers, and the Clients rail has been both. It filtered by industry,
+ * then briefly filtered by nothing at all — the owner replaced the taxonomy on
+ * 2026-08-25 and for one build the rail was static text — and then filtered by
+ * discipline. Through all three the movement is the same: the grid fades out
+ * and a different grid arrives. What must not come back is a fourth
+ * hand-written copy of it.
  */
 
 const ROOT = new URL("../", import.meta.url);

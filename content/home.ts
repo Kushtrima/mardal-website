@@ -169,20 +169,20 @@ export const menu = [
     href: "/case-studies",
     /* The one word in the bar that still goes somewhere on a press. */
     panelOnly: false,
-    /* Each sector goes to the Clients page with itself already chosen, not to a
-       run further down the homepage. That is the difference between a menu that
-       sends you somewhere and one that only scrolls you, and it is why these
-       came out of the header the first time.
+    /* **No panel.** It held the seven sectors, each going to the Clients page
+       with itself already chosen. The owner replaced that taxonomy on
+       2026-08-25 — the index is a rail of disciplines now and there is no
+       sector view to send anyone to — so the seven routes went and this went
+       with them.
 
-       Seven real routes, prerendered, each rendering the Clients page with its
-       own sector already chosen — so the first paint is Finance rather than
-       everything-then-Finance, and the address is a link that can be sent.
-       Changing sector once you are there is a filter rather than a seventh
-       navigation. */
-    items: industries.map((industry) => ({
-      label: industry.title,
-      href: `/case-studies/${industry.id}`,
-    })),
+       Which returns Clients to a plain link, and the header needs no flag to
+       know that: `hasPanel` is `items.length > 0`, so an empty list means the
+       word is a link with no chevron and no panel, exactly as it was before the
+       sectors were put in it.
+
+       An empty array rather than the field being deleted, so every entry in
+       this menu still answers the same two questions. */
+    items: [],
   },
   {
     key: "company",

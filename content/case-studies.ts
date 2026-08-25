@@ -24,12 +24,15 @@
  * delivered client outcome. Products is where it lives.
  */
 /**
- * The unfiltered view, named once so the route, the page and the filter cannot
- * disagree about it. Not one of the seven and deliberately not in that list —
- * "all" is a state the page can be in rather than a sector anyone works in, and
- * putting it in `industries` would put it in the header menu too.
+ * The unfiltered view, named once so the page and the rail cannot disagree
+ * about it. Not one of the seven and deliberately not in that list — "all" is a
+ * state the page can be in rather than a kind of work anyone does.
+ *
+ * It was `ALL_SECTORS` while the rail filtered by the client's industry. The
+ * owner replaced that taxonomy with the disciplines on 2026-08-25; the constant
+ * is the same idea under the thing that replaced it.
  */
-export const ALL_SECTORS = "all";
+export const ALL_WORK = "all";
 
 export const caseStudies = {
   /* The seed the hero's drawing is generated from, and the route it is served
@@ -83,10 +86,46 @@ export const caseStudies = {
      records that per-client sign-off for naming those companies in public was
      never recorded, so it stays a bracket until that decision is made — the one
      slot on this page where a plausible guess would do real damage. */
-  fields: {
-    client: "Client",
-    description: "Description",
+  /**
+   * The rail down the left of the index.
+   *
+   * **This replaced the seven-sector filter on 2026-08-25.** The index used to
+   * be Finance / Healthcare / Manufacturing and so on — the client's industry —
+   * with seven prerendered routes behind it and the header's Clients panel
+   * pointing at them. Owner replaced the whole taxonomy: what the page indexes
+   * now is the WORK, by what kind of work it is.
+   *
+   * It is a statement and not a control. Nothing filters, nothing is clickable,
+   * and there is no state anywhere in `ClientsIndex` any more — which is what
+   * let it stop being a client component at all. If these are ever meant to
+   * filter, every entry needs a discipline recorded on it first; the sectors
+   * could filter because `sector` was on every entry, and nothing here is.
+   *
+   * The seven read as the five services split where a service covers two
+   * distinct crafts — UX/UI & Branding into its two halves, Website & Apps into
+   * its two. They are deliberately NOT generated from the services list: that
+   * list is what Mardal sells and this one is what it has made, and the day
+   * those two stop matching is the day this would silently start lying.
+   */
+  rail: {
+    title: ["Selected", "work"],
+    /* The word for the unfiltered view, and it is not one of the seven. */
+    all: "All",
+    items: [
+      "UX/UI Design",
+      "Branding",
+      "Websites",
+      "Applications",
+      "Software",
+      "CRM",
+      "AI & Automation",
+    ],
   },
+
+  /* No `fields`. There were labels down each card — Client and Description,
+     then Location / Client / Industry, then Location / Industry — and on
+     2026-08-25 the owner took the labels off and left the values: three plain
+     lines under the picture. A label needs a row to label. */
 
   /* Read when a sector has nothing in it. The same voice the Blog's empty state
      uses, and true of every sector today. */
@@ -124,23 +163,105 @@ export const caseStudies = {
  * the empty state stand. The one thing that must never happen is a bracket
  * reaching the page — a plausible guess in one of these is worse than a gap.
  */
+/**
+ * ⚠ **INVENTED NAMES. NOT MARDAL CLIENTS. MUST NOT SHIP.**
+ *
+ * Owner asked on 2026-08-25 for names on the cards instead of `[Client name]`,
+ * so the layout could be judged against real-looking words rather than
+ * brackets. These eight are made up. Not one of them is a company Mardal has
+ * worked for, and none of them is a company at all as far as anyone here knows.
+ *
+ * The reason they cannot ship is not that they are placeholders — it is what
+ * page they are on. This is Clients, under a heading that reads "Customer
+ * stories" and a line promising "delivered work". Eight invented companies
+ * there are not lorem ipsum; they are a claimed client list, and a reader has
+ * no way to tell them from the real archive.
+ *
+ * The real archive is in PRODUCT.md — EN NUR, Spitex Schwab AG, Stolzbau,
+ * Henor, ANDI SPORT, ZEN, Jetonikeramika — and it may be DESCRIBED as Mardal's
+ * work. What was never recorded is per-client sign-off for naming those
+ * companies in public. That is still the outstanding decision, and it is the
+ * only thing that replaces this list.
+ *
+ * `tests/rendered-html.test.mjs` pins all eight, next to the assertion that
+ * pins the stock photographs, for the same reason: so publishing this page
+ * means deleting a test on purpose rather than forgetting one.
+ *
+ * ⚠ **The disciplines on each entry are invented too**, and for the same reason:
+ * the rail filters on them, so the filter needs something to filter. They are
+ * spread so every one of the seven holds between two and four entries — a
+ * filter whose every view holds one card is the failure the sector routes had,
+ * and it is a design decision being judged here, not a record of what was
+ * built. They go when the real ones arrive, with the names.
+ *
+ * Locations are deliberately unspecific — owner's word — and they are countries
+ * rather than cities or addresses. PRODUCT.md puts the buyer in DACH and the
+ * company in Kosovo, so a country is the largest true thing that can be said
+ * while the names under them are not.
+ */
 export const clientEntries = [
-  { slug: "entry-01", sector: "finance" },
-  { slug: "entry-02", sector: "finance" },
+  {
+    slug: "entry-01",
+    sector: "finance",
+    name: "Nordvik",
+    location: "Switzerland",
+    disciplines: ["UX/UI Design", "Branding", "Websites"],
+  },
+  {
+    slug: "entry-02",
+    sector: "finance",
+    name: "Alturi",
+    location: "Germany",
+    disciplines: ["Software", "CRM"],
+  },
   /* The one entry with a page behind it. `story` is what makes the card a link:
      everything else on this index is a card that goes nowhere, because nowhere
      is where it should go until someone has written the story. */
-  { slug: "healthcare-office-website", sector: "healthcare", story: true },
-  { slug: "entry-04", sector: "healthcare" },
-  { slug: "entry-05", sector: "manufacturing" },
-  { slug: "entry-06", sector: "automotive" },
-  { slug: "entry-07", sector: "retail" },
-  { slug: "entry-08", sector: "logistics" },
+  {
+    slug: "healthcare-office-website",
+    sector: "healthcare",
+    story: true,
+    name: "Solvei",
+    location: "Switzerland",
+    disciplines: ["UX/UI Design", "Websites"],
+  },
+  {
+    slug: "entry-04",
+    sector: "healthcare",
+    name: "Marren",
+    location: "Austria",
+    disciplines: ["Applications", "Software"],
+  },
+  {
+    slug: "entry-05",
+    sector: "manufacturing",
+    name: "Brekk",
+    location: "Germany",
+    disciplines: ["Software", "AI & Automation"],
+  },
+  {
+    slug: "entry-06",
+    sector: "automotive",
+    name: "Vantor",
+    location: "Kosovo",
+    disciplines: ["CRM", "Applications"],
+  },
+  {
+    slug: "entry-07",
+    sector: "retail",
+    name: "Lumea",
+    location: "Switzerland",
+    disciplines: ["UX/UI Design", "Branding", "Websites"],
+  },
+  {
+    slug: "entry-08",
+    sector: "logistics",
+    name: "Kestrel",
+    location: "Germany",
+    disciplines: ["AI & Automation", "Software", "Applications"],
+  },
 ].map((entry) => ({
   ...entry,
-  client: "[Client name]",
-  description:
-    "[What the system replaced, what it does now, and what the client owns]",
   /* **A placeholder off someone else's server, and it must not ship.**
    *
    * Owner asked for real pictures in the box to judge the card against, and
@@ -155,8 +276,11 @@ export const clientEntries = [
    *     nothing to do with the work.
    *   — it is a live request to a third party on every card, which is a network
    *     dependency this site does not otherwise have.
-   *   — 640x360 is 16:9, which is the plate's ratio, so a real screenshot drops
-   *     into the same box later without the grid moving.
+   *   — 640x360 is 16:9. The plate is no longer that shape — it is 70% as wide
+   *     at the same height since 2026-08-25, so `object-fit: cover` crops the
+   *     sides — but the intrinsic size is what reserves the box before the
+   *     picture arrives, and a real screenshot at any 16:9 size drops in
+   *     without the grid moving.
    *
    * What replaces them is a screenshot of the delivered system, cleared for
    * publication alongside the client name. Until then the drawn plate this

@@ -310,6 +310,28 @@
      paragraph leading here and nowhere else; the service pages' copy token
      below is pointed at this, so both halves of the site move together. */
   --leading-body: 1.3;
+  /* ── The display face's fit, arrived at in three steps on 2026-08-25 ──
+     It was `--tracking-tight` below, -0.055em, on every heading set in
+     `--type-title`. Owner: too tight. Then `letter-spacing: normal`, the face's
+     own fit with nothing done to it. Owner: too loose. This is the middle, and
+     it is a token rather than a value written out eighteen times so the next
+     adjustment is one number.
+
+     -0.03em is a little over half of what was there. Being em-based it still
+     scales with the type — -0.9px a gap on a card title, -3.6px on the hero's
+     120px — but at this size that reads as fit rather than as compression,
+     which is what -6.6px on the hero did not.
+
+     It landed here in one more step: -0.02em first, which the owner read as
+     still a shade loose. The two are close enough that the difference only
+     shows at the top of the scale, which is exactly where it was wanted. */
+  --tracking-display: -0.03em;
+
+  /* The sans's tightening, and no longer the display face's. Four rules read
+     it, all `--type-display` — nav links, the service support line, the mobile
+     menu and its card title — where at those sizes it pulls under a pixel.
+     Do not put it back on a title-face heading; tests/typography.test.mjs
+     holds that. */
   --tracking-tight: -0.055em;
   --tracking-wide: 0.12em;
 
@@ -6866,11 +6888,66 @@ video {
      moment the content left it — taking the work column across the page with
      it. Given a width of its own the column stays where it is whether anything
      is standing in it or not. */
-  grid-template-columns: clamp(9.5rem, 15vw, 13.5rem) minmax(0, 1fr);
+  /* Widened on 2026-08-25 with the heading that stands in it — see
+     `.clients-rail__title` for the arithmetic. It was
+     `clamp(9.5rem, 15vw, 13.5rem)`, sized for a list of one-word sectors under
+     no heading at all. */
+  grid-template-columns: clamp(11rem, 22vw, 20rem) minmax(0, 1fr);
 }
 
 .clients-work {
   min-width: 0;
+}
+
+/* **The rail: what kind of work this page holds.**
+
+   It was the sector filter — eight pressable words with a rule drawn from the
+   left of the chosen one and the word stepping aside to let it in. The owner
+   replaced the taxonomy on 2026-08-25 and nothing in here is pressable now, so
+   all of that came out: the hover, the current mark, the phone disclosure that
+   opened and shut it, and the toggle row that stood in for it while it was
+   shut. Twenty-six rules.
+
+   What is left is an index in the plainest sense — a heading and a list — and
+   it needs no state, which is what let ClientsIndex stop being a client
+   component at all. */
+.clients-rail {
+  min-width: 0;
+}
+
+/* The special face, which on this site is the one thing set in it: `--type-title`
+   is CS Alistair and it opens the hero, the story titles and this. Two authored
+   lines, so the turn is a decision rather than the column's width.
+
+   **Way bigger — owner's call, 2026-08-25.** It was 28–40px, which read as a
+   label over a list; at 40–76px it is a heading the column is built around. The
+   rail's track widened with it: "Selected" is eight characters of a display
+   serif and needs roughly 3.8 times the type size to sit on one line, so 76px
+   wants about 290px of column and the old 216px ceiling would have broken the
+   authored line in half. Both numbers move together or neither does. */
+.clients-rail__title {
+  margin: 0 0 clamp(1.5rem, 3.5vh, 2.5rem);
+  color: var(--ink);
+  font-family: var(--type-title);
+  font-size: clamp(2.5rem, 5vw, 4.75rem);
+  font-weight: var(--weight-heading-xl);
+  /* The face's own token, like every other heading in it. This was the heading
+     that started the change — it went to 76px and the old -0.055em closed the
+     letters up — and for one build it was the only thing on the site set to
+     `normal`. That exception is gone: what was wrong was the number, not the
+     idea of tokenising it. */
+  letter-spacing: var(--tracking-display);
+  line-height: 1.02;
+}
+
+.clients-rail__title-line {
+  display: block;
+}
+
+.clients-rail__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 /* One under the next, and read as an index rather than as a row of controls. */
@@ -6884,7 +6961,10 @@ video {
 /* The mega menu's own way of marking a name, which is the reason this stood up
    in the first place: a rule is drawn from the left and the word steps aside to
    let it in. Both measures are named here because two declarations have to
-   agree on them — the rule's width, and how far the word moves to clear it. */
+   agree on them — the rule's width, and how far the word moves to clear it.
+
+   Set to the cards' own text rather than smaller. The rail is one of the two
+   columns on this page, not a caption beside the other one. */
 .clients-filter__item {
   --mark: clamp(1.05rem, 1.7vw, 1.5rem);
   --mark-gap: 0.55rem;
@@ -6928,10 +7008,6 @@ video {
   transition: transform var(--duration-base) var(--ease-handover);
 }
 
-.clients-filter__item.is-current {
-  color: var(--ink);
-}
-
 .clients-filter__item.is-current::before {
   transform: scaleX(1);
 }
@@ -6949,11 +7025,21 @@ video {
   border-top: 1px solid var(--line-soft);
 }
 
-/* Ink, and nothing drawn. Hovering is not choosing: a rule that followed the
-   pointer would have the index drawing and undrawing itself all the way down. */
-.clients-filter__item:hover,
+/* Hovering is not choosing: a rule that followed the pointer would have the
+   index drawing and undrawing itself all the way down. It used to answer in
+   colour — grey going to ink — and there is no colour left to move now that
+   every word is ink, so it answers the way the mega menu's own legal line does.
+
+   Under a hover query, because on a touch screen the state sticks after a tap
+   and the word stays faded until something else is pressed. */
+@media (hover: hover) {
+  .clients-filter__item:hover {
+    opacity: 0.68;
+  }
+}
+
 .clients-filter__item:focus-visible {
-  color: var(--ink);
+  opacity: 0.68;
 }
 
 /* The toggle exists only where the index is shut, which is only on a phone. On
@@ -6967,35 +7053,27 @@ video {
   display: none;
 }
 
-/* Stacked — and **the index is shut until it is asked for.**
+/* Stacked, the rail is a block of words above the work rather than a column
+   beside it, so it takes the gap a section pays and nothing else. The width
+   query is the same one ClientsPin reads back through matchMedia — the rail is
+   only held against the scroll while there is a column of work beside it. */
+@media (max-width: 64rem) {
+  .clients-rail {
+    margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+  }
+}
 
-   Three arrangements of these eight words were built and rejected on the page,
-   in this order: a wrapping row, one tall column, two columns of four. The row
-   is the toolbar the column was arrived at to avoid, and across a line it loses
-   three of the four ways a choice is marked — the rule cannot be drawn from the
-   left, the word cannot step aside without landing on its neighbour, and `All`
-   loses the rule that makes it the foot of an index rather than an eighth
-   sector. The tall column keeps all four and spends a full phone screen of grey
-   words before a reader reaches a card. Two columns halve that and it was still
-   a block of eight grey words over the work. Moving the column under the work
-   was tried too and rejected on position.
+/* One column below this width, and the rail becomes a block of words above the
+   work rather than a column beside it.
 
-   **So the fourth is not a fourth arrangement.** What the three share is that a
-   phone is shown all eight at once, in a section whose whole list is eight
-   cards — an index earns its place when it is shorter than the thing it indexes,
-   and here it is not. Shut, it costs one row: the sector you are in, and a mark
-   saying there is more. Open, it is the tall column exactly as it was, because
-   that shape was never wrong as a thing to open — only as a thing that is always
-   there.
-
-   `display` rather than a transform or `inert`: it takes the closed index out of
-   the tab order and out of the accessibility tree at exactly the widths this
-   query covers, with no width read in JavaScript to keep in step with this file.
-   The component carries `data-open` at every width and this is the only place
-   that looks at it.
+   The comment that stood here described a phone disclosure — the index shut to
+   a single row with a mark saying there was more, opening to the tall column —
+   and all of it went with the filter on 2026-08-25. Seven words that do not
+   respond to being pressed do not need to be hidden behind a control; they are
+   shorter than the thing they index, which is the test the sector list failed.
 
    The complement of this query is read back in ClientsPin through matchMedia:
-   the index is only held against the scroll while there is a column of work
+   the rail is only held against the scroll while there is a column of work
    beside it to hold it against. Change the width here and change it there. */
 @media (max-width: 64rem) {
   .clients-layout {
@@ -7053,13 +7131,7 @@ video {
    * `visibility` is the half that is not decoration. Collapsed to nothing the
    * index is still focusable and still read aloud, so it is hidden outright —
    * and the delay is what sequences it: going out it waits for the track to
-   * close, coming in it does not wait at all. That is what `0s linear` with a
-   * delay buys, and it is why this can be one property rather than a callback.
-   *
-   * `--duration-handover` for both this and the mark, so the tap moves one
-   * thing at two ends rather than two things at two speeds. It is the token for
-   * a change that happens on its own while being watched, which is what an
-   * index unfolding is. */
+   * close, coming in it does not wait at all. */
   .clients-filter-holder {
     display: grid;
     grid-template-rows: auto 0fr;
@@ -7120,12 +7192,34 @@ video {
 /* The Blog's grid, at the same measure. Entries are equal here for the reason
    pieces are equal there: an index where one item is drawn larger is telling
    the reader which to pick before they have read any of them. */
+/* **Two to a row, at every width — owner's call, 2026-08-25.**
+
+   It was `auto-fit` with a 19rem floor, which is a rule about how much room a
+   card needs rather than how many there should be: the grid took three columns
+   on a laptop and four on a wide monitor, and the count changed under you as
+   the window moved. A fixed two is a decision about the page instead.
+
+   `repeat(2, ...)` and no media query, which is what "always" means here. It
+   holds down to the narrowest phone — two cards on a 320px screen are about
+   150px each, which the pictures carry and the three lines under them survive
+   at 18px. If that ever reads as too tight, the fix is one breakpoint, and it
+   would be a change to this decision rather than a repair of it.
+
+   `minmax(0, 1fr)` rather than `1fr`: a bare `1fr` floors at the content's
+   min-content width, which a long client name would push past, and the two
+   columns would stop being equal. */
 .clients-grid {
   display: grid;
   margin: 0;
   padding: 0;
-  grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
-  gap: clamp(0.75rem, 1.2vw, 1.15rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Measured off the reference rather than picked: its two pictures are 680
+     wide with 42 between them across a 1402 span, which is 3% — so 3vw, with a
+     floor and a ceiling either side of it the way every other gap on this site
+     is written. It was 12-18px, set when the cards were panels with frames of
+     their own; two pictures standing on the page need the air those frames used
+     to give them. */
+  gap: clamp(1.5rem, 3vw, 2.75rem);
   list-style: none;
 }
 
@@ -7161,11 +7255,27 @@ video {
    preserveAspectRatio="xMidYMid meet", so any other ratio letterboxes it into a
    band of nothing rather than filling. A real screenshot dropped in here later
    inherits the same box and the grid does not move. */
+/* The whole top of the card, and the card is the picture.
+
+   **Full width and a taller frame — owner's call, 2026-08-25, against a
+   reference whose two pictures fill their columns.** It was 70% wide for a day
+   with the ratio derived from that width, so that narrowing the box would not
+   also shorten it; both are gone. The picture reaches the card's right edge, so
+   there is nothing left to derive a ratio from and it is simply stated.
+
+   4:3 rather than the 16:9 it has been. The reference reads 680x520, which is
+   1.308; 4:3 is 1.333 and is a ratio a photographer would recognise, so it is
+   the one worth naming rather than the exact measurement of a screenshot. The
+   source frames are 16:9 and `object-fit: cover` takes the difference off the
+   top and bottom rather than squashing what is in them.
+
+   Square corners, and only that left of the panel this used to sit in.
+   `overflow: hidden` stays — it is what holds the image to the ratio, not what
+   drew the corner. */
 .clients-card__plate {
   position: relative;
-  aspect-ratio: 242 / 136;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
-  border-radius: calc(var(--shape-md) - 0.35rem);
   background: var(--plate-tint);
 }
 
@@ -7180,19 +7290,11 @@ video {
    out by 58% because the sector sits in the top left and nothing else on the
    plate needs holding down; a scrim over the whole picture would be a filter on
    the artwork rather than a bed for one word. */
-.clients-card__plate::after {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--canvas) 52%, transparent) 0%,
-    color-mix(in srgb, var(--canvas) 22%, transparent) 28%,
-    transparent 58%
-  );
-  content: "";
-  pointer-events: none;
-}
+/* The shade over the top of the picture is GONE — owner's call, 2026-08-25.
+   It was a wash of `--canvas` at 52% falling away by 58% down the frame, and it
+   existed for one reason: the sector used to be set ON the picture and needed
+   something to be legible against. No word stands there now, so all it did was
+   put a pale band across the top of every photograph. */
 
 /* Cover, not contain: the box is 16:9 and so is what is asked for, but a real
    screenshot later will not be, and a picture that letterboxes itself into a
@@ -7238,72 +7340,41 @@ video {
    in flow, so the plate keeps its 242x136 whatever the sector is called and a
    two-word one like Public Sector cannot push the photograph taller than its
    neighbours. */
-.clients-card__title {
-  position: absolute;
-  z-index: 2;
-  top: clamp(0.75rem, 1.1vw, 1.05rem);
-  left: clamp(0.85rem, 1.2vw, 1.15rem);
-  max-width: calc(100% - 2 * clamp(0.85rem, 1.2vw, 1.15rem));
+/* **The three lines under the picture, and they are all the same line.**
+   Owner's call, 2026-08-25: normal text, no labels, nothing set apart. The name
+   was the title face at up to 30px and heavy; the values under it were body
+   copy; the labels between them were tracked uppercase in grey. One treatment
+   now — the body face at the page's own copy size — so the card is a picture
+   and three lines rather than a picture and a small typographic system.
+
+   `.clients-card__name` is still an `<h3>`. Flattening how it looks does not
+   change what it is: it is what puts each card in the page's outline. */
+.clients-card__name,
+.clients-card__meta {
   margin: 0;
   color: var(--ink);
-  font-family: var(--type-title);
-  font-size: clamp(1.5rem, 1.8vw, 1.875rem);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-tight);
-  line-height: 1.06;
-  text-wrap: balance;
+  font-family: var(--type-body);
+  /* A step above the page's copy size — owner asked for it bigger, 2026-08-25.
+     Its own clamp rather than a multiple of `--text-copy`, because that token
+     already carries a slope and multiplying it would multiply the slope too:
+     the card would grow faster than every other paragraph on the site instead
+     of sitting a fixed step above them. Same shape, both ends moved up two. */
+  font-size: clamp(18px, calc(15.43px + 0.286vw), 20px);
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.5;
+}
+
+.clients-card__name {
+  margin-top: clamp(0.9rem, 1.8vh, 1.25rem);
 }
 
 /* Dropped to the foot, so a row of cards agrees along its bottom edge however
    long the titles run — the same margin-top: auto the blog card is built on. */
-.clients-card__facts {
-  margin: auto 0 0;
-  padding-top: clamp(1rem, 2.4vh, 1.5rem);
-  padding-inline: clamp(0.45rem, 0.7vw, 0.7rem);
-  padding-bottom: clamp(0.35rem, 0.8vh, 0.6rem);
-}
-
 /* Label and answer on one line, the label held to a fixed measure so the three
    answers start at the same place on every card in the row. Comparing two
    entries means comparing the same three questions, and they only read as the
    same three if they line up. */
-.clients-card__fact {
-  display: flex;
-  gap: clamp(0.75rem, 1.4vw, 1.1rem);
-  padding-top: clamp(0.55rem, 1.4vh, 0.8rem);
-  margin-top: clamp(0.55rem, 1.4vh, 0.8rem);
-  border-top: 1px solid var(--line-soft);
-}
-
-.clients-card__fact:first-child {
-  padding-top: 0;
-  margin-top: 0;
-  border-top: 0;
-}
-
-.clients-card__fact dt {
-  flex: none;
-  /* Measured, not guessed: "DESCRIPTION" is the longest of the two at 86px, and
-     the track was 112 — 26px of empty column taken off a description that only
-     had 149 to wrap in. 5.75rem leaves the label six pixels of slack and gives
-     the rest back to the words. Widen it if a longer label is ever added; a
-     label that wraps costs more than the line it saves. */
-  width: 5.75rem;
-  color: var(--ink-grey);
-  font-size: var(--text-fine);
-  letter-spacing: 0.06em;
-  line-height: 1.5;
-  text-transform: uppercase;
-}
-
-.clients-card__fact dd {
-  margin: 0;
-  color: var(--ink);
-  font-size: var(--text-copy);
-  line-height: 1.5;
-  text-wrap: pretty;
-}
-
 /* A card with a story behind it. One link, wrapping the picture and named by
    the heading inside it — one target and one thing for a screen reader to
    announce — stretched over the card by the pseudo-element below, so the whole
@@ -7339,60 +7410,29 @@ video {
 /* The card answers, not a cursor decoration: the picture lifts out of the shade
    it is read through and the panel comes up a step. Content responding to the
    pointer is the one hover language this site has. */
-.clients-card--linked:hover {
-  background: var(--surface-raised-strong);
+/* The hover was a fill on the card, which worked while the card was a panel
+   with a ground of its own. There is no panel now, so filling it would paint a
+   rectangle around three lines of text standing on the page — a box appearing
+   under the pointer where none exists at rest. The picture darkening below is
+   what the hover is; it is the only part of the card that has a surface. */
+.clients-card--linked:hover .clients-card__name {
+  color: var(--accent-strong);
 }
 
-.clients-card--linked .clients-card__plate::after {
+/* `.clients-card__facts`, `__fact`, and their `dt`/`dd` rules were here and are
+   gone with the description list they styled — the labels came off on
+   2026-08-25 and what is left is three plain lines, set by the one rule above. */
+
+/* The picture dims a little with it. These two rules drove the shade that was
+   removed above — it sat at rest and deepened on hover — so what is left is the
+   dim without the wash: the photograph itself goes down, rather than something
+   pale being laid over it. */
+.clients-card--linked .clients-card__art {
   transition: opacity var(--duration-base) var(--ease-standard);
 }
 
-.clients-card--linked:hover .clients-card__plate::after {
-  opacity: 0.55;
-}
-
-/* Every sector's state today, and the Blog's empty state exactly — the bars
-   standing in for writing that genuinely is not there yet. */
-.clients-empty {
-  position: relative;
-  padding-block: clamp(3rem, 9vh, 6rem);
-}
-
-.clients-empty__lines {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  width: min(52%, 30rem);
-  aspect-ratio: 716 / 336;
-  opacity: 0.18;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-.clients-empty__bars {
-  width: 100%;
-  height: 100%;
-  fill: var(--accent);
-}
-
-.clients-empty__title {
-  position: relative;
-  max-width: 20ch;
-  margin: 0;
-  font-family: var(--type-display);
-  font-size: clamp(1.5rem, 2.4vw, 2.25rem);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1.08;
-}
-
-.clients-empty__copy {
-  position: relative;
-  max-width: 46ch;
-  margin: clamp(0.75rem, 2vh, 1.25rem) 0 0;
-  font-size: var(--text-copy);
-  line-height: 1.6;
-  opacity: 0.72;
+.clients-card--linked:hover .clients-card__art {
+  opacity: 0.82;
 }
 
 /* ---------------------------- Clients: one story -------------------------- */

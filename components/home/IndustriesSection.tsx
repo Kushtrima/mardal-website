@@ -284,7 +284,16 @@ export function IndustriesSection() {
                       it while someone is standing on a name. */}
                   <Link
                     className={`industries-item industries-item--${TINTS[index % TINTS.length]}`}
-                    href={`/case-studies/${industry.id}`}
+                    /* All seven go to the same page, and that is the honest
+                       answer rather than a shortcut. Each used to open
+                       `/case-studies/{id}` with its own sector already chosen;
+                       the owner replaced that taxonomy on 2026-08-25 and the
+                       seven routes went with it, so there is one page of
+                       delivered work and this is it. Kept as links rather than
+                       turned into plain text: the run reads focus off them, and
+                       a reader tabbing this section still needs somewhere to
+                       land. */
+                    href="/case-studies"
                     id={industry.id}
                     data-active={index === activeIndex}
                     data-cursor

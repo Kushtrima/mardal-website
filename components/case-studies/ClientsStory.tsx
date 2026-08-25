@@ -65,15 +65,14 @@ export function ClientsStory() {
                   this story sits in — leaving a story should put you back among
                   the ones like it, not at the top of everything. */}
               <p className="story-hero__trail">
+                {/* One crumb now. There were two — Clients, then the sector
+                    this story sat under — and the second pointed at a route
+                    that no longer exists: the owner replaced the industry
+                    taxonomy on 2026-08-25 and the seven sector views went with
+                    it. There is nowhere between here and the index any more, so
+                    there is nothing between them in the trail either. */}
                 <Link className="story-hero__back" href="/case-studies">
                   {pilotStory.backLabel}
-                </Link>
-                <span aria-hidden="true">·</span>
-                <Link
-                  className="story-hero__back"
-                  href={`/case-studies/${pilotStory.sector}`}
-                >
-                  {sector?.title}
                 </Link>
               </p>
 

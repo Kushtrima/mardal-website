@@ -161,30 +161,40 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /Web Platforms|web-platforms-apps/);
   assert.match(html, /Company/);
 
-  /* Clients: the one word in the bar that is both a link and a trigger. It is a
-     real anchor, so a click goes to the page, and it carries the panel's hooks
-     as well, so hovering it opens the seven sectors. Every other word is one or
-     the other and this is the only entry that has to be checked for both.
+  /* **Clients is a plain link again — no panel behind it.**
+
+     It was the one word in the bar that was both. Its panel held the seven
+     industry sectors, each going to `/case-studies/{sector}`; the owner
+     replaced that taxonomy on 2026-08-25 and the seven routes went with it, so
+     the panel had nothing to hold and `items` is empty.
+
+     The header needed no change to do that — `hasPanel` is `items.length > 0`
+     — which is exactly why this is asserted: the word looks identical either
+     way in a screenshot, and the difference is a chevron and a panel that
+     either open or do not.
 
      Picked apart rather than matched whole, because the two builds this repo
-     has do not agree on attribute order — `next dev` writes the class first and
-     the worker these tests load writes the href first. An assertion on the
-     whole tag passes under one and fails under the other while the markup is
-     correct in both. */
+     has do not agree on attribute order. */
   const clientsLink = html.match(/<a [^>]*>Clients<\/a>/)?.[0];
   assert.ok(clientsLink, "Clients is not rendered as a link");
   assert.match(clientsLink, /href="\/case-studies"/);
-  /* `nav-trigger` is what draws the chevron and turns it. The word has a panel
-     again, so the mark that says so is back with it — this is the visual half
-     of the check and it is the half that silently regresses. */
-  assert.match(clientsLink, /class="nav-link nav-trigger"/);
-  assert.match(clientsLink, /data-nav-trigger="true"/);
-  assert.match(clientsLink, /aria-controls="desktop-mega-menu"/);
-  assert.match(clientsLink, /aria-expanded="false"/);
-  /* One element, not two: a half conversion would leave the button standing
-     beside the link and the word would open a panel on a press as well as go to
-     a page. */
+  assert.match(clientsLink, /class="nav-link"/);
+  assert.doesNotMatch(clientsLink, /nav-trigger|aria-controls|aria-expanded/);
   assert.doesNotMatch(html, /<button[^>]*>Clients<\/button>/);
+
+  /* And no sector is named in the header's panel any more. Scoped to the panel,
+     not to the page: the homepage's own Industries section names all seven and
+     always did — that section is about who Mardal builds for and is untouched
+     by any of this. Written page-wide, this caught it. */
+  const chrome = html.match(/<ul class="mega-menu__links">[\s\S]*?<\/ul>/)?.[0];
+  assert.ok(chrome, "the header panel is not rendered");
+  for (const sector of ["Finance", "Manufacturing", "Logistics", "Public Sector"]) {
+    assert.doesNotMatch(
+      chrome,
+      new RegExp(`>${sector}<`),
+      `${sector} is still in the header panel after the taxonomy was removed`,
+    );
+  }
 
   /* **The other three go nowhere on a press.** Owner's call, 2026-08-24: they
      open their lists and that is all they do. Each still has a real route
@@ -229,7 +239,7 @@ test("server-renders the Mardal homepage", async () => {
      This is the static half of the keyboard fix — the half that can be asserted
      from rendered HTML. The keys themselves are `lib/nav-keys.ts`, held by
      tests/nav-keys.test.mjs, because a key handler leaves no trace in markup. */
-  for (const key of ["services", "products", "case-studies", "company"]) {
+  for (const key of ["services", "products", "company"]) {
     assert.match(
       html,
       new RegExp(`id="nav-trigger-${key}"`),
@@ -247,9 +257,9 @@ test("server-renders the Mardal homepage", async () => {
      page. PRODUCT.md forbids ArvenaAI being written as a delivered client
      outcome, so it must not come back pointing at /case-studies either. */
   assert.doesNotMatch(html, /arvena-ai-case-study/);
-  /* Mobile stays a link even though the entry now has children, because the
-     children are a hover affordance and there is no hovering on a phone. A tap
-     means what a click means on the bar: the page. */
+  /* Mobile is a link for the same reason the bar is: there are no children left
+     to open. It was a link even while there were, because they were a hover
+     affordance and there is no hovering on a phone. */
   const clientsMobile = html.match(/<a ([^>]*)><span>Clients<\/span>/)?.[1];
   assert.ok(clientsMobile, "Clients is not a link in the mobile index");
   assert.match(clientsMobile, /href="\/case-studies"/);
@@ -321,23 +331,17 @@ test("server-renders the Mardal homepage", async () => {
      builds this repo has disagree on it, and `next dev` writes one way while
      the worker these tests load writes the other.
 
-     The order is asserted with them: the sectors are declared once at the top
-     of content/home.ts and this run, the header panel and the Clients index are
-     all built from that one array, so a sector reordered in the declaration and
-     not here would mean something had been copied that should have been
-     shared. */
+     **All seven go to the same page now.** Each used to open its own sector
+     view; the owner replaced that taxonomy on 2026-08-25 and the seven routes
+     went with it, so there is one page of delivered work and every name on this
+     run points at it. Asserted as seven identical hrefs rather than as one:
+     what would break silently is a name losing its link entirely, and a count
+     of seven is what catches that. */
   const industryLinks = [...html.matchAll(/<a ([^>]*industries-item[^>]*)>/g)]
     .map((match) => match[1].match(/href="([^"]*)"/)?.[1])
     .filter(Boolean);
-  assert.deepEqual(industryLinks, [
-    "/case-studies/finance",
-    "/case-studies/healthcare",
-    "/case-studies/manufacturing",
-    "/case-studies/automotive",
-    "/case-studies/retail",
-    "/case-studies/logistics",
-    "/case-studies/public-sector",
-  ]);
+  assert.equal(industryLinks.length, 7);
+  assert.deepEqual([...new Set(industryLinks)], ["/case-studies"]);
 
   /* And the one that does not narrow. `Explore` pointing at `#contact` was the
      only destination this run had before the Clients page existed — seven
@@ -947,161 +951,225 @@ test("server-renders the Clients hero", async () => {
   assert.match(html, /<footer class="site-footer"/);
 });
 
-/* The sector filter, which is the answer to "choosing Finance should not mean
-   coming back to the header to change your mind": one page, seven views, and
-   the view chosen on the SERVER so the first paint is already the right one.
-   These assert the server half — that /case-studies/finance arrives filtered
-   rather than arriving whole and correcting itself in the browser. */
-test("filters the Clients page by sector, server-side", async () => {
+/* **What replaced the sector filter, and what has to stay gone.**
+
+   This test was the filter's: `/case-studies/finance` had to arrive already
+   filtered, from the server, rather than arriving whole and correcting itself
+   in the browser. The owner replaced the industry taxonomy on 2026-08-25 —
+   there is one page of work now, with a rail down the left saying what KIND of
+   work it holds — so what is asserted is the shape that replaced it, and that
+   the seven addresses answer rather than 404.
+
+   The card assertions below are the filter test's own and are kept: they were
+   never about filtering, they are about what a card is. */
+test("the Clients index is one page with a rail, not seven filtered views", async () => {
   const all = await (await render("/case-studies")).text();
-  const finance = await (await render("/case-studies/finance")).text();
-  const publicSector = await (
-    await render("/case-studies/public-sector")
-  ).text();
 
-  /* Matched to the end of the class name rather than the end of the attribute:
-     a card with a story behind it carries a modifier too, and pinning this to
-     the bare `class="clients-card"` stopped counting it the moment the first
-     story existed. */
-  const cards = (html) => (html.match(/class="clients-card[" ]/g) ?? []).length;
-  /* Matched across the class list rather than against one exact string — All
-     carries a modifier of its own — and reaching through to the label span,
-     since the word is wrapped now: the span is what travels when a sector is
-     chosen, so the button holds no text of its own to match on. */
-  const lit = (html) =>
-    html.match(
-      /clients-filter__item[^"]*is-current"[\s\S]*?clients-filter__label">([^<]*)/,
-    )?.[1];
+  /* **The grid element, taken once — everything about a card is read out of
+     this and not out of the page.**
 
-  /* Unfiltered is every entry, and the word lit in the row says so. */
-  assert.equal(lit(all), "All");
-  assert.equal(cards(all), 8);
+     Next embeds the whole tree a second time as its RSC payload, and since
+     ClientsIndex stopped being a client component the cards appear in that copy
+     too: every per-card count read double. The first `<ul class="clients-grid">`
+     is the rendered one. */
+  const cardMarkup = all.match(/<ul class="clients-grid">[\s\S]*?<\/ul>/)?.[0];
+  assert.ok(cardMarkup, "the clients grid is not rendered");
 
-  /* All closes the row rather than opening it: the seven sectors are a list,
-     and the way out of one of them is not the eighth member of that list. This
-     asserts the order, because it is a decision and not an accident of how the
-     array happens to be written. */
-  const order = [
-    ...all.matchAll(/class="clients-filter__label">([^<]*)/g),
-  ].map((match) => match[1]);
-  assert.equal(order.at(-1), "All");
-  assert.equal(order.at(0), "Finance");
-  assert.equal(order.length, 8);
+  /* Every entry, once. There is no state and no subset any more, so this is the
+     count of the whole list rather than of a view of it. Matched to the end of
+     the class name rather than the attribute: a card with a story behind it
+     carries a modifier too. */
+  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 8);
+  assert.equal((cardMarkup.match(/<article/g) ?? []).length, 8);
 
-  /* Filtered is a subset, and only that sector survives — the count and the
-     labels both, since a filter that changed the count while leaving a stray
-     card from another sector would pass on the count alone. */
-  assert.equal(lit(finance), "Finance");
-  assert.equal(cards(finance), 2);
-  const labels = [
-    ...finance.matchAll(/class="clients-card__title">([^<]*)/g),
-  ].map((match) => match[1]);
-  assert.deepEqual([...new Set(labels)], ["Finance"]);
+  /* The heading, in the special face and on its two authored lines. */
+  assert.match(all, /class="clients-rail__title"/);
+  assert.match(all, /clients-rail__title-line">Selected<[\s\S]*?clients-rail__title-line">work</);
+
+  /* The rail itself. Matched on the group element rather than on
+     `.clients-rail`, whose closing tag a non-greedy match now finds inside the
+     holder — the holder is nested in it, so the first `</div>` after
+     `class="clients-rail"` closes the wrong box. */
+  const rail = all.match(
+    /<div class="clients-filter" id="clients-filter"[\s\S]*?<\/div>\s*<\/div>/,
+  )?.[0];
+  assert.ok(rail, "the rail is not rendered");
+
+  /* The seven, in order, then All. As a list because the order is the owner's
+     and a set would pass while they were shuffled. */
+  assert.deepEqual(
+    [...rail.matchAll(/class="clients-filter__label">([^<]*)</g)].map((m) => m[1]),
+    [
+      "UX/UI Design",
+      "Branding",
+      "Websites",
+      "Applications",
+      "Software",
+      "CRM",
+      "AI &amp; Automation",
+      "All",
+    ],
+  );
+
+  /* **Eight pressable words: the seven, then All.** The rail filters again —
+     owner's call, after one build in which it was static text — so what is
+     asserted is that every discipline is a control and that `All` is the eighth
+     and last of them, held off by the rule at the foot of the index.
+
+     `aria-pressed` rather than `aria-current`: these are toggles over one list,
+     not links to eight places. That distinction is the whole difference between
+     this rail and the sector routes it replaced, and it is the only thing in
+     the markup that says so. */
+  const controls = [...rail.matchAll(/<button[^>]*class="clients-filter__item[^"]*"[^>]*>/g)];
+  assert.equal(controls.length, 8);
+  assert.match(rail, /clients-filter__item clients-filter__item--all/);
+  assert.doesNotMatch(rail, /<a /);
+
+  /* **All is chosen when the page arrives**, and it is the ONLY one that is.
+     A rail arriving with two marks drawn, or with none, is the failure this
+     catches — and neither would fail anything else here, since the eight
+     buttons would still be eight buttons. */
+  const current = [...rail.matchAll(/class="clients-filter__item[^"]*is-current[^"]*"[\s\S]*?<span class="clients-filter__label">([^<]*)</g)]
+    .map((match) => match[1]);
+  assert.deepEqual(current, ["All"]);
+  assert.equal((rail.match(/aria-pressed="true"/g) ?? []).length, 1);
+
+  /* And with All chosen the grid is every entry — which is what makes the
+     default meaningful rather than just marked. */
+  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 8);
+
+  /* The seven sector addresses were live and prerendered. They redirect rather
+     than 404, so anything already linked still lands somewhere. */
+  for (const sector of ["finance", "healthcare", "public-sector"]) {
+    const response = await render(`/case-studies/${sector}`);
+    assert.equal(
+      response.status,
+      308,
+      `/case-studies/${sector} does not redirect`,
+    );
+    assert.equal(response.headers.get("location"), "/case-studies");
+  }
+
+
+  /* **No labels on a card.** The words "Location" and "Industry" came off on
+     2026-08-25 and the values stayed; the industry line went entirely with the
+     taxonomy. Asserted as the absence of the description list rather than of
+     two strings, and scoped to the cards — written page-wide this caught the
+     SITE FOOTER, which lists Email and Phone in a `<dl>` of its own. */
+  assert.doesNotMatch(cardMarkup, /<dt>|<\/dt>|<dl|clients-card__facts/);
 
   /* Every card carries a picture in a box of the same shape. Four tints cycled
-     by position, so no plate sits under its own colour — the tint is what
-     stands in the box while a picture is in flight and what is left if one
-     never arrives. */
-  assert.equal((all.match(/class="clients-card__plate"/g) ?? []).length, 8);
-  assert.equal((all.match(/class="clients-card__art"/g) ?? []).length, 8);
+     by position, so no plate sits under its own colour. */
+  assert.equal((cardMarkup.match(/class="clients-card__plate"/g) ?? []).length, 8);
+  assert.equal((cardMarkup.match(/class="clients-card__art"/g) ?? []).length, 8);
+  const tints = [...cardMarkup.matchAll(/clients-card__plate" data-tint="(\w+)"/g)].map(
+    (match) => match[1],
+  );
+  assert.deepEqual(tints.slice(0, 5), ["one", "two", "three", "four", "one"]);
 
   /* **The pictures are placeholders on a third party's server and must not
      ship.** This is the assertion that makes that impossible to forget: it
      fails the build the day someone tries to publish this page with stock
      frames still in it, which is exactly when nobody is reading comments.
      Delete it in the same commit that puts real screenshots in. */
-  assert.equal((all.match(/https:\/\/picsum\.photos\//g) ?? []).length, 8);
-  /* Decorative, so every one of them is silent to a screen reader: they are
-     photographs of nothing to do with the work. */
-  assert.doesNotMatch(all, /class="clients-card__art"[^>]*alt="[^"]+"/);
-  const tints = [...all.matchAll(/clients-card__plate" data-tint="(\w+)"/g)].map(
-    (match) => match[1],
+  assert.equal((cardMarkup.match(/https:\/\/picsum\.photos\//g) ?? []).length, 8);
+  /* Decorative, so every one of them is silent to a screen reader. */
+  assert.doesNotMatch(cardMarkup, /class="clients-card__art"[^>]*alt="[^"]+"/);
+
+  /* ⚠ **THE EIGHT NAMES ON THIS PAGE ARE INVENTED AND MUST NOT SHIP.**
+
+     Pinned for the same reason the stock photographs above are: so publishing
+     this page means deleting a test on purpose rather than forgetting a
+     comment. None of these is a company Mardal has worked for. Under a heading
+     reading "Customer stories" and a line promising delivered work, eight
+     invented companies are a claimed client list and a reader cannot tell them
+     from the real archive — which is in PRODUCT.md, behind a naming decision
+     nobody has made. Delete this with the commit that puts real names in. */
+  assert.deepEqual(
+    [...cardMarkup.matchAll(/class="clients-card__name">([^<]*)</g)].map(
+      (m) => m[1],
+    ),
+    ["Nordvik", "Alturi", "Solvei", "Marren", "Brekk", "Vantor", "Lumea", "Kestrel"],
   );
-  assert.deepEqual(tints.slice(0, 5), ["one", "two", "three", "four", "one"]);
 
-  /* No project name anywhere on a card. A project's name is its client's, and
-     the sector heads the card precisely so nothing has to stand in for one —
-     `[Project 01]` was the placeholder that used to, and a bracket must never
-     reach a page. */
-  assert.doesNotMatch(all, /\[Project/);
+  /* No project name, and no bracket left behind by the names landing. One entry
+     still holding `[Client name]` while the other seven read as companies is
+     worse than eight brackets. */
+  assert.doesNotMatch(all, /\[Project|\[Client name\]|\[Location\]/);
 
-  /* Two fields a card, in this order: who it was for, then what it was. */
-  const fields = [...all.matchAll(/<dt>([^<]*)<\/dt>/g)].map((m) => m[1]);
-  assert.deepEqual(fields.slice(0, 2), ["Client", "Description"]);
-  assert.equal(fields.length, 16);
-  /* The three they replaced are gone rather than left rendering beside them. */
-  assert.doesNotMatch(all, /<dt>(Replaced|Does now|Client owns)<\/dt>/);
+  /* **Two lines under each name: where, then what the client does.** The
+     industry came back on 2026-08-25 after a day off the card — it left when it
+     WAS the rail's taxonomy and the card was repeating the filter that had put
+     it there, and it returned once the rail began filtering by discipline
+     instead, because the two now say different things.
+
+     Read as PAIRS rather than as one flat list. Flat, a location landing in an
+     industry's place — or one card losing a line and shifting every pair after
+     it — would still be sixteen strings drawn from the right two sets. */
+  const COUNTRIES = ["Switzerland", "Germany", "Austria", "Kosovo"];
+  const SECTORS = [
+    "Finance",
+    "Healthcare",
+    "Manufacturing",
+    "Automotive",
+    "Retail",
+    "Logistics",
+    "Public Sector",
+  ];
+  const pairs = [
+    ...cardMarkup.matchAll(
+      /class="clients-card__meta">([^<]*)<[\s\S]*?class="clients-card__meta">([^<]*)</g,
+    ),
+  ];
+  assert.equal(pairs.length, 8);
+  for (const [, place, sector] of pairs) {
+    /* Unspecific on purpose — a country, not a city or an address — asserted as
+       a closed set, because "unspecific" is the kind of instruction a later
+       edit satisfies once and then forgets. */
+    assert.ok(
+      COUNTRIES.includes(place),
+      `"${place}" is more specific than a country`,
+    );
+    /* The industry is the one line on a card that is not invented: it is
+       derived from the entry's own sector, out of the list declared once in
+       content/home.ts that the homepage reads too. */
+    assert.ok(SECTORS.includes(sector), `"${sector}" is not one of the seven`);
+  }
+
+  /* Read out of the cards, not off the page: Next embeds the whole tree a
+     second time as its RSC payload, so counting an attribute document-wide
+     counts everything twice. */
+  assert.equal((cardMarkup.match(/class="clients-card__meta"/g) ?? []).length, 16);
 
   /* **One card is a link, and only one.** The pilot story is the only entry
      with a page behind it; the other seven go nowhere on purpose, because a
      card that looks like a link and answers with an empty page is worse than a
-     card that never offered. This is what stops the next story being wired up
-     by adding a route and forgetting the index, or the reverse. */
-  /* Read off the whole tag rather than assuming class comes before href: the
-     two builds this repo has disagree on attribute order, and `next dev` writes
-     one way while the worker these tests load writes the other. */
-  const links = [...all.matchAll(/<a ([^>]*clients-card__link[^>]*)>/g)]
-    .map((match) => match[1].match(/href="([^"]*)"/)?.[1])
-    .filter(Boolean);
-  assert.deepEqual(links, [
-    "/case-studies/healthcare/healthcare-office-website",
-  ]);
+     card that never offered.
+
+     Its address lost the sector segment with the taxonomy — it was
+     `/case-studies/healthcare/healthcare-office-website`. */
+  const links = [...cardMarkup.matchAll(/<a [^>]*class="clients-card__link"[^>]*>/g)];
+  assert.equal(links.length, 1);
+  assert.match(all, /href="\/case-studies\/healthcare-office-website"/);
 
   /* **The link opens on the picture, and that is a size, not a nesting taste.**
      The stylesheet stretches this anchor over the whole card with `inset: 0`,
-     which measures from the nearest positioned ancestor. The anchor used to sit
-     inside `.clients-card__title` — absolutely positioned in the corner of the
-     picture, shrunk to the word in it — so the clickable area was the word while
-     the card's hover lit the whole panel. Markup is the only place that fact is
-     visible, so it is asserted here: the anchor must open directly on the plate,
-     and no anchor may appear inside a title. */
-  assert.match(all, /<a [^>]*clients-card__link[^>]*><div [^>]*clients-card__plate/);
-  assert.doesNotMatch(all, /clients-card__title[^>]*>\s*<a[\s>]/);
+     which measures from the nearest positioned ancestor. It once sat inside a
+     heading that was absolutely positioned in the corner of the picture, so the
+     clickable area was one word while the hover lit the whole card. */
+  assert.match(cardMarkup, /<a [^>]*clients-card__link[^>]*><div [^>]*clients-card__plate/);
 
-  /* **The Client field is the one this page may not fill.** PRODUCT.md records
-     that per-client sign-off for naming those companies publicly was never
-     recorded, so the slot stays bracketed — this is the assertion that catches a
-     real name being typed into the likeliest place on the whole site for one to
-     appear. The named-client loop below covers the seven the archive holds; this
-     covers the field itself being filled with anything at all. */
-  assert.match(all, /<dt>Client<\/dt><dd>\[Client name\]<\/dd>/);
-
-  /* A sector with nothing in it is a screen, not a blank: the same empty state
-     the Blog index shows, the bars standing in for writing that is genuinely
-     not there. Every sector is in this state until the entries are written —
-     this one is only the first to prove it renders. */
-  assert.equal(lit(publicSector), "Public Sector");
-  assert.equal(cards(publicSector), 0);
-  assert.match(publicSector, /class="clients-empty__title"/);
-  assert.match(publicSector, /Nothing published yet\./);
-
-  /* The sector leads the tab, because a shared link shows the tab and the
-     sector is why it was shared. */
-  assert.match(finance, /<title>Finance — Clients — Mardal<\/title>/i);
-
-  /* A sector that does not exist is a wrong address, not an empty filter. */
-  assert.equal((await render("/case-studies/nonsense")).status, 404);
-
-  /* **Still no client named, on the filtered routes too.** The assertion above
-     covers /case-studies alone; these are seven more pages that could carry a
-     name, and the entries on them are the likeliest place for one to arrive. */
-  for (const client of [
-    "EN NUR",
-    "Spitex",
-    "Stolzbau",
-    "Henor",
-    "ANDI SPORT",
-    "Jetonikeramika",
-  ]) {
-    assert.doesNotMatch(finance, new RegExp(client, "i"), `${client} named`);
-    assert.doesNotMatch(all, new RegExp(client, "i"), `${client} named`);
-  }
+  /* The only thing inside that link is a silent image, so it carries its own
+     name — without one the single clickable card announces itself as "link". */
+  assert.match(cardMarkup, /class="clients-card__link"[^>]*aria-label="[^"]+"/);
 });
 
 /* The pilot story — the page a card opens, and the only one there is. What is
    being judged is the shape; the words in it are slots. */
 test("server-renders the one customer story", async () => {
-  const path = "/case-studies/healthcare/healthcare-office-website";
+  /* The sector segment came out of this address with the taxonomy on
+     2026-08-25; next.config.ts redirects the old one. */
+  const path = "/case-studies/healthcare-office-website";
   const response = await render(path);
   assert.equal(response.status, 200);
 
@@ -1187,7 +1255,9 @@ test("server-renders the one customer story", async () => {
   /* The way back, and both halves of it: leaving a story should offer the
      sector it sits in as well as the whole index. */
   assert.match(html, /href="\/case-studies"/);
-  assert.match(html, /href="\/case-studies\/healthcare"/);
+  /* One crumb now. The second pointed at the sector view this story sat
+     under, and that view no longer exists. */
+  assert.doesNotMatch(html, /href="\/case-studies\/healthcare"/);
 
   /* **Still no client named, on the page most likely to name one.** A story is
      where a name wants to go — it is a page about one customer — so this is the
@@ -1245,16 +1315,23 @@ test("server-renders the one customer story", async () => {
   assert.match(html, /class="story-hero__art"/);
   assert.match(html, /class="story-hero__art-image"/);
 
-  /* Exactly one story exists. Any other address under a sector is a wrong
-     address, not an unwritten page. */
-  assert.equal(
-    (await render("/case-studies/healthcare/not-a-story")).status,
-    404,
-  );
-  assert.equal(
-    (await render("/case-studies/finance/healthcare-office-website")).status,
-    404,
-  );
+  /* Exactly one story exists, and any other slug is a wrong address rather than
+     an unwritten page. */
+  assert.equal((await render("/case-studies/not-a-story")).status, 404);
+
+  /* **The two-segment addresses are now redirects, not 404s**, and the
+     difference is deliberate. They were `/case-studies/{sector}/{story}` and
+     the sector segment came out with the taxonomy on 2026-08-25, so an old
+     address is a moved page rather than a wrong one — `next.config.ts` strips
+     the segment and lets the router judge what is left.
+
+     Which means a wrong story under an old sector redirects to a 404 rather
+     than answering with one directly. That is the correct pair of answers in
+     the correct order: the address moved, and then it does not exist. */
+  const moved = await render("/case-studies/healthcare/not-a-story");
+  assert.equal(moved.status, 308);
+  assert.equal(moved.headers.get("location"), "/case-studies/not-a-story");
+  assert.equal((await render("/case-studies/not-a-story")).status, 404);
 
   assert.match(html, /class="site-nav"/);
   assert.match(html, /<footer class="site-footer"/);

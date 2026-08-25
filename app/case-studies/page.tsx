@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ClientsPage } from "../../components/case-studies/ClientsPage";
-import { ALL_SECTORS, caseStudies } from "../../content/case-studies";
+import { caseStudies } from "../../content/case-studies";
 
 export const metadata: Metadata = {
   title: caseStudies.title,
@@ -8,10 +8,15 @@ export const metadata: Metadata = {
 };
 
 /**
- * Clients, unfiltered — every sector at once, which is what the word in the bar
- * goes to. The page itself lives in ClientsPage, because the sector routes
- * beside this one render exactly the same thing with one word different.
+ * Clients — every entry, once.
+ *
+ * The only route to this page now. There were eight: this one and seven
+ * `/case-studies/[sector]` siblings rendering the same page with one sector
+ * already chosen, which is what the header's Clients panel pointed at. The
+ * owner replaced the industry taxonomy on 2026-08-25 and the seven went with
+ * it; `next.config.ts` redirects them here rather than 404ing anything that was
+ * already linked.
  */
 export default function CaseStudiesPage() {
-  return <ClientsPage sector={ALL_SECTORS} />;
+  return <ClientsPage />;
 }

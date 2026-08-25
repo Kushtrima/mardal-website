@@ -134,3 +134,56 @@ test("the smoother is killed rather than only dropped when the menu appears", ()
      then owns. */
   assert.match(SMOOTH, /smoother\.kill\(\)/);
 });
+
+/**
+ * Two client cards to a row, at every width.
+ *
+ * Owner's call, 2026-08-25, and "always" is the substance of it: the grid ran
+ * on `auto-fit` with a 19rem floor, so the column count changed under the
+ * reader as the window moved — three on a laptop, four on a wide monitor. What
+ * was asked for is a fixed two.
+ *
+ * Which makes this a breakpoint claim rather than a styling one, and that is
+ * why it is held in this file: it is not enough that the rule says two, nothing
+ * anywhere may override it at a width.
+ */
+test("the clients grid is two columns and no width changes it", () => {
+  const stripped = code(CSS);
+
+  const rules = [...stripped.matchAll(/\.clients-grid\s*\{([^}]*)\}/g)].map(
+    (match) => match[1],
+  );
+  assert.equal(rules.length, 1, "the clients grid is styled in more than one place");
+  assert.match(rules[0], /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
+
+  /* `auto-fit` and `auto-fill` are the two ways a column count becomes a
+     function of the window again, which is exactly what this replaced. */
+  assert.doesNotMatch(rules[0], /auto-fit|auto-fill/);
+
+  /* And nothing inside any media query touches it — the assertion above reads
+     the one top-level rule and would go on passing while a query below it
+     rewrote the columns at some width. Walked by brace depth, the same way
+     `menuQuery` above does, because a top-level rule and a rule nested in a
+     query are indistinguishable to a flat regex. */
+  let depth = 0;
+  let condition = null;
+
+  for (const line of stripped.split("\n")) {
+    const trimmed = line.trim();
+
+    if (depth === 0 && trimmed.startsWith("@media")) {
+      condition = trimmed.replace(/^@media\s*/, "").replace(/\s*\{\s*$/, "");
+    } else if (condition) {
+      assert.doesNotMatch(
+        line,
+        /\.clients-grid\b/,
+        `a media query changes the clients grid at ${condition}`,
+      );
+    }
+
+    depth += (line.match(/\{/g) ?? []).length;
+    depth -= (line.match(/\}/g) ?? []).length;
+
+    if (depth === 0) condition = null;
+  }
+});
