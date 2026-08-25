@@ -31,16 +31,18 @@ export default function RootLayout({
       <head>
         {/* Applies a remembered choice before the first paint.
 
-            A remembered choice only — with nothing stored this writes nothing,
-            because `color-scheme: light dark` on :root already lets the browser
-            follow the system setting on its own, with no script and no flash.
-            So this runs for one case: someone who pressed the toggle and
-            disagreed with their own system.
+            A remembered choice only — with nothing stored this writes nothing
+            and the stylesheet's own `color-scheme: light` gives the visitor the
+            white page, which since 2026-08-25 is what the site defaults to for
+            everyone rather than what half of them got from their OS.
 
-            It has to be inline and it has to be in the head. Anything deferred
-            runs after the first frame, and on a page whose dark canvas is #000
-            that is a black flash on the way to a white one — which is the whole
-            thing worth avoiding. */}
+            So this now runs for exactly one case, and it is the one that used to
+            need no script: a visitor who pressed the toggle and chose dark. It
+            has to be inline and it has to be in the head, because anything
+            deferred runs after the first frame — and that is a white flash on
+            the way to a black page, for the one reader who has explicitly asked
+            not to be shown white. The flash this avoids has changed direction;
+            the reason for the tag has not. */}
         {/* A plain script rather than next/script. `beforeInteractive` was the
             obvious choice and does not work here: with inline content it never
             reaches the server-rendered HTML at all, which is the one thing this

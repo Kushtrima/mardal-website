@@ -33,16 +33,21 @@
 
 :root {
   /* Both themes are live at once and this decides which half of every
-     light-dark() below is read. Two words rather than one, so a visitor whose
-     system is set to light gets the light page on the very first painted frame
-     with no script involved — which is the only way to avoid a black flash on
-     a page whose canvas is #000. The toggle overrides it by writing
-     [data-theme] on this element; see the two rules under the tokens.
+     light-dark() below is read.
+
+     **One word, not two — owner's call, 2026-08-25: the page arrives white.**
+     It read `light dark`, which handed the choice to the visitor's operating
+     system, so half of them met a black site. The dark page is not gone and is
+     not secondary in the code — every token still carries both halves and the
+     toggle still turns the whole thing over — but nobody is shown it until they
+     ask. Written here rather than in a `prefers-color-scheme` block so there is
+     still exactly one property deciding the theme.
 
      It also hands the native UI to the browser: scrollbars, autofill, and the
      form controls on the role pages, none of which had been told which ground
-     they were standing on. */
-  color-scheme: light dark;
+     they were standing on. `light` here is what makes those default to their
+     light forms too, which is the half of this that has no token. */
+  color-scheme: light;
 
   --font-geist: "Geist";
 
@@ -378,8 +383,14 @@
    Attribute selectors rather than a `prefers-color-scheme` block on purpose.
    The media queries in this file are parsed structurally by
    tests/breakpoints.test.mjs and tests/reduced-motion.test.mjs, which count and
-   walk them; a theme query would be a third thing for them to step over for no
-   gain, since the bare :root above already follows the OS on its own. */
+   walk them; a theme query would be a third thing for them to step over, and
+   since 2026-08-25 there is nothing for it to say — the page does not follow the
+   OS any more, it is light until someone presses the toggle.
+
+   Which makes this first rule a restatement of the base rather than an override,
+   and it stays for two reasons: it is what a reader looking for "what does
+   data-theme=light do" comes here to find, and it is what keeps the toggle's two
+   values symmetrical in the one place they are both written down. */
 :root[data-theme="light"] {
   color-scheme: light;
 }
@@ -388,49 +399,42 @@
   color-scheme: dark;
 }
 
-/* Three values that turn over with the page and are not colours, so
-   light-dark() cannot carry them and they need saying the long way.
+/* Four values that turn over with the page and are not colours, so light-dark()
+   cannot carry them and they need saying the long way.
 
-   They are the only reason this file has a colour-scheme query at all — the
-   palette above does not, and should not gain one. Because a declaration block
-   cannot be shared between a media query and a selector, the light values are
-   written twice: once for a visitor who has only their OS set, and once for a
-   visitor who has pressed the toggle. If you change one, change both.
+   **This file no longer has a colour-scheme media query, and should not gain
+   one.** It had exactly one, for these four, and it existed only because the
+   base values here were the DARK ones — so the light values had to be written
+   twice, once for a visitor whose OS said light and once for a visitor who had
+   pressed the toggle, with a note to keep the two copies in step. Since the
+   default became light on 2026-08-25 the base carries the light values and the
+   toggle's dark rule carries the dark ones, each written once. The palette above
+   never had a query and still does not.
 
    --logo-filter: the wordmark is a flat black SVG, so it is crushed to a
-   silhouette rather than recoloured. On black it wants brightness(0) to make it
-   solid, then invert(1) to turn that white. On white the source art is already
-   the right colour and only needs flattening.
+   silhouette rather than recoloured. On white the source art is already the
+   right colour and only needs flattening. On black it wants brightness(0) to
+   make it solid, then invert(1) to turn that white.
 
-   --panel-shadow: on black a card is lifted with a few percent of white, which
-   is a real edge. On white that lift is nearly nothing, so the panels need an
-   actual shadow — and one was left behind in the tokens from when the page was
-   white, drawn for exactly this.
+   --panel-shadow: on white a card's lift is nearly nothing, so the panels need
+   an actual shadow. On black a card is lifted with a few percent of white,
+   which is a real edge on its own.
 
-   --font-smoothing: antialiased thins the stems, which counteracts the bloom of
-   light type on a dark ground. Dark type on white does not bloom, and thinning
-   it there just makes it look underfed. */
+   --font-smoothing: dark type on white does not bloom, and thinning it makes it
+   look underfed. On a dark ground light type does bloom, and antialiased thins
+   the stems to counteract it. */
 :root {
-  --logo-filter: brightness(0) invert(1);
-  --panel-shadow: none;
-  --menu-edge-shadow: none;
-  --font-smoothing: antialiased;
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --logo-filter: brightness(0);
-    --panel-shadow: var(--shadow-soft);
-    --menu-edge-shadow: var(--shadow-menu-edge);
-    --font-smoothing: auto;
-  }
-}
-
-:root[data-theme="light"] {
   --logo-filter: brightness(0);
   --panel-shadow: var(--shadow-soft);
   --menu-edge-shadow: var(--shadow-menu-edge);
   --font-smoothing: auto;
+}
+
+:root[data-theme="dark"] {
+  --logo-filter: brightness(0) invert(1);
+  --panel-shadow: none;
+  --menu-edge-shadow: none;
+  --font-smoothing: antialiased;
 }
 
 /* Whichever way the page is set, three things on it are always a light panel:
@@ -469,16 +473,27 @@
    --accent-contrast.
 
    It is the one large purple on the site and it does not move between themes,
-   so it takes itself off the themed --accent and names both halves here. The
-   slab is the light lavender in either theme and the ink on it stays black:
-   7.29:1, which holds whichever way the page around it is set. Every child
-   reads these by inheritance, so nothing inside the panel had to change.
+   so it takes itself off the themed --accent and names both halves here. Every
+   child reads them by inheritance, which is why turning the whole panel over on
+   2026-08-25 was one line: owner's call, the ink goes white and the slab stays
+   the lavender it is.
 
-   The one thing that does not follow the colour is the wordmark, which is a
-   raster and is driven by a filter instead; see .site-footer__mark img. */
+   ⚠ **The contrast is 2.88:1 and that does not meet WCAG AA.** It was 7.29:1
+   with black. White needs 4.5:1 for body text and 3:1 for large, and #a98ad6 is
+   too light to carry it — this fails both. Nothing here is broken and nothing
+   below compensates for it, because there is no fix on this side of the pair:
+   the ink is already the lightest colour there is. The slab is what would have
+   to move. #8362b8, the site's own --accent, gives 4.77:1; #7b64ab, the purple
+   the design reference actually reads, gives 4.94:1. Both are still plainly the
+   same lavender. This is recorded rather than acted on because the owner asked
+   for the background to stay as it is.
+
+   The one thing that does not follow --accent-contrast is the wordmark, which
+   is a raster and is driven by a filter instead; see .site-footer__mark img,
+   which has to be turned over by hand every time this line changes. */
 .site-footer__panel {
   --accent: #a98ad6;
-  --accent-contrast: #000000;
+  --accent-contrast: #ffffff;
 }
 
 @theme inline {
@@ -3571,9 +3586,16 @@ video {
   height: auto;
   /* A raster wordmark cannot take currentColor, so it is crushed to a
      silhouette instead. brightness(0) alone lands it black, with the panel
-     showing through where the mark is transparent; the invert(1) that used to
-     follow it was what made it white. */
-  filter: brightness(0);
+     showing through where the mark is transparent; invert(1) after it makes
+     that silhouette white.
+
+     **This is the one thing on the panel that does not follow
+     --accent-contrast**, so it has to be turned over by hand whenever that
+     does — and the failure is silent in the worst way, because a mark left
+     black on a white-inked panel still draws, just as the one element that
+     disagrees with everything around it. tests/theme.test.mjs holds the two
+     together. */
+  filter: brightness(0) invert(1);
 }
 
 /* The words on the left, the links on the right — the two places the
@@ -7114,16 +7136,21 @@ video {
 /* No min-height any more. It was holding the card open around a one-word title
    and a mark; the plate is most of the card's height now and sets it, so a
    forced minimum would only reopen the dead band under the facts. */
+/* **No frame, no inset, no ground of its own — owner's call, 2026-08-25.** The
+   card was a padded panel with the picture set inside it and the heading
+   standing on the picture. It is now what the reference is: the photograph
+   whole across the top and every word under it, on the page's own ground.
+
+   Which is why the padding, the raised background and the panel shadow all
+   come off together rather than one at a time. Any one of them left behind
+   redraws the box the picture is meant to have escaped — the shadow in
+   particular, since it traces an edge the eye reads as a card whether or not
+   anything is filled inside it. */
 .clients-card {
   position: relative;
   display: flex;
   width: 100%;
   flex-direction: column;
-  padding: clamp(0.9rem, 1.2vw, 1.15rem);
-  overflow: hidden;
-  border-radius: var(--shape-md);
-  background: var(--surface-raised);
-  box-shadow: var(--panel-shadow);
 }
 
 /* The picture. A flat panel in one of the four tints with the entry's own plate
