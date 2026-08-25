@@ -362,11 +362,22 @@
      rounds its 1084-wide panel by 6px. */
   --shape-panel: 0.5rem;
   /* Hairlines drawn on the accent rather than on the page: the strokes between
-     the legal links, and the rule above the contact block. Black now, with the
-     rest of the panel's content. Kept at 26% so they stay hairlines and do not
-     start competing with the words they separate — and black at 26% carries
-     further on this purple than white at 26% did, so they read no fainter. */
-  --panel-line: rgb(0 0 0 / 26%);
+     the legal links, and the rule above the contact block.
+
+     **White again, with the rest of the panel's content — 2026-08-25.** This
+     token has been both: white while the footer's ink was white, black when it
+     went black. The ink went back to white and this did not follow, which is
+     the whole of why two dark hairlines were left on a panel where everything
+     else had turned over. It is the one thing on the slab that does not read
+     `--accent-contrast` by inheritance, because a border colour and a text
+     colour are different properties.
+
+     45% and not the 26% it had as black. The note it replaces recorded the
+     reason: black at 26% carries further on this purple than white at 26% does,
+     so coming back the other way the number has to rise or the lines go faint.
+     Still short of half, so they stay hairlines rather than starting to compete
+     with the words they separate. */
+  --panel-line: rgb(255 255 255 / 45%);
   --radius-full: 999px;
   --radius-circle: 50%;
   --shadow-soft: 0 1rem 3rem rgb(21 21 21 / 8%);
@@ -1504,7 +1515,7 @@ video {
 }
 
 /* Hairlines between them, as in the footer, but drawn from the ink rather than
-   --panel-line: that token is black at 26%, cut for the purple slab. */
+   --panel-line: that token is white at 45%, cut for the purple slab. */
 .mega-menu__legal > * + * {
   position: relative;
   /* The other half of the pair. See --legal-gap: this is the space after the
