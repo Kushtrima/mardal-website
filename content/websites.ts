@@ -14,7 +14,7 @@
    route moved with it — see next.config.ts for the redirect off the old one.
    The chapter titled "Web Platforms" below keeps its name: it is one chapter
    inside this page and not the page. */
-export const websiteApps = {
+export const websites = {
   title: "Websites",
   description:
     "Websites, online stores, portals, and mobile apps, built for the people who use them.",

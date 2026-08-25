@@ -3,7 +3,7 @@
  *
  * Service positioning and capability copy approved for the page.
  */
-export const crmSolutions = {
+export const crmSolution = {
   title: "CRM Solution",
   description: "Keep everything organized, connected, and easy to manage.",
   heroTitleLines: ["One system for", "your business."],

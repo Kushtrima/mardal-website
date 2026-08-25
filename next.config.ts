@@ -15,9 +15,38 @@ const nextConfig: NextConfig = {
    */
   async redirects() {
     return [
+      /* ── The service routes, renamed to match their labels on 2026-08-25 ──
+         The labels changed first and the addresses followed an hour later, so
+         every one of these was live and linkable in between.
+
+         `web-platforms-apps` is the oldest and points at the FINAL address
+         rather than at `website-apps`, which is where it went when it was
+         written. A redirect to a redirect works and costs a second round trip
+         for no reason; more to the point, a chain is a thing that breaks
+         silently the day a middle link is tidied away. */
       {
         source: "/services/web-platforms-apps",
-        destination: "/services/website-apps",
+        destination: "/services/websites",
+        permanent: true,
+      },
+      {
+        source: "/services/website-apps",
+        destination: "/services/websites",
+        permanent: true,
+      },
+      {
+        source: "/services/ux-ui-branding",
+        destination: "/services/branding",
+        permanent: true,
+      },
+      {
+        source: "/services/custom-software",
+        destination: "/services/software",
+        permanent: true,
+      },
+      {
+        source: "/services/crm-solutions",
+        destination: "/services/crm-solution",
         permanent: true,
       },
       /* The industry taxonomy came off Clients on 2026-08-25 — seven

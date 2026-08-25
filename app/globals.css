@@ -5794,7 +5794,7 @@ video {
    pattern is using: mint, sky and lilac are taken by the three below and
    AI & Automation asks for `--accent` from the base rule. Four services with a
    pattern each and four tints, so the set closes. */
-.service-hero__pattern--ux-ui-branding {
+.service-hero__pattern--branding {
   background: var(--tint-butter-bar);
   -webkit-mask-image: url("/ux-ui-branding-pattern.png");
   mask-image: url("/ux-ui-branding-pattern.png");
@@ -5804,7 +5804,7 @@ video {
    other belonged to System Integration and its drawing is directly above. The
    mint was #ace5ca, which is not any of the four tints and not a fifth one the
    site is allowed to have, so it joins the family its siblings are already in. */
-.service-hero__pattern--crm-solutions {
+.service-hero__pattern--crm-solution {
   background: var(--tint-mint-bar);
   -webkit-mask-image: url("/crm-solutions-pattern-v5.png");
   mask-image: url("/crm-solutions-pattern-v5.png");
@@ -5813,14 +5813,14 @@ video {
 /* Same redaction language as the AI page -- bars snapped to a shared column
    grid, several to a row -- in a different arrangement. Drawn at 1447x1087 like
    the rest, so it no longer needs the mask-size correction the old artwork did. */
-.service-hero__pattern--custom-software {
+.service-hero__pattern--software {
   background: var(--tint-sky-bar);
   -webkit-mask-image: url("/custom-software-pattern-v5.png");
   mask-image: url("/custom-software-pattern-v5.png");
 }
 
 /* Same redaction language as the AI page, different arrangement. */
-.service-hero__pattern--website-apps {
+.service-hero__pattern--websites {
   background: var(--tint-lilac-bar);
   -webkit-mask-image: url("/web-platforms-apps-pattern-v6.png");
   mask-image: url("/web-platforms-apps-pattern-v6.png");

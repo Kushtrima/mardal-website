@@ -111,17 +111,14 @@ export const menu = [
          read the same order from `difference` below, which is kept in step with
          this one by hand — a site that names its five services in two orders on
          one page is the thing to avoid. */
-      /* **The labels were renamed on 2026-08-25 and the ROUTES were not.**
-         Branding lives at /services/ux-ui-branding, Websites at
-         /services/website-apps, Software at /services/custom-software. The
-         owner asked for the words; moving the addresses is a separate act
-         with its own redirects, and the last one of those is three commits
-         back. A label and a slug are allowed to differ — what is not allowed
-         is a slug that points at nothing. */
-      { label: "Branding", href: "/services/ux-ui-branding" },
-      { label: "Websites", href: "/services/website-apps" },
-      { label: "Software", href: "/services/custom-software" },
-      { label: "CRM Solution", href: "/services/crm-solutions" },
+      /* Renamed on 2026-08-25, and the routes followed an hour later on the
+         owner's word — so a label and its address say the same thing again.
+         `next.config.ts` redirects all four of the old ones; nothing that was
+         ever linked stops resolving. */
+      { label: "Branding", href: "/services/branding" },
+      { label: "Websites", href: "/services/websites" },
+      { label: "Software", href: "/services/software" },
+      { label: "CRM Solution", href: "/services/crm-solution" },
       /* Last, and moved there on the owner's word 2026-08-25 — it sat third,
          in the middle of the run. */
       { label: "AI & Automation", href: "/services/ai-automation" },

@@ -6,13 +6,13 @@ import { HeaderSpace } from "../../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
-import { websiteApps } from "../../../content/website-apps";
+import { websites } from "../../../content/websites";
 import { products } from "../../../content/home";
 import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
-  title: websiteApps.title,
-  description: websiteApps.description,
+  title: websites.title,
+  description: websites.description,
 };
 
 function ServiceWords({ className, text }: { className: string; text: string }) {
@@ -31,7 +31,7 @@ function ServiceWords({ className, text }: { className: string; text: string }) 
 }
 
 export default function WebPlatformsAppsPage() {
-  const serviceCards = buildServiceCards(websiteApps.chapters);
+  const serviceCards = buildServiceCards(websites.chapters);
 
   return (
     <>
@@ -39,7 +39,7 @@ export default function WebPlatformsAppsPage() {
       <ServicePageMotion />
 
       <main
-        className="service-page service-page--website-apps"
+        className="service-page service-page--websites"
         id="main-content"
         data-service-page
       >
@@ -47,17 +47,17 @@ export default function WebPlatformsAppsPage() {
 
         <section
           className="service-hero"
-          aria-labelledby="website-apps-title"
+          aria-labelledby="websites-title"
           data-service-hero
         >
           <Container className="service-hero__inner">
             <div className="service-hero__intro">
               <h1
                 className="service-hero__title"
-                id="website-apps-title"
+                id="websites-title"
                 data-service-hero-title
               >
-                {websiteApps.heroTitleLines.map((line) => (
+                {websites.heroTitleLines.map((line) => (
                   <span className="service-hero__title-line" key={line}>
                     {line}
                   </span>
@@ -66,13 +66,13 @@ export default function WebPlatformsAppsPage() {
             </div>
 
             <div
-              className="service-hero__pattern service-hero__pattern--website-apps"
+              className="service-hero__pattern service-hero__pattern--websites"
               aria-hidden="true"
               data-service-hero-pattern
             />
 
             <p className="service-hero__support" data-service-hero-support>
-              {websiteApps.support}
+              {websites.support}
             </p>
 
             <a
@@ -80,7 +80,7 @@ export default function WebPlatformsAppsPage() {
               href={products.ctaHref}
               data-service-hero-cta
             >
-              {websiteApps.heroCta}
+              {websites.heroCta}
               <PixelArrow
                 className="service-hero__cta-arrow"
                 direction="up-right"
@@ -108,7 +108,7 @@ export default function WebPlatformsAppsPage() {
 
         <section
           className="service-offerings"
-          aria-labelledby="website-apps-services-title"
+          aria-labelledby="websites-services-title"
           data-route-section
           data-enter-mode="fade"
           data-service-offerings
@@ -117,7 +117,7 @@ export default function WebPlatformsAppsPage() {
             <Container className="service-journey__layout">
               <h2
                 className="visually-hidden"
-                id="website-apps-services-title"
+                id="websites-services-title"
               >
                 Websites Services
               </h2>
@@ -126,7 +126,7 @@ export default function WebPlatformsAppsPage() {
                 className="service-journey__nav"
                 aria-label="Service categories"
               >
-                {websiteApps.chapters.map((chapter, index) => (
+                {websites.chapters.map((chapter, index) => (
                   <a
                     className={`service-journey__nav-link${
                       index === 0 ? " is-active" : ""
@@ -198,7 +198,7 @@ export default function WebPlatformsAppsPage() {
               <div className="service-journey__controls">
                 <a
                   className="service-journey__skip"
-                  href="#website-apps-cta"
+                  href="#websites-cta"
                   data-scroll-direct
                   data-scroll-duration="1.5"
                   data-scroll-ease="sine.in"
@@ -214,11 +214,11 @@ export default function WebPlatformsAppsPage() {
 
                 <a
                   className="service-journey__next"
-                  href={`#${websiteApps.chapters[1].services[0].id}`}
+                  href={`#${websites.chapters[1].services[0].id}`}
                   data-service-next-link
                 >
                   <span data-service-next-label>
-                    {websiteApps.chapters[1].title}
+                    {websites.chapters[1].title}
                   </span>
                   <PixelArrow
                     className="service-journey__next-arrow"
@@ -233,8 +233,8 @@ export default function WebPlatformsAppsPage() {
 
         <section
           className="service-cta"
-          id="website-apps-cta"
-          aria-labelledby="website-apps-cta-title"
+          id="websites-cta"
+          aria-labelledby="websites-cta-title"
           data-route-section
         >
           <Container>
@@ -245,13 +245,13 @@ export default function WebPlatformsAppsPage() {
             >
               <h2
                 className="service-cta__title"
-                id="website-apps-cta-title"
+                id="websites-cta-title"
               >
-                {websiteApps.cta.title}
+                {websites.cta.title}
               </h2>
 
               <a className="service-cta__link" href={products.ctaHref}>
-                {websiteApps.cta.label}
+                {websites.cta.label}
                 <PixelArrow className="service-cta__arrow" direction="up-right" size="small" />
               </a>
             </div>

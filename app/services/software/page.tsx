@@ -6,13 +6,13 @@ import { HeaderSpace } from "../../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
-import { branding } from "../../../content/branding";
+import { software } from "../../../content/software";
 import { products } from "../../../content/home";
 import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
-  title: branding.title,
-  description: branding.description,
+  title: software.title,
+  description: software.description,
 };
 
 function ServiceWords({ className, text }: { className: string; text: string }) {
@@ -30,8 +30,8 @@ function ServiceWords({ className, text }: { className: string; text: string }) 
   );
 }
 
-export default function BrandingPage() {
-  const serviceCards = buildServiceCards(branding.chapters);
+export default function CustomSoftwarePage() {
+  const serviceCards = buildServiceCards(software.chapters);
 
   return (
     <>
@@ -39,7 +39,7 @@ export default function BrandingPage() {
       <ServicePageMotion />
 
       <main
-        className="service-page service-page--ux-ui-branding"
+        className="service-page service-page--software"
         id="main-content"
         data-service-page
       >
@@ -47,17 +47,17 @@ export default function BrandingPage() {
 
         <section
           className="service-hero"
-          aria-labelledby="ux-ui-branding-title"
+          aria-labelledby="software-title"
           data-service-hero
         >
           <Container className="service-hero__inner">
             <div className="service-hero__intro">
               <h1
                 className="service-hero__title"
-                id="ux-ui-branding-title"
+                id="software-title"
                 data-service-hero-title
               >
-                {branding.heroTitleLines.map((line) => (
+                {software.heroTitleLines.map((line) => (
                   <span className="service-hero__title-line" key={line}>
                     {line}
                   </span>
@@ -66,13 +66,13 @@ export default function BrandingPage() {
             </div>
 
             <div
-              className="service-hero__pattern service-hero__pattern--ux-ui-branding"
+              className="service-hero__pattern service-hero__pattern--software"
               aria-hidden="true"
               data-service-hero-pattern
             />
 
             <p className="service-hero__support" data-service-hero-support>
-              {branding.support}
+              {software.support}
             </p>
 
             <a
@@ -80,7 +80,7 @@ export default function BrandingPage() {
               href={products.ctaHref}
               data-service-hero-cta
             >
-              {branding.heroCta}
+              {software.heroCta}
               <PixelArrow
                 className="service-hero__cta-arrow"
                 direction="up-right"
@@ -108,23 +108,23 @@ export default function BrandingPage() {
 
         <section
           className="service-offerings"
-          aria-labelledby="ux-ui-branding-services-title"
+          aria-labelledby="software-services-title"
           data-service-offerings
         >
           <div className="service-journey" data-service-viewport>
             <Container className="service-journey__layout">
               <h2
                 className="visually-hidden"
-                id="ux-ui-branding-services-title"
+                id="software-services-title"
               >
-                Branding Services
+                Software Services
               </h2>
 
               <nav
                 className="service-journey__nav"
                 aria-label="Service categories"
               >
-                {branding.chapters.map((chapter, index) => (
+                {software.chapters.map((chapter, index) => (
                   <a
                     className={`service-journey__nav-link${
                       index === 0 ? " is-active" : ""
@@ -196,7 +196,7 @@ export default function BrandingPage() {
               <div className="service-journey__controls">
                 <a
                   className="service-journey__skip"
-                  href="#ux-ui-branding-cta"
+                  href="#software-cta"
                   data-scroll-direct
                   data-scroll-duration="1.5"
                   data-scroll-ease="sine.in"
@@ -212,11 +212,11 @@ export default function BrandingPage() {
 
                 <a
                   className="service-journey__next"
-                  href={`#${branding.chapters[1].services[0].id}`}
+                  href={`#${software.chapters[1].services[0].id}`}
                   data-service-next-link
                 >
                   <span data-service-next-label>
-                    {branding.chapters[1].title}
+                    {software.chapters[1].title}
                   </span>
                   <PixelArrow
                     className="service-journey__next-arrow"
@@ -231,8 +231,8 @@ export default function BrandingPage() {
 
         <section
           className="service-cta"
-          id="ux-ui-branding-cta"
-          aria-labelledby="ux-ui-branding-cta-title"
+          id="software-cta"
+          aria-labelledby="software-cta-title"
           data-route-section
         >
           <Container>
@@ -243,13 +243,13 @@ export default function BrandingPage() {
             >
               <h2
                 className="service-cta__title"
-                id="ux-ui-branding-cta-title"
+                id="software-cta-title"
               >
-                {branding.cta.title}
+                {software.cta.title}
               </h2>
 
               <a className="service-cta__link" href={products.ctaHref}>
-                {branding.cta.label}
+                {software.cta.label}
                 <PixelArrow className="service-cta__arrow" direction="up-right" size="small" />
               </a>
             </div>

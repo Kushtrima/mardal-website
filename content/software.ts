@@ -14,7 +14,7 @@
  * hour later on the owner's word. `Custom Connections` moved with it; nothing
  * is in two places.
  */
-export const customSoftware = {
+export const software = {
   title: "Software",
   description:
     "Custom apps, platforms, and internal tools designed around how your business works.",

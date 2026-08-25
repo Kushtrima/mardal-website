@@ -6,13 +6,13 @@ import { HeaderSpace } from "../../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
-import { customSoftware } from "../../../content/custom-software";
+import { branding } from "../../../content/branding";
 import { products } from "../../../content/home";
 import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
-  title: customSoftware.title,
-  description: customSoftware.description,
+  title: branding.title,
+  description: branding.description,
 };
 
 function ServiceWords({ className, text }: { className: string; text: string }) {
@@ -30,8 +30,8 @@ function ServiceWords({ className, text }: { className: string; text: string }) 
   );
 }
 
-export default function CustomSoftwarePage() {
-  const serviceCards = buildServiceCards(customSoftware.chapters);
+export default function BrandingPage() {
+  const serviceCards = buildServiceCards(branding.chapters);
 
   return (
     <>
@@ -39,7 +39,7 @@ export default function CustomSoftwarePage() {
       <ServicePageMotion />
 
       <main
-        className="service-page service-page--custom-software"
+        className="service-page service-page--branding"
         id="main-content"
         data-service-page
       >
@@ -47,17 +47,17 @@ export default function CustomSoftwarePage() {
 
         <section
           className="service-hero"
-          aria-labelledby="custom-software-title"
+          aria-labelledby="branding-title"
           data-service-hero
         >
           <Container className="service-hero__inner">
             <div className="service-hero__intro">
               <h1
                 className="service-hero__title"
-                id="custom-software-title"
+                id="branding-title"
                 data-service-hero-title
               >
-                {customSoftware.heroTitleLines.map((line) => (
+                {branding.heroTitleLines.map((line) => (
                   <span className="service-hero__title-line" key={line}>
                     {line}
                   </span>
@@ -66,13 +66,13 @@ export default function CustomSoftwarePage() {
             </div>
 
             <div
-              className="service-hero__pattern service-hero__pattern--custom-software"
+              className="service-hero__pattern service-hero__pattern--branding"
               aria-hidden="true"
               data-service-hero-pattern
             />
 
             <p className="service-hero__support" data-service-hero-support>
-              {customSoftware.support}
+              {branding.support}
             </p>
 
             <a
@@ -80,7 +80,7 @@ export default function CustomSoftwarePage() {
               href={products.ctaHref}
               data-service-hero-cta
             >
-              {customSoftware.heroCta}
+              {branding.heroCta}
               <PixelArrow
                 className="service-hero__cta-arrow"
                 direction="up-right"
@@ -108,23 +108,23 @@ export default function CustomSoftwarePage() {
 
         <section
           className="service-offerings"
-          aria-labelledby="custom-software-services-title"
+          aria-labelledby="branding-services-title"
           data-service-offerings
         >
           <div className="service-journey" data-service-viewport>
             <Container className="service-journey__layout">
               <h2
                 className="visually-hidden"
-                id="custom-software-services-title"
+                id="branding-services-title"
               >
-                Software Services
+                Branding Services
               </h2>
 
               <nav
                 className="service-journey__nav"
                 aria-label="Service categories"
               >
-                {customSoftware.chapters.map((chapter, index) => (
+                {branding.chapters.map((chapter, index) => (
                   <a
                     className={`service-journey__nav-link${
                       index === 0 ? " is-active" : ""
@@ -196,7 +196,7 @@ export default function CustomSoftwarePage() {
               <div className="service-journey__controls">
                 <a
                   className="service-journey__skip"
-                  href="#custom-software-cta"
+                  href="#branding-cta"
                   data-scroll-direct
                   data-scroll-duration="1.5"
                   data-scroll-ease="sine.in"
@@ -212,11 +212,11 @@ export default function CustomSoftwarePage() {
 
                 <a
                   className="service-journey__next"
-                  href={`#${customSoftware.chapters[1].services[0].id}`}
+                  href={`#${branding.chapters[1].services[0].id}`}
                   data-service-next-link
                 >
                   <span data-service-next-label>
-                    {customSoftware.chapters[1].title}
+                    {branding.chapters[1].title}
                   </span>
                   <PixelArrow
                     className="service-journey__next-arrow"
@@ -231,8 +231,8 @@ export default function CustomSoftwarePage() {
 
         <section
           className="service-cta"
-          id="custom-software-cta"
-          aria-labelledby="custom-software-cta-title"
+          id="branding-cta"
+          aria-labelledby="branding-cta-title"
           data-route-section
         >
           <Container>
@@ -243,13 +243,13 @@ export default function CustomSoftwarePage() {
             >
               <h2
                 className="service-cta__title"
-                id="custom-software-cta-title"
+                id="branding-cta-title"
               >
-                {customSoftware.cta.title}
+                {branding.cta.title}
               </h2>
 
               <a className="service-cta__link" href={products.ctaHref}>
-                {customSoftware.cta.label}
+                {branding.cta.label}
                 <PixelArrow className="service-cta__arrow" direction="up-right" size="small" />
               </a>
             </div>

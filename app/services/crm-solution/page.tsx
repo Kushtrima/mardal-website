@@ -6,13 +6,13 @@ import { HeaderSpace } from "../../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
-import { crmSolutions } from "../../../content/crm-solutions";
+import { crmSolution } from "../../../content/crm-solution";
 import { products } from "../../../content/home";
 import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
-  title: crmSolutions.title,
-  description: crmSolutions.description,
+  title: crmSolution.title,
+  description: crmSolution.description,
 };
 
 function ServiceWords({ className, text }: { className: string; text: string }) {
@@ -31,7 +31,7 @@ function ServiceWords({ className, text }: { className: string; text: string }) 
 }
 
 export default function CrmSolutionsPage() {
-  const serviceCards = buildServiceCards(crmSolutions.chapters);
+  const serviceCards = buildServiceCards(crmSolution.chapters);
 
   return (
     <>
@@ -39,7 +39,7 @@ export default function CrmSolutionsPage() {
       <ServicePageMotion />
 
       <main
-        className="service-page service-page--crm-solutions"
+        className="service-page service-page--crm-solution"
         id="main-content"
         data-service-page
       >
@@ -47,17 +47,17 @@ export default function CrmSolutionsPage() {
 
         <section
           className="service-hero"
-          aria-labelledby="crm-solutions-title"
+          aria-labelledby="crm-solution-title"
           data-service-hero
         >
           <Container className="service-hero__inner">
             <div className="service-hero__intro">
               <h1
                 className="service-hero__title"
-                id="crm-solutions-title"
+                id="crm-solution-title"
                 data-service-hero-title
               >
-                {crmSolutions.heroTitleLines.map((line) => (
+                {crmSolution.heroTitleLines.map((line) => (
                   <span className="service-hero__title-line" key={line}>
                     {line}
                   </span>
@@ -66,13 +66,13 @@ export default function CrmSolutionsPage() {
             </div>
 
             <div
-              className="service-hero__pattern service-hero__pattern--crm-solutions"
+              className="service-hero__pattern service-hero__pattern--crm-solution"
               aria-hidden="true"
               data-service-hero-pattern
             />
 
             <p className="service-hero__support" data-service-hero-support>
-              {crmSolutions.support}
+              {crmSolution.support}
             </p>
 
             <a
@@ -80,7 +80,7 @@ export default function CrmSolutionsPage() {
               href={products.ctaHref}
               data-service-hero-cta
             >
-              {crmSolutions.heroCta}
+              {crmSolution.heroCta}
               <PixelArrow
                 className="service-hero__cta-arrow"
                 direction="up-right"
@@ -108,7 +108,7 @@ export default function CrmSolutionsPage() {
 
         <section
           className="service-offerings"
-          aria-labelledby="crm-solutions-services-title"
+          aria-labelledby="crm-solution-services-title"
           data-route-section
           data-enter-mode="fade"
           data-service-offerings
@@ -117,7 +117,7 @@ export default function CrmSolutionsPage() {
             <Container className="service-journey__layout">
               <h2
                 className="visually-hidden"
-                id="crm-solutions-services-title"
+                id="crm-solution-services-title"
               >
                 CRM Solution Services
               </h2>
@@ -126,7 +126,7 @@ export default function CrmSolutionsPage() {
                 className="service-journey__nav"
                 aria-label="Service categories"
               >
-                {crmSolutions.chapters.map((chapter, index) => (
+                {crmSolution.chapters.map((chapter, index) => (
                   <a
                     className={`service-journey__nav-link${
                       index === 0 ? " is-active" : ""
@@ -198,7 +198,7 @@ export default function CrmSolutionsPage() {
               <div className="service-journey__controls">
                 <a
                   className="service-journey__skip"
-                  href="#crm-solutions-cta"
+                  href="#crm-solution-cta"
                   data-scroll-direct
                   data-scroll-duration="1.5"
                   data-scroll-ease="sine.in"
@@ -214,11 +214,11 @@ export default function CrmSolutionsPage() {
 
                 <a
                   className="service-journey__next"
-                  href={`#${crmSolutions.chapters[1].services[0].id}`}
+                  href={`#${crmSolution.chapters[1].services[0].id}`}
                   data-service-next-link
                 >
                   <span data-service-next-label>
-                    {crmSolutions.chapters[1].title}
+                    {crmSolution.chapters[1].title}
                   </span>
                   <PixelArrow
                     className="service-journey__next-arrow"
@@ -233,8 +233,8 @@ export default function CrmSolutionsPage() {
 
         <section
           className="service-cta"
-          id="crm-solutions-cta"
-          aria-labelledby="crm-solutions-cta-title"
+          id="crm-solution-cta"
+          aria-labelledby="crm-solution-cta-title"
           data-route-section
         >
           <Container>
@@ -245,13 +245,13 @@ export default function CrmSolutionsPage() {
             >
               <h2
                 className="service-cta__title"
-                id="crm-solutions-cta-title"
+                id="crm-solution-cta-title"
               >
-                {crmSolutions.cta.title}
+                {crmSolution.cta.title}
               </h2>
 
               <a className="service-cta__link" href={products.ctaHref}>
-                {crmSolutions.cta.label}
+                {crmSolution.cta.label}
                 <PixelArrow className="service-cta__arrow" direction="up-right" size="small" />
               </a>
             </div>

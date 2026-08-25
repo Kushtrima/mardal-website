@@ -152,11 +152,12 @@ homepage boxes — **but no longer in the route folder names.** Renamed by the
 owner on 2026-08-25 and now, in order: Branding, Websites, CRM Solution,
 Software, AI & Automation.
 
-The addresses did not move with the words, so four of the five now differ from
-their label: Branding is `/services/ux-ui-branding`, Websites is
-`/services/website-apps`, Software is `/services/custom-software`. That is a
-decision outstanding rather than an oversight — moving them is its own act with
-its own redirects.
+The addresses moved with them an hour later, so a label and its route say the
+same thing again: `/services/branding`, `/services/websites`,
+`/services/software`, `/services/crm-solution`, `/services/ai-automation`.
+Every old path redirects — `next.config.ts` carries five, including the original
+`web-platforms-apps`, which points at the final address rather than at the one
+it was written for. Nothing that was ever linked has stopped resolving.
 
 - **System Integration was deleted outright** — page, copy, homepage box,
   artwork and all.
@@ -209,7 +210,7 @@ undecided; product IP ownership relative to the company is unrecorded.
 
 **Known broken or incomplete at time of writing:**
 
-- `/services/website-apps` — recorded here when it was `web-platforms-apps` and
+- `/services/websites` — recorded here when it was `web-platforms-apps` and
   a hero-only stub with no footer. It has its four chapters and its footer now;
   what has not changed is that none of its cards names a capability, which is
   the **0** in the count above.

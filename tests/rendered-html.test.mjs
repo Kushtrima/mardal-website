@@ -554,7 +554,7 @@ test("server-renders the AI & Automation service page", async () => {
    It was a placeholder route for a day; the owner asked for it written on
    2026-08-25 and it left `content/placeholders.ts` the way Careers did. */
 test("server-renders the Branding service page", async () => {
-  const response = await render("/services/ux-ui-branding");
+  const response = await render("/services/branding");
   assert.equal(response.status, 200);
 
   const html = await response.text();
@@ -569,7 +569,7 @@ test("server-renders the Branding service page", async () => {
      written. */
   assert.match(
     html,
-    /class="service-hero__pattern service-hero__pattern--ux-ui-branding"/,
+    /class="service-hero__pattern service-hero__pattern--branding"/,
   );
 
   /* **It is a real page now, not the placeholder.** Both halves: the journey
@@ -618,7 +618,7 @@ test("server-renders the Branding service page", async () => {
 });
 
 test("server-renders the Software service page", async () => {
-  const response = await render("/services/custom-software");
+  const response = await render("/services/software");
   assert.equal(response.status, 200);
 
   const html = await response.text();
@@ -673,8 +673,8 @@ test("server-renders the Software service page", async () => {
   assert.doesNotMatch(html, /Custom software is built for a specific/);
 });
 
-test("server-renders the CRM Solutions service page", async () => {
-  const response = await render("/services/crm-solutions");
+test("server-renders the CRM Solution service page", async () => {
+  const response = await render("/services/crm-solution");
   assert.equal(response.status, 200);
 
   const html = await response.text();
@@ -687,7 +687,7 @@ test("server-renders the CRM Solutions service page", async () => {
   );
   assert.match(
     html,
-    /class="service-hero__pattern service-hero__pattern--crm-solutions"/,
+    /class="service-hero__pattern service-hero__pattern--crm-solution"/,
   );
   assert.match(html, /CRM Solution Services/);
   assert.match(html, /CRM Strategy/);
@@ -698,9 +698,9 @@ test("server-renders the CRM Solutions service page", async () => {
   assert.equal((html.match(/data-service-group-link=/g) ?? []).length, 4);
   assert.match(
     html,
-    /class="service-journey__skip" href="#crm-solutions-cta" data-scroll-direct="true" data-scroll-duration="1.5" data-scroll-ease="sine.in" data-scroll-preserve-view="true" data-service-skip="true"[^>]*>[\s\S]*?pixel-x[\s\S]*?Skip[\s\S]*?<\/a>/,
+    /class="service-journey__skip" href="#crm-solution-cta" data-scroll-direct="true" data-scroll-duration="1.5" data-scroll-ease="sine.in" data-scroll-preserve-view="true" data-service-skip="true"[^>]*>[\s\S]*?pixel-x[\s\S]*?Skip[\s\S]*?<\/a>/,
   );
-  assert.match(html, /class="service-cta" id="crm-solutions-cta"/);
+  assert.match(html, /class="service-cta" id="crm-solution-cta"/);
   assert.match(html, /class="service-journey__controls"/);
   assert.match(
     html,
