@@ -122,10 +122,20 @@ export const caseStudies = {
     ],
   },
 
-  /* No `fields`. There were labels down each card — Client and Description,
-     then Location / Client / Industry, then Location / Industry — and on
-     2026-08-25 the owner took the labels off and left the values: three plain
-     lines under the picture. A label needs a row to label. */
+  /* The two labels under a card's name, and only those two.
+
+     They have been on and off this card twice in a day: Client and Description,
+     then Location / Client / Industry, then no labels at all — three plain lines
+     — and now back over the two facts. What did not come back is a label over
+     the NAME, which is the owner's distinction: the name is the card's heading
+     and a word above it would be a caption on a title.
+
+     Client is not among them either. The name IS the client, so a row repeating
+     it under itself would set the same word twice in two sizes. */
+  fields: {
+    location: "Location",
+    industry: "Industry",
+  },
 
   /* Read when a sector has nothing in it. The same voice the Blog's empty state
      uses, and true of every sector today. */

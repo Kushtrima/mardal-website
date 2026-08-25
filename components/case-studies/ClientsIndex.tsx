@@ -331,10 +331,28 @@ export function ClientsIndex() {
                           the page's outline; styling it flat is a look, not a
                           demotion. */}
                       <h3 className="clients-card__name">{entry.name}</h3>
-                      <p className="clients-card__meta">{entry.location}</p>
-                      <p className="clients-card__meta">
-                        {sectorTitle(entry.sector)}
-                      </p>
+
+                      {/* A label over each fact, and none over the name — the
+                          owner's distinction, 2026-08-25. The name is the
+                          card's heading; a word above a heading is a caption on
+                          it, and the two facts under it are the things that
+                          need saying what they are.
+
+                          A description list again, because that is what a run
+                          of label-and-value pairs is. It was one for a day, then
+                          three bare `<p>`s when the labels came off, and the
+                          markup follows the labels rather than the other way
+                          round. */}
+                      <dl className="clients-card__facts">
+                        <div className="clients-card__fact">
+                          <dt>{caseStudies.fields.location}</dt>
+                          <dd>{entry.location}</dd>
+                        </div>
+                        <div className="clients-card__fact">
+                          <dt>{caseStudies.fields.industry}</dt>
+                          <dd>{sectorTitle(entry.sector)}</dd>
+                        </div>
+                      </dl>
                     </article>
                   </li>
                 );

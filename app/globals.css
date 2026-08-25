@@ -6881,7 +6881,18 @@ video {
 .clients-layout {
   display: grid;
   align-items: start;
-  gap: clamp(1.75rem, 3.5vw, 3.25rem);
+  /* The air between the rail and the work — owner asked for more of it,
+     2026-08-25. It was 28-52px, set when the rail was a column of one-word
+     sector names under no heading; it now carries a 76px heading and seven
+     longer words, and a block that size needs the gap to read as two columns
+     rather than as a wide first one. 48-120px, in two steps: 28-52 was the old
+     value, 40-96 was the first ask, and this is the second.
+
+     The work column is `minmax(0, 1fr)` and absorbs it, so this comes out of
+     the cards rather than out of the page. There is a floor under how far it
+     can go — two 4:3 pictures and the gap between them still have to fit the
+     track — but at 120px the cards are nowhere near it. */
+  gap: clamp(3rem, 7.5vw, 7.5rem);
   /* The first track is a definite width rather than minmax(0, …), and that is
      load-bearing: ClientsPin lifts the index out of flow to hold it against the
      scroll, and a track sized to its content would collapse to nothing the
@@ -7346,33 +7357,33 @@ video {
    in flow, so the plate keeps its 242x136 whatever the sector is called and a
    two-word one like Public Sector cannot push the photograph taller than its
    neighbours. */
-/* **The three lines under the picture, and they are all the same line.**
-   Owner's call, 2026-08-25: normal text, no labels, nothing set apart. The name
-   was the title face at up to 30px and heavy; the values under it were body
-   copy; the labels between them were tracked uppercase in grey. One treatment
-   now — the body face at the page's own copy size — so the card is a picture
-   and three lines rather than a picture and a small typographic system.
+/* **The name, and the two facts under it.**
 
-   `.clients-card__name` is still an `<h3>`. Flattening how it looks does not
-   change what it is: it is what puts each card in the page's outline. */
+   One treatment was tried and rejected in between: the name and both values set
+   identically, body face at one size, no labels — three plain lines. The owner
+   asked for the name to lead and for the facts to say what they are, so there
+   are three sizes here now: the name, the label, the value.
+
+   The name stays in the BODY face. It is bigger than everything under it and
+   that is enough to lead; putting it in `--type-title` would make eight cards
+   compete with the heading standing beside them in the rail, which is set in
+   that face at up to 76px. */
 .clients-card__name,
-.clients-card__meta {
+.clients-card__fact dd {
   margin: 0;
   color: var(--ink);
   font-family: var(--type-body);
-  /* A step above the page's copy size — owner asked for it bigger, 2026-08-25.
-     Its own clamp rather than a multiple of `--text-copy`, because that token
-     already carries a slope and multiplying it would multiply the slope too:
-     the card would grow faster than every other paragraph on the site instead
-     of sitting a fixed step above them. Same shape, both ends moved up two. */
-  font-size: clamp(18px, calc(15.43px + 0.286vw), 20px);
-  font-weight: 400;
   letter-spacing: normal;
   line-height: 1.5;
 }
 
 .clients-card__name {
   margin-top: clamp(0.9rem, 1.8vh, 1.25rem);
+  /* Up from the values' 18-20px, which it used to share with them. */
+  font-size: clamp(1.5rem, 2vw, 1.875rem);
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 /* Dropped to the foot, so a row of cards agrees along its bottom edge however
@@ -7425,9 +7436,50 @@ video {
   color: var(--accent-strong);
 }
 
-/* `.clients-card__facts`, `__fact`, and their `dt`/`dd` rules were here and are
-   gone with the description list they styled — the labels came off on
-   2026-08-25 and what is left is three plain lines, set by the one rule above. */
+/* The facts, and the labels over them. Both came back on 2026-08-25 after a
+   build with neither — see the note on the name above.
+
+   Label OVER value, not beside it. Side by side, two rows of two columns need a
+   shared label column to line their values up, and the wider of Location and
+   Industry would set it for both — which on a card this narrow is a third of
+   the width spent on the smallest type on it. */
+.clients-card__facts {
+  margin: clamp(0.85rem, 1.8vh, 1.15rem) 0 0;
+}
+
+.clients-card__fact + .clients-card__fact {
+  margin-top: clamp(0.55rem, 1.2vh, 0.8rem);
+}
+
+/* The site's own small-label treatment: fine, uppercase, tracked open. Ink
+   rather than grey — the owner asked for the text on this page to be black, and
+   a label that is the only grey thing on the card reads as disabled rather than
+   as secondary. It is held back by size and case instead.
+
+   **10px, below `--text-fine` — owner's call, 2026-08-25.** The token is 12px
+   and is the site's floor everywhere else, so this is the one label that goes
+   under it. It carries that: uppercase, tracked open at 0.12em and set in the
+   strong weight, which is three things holding a small word legible where a
+   10px sentence in the body face would not be. A value written out rather than
+   a new token, because a second "fine" size is a thing the rest of the site
+   would start reaching for. */
+.clients-card__fact dt {
+  margin-bottom: 0.15em;
+  color: var(--ink);
+  font-family: var(--type-body);
+  font-size: 10px;
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--tracking-wide);
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+/* The values keep the size they have had. They went down to `--text-copy` for
+   one build and came straight back: what the owner wanted smaller was the
+   LABEL, not the thing it labels. */
+.clients-card__fact dd {
+  font-size: clamp(18px, calc(15.43px + 0.286vw), 20px);
+}
 
 /* The picture dims a little with it. These two rules drove the shade that was
    removed above — it sat at rest and deepened on hover — so what is left is the

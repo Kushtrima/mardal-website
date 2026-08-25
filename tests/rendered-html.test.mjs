@@ -1051,12 +1051,21 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
   }
 
 
-  /* **No labels on a card.** The words "Location" and "Industry" came off on
-     2026-08-25 and the values stayed; the industry line went entirely with the
-     taxonomy. Asserted as the absence of the description list rather than of
-     two strings, and scoped to the cards — written page-wide this caught the
-     SITE FOOTER, which lists Email and Phone in a `<dl>` of its own. */
-  assert.doesNotMatch(cardMarkup, /<dt>|<\/dt>|<dl|clients-card__facts/);
+  /* **A label over each fact, and none over the name.** That is the whole of the
+     owner's distinction, 2026-08-25: the name is the card's heading and a word
+     above a heading is a caption on it. Both halves asserted — a label arriving
+     over the name would be the obvious way to "finish" this card, and nothing
+     else here would notice. */
+  assert.deepEqual(
+    [...cardMarkup.matchAll(/<dt>([^<]*)<\/dt>/g)].map((m) => m[1]),
+    Array.from({ length: 8 }, () => ["Location", "Industry"]).flat(),
+  );
+  assert.doesNotMatch(
+    cardMarkup,
+    /<dt>[^<]*<\/dt>\s*<[^>]*clients-card__name/,
+    "a label has appeared over the card's name",
+  );
+  assert.doesNotMatch(cardMarkup, /<dt>Client<\/dt>|<dt>Name<\/dt>/);
 
   /* Every card carries a picture in a box of the same shape. Four tints cycled
      by position, so no plate sits under its own colour. */
@@ -1118,7 +1127,7 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
   ];
   const pairs = [
     ...cardMarkup.matchAll(
-      /class="clients-card__meta">([^<]*)<[\s\S]*?class="clients-card__meta">([^<]*)</g,
+      /<dt>Location<\/dt><dd>([^<]*)<[\s\S]*?<dt>Industry<\/dt><dd>([^<]*)</g,
     ),
   ];
   assert.equal(pairs.length, 8);
@@ -1139,7 +1148,7 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
   /* Read out of the cards, not off the page: Next embeds the whole tree a
      second time as its RSC payload, so counting an attribute document-wide
      counts everything twice. */
-  assert.equal((cardMarkup.match(/class="clients-card__meta"/g) ?? []).length, 16);
+  assert.equal((cardMarkup.match(/class="clients-card__fact"/g) ?? []).length, 16);
 
   /* **One card is a link, and only one.** The pilot story is the only entry
      with a page behind it; the other seven go nowhere on purpose, because a
