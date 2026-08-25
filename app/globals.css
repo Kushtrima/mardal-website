@@ -157,18 +157,24 @@
      colours — two of them identical and not adjacent, which reads as an
      oversight rather than as a pattern.
 
-     `#e76f51` is the owner's, used exactly as given. The panel is derived: hue
-     and saturation held, lightness set to 78, which is where this family's
-     panels sit — mint is 77 and butter 79. Deriving it the other way, from the
-     average gap between the four panels and their own bars, gives 71, and a
-     panel darker than every other one is the opposite of adapting to them.
+     Both are the owner's, given rather than derived, and both were replaced
+     once before landing here. The first pair was `#e76f51` for the bar with a
+     panel derived from it; that bar was darker than any the set had — L 61
+     against 65 to 82 — which left the marks sitting 21 points of lightness
+     below their panel where the other four sit 7 to 12 below theirs. It read as
+     a heavier card, and no panel could fix it because the panel was not the
+     problem.
 
-     The consequence, stated rather than hidden: this bar is 17 points of
-     lightness below its panel where the other four sit 7 to 12 below theirs, so
-     the marks read a little stronger here. That follows from the colour being
-     darker than any bar the set had, and the alternative was a darker card. */
-  --tint-clay: #f4ac9a;
-  --tint-clay-bar: #e76f51;
+     This pair fixes it at the bar. `#fd7979` is L 73 against the panel's 83:
+     a gap of 9, which is exactly sky's and inside the range all four keep. The
+     saturations sit 100 and 97, the same three-point step the other pairs make.
+
+     So the arithmetic that made this the odd card is gone, and what is left is
+     a hue nothing else here occupies — the four are violet, yellow, green and
+     blue, and this is red. Which is the point: it exists because five boxes had
+     four colours and two of them matched. */
+  --tint-clay: #ffb6a6;
+  --tint-clay-bar: #fd7979;
 
   /* Typography */
   --type-body: var(--font-geist), Arial, Helvetica, sans-serif;

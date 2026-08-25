@@ -62,7 +62,10 @@ test("server-renders the Mardal homepage", async () => {
      **The tints are a list, not a modulo.** They cycled `one two three four
      one` over five cards, so AI & Automation wore Branding's lilac — two
      identical boxes two rows apart, which reads as an oversight rather than as
-     a rhythm. `--five` is `--tint-clay`, the owner's `#e76f51`.
+     a rhythm. `--five` is `--tint-clay` — panel `#ffb6a6`, bar `#fd7979`, both
+     the owner's and both replaced once since this block was written. The hex is
+     deliberately NOT asserted anywhere: the sequence is structure and belongs
+     in a test, the colours are taste and belong to him.
 
      Sliced to the first five, because the markup is followed by the RSC payload
      and every class name appears in it twice. */
