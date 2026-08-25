@@ -6926,6 +6926,13 @@ video {
   min-width: 0;
 }
 
+/* What is actually pinned. It carries nothing of its own — the box exists so
+   that ScrollTrigger has something to take out of flow that is NOT the grid
+   item above it; see the note in ClientsIndex.tsx. */
+.clients-rail__inner {
+  min-width: 0;
+}
+
 /* The special face, which on this site is the one thing set in it: `--type-title`
    is CS Alistair and it opens the hero, the story titles and this. Two authored
    lines, so the turn is a decision rather than the column's width.

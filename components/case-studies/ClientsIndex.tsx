@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { fadeIn, fadeOut, hide, OUT } from "../../lib/page-transition";
 import { ClientsPin } from "./ClientsPin";
 import { Container } from "../layout/Container";
@@ -21,6 +22,18 @@ import { industries } from "../../content/home";
    card is a different colour, which is the rule the coloured boxes on the
    homepage were built to. */
 const TINTS = ["one", "two", "three", "four"] as const;
+
+/**
+ * Where the section comes to rest when a filter is chosen.
+ *
+ * The same 88 `ClientsPin` holds the rail at, and it has to be: the rail is
+ * pinned to that line while there is anything to pin it for, so landing the
+ * section anywhere else would move the rail by the difference at exactly the
+ * moment the reader is watching it. Written out rather than imported, because
+ * the pin's copy is a private constant and one of the two files would have to
+ * export a number that is really a shared decision — this comment is the link.
+ */
+const SECTION_CLEARANCE = 88;
 
 /**
  * The Clients index: one list, with a rail down the left filtering it by what
@@ -96,9 +109,41 @@ export function ClientsIndex() {
     window.setTimeout(() => setListed(next), OUT * 1000);
   }
 
-  /* The work arriving. Down and up rather than up from wherever the outgoing
-     half reached, so the rise is the same length every time. */
-  useEffect(() => {
+  /**
+   * The work arriving, and the reader put at the top of it.
+   *
+   * ── Why the scroll is here at all ──
+   * **Measured on 2026-08-25: the work column is 1933px with all eight cards
+   * and 456px with Branding's two, while the rail beside it is 513.** So
+   * choosing a short view takes about 1400px out of the document under a reader
+   * who is scrolled into it — the browser clamps their position, and
+   * `ClientsPin` lets go of the rail in the same frame, because the distance it
+   * holds the rail for is the work column's height MINUS the rail's and that
+   * has just gone to zero. Both move at once. The owner saw it as the whole
+   * left-hand column jumping up.
+   *
+   * Neither half is wrong on its own. A rail cannot be held against a column
+   * shorter than itself, and a page that has lost its content is shorter. What
+   * was missing is that nobody decided where the reader should be afterwards,
+   * so the browser decided, and a clamp is not a decision.
+   *
+   * Top of the section, then — which is where someone who has just changed what
+   * they are looking at wants to be. It happens under the same blur the cards
+   * arrive through, so it reads as the page answering rather than as a jump.
+   *
+   * ── `useLayoutEffect`, not `useEffect` ──
+   * This runs after React has written the new list and before the browser
+   * paints. In `useEffect` the reader would see one frame at the clamped
+   * position first, which is the flicker this exists to remove.
+   *
+   * ── Through the smoother where there is one ──
+   * `window.scrollTo` sets the native position, which ScrollSmoother then eases
+   * towards over the next few frames — a scroll it did not perform and has to
+   * catch up with. `scrollTo(target, false)` is the same instruction given to
+   * the thing that actually owns the scroll. The fallback is for reduced motion
+   * and for a page where the smoother never built.
+   */
+  useLayoutEffect(() => {
     if (firstRef.current) {
       firstRef.current = false;
       return;
@@ -106,6 +151,20 @@ export function ClientsIndex() {
 
     const work = workRef.current;
     if (!work) return;
+
+    const section = work.closest(".clients-index");
+    if (section) {
+      const smoother = ScrollSmoother.get();
+
+      if (smoother) {
+        smoother.scrollTo(section, false, `top top+=${SECTION_CLEARANCE}`);
+      } else {
+        const top =
+          section.getBoundingClientRect().top + window.scrollY - SECTION_CLEARANCE;
+        window.scrollTo(0, Math.max(0, Math.round(top)));
+      }
+    }
+
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     hide(work);
@@ -149,84 +208,103 @@ export function ClientsIndex() {
             what it still is now that nothing in it is pressable. */}
         <div className="clients-layout">
           <div className="clients-rail">
-            {/* Two authored lines, the way every heading on this site is set:
+            {/* **The pinned element, and it is deliberately not the grid item
+                above it.**
+
+                ScrollTrigger pins by wrapping its target in a `pin-spacer` and
+                taking the element out of normal flow inside it. Pin a grid
+                CHILD and that spacer becomes the grid item — so every refresh
+                re-measures something the grid is laid out from, the work column
+                beside it can move, and `ClientsPin` is watching that column's
+                height with a ResizeObserver in order to decide when to refresh.
+                That is a loop, and it is what the owner saw as the page moving
+                up and down on every press.
+
+                It only appeared when the heading was asked to stick: the pin
+                used to target `.clients-filter`, three levels down and
+                incapable of moving the grid. This box restores that — the grid
+                item never moves, and what is held against the scroll is
+                everything inside it. */}
+            <div className="clients-rail__inner">
+              {/* Two authored lines, the way every heading on this site is set:
                 where the line turns is a decision about the copy rather than
                 something left to the width of the column. Outside the holder
                 below, which is a two-row grid on a phone — a third thing in it
                 would be a third row and the disclosure would open the wrong
                 one. */}
-            <p className="clients-rail__title">
-              {caseStudies.rail.title.map((line) => (
-                <span className="clients-rail__title-line" key={line}>
-                  {line}
-                </span>
-              ))}
-            </p>
+              <p className="clients-rail__title">
+                {caseStudies.rail.title.map((line) => (
+                  <span className="clients-rail__title-line" key={line}>
+                    {line}
+                  </span>
+                ))}
+              </p>
 
-            {/* The state is carried on the holder rather than on the rail, so
+              {/* The state is carried on the holder rather than on the rail, so
                 the stylesheet can open a row around it: the two are a grid and
                 its track, and a track is the one thing that can be animated
                 from nothing to the height of whatever is standing in it. */}
-            <div
-              className="clients-filter-holder"
-              data-open={open ? "true" : "false"}
-            >
-              {/* The rail, shut, on a phone. It names what you are looking at
+              <div
+                className="clients-filter-holder"
+                data-open={open ? "true" : "false"}
+              >
+                {/* The rail, shut, on a phone. It names what you are looking at
                   rather than what it does — a reader who has chosen Websites is
                   told Websites, and the mark beside it says there is more.
                   `Filter` over it would be a label on a control, and this site
                   labels nothing. */}
-              <button
-                className="clients-filter__toggle"
-                type="button"
-                aria-expanded={open}
-                aria-controls="clients-filter"
-                onClick={() => setOpen((wasOpen) => !wasOpen)}
-              >
-                <span className="clients-filter__toggle-label">
-                  {filter === ALL_WORK ? caseStudies.rail.all : filter}
-                </span>
-                <span
-                  className="clients-filter__toggle-mark"
-                  aria-hidden="true"
-                />
-              </button>
+                <button
+                  className="clients-filter__toggle"
+                  type="button"
+                  aria-expanded={open}
+                  aria-controls="clients-filter"
+                  onClick={() => setOpen((wasOpen) => !wasOpen)}
+                >
+                  <span className="clients-filter__toggle-label">
+                    {filter === ALL_WORK ? caseStudies.rail.all : filter}
+                  </span>
+                  <span
+                    className="clients-filter__toggle-mark"
+                    aria-hidden="true"
+                  />
+                </button>
 
-              <div
-                className="clients-filter"
-                id="clients-filter"
-                role="group"
-                aria-label="Filter the work"
-              >
-                {caseStudies.rail.items.map((item) => (
-                  <button
-                    className={`clients-filter__item${
-                      filter === item ? " is-current" : ""
-                    }`}
-                    key={item}
-                    type="button"
-                    aria-pressed={filter === item}
-                    onClick={() => choose(item)}
-                  >
-                    <span className="clients-filter__label">{item}</span>
-                  </button>
-                ))}
+                <div
+                  className="clients-filter"
+                  id="clients-filter"
+                  role="group"
+                  aria-label="Filter the work"
+                >
+                  {caseStudies.rail.items.map((item) => (
+                    <button
+                      className={`clients-filter__item${
+                        filter === item ? " is-current" : ""
+                      }`}
+                      key={item}
+                      type="button"
+                      aria-pressed={filter === item}
+                      onClick={() => choose(item)}
+                    >
+                      <span className="clients-filter__label">{item}</span>
+                    </button>
+                  ))}
 
-                {/* `All` closes the rail rather than opening it: the seven are a
+                  {/* `All` closes the rail rather than opening it: the seven are a
                     list, and the way out of one of them is not the eighth
                     member of that list. It is chosen when the page arrives. */}
-                <button
-                  className={`clients-filter__item clients-filter__item--all${
-                    filter === ALL_WORK ? " is-current" : ""
-                  }`}
-                  type="button"
-                  aria-pressed={filter === ALL_WORK}
-                  onClick={() => choose(ALL_WORK)}
-                >
-                  <span className="clients-filter__label">
-                    {caseStudies.rail.all}
-                  </span>
-                </button>
+                  <button
+                    className={`clients-filter__item clients-filter__item--all${
+                      filter === ALL_WORK ? " is-current" : ""
+                    }`}
+                    type="button"
+                    aria-pressed={filter === ALL_WORK}
+                    onClick={() => choose(ALL_WORK)}
+                  >
+                    <span className="clients-filter__label">
+                      {caseStudies.rail.all}
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

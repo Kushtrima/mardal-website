@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
 
 async function render(path = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -981,6 +982,32 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
      carries a modifier too. */
   assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 8);
   assert.equal((cardMarkup.match(/<article/g) ?? []).length, 8);
+
+  /* **What ClientsPin holds must not be a grid item, and this is the only place
+     that fact is visible.**
+
+     ScrollTrigger pins by wrapping its target in a `pin-spacer` and lifting the
+     element out of flow inside it. Point it at a direct child of
+     `.clients-layout` and the spacer becomes the grid item — so every refresh
+     re-measures a box the grid lays itself out from, which can move the work
+     column, whose height the pin watches in order to decide when to refresh.
+     The page walks up and down on every press. That is exactly what happened
+     when the rail was asked to stick and the pin was aimed one level too high.
+
+     Two halves, and both are needed: the selector the pin defaults to, read out
+     of its own source, and the proof that the element wearing it is nested
+     inside the grid item rather than being it. */
+  const pinSource = readFileSync(
+    new URL("../components/case-studies/ClientsPin.tsx", import.meta.url),
+    "utf8",
+  );
+  const pinned = pinSource.match(/rail:\s*railSelector\s*=\s*"\.([\w-]+)"/)?.[1];
+  assert.ok(pinned, "ClientsPin names no rail to hold");
+  assert.match(
+    all,
+    new RegExp(`<div class="clients-layout"><div class="[\\w-]+"><div class="${pinned}"`),
+    `ClientsPin holds .${pinned}, which is the grid item itself`,
+  );
 
   /* The heading, in the special face and on its two authored lines. */
   assert.match(all, /class="clients-rail__title"/);
