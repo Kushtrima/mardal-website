@@ -329,6 +329,12 @@ export function ClientsIndex() {
                   <div
                     className="clients-card__plate"
                     data-tint={TINTS[index % TINTS.length]}
+                    /* Where the ground and the mark are drawn — see
+                       `data-opens` on the article. Marked on every card, not
+                       only the ones that open: it says "this is the box the
+                       treatment paints in", and whether it paints is the
+                       article's to say. */
+                    data-opens-mark
                   >
                     {/* Decorative, so alt is empty: these photographs are of
                         nothing to do with the work, and describing one to a
@@ -365,6 +371,21 @@ export function ClientsIndex() {
                          than from a line of text that has been restyled three
                          times in a day. */
                       data-sector={entry.sector}
+                      /* **The hook the hover treatment hangs off, and it is
+                         deliberately not a Clients class.**
+
+                         A card that opens something darkens and draws a plus on
+                         its picture. That is a rule about cards in general
+                         rather than about this page, so the stylesheet answers
+                         to `[data-opens]` and `[data-opens-mark]` — any card
+                         anywhere adopts the whole treatment by carrying those
+                         two attributes, with no CSS written for it.
+
+                         Set from the entry rather than by hand: a card gets it
+                         the moment a story exists behind it, which is the same
+                         condition that makes it a link at all. When the other
+                         seven are written they gain it with them. */
+                      data-opens={"story" in entry ? "true" : undefined}
                     >
                       {/* The link wraps the picture, and where it sits in this
                           tree is the whole of how much of the card can be

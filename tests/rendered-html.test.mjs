@@ -1198,6 +1198,28 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
   /* The only thing inside that link is a silent image, so it carries its own
      name — without one the single clickable card announces itself as "link". */
   assert.match(cardMarkup, /class="clients-card__link"[^>]*aria-label="[^"]+"/);
+
+  /* **The hover treatment is hung on data, and the data comes from the entry.**
+
+     A card that opens something darkens and draws a plus on its picture. The
+     stylesheet answers to `[data-opens]` and `[data-opens-mark]` rather than to
+     anything named Clients, so another card type adopts the whole treatment by
+     carrying two attributes — and, more to the point here, these eight get it
+     the moment a story is written behind them, with no CSS and no markup
+     touched.
+
+     Which is the half worth asserting: `data-opens` must appear exactly as
+     often as the link does. Set by hand it would drift from what actually
+     opens, and a plus under the pointer on a card that answers with an empty
+     page is the promise this site refuses to make. */
+  assert.equal((cardMarkup.match(/data-opens="true"/g) ?? []).length, links.length);
+  assert.equal((cardMarkup.match(/data-opens-mark/g) ?? []).length, 8);
+
+  /* And it is on the card that has the link, not on some other one. */
+  assert.match(
+    cardMarkup,
+    /<article[^>]*data-opens="true"[^>]*>[\s\S]*?class="clients-card__link"/,
+  );
 });
 
 /* The pilot story — the page a card opens, and the only one there is. What is
