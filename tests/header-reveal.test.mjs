@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   HEADER_AT_REST,
+  MENU_SCROLL_TOLERANCE,
+  menuSurvivesScroll,
   HEADER_DIRECTION_DEADZONE,
   HEADER_HIDE_TRAVEL,
   HEADER_REVEAL_AFTER,
@@ -105,4 +107,26 @@ test("returning to the top resets the run", () => {
   const home = scroll(down, DEEP, 0, 60);
   assert.equal(home.state, "top");
   assert.equal(home.travel, 0);
+});
+
+/* **The mega menu closes when the page moves, rather than stopping it moving.**
+   The owner asked for the opposite — lock the scroll while the pointer is on
+   the panel — and the panel is the wrong kind of thing for that: it opens on
+   hover and is dismissed by the pointer leaving, so a locked page would have no
+   visible way out. This repo already carries that scar on the mobile menu. */
+test("an open menu survives the page settling, and not a real scroll", () => {
+  /* The smoother can still be easing a gesture that finished before the menu
+     opened. Closing on that would look like a panel refusing to open. */
+  assert.equal(menuSurvivesScroll(2000, 2000), true);
+  assert.equal(menuSurvivesScroll(2000, 2000 + MENU_SCROLL_TOLERANCE), true);
+  assert.equal(menuSurvivesScroll(2000, 2000 - MENU_SCROLL_TOLERANCE), true);
+
+  /* Past it, either way, the reader has asked for the page. */
+  assert.equal(menuSurvivesScroll(2000, 2000 + MENU_SCROLL_TOLERANCE + 1), false);
+  assert.equal(menuSurvivesScroll(2000, 2000 - MENU_SCROLL_TOLERANCE - 1), false);
+
+  /* Measured from where the menu opened, not from the last frame — a slow
+     scroll that never moves more than the tolerance between frames still adds
+     up to leaving. */
+  assert.equal(menuSurvivesScroll(0, 400), false);
 });

@@ -116,3 +116,33 @@ export function nextHeaderState(
 
   return { state, lastY: y, travel };
 }
+
+/**
+ * How far the page may move under an open mega menu before it is dismissed.
+ *
+ * Not zero, and the reason is the same one `HEADER_DIRECTION_DEADZONE` exists
+ * for: ScrollSmoother eases the content towards the real scroll position, so it
+ * can still be reporting movement from a gesture that finished before the menu
+ * was opened. At zero the panel would close on that settling and look as though
+ * it had refused to open.
+ */
+export const MENU_SCROLL_TOLERANCE = 8;
+
+/**
+ * Whether an open mega menu survives the page being at `y`.
+ *
+ * **Closing on scroll rather than locking the scroll, and that is a decision
+ * about what kind of thing this panel is.** It opens on HOVER — no press, no
+ * deliberate act — and it is dismissed by moving the pointer away, so there is
+ * no visible control that closes it. A page that stops scrolling because the
+ * pointer drifted over a word, with nothing on screen saying why or how to
+ * release it, is the exact failure this repo already carries a scar from: the
+ * mobile menu once held `overflow: hidden` on the body with its own Close
+ * button off-screen, and Escape was the only way out.
+ *
+ * Scrolling is an unambiguous statement that the reader wants the page rather
+ * than the menu. Answering it by taking the page away inverts that.
+ */
+export function menuSurvivesScroll(openedAt: number, y: number): boolean {
+  return Math.abs(y - openedAt) <= MENU_SCROLL_TOLERANCE;
+}

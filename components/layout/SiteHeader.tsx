@@ -11,7 +11,11 @@ import gsap from "gsap";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MOBILE_MENU } from "../../lib/breakpoints";
-import { HEADER_AT_REST, nextHeaderState } from "../../lib/header-reveal";
+import {
+  HEADER_AT_REST,
+  menuSurvivesScroll,
+  nextHeaderState,
+} from "../../lib/header-reveal";
 import { navTriggerIntent } from "../../lib/nav-keys";
 import { Button } from "../ui/Button";
 import { PixelArrow } from "../ui/PixelArrow";
@@ -677,8 +681,39 @@ export function SiteHeader() {
     };
   }, []);
 
+  /**
+   * The page moving dismisses the panel.
+   *
+   * Owner, watching it float over content he had scrolled past: could the page
+   * be stopped from scrolling while the pointer is on the menu? The answer is
+   * the other way round — see `menuSurvivesScroll` for why a hover-opened panel
+   * with no visible close control must not take the scroll away.
+   *
+   * Only mounted while the menu is open, so the site carries no listener for
+   * this the rest of the time. The position it compares against is read once,
+   * when the effect runs: what matters is how far the page has moved SINCE the
+   * menu opened, not between two frames — a slow scroll would never trip a
+   * frame-to-frame test and would leave the panel behind anyway.
+   */
+  useEffect(() => {
+    if (!megaMenuOpen) return;
+
+    const openedAt = window.scrollY;
+
+    const onScroll = () => {
+      if (!menuSurvivesScroll(openedAt, window.scrollY)) closeMegaMenu();
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+    /* `closeMegaMenu` is redeclared every render, and listing it here would
+       tear this listener down and rebuild it on each one. What the effect
+       depends on is whether the menu is open, which is what it watches. */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [megaMenuOpen]);
+
   /* Held open by its own panel. Separate from the effect above so the listener
-     is not town down and rebuilt every time a menu opens. */
+     is not torn down and rebuilt every time a menu opens. */
   useEffect(() => {
     const header = headerRef.current;
     if (!header) return;
