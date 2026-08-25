@@ -3175,11 +3175,11 @@ video {
    changing the state, and lets go the moment the pointer does. Keyboard needs
    no equivalent: focus moves the run itself, because someone arriving there has
    chosen that name rather than passed over it. */
-@media (hover: hover) {
-  .industries-item:hover {
-    opacity: 0.6;
-  }
-}
+/* No hover response. There was one — the name dimmed to 0.6 under the pointer —
+   and it went with the link on 2026-08-25. A word that answers the pointer and
+   does nothing when pressed is the same false promise `data-cursor` was making
+   one line above it, quieter. The run is what moves these names now, and it
+   answers to the scroll rather than to where a pointer happens to be. */
 
 .industries-item__name {
   position: relative;

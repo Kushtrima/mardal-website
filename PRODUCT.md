@@ -147,22 +147,28 @@ holding only an orphan `node_modules`. Remote is
 
 ## Capabilities and Constraints
 
-**The offer is exactly five services**, named identically in navigation,
-homepage boxes and route folder names. Changed by the owner on 2026-08-24 and
-now, in order: UX/UI & Branding, Website & Apps, AI & Automation, CRM Solutions
-(to be renamed CRM Systems), Custom Software.
+**The offer is exactly five services**, named identically in navigation and
+homepage boxes — **but no longer in the route folder names.** Renamed by the
+owner on 2026-08-25 and now, in order: Branding, Websites, CRM Solution,
+Software, AI & Automation.
+
+The addresses did not move with the words, so four of the five now differ from
+their label: Branding is `/services/ux-ui-branding`, Websites is
+`/services/website-apps`, Software is `/services/custom-software`. That is a
+decision outstanding rather than an oversight — moving them is its own act with
+its own redirects.
 
 - **System Integration was deleted outright** — page, copy, homepage box,
   artwork and all.
 - **Web Platforms & Apps became Website & Apps**, and its route moved from
   `/services/web-platforms-apps` to `/services/website-apps`. A permanent
   redirect off the old path is in `next.config.ts`.
-- **UX/UI & Branding is named but not written.** It is a placeholder route, the
+- **Branding is named but not written.** It is a placeholder route, the
   only service in `content/placeholders.ts`. **Four of the five services have
   copy; this one is an address with a heading that says so.**
 
 39 named capabilities exist, unevenly distributed — CRM 18, AI & Automation 12,
-Custom Software 9, **Website & Apps 0**, **UX/UI & Branding 0**. The count was
+Software 9, **Websites 0**, **Branding 0**. The count was
 48 across five services before System Integration's 9 left with it.
 
 - **Custom Software is organised by client intention**, not technology: build

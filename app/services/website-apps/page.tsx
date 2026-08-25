@@ -119,7 +119,7 @@ export default function WebPlatformsAppsPage() {
                 className="visually-hidden"
                 id="website-apps-services-title"
               >
-                Website &amp; Apps Services
+                Websites Services
               </h2>
 
               <nav

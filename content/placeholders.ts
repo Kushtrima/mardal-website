@@ -26,7 +26,11 @@
  * Careers went that way first, 2026-08-19: it left this module for
  * `content/careers.ts` and `app/careers/page.tsx`, and the count below went
  * from twelve to eleven. UX/UI & Branding brought it back to twelve on
- * 2026-08-24 — a service named in the menu with no copy written for it yet. `PlaceholderKey` is derived from these keys, so
+ * 2026-08-24 — a service named in the menu with no copy written for it yet —
+ * and went the other way on 2026-08-25, when the owner asked for it written.
+ * It is `content/branding.ts` now and the count is eleven again. Careers went
+ * first and this went second; both left the same way, by deleting an entry
+ * here and writing a route. `PlaceholderKey` is derived from these keys, so
  * removing one makes the compiler find every reference to it.
  */
 
@@ -75,7 +79,7 @@ const getInTouch = {
 } as const;
 
 /**
- * Keyed by route, and the keys are read by the test that walks all twelve.
+ * Keyed by route, and the keys are read by the test that walks all eleven.
  * `/products/arvena-ai` is written `products/arvena-ai` — the leading slash is
  * added where it is needed rather than stored eleven times.
  */
@@ -117,25 +121,13 @@ export const placeholders = {
     title: "Services",
     description: "The five services Mardal offers, in one place.",
     support: "The five ways we work, gathered in one place.",
-    /* Four of the five service pages are written, which is the most finished
-       part of this site, so the way out of the index that has not been written
-       is into them. It was five until 2026-08-24: System Integration was
-       deleted and UX/UI & Branding took its place in the list, arriving as an
-       address before it arrives as writing — the entry directly below. */
+    /* All five service pages are written now — the most finished part of this
+       site — so the way out of the index that has not been written is into
+       them. It was four for a day: System Integration was deleted on
+       2026-08-24 and Branding took its place in the list as an address before
+       it was writing. It was written on 2026-08-25 and left this module. */
     cta: "See a service page",
     ctaHref: "/services/ai-automation",
-  },
-  "services/ux-ui-branding": {
-    label: "UX/UI & Branding",
-    title: "UX/UI & Branding",
-    description: "Design and identity, made to be built.",
-    support: "Design and identity, made to be built.",
-    /* The nearest real thing today: Website & Apps opens on a design chapter,
-       which is the closest this site comes to saying what this page will. */
-    cta: "See Website & Apps",
-    ctaHref: "/services/website-apps",
-    /* The only placeholder with a drawing — see `pattern` on the type above. */
-    pattern: "ux-ui-branding",
   },
   company: {
     label: "Company",

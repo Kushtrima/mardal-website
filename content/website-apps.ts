@@ -3,7 +3,7 @@
  *
  * Same shape as the other three service pages. Four chapters, each one an entry
  * in the left-hand nav, and each holding only the services that belong to it:
- * design before the build, everything that runs in a browser, everything that
+ * UX/UI before the build, everything that runs in a browser, everything that
  * runs on a phone, and how AI is built into the product itself. Each service is
  * a capability sentence, the actions it covers, and one worked example.
  *
@@ -15,7 +15,7 @@
    The chapter titled "Web Platforms" below keeps its name: it is one chapter
    inside this page and not the page. */
 export const websiteApps = {
-  title: "Website & Apps",
+  title: "Websites",
   description:
     "Websites, online stores, portals, and mobile apps, built for the people who use them.",
   /* Kept to the length the other service heroes use -- their first lines run
@@ -26,8 +26,19 @@ export const websiteApps = {
   heroCta: "Let’s build",
   chapters: [
     {
-      id: "product-design",
-      title: "Product Design",
+      /* **Product Design became UX/UI Design — owner's call, 2026-08-25.** He
+         asked for a UX/UI Design chapter first and for Product Design to go,
+         and the two turn out to be one edit: this chapter already held
+         Interface Design, Prototypes & Testing and Content & Structure, which
+         is UX/UI work under another name. Nothing moved and no service copy was
+         written — only the name over it changed, so nothing here claims
+         anything the site was not already claiming.
+
+         The id follows the title. Nothing outside this file read the old one —
+         the page's nav links to `services[0].id`, not to the chapter's — so it
+         cost nothing to keep the two in step. */
+      id: "ux-ui-design",
+      title: "UX/UI Design",
       description:
         "Decide how a product looks and works before development begins, while changes are still inexpensive.",
       services: [

@@ -111,11 +111,20 @@ export const menu = [
          read the same order from `difference` below, which is kept in step with
          this one by hand — a site that names its five services in two orders on
          one page is the thing to avoid. */
-      { label: "UX/UI & Branding", href: "/services/ux-ui-branding" },
-      { label: "Website & Apps", href: "/services/website-apps" },
+      /* **The labels were renamed on 2026-08-25 and the ROUTES were not.**
+         Branding lives at /services/ux-ui-branding, Websites at
+         /services/website-apps, Software at /services/custom-software. The
+         owner asked for the words; moving the addresses is a separate act
+         with its own redirects, and the last one of those is three commits
+         back. A label and a slug are allowed to differ — what is not allowed
+         is a slug that points at nothing. */
+      { label: "Branding", href: "/services/ux-ui-branding" },
+      { label: "Websites", href: "/services/website-apps" },
+      { label: "Software", href: "/services/custom-software" },
+      { label: "CRM Solution", href: "/services/crm-solutions" },
+      /* Last, and moved there on the owner's word 2026-08-25 — it sat third,
+         in the middle of the run. */
       { label: "AI & Automation", href: "/services/ai-automation" },
-      { label: "CRM Solutions", href: "/services/crm-solutions" },
-      { label: "Custom Software", href: "/services/custom-software" },
     ],
   },
   /* Solutions is deliberately not here. The seven industries have no pages of
@@ -290,29 +299,29 @@ export const services = {
   items: [
     {
       id: "ux-ui-branding",
-      title: "UX/UI & Branding",
+      title: "Branding",
       description: "Design and identity, made to be built.",
     },
     {
       id: "web-platforms",
-      title: "Website & Apps",
+      title: "Websites",
       description: "Fast, intuitive digital products built to grow.",
+    },
+    {
+      id: "custom-software",
+      title: "Software",
+      description: "Build the software your business actually needs.",
+    },
+    {
+      id: "crm-solutions",
+      title: "CRM Solution",
+      description: "Give customer-facing teams one clear place to work.",
     },
     {
       id: "ai-automation",
       title: "AI & Automation",
       description:
         "Turn repetitive work into intelligent, dependable workflows.",
-    },
-    {
-      id: "crm-solutions",
-      title: "CRM Solutions",
-      description: "Give customer-facing teams one clear place to work.",
-    },
-    {
-      id: "custom-software",
-      title: "Custom Software",
-      description: "Build the software your business actually needs.",
     },
   ],
 } as const;
@@ -336,13 +345,16 @@ export const difference = {
      labels: they are the keys `lib/isometric.ts` draws each box from and the
      anchors this section answers to, and renaming them would move two things
      that have nothing to do with what the box is called. `web-platforms` is
-     the box now labelled Website & Apps. */
+     the box now labelled Websites. */
   items: [
-    { id: "ux-ui-branding", lines: ["UX/UI &", "Branding"] },
-    { id: "web-platforms", lines: ["Website", "& Apps"] },
+    /* One line each now. These are authored breaks, and three of the four
+       names stopped having anything to break after the rename — a single
+       word in a two-line array would set the second line empty. */
+    { id: "ux-ui-branding", lines: ["Branding"] },
+    { id: "web-platforms", lines: ["Websites"] },
+    { id: "custom-software", lines: ["Software"] },
+    { id: "crm-solutions", lines: ["CRM", "Solution"] },
     { id: "ai-automation", lines: ["AI &", "Automation"] },
-    { id: "crm-solutions", lines: ["CRM", "Solutions"] },
-    { id: "custom-software", lines: ["Custom", "Software"] },
   ],
 } as const;
 

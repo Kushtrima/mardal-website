@@ -1,5 +1,5 @@
 /**
- * The twelve pages that exist as an address before they exist as writing.
+ * The eleven pages that exist as an address before they exist as writing.
  *
  * Every word in the header and the footer used to promise a page; four of them
  * pointed at nothing at all and five only scrolled the homepage, which from any
@@ -11,8 +11,9 @@
  * a page graduating out of here is the point of the arrangement, and the count
  * moving is how it is noticed.
  *
- * Back to twelve on 2026-08-24, going the other way: UX/UI & Branding is a new
- * service the menu names and nobody has written yet. **The count is asserted
+ * Back to twelve on 2026-08-24, going the other way: Branding was a new service
+ * the menu named and nobody had written — and back to eleven on 2026-08-25,
+ * when it was written and left, the way Careers did. **The count is asserted
  * below now, and it was added because this table did not notice.** The new page
  * was live, in the menu, and rendering, and every test here passed without ever
  * fetching it — a table of routes only covers the routes someone remembered to
@@ -133,18 +134,6 @@ const pages = [
     cta: "Get in touch",
     ctaHref: "mailto:info@mardal.co",
   },
-  /* The only service in this table. System Integration was deleted on
-     2026-08-24 and this took its place in the menu, so the list of five the
-     site names is four written pages and this one. */
-  {
-    path: "/services/ux-ui-branding",
-    label: "UX/UI & Branding",
-    support: "Design and identity, made to be built.",
-    cta: "See Website & Apps",
-    ctaHref: "/services/website-apps",
-    /* The only one with a drawing — see the artwork test below. */
-    pattern: "ux-ui-branding",
-  },
 ];
 
 /** Every key in `content/placeholders.ts` has a row above.
@@ -153,7 +142,7 @@ const pages = [
  *  a test that imports the module the page reads asserts only that a file
  *  equals itself — and the cost of that is a table that goes quietly out of
  *  date, which it did the day this line was written. */
-const PLACEHOLDER_PAGES = 12;
+const PLACEHOLDER_PAGES = 11;
 
 test("every unwritten page is a page", async () => {
   assert.equal(
@@ -322,14 +311,18 @@ test("the unwritten heroes carry no artwork, except the one service", async () =
     );
   }
 
-  /* Exactly one exception, counted. Without this the test passes just as
-     happily with a drawing added to every row — each page would be checked
-     against its own `pattern` field and agree with itself, which is the failure
-     mode of every rule that carries its exception in the same table. */
+  /* **No exceptions left.** There was exactly one — Branding, the only
+     placeholder that was a SERVICE and so stood beside four written pages that
+     each carry a drawing. It was written on 2026-08-25 and took its exception
+     with it, so this is back to what it always was: none of these has artwork.
+
+     Counted rather than dropped, because the `pattern` field is still on the
+     type and a row that quietly grows one would otherwise be checked against
+     itself and agree. */
   assert.equal(
     withArtwork,
-    1,
-    "the no-artwork rule has more than the one exception the owner named",
+    0,
+    "a placeholder has artwork again; the last one to have it was written",
   );
 });
 

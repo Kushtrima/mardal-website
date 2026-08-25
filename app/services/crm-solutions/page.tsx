@@ -119,7 +119,7 @@ export default function CrmSolutionsPage() {
                 className="visually-hidden"
                 id="crm-solutions-services-title"
               >
-                CRM Solutions Services
+                CRM Solution Services
               </h2>
 
               <nav

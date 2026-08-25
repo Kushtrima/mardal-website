@@ -117,7 +117,7 @@ export default function CustomSoftwarePage() {
                 className="visually-hidden"
                 id="custom-software-services-title"
               >
-                Custom Software Services
+                Software Services
               </h2>
 
               <nav

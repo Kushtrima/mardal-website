@@ -3,9 +3,19 @@
  *
  * The three chapters are organized by client intention: build for employees,
  * build for customers, or improve software that already exists.
+ *
+ * A fourth chapter arrived on 2026-08-25: `System Integration`, five services
+ * recovered word for word from the page of that name deleted the day before.
+ * Integration is not a product this site sells any more — it is what a build
+ * has to do to reach the systems a business already runs — so it is a chapter
+ * here rather than a page of its own.
+ *
+ * It began as a single service inside `Existing Software` and was promoted an
+ * hour later on the owner's word. `Custom Connections` moved with it; nothing
+ * is in two places.
  */
 export const customSoftware = {
-  title: "Custom Software",
+  title: "Software",
   description:
     "Custom apps, platforms, and internal tools designed around how your business works.",
   heroTitleLines: [
@@ -153,6 +163,98 @@ export const customSoftware = {
           ],
           example:
             "After a new platform goes live, we monitor it, fix problems, release approved improvements, and help the business plan the next useful features.",
+        },
+      ],
+    },
+    {
+      /* **The System Integration page, folded back in as one chapter** —
+         owner's call, 2026-08-25. That page was deleted the day before and its
+         nine services went with it; five of them are here, word for word rather
+         than rewritten, so nothing in this chapter claims anything the site had
+         not already been saying.
+
+         Which five, and why these. The three from its own `Business
+         Integrations` heading are the systems a company already runs and
+         expects a build to reach — the CRM and ERP, the store, the accounting.
+         `Custom Connections` is the same job where no standard connector
+         exists, and it MOVED here rather than being copied: it spent an hour in
+         Existing Software while integration was one service rather than a
+         chapter. `Data Transfer & Sync` is the migration every replacement
+         needs and the one most often discovered late.
+
+         Four are deliberately left in git. `Communication Tools` is real work
+         but reads as a fifth flavour of the same thing beside these. And
+         `Monitoring & Alerts`, `Error Recovery` and `Updates & Support`
+         describe RUNNING an integration estate as an ongoing service — which is
+         what the deleted page sold and this site no longer does. Bringing those
+         back would be re-creating that page rather than giving this one a
+         chapter. */
+      id: "system-integration",
+      title: "System Integration",
+      description:
+        "Connect what a business already runs — its CRM, its store, its accounting and its older applications — so information moves between them instead of being carried by hand.",
+      services: [
+        {
+          id: "crm-erp-integration",
+          title: "CRM & ERP",
+          copy: "We connect your CRM and ERP so customer, sales, order, inventory, and financial information stays updated across both systems.",
+          items: [
+            "Synchronize customers and products",
+            "Transfer approved quotations and sales",
+            "Update order, invoice, stock, and payment statuses",
+          ],
+          example:
+            "A deal is approved in the CRM. The customer and order details are automatically transferred to the ERP for processing and invoicing.",
+        },
+        {
+          id: "ecommerce-operations-integration",
+          title: "E-commerce & Operations",
+          copy: "We connect your online store with inventory, order, accounting, and delivery systems so each platform stays up to date.",
+          items: [
+            "Synchronize products, prices, and stock",
+            "Transfer online orders",
+            "Update payment, fulfilment, delivery, return, and refund information",
+          ],
+          example:
+            "An online order is transferred to the ERP. Stock, payment, fulfilment, and delivery updates are then synchronized back to the online store.",
+        },
+        {
+          id: "accounting-payment-integration",
+          title: "Accounting & Payments",
+          copy: "We connect your business platforms with accounting software and payment services so financial information stays accurate and up to date.",
+          items: [
+            "Transfer invoices and transaction details",
+            "Record payment confirmations",
+            "Update balances, refunds, and order payment statuses",
+          ],
+          example:
+            "A customer completes an online payment. The order is marked as paid, and the transaction details are transferred to the accounting system.",
+        },
+        {
+          id: "api-custom-integration",
+          title: "Custom Connections",
+          copy: "We connect websites, internal software, and specialist business apps that do not already work together.",
+          items: [
+            "Share information between platforms",
+            "Check and format data before it is sent",
+            "Control which systems can access information",
+            "Connect custom and internal applications",
+          ],
+          example:
+            "A booking is created on the website. The information is sent through an API to the company’s internal scheduling system.",
+        },
+        {
+          id: "data-migration-synchronization",
+          title: "Data Transfer & Sync",
+          copy: "We move existing information into new apps and keep important records updated across connected systems.",
+          items: [
+            "Import customers, products, orders, and historical records",
+            "Remove duplicates",
+            "Map data fields",
+            "Keep selected information updated across platforms",
+          ],
+          example:
+            "Information from older software is cleaned and moved into a new system. Selected customer and product records then remain synchronized across the connected apps.",
         },
       ],
     },

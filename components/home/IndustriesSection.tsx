@@ -262,42 +262,37 @@ export function IndustriesSection() {
             <ul className="industries-list" ref={listRef}>
               {solutions.items.map((industry, index) => (
                 <li key={industry.id}>
-                  {/* A link now, to that sector's own page — owner's call. It
-                      was a plain `div` and the note here said why: it had been
-                      a button, the run took the scrollbar over, and a control
-                      that answers to nothing is a trap for anyone arriving on
-                      it by keyboard. That argument was about a control with
-                      nowhere to go. These have somewhere to go, so the trap is
-                      gone and `data-cursor` comes back with the destination —
-                      it is the hook for the finger and the hover mark, and both
-                      are now telling the truth.
+                  {/* **Not a link — owner's call, 2026-08-25.** The seven
+                      names say who Mardal builds for; `Explore All` under them
+                      is the one thing that goes anywhere.
 
-                      It keeps its id, which the menu still points at.
+                      They have been three things now. Anchors to a run further
+                      down this same page, which only ever scrolled you. Then
+                      links to `/case-studies/{id}`, a sector view of the
+                      Clients page. Then, when that taxonomy was removed, seven
+                      links all pointing at `/case-studies` — which is the state
+                      this replaces, and it was the weakest of the three: seven
+                      different words promising one destination.
 
-                      `onFocus` is the part that is not decoration. Six of the
-                      seven are dimmed almost to the ground while the run is on
-                      another one, so a keyboard reaching a link it cannot read
-                      would be the same trap coming back through the other door.
-                      Focus brings the industry forward, exactly as the scroll
-                      does — and the scroll takes it back on the next update,
-                      which is right: the run owns the index, this only borrows
-                      it while someone is standing on a name. */}
-                  <Link
+                      What went with the anchor, and why none of it is a loss:
+
+                      `data-cursor` gave the finger. There is nothing to press,
+                      so the finger was the promise being withdrawn here.
+
+                      `onFocus` moved the run to whichever name had been tabbed
+                      to. It existed because six of the seven are dimmed almost
+                      to the ground while the run is on another one, so a
+                      keyboard landing on a link it could not read was a trap. A
+                      `div` is not focusable, so there is nothing to land on and
+                      nothing to rescue — the trap is gone with the tab stop
+                      rather than worked around.
+
+                      The id stays. It is what the section answers to, and the
+                      run reads these elements by position either way. */}
+                  <div
                     className={`industries-item industries-item--${TINTS[index % TINTS.length]}`}
-                    /* All seven go to the same page, and that is the honest
-                       answer rather than a shortcut. Each used to open
-                       `/case-studies/{id}` with its own sector already chosen;
-                       the owner replaced that taxonomy on 2026-08-25 and the
-                       seven routes went with it, so there is one page of
-                       delivered work and this is it. Kept as links rather than
-                       turned into plain text: the run reads focus off them, and
-                       a reader tabbing this section still needs somewhere to
-                       land. */
-                    href="/case-studies"
                     id={industry.id}
                     data-active={index === activeIndex}
-                    data-cursor
-                    onFocus={() => setActiveIndex(index)}
                   >
                     <span className="industries-item__name">
                       {/* A rule out to the left of the name, shown only on the
@@ -313,7 +308,7 @@ export function IndustriesSection() {
                     <span className="industries-item__note">
                       {industry.descriptor}
                     </span>
-                  </Link>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -324,8 +319,10 @@ export function IndustriesSection() {
                 carries the indent that puts the list where it is — placed as a
                 grid row it landed 286px to the left of the names, level with
                 nothing at all. */}
-            {/* The one that does not narrow: the seven names above it each go
-                to their own sector, so this goes to all of them. It pointed at
+            {/* **The only thing in this section that goes anywhere.** It has
+                narrowed to that: the seven names above it were links until
+                2026-08-25 and are now text, so this is not "all of them beside
+                seven of them" any more, it is the way out. It pointed at
                 `#contact` while the Clients page did not exist. */}
             <Link className="industries-explore" href={solutions.ctaHref}>
               {solutions.cta}
