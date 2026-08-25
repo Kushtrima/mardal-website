@@ -6937,17 +6937,37 @@ video {
    is CS Alistair and it opens the hero, the story titles and this. Two authored
    lines, so the turn is a decision rather than the column's width.
 
-   **Way bigger — owner's call, 2026-08-25.** It was 28–40px, which read as a
-   label over a list; at 40–76px it is a heading the column is built around. The
-   rail's track widened with it: "Selected" is eight characters of a display
-   serif and needs roughly 3.8 times the type size to sit on one line, so 76px
-   wants about 290px of column and the old 216px ceiling would have broken the
-   authored line in half. Both numbers move together or neither does. */
+   **Bigger twice — owner's call, 2026-08-25.** 28-40px first, which read as a
+   label over a list; then 40-76; now 48-96.
+
+   The track widened at the first step on an ESTIMATE, and the estimate was
+   wrong. "Selected" was guessed at roughly 3.8 times the type size; measured in
+   the browser it is **2.71** — CS Alistair is a good deal narrower than that —
+   so at 69px the word is 188px inside a 306px column with 118px spare, and the
+   ceiling that actually fits is about 113px.
+
+   96 rather than 113, and 6.5vw rather than 7, because the SLOPE is what has to
+   be safe and not the cap. Where both the column and the type are scaling the
+   word takes `6.5 * 2.71 / 22` of the track — about 80% — which leaves room for
+   the fallback stack to be wider than the real face. At 7vw it is 86%, close
+   enough to the edge that a font failing to load breaks the authored line in
+   half.
+
+   So the track does not have to move again for this. If the type is ever pushed
+   past about 113px it does, and 2.71 is the ratio to recompute against. */
 .clients-rail__title {
-  margin: 0 0 clamp(1.5rem, 3.5vh, 2.5rem);
+  /* The space under it, raised alongside the type each time it grew: 24-40px
+     when the heading was 40-76, then 36-64, now 48-88. A heading that doubles
+     while the gap under it stands still stops reading as a heading over a list
+     and starts reading as the first item of one.
+
+     `vh` and not `rem`, which is how it was already written and is right here:
+     the rail is a full-height column held against a scrolling grid, so what
+     this gap has to hold its own against is the window rather than the type. */
+  margin: 0 0 clamp(3rem, 7.5vh, 5.5rem);
   color: var(--ink);
   font-family: var(--type-title);
-  font-size: clamp(2.5rem, 5vw, 4.75rem);
+  font-size: clamp(3rem, 6.5vw, 6rem);
   font-weight: var(--weight-heading-xl);
   /* The face's own token, like every other heading in it. This was the heading
      that started the change — it went to 76px and the old -0.055em closed the
