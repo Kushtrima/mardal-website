@@ -257,9 +257,16 @@ test("each hero wears its own card's colour, read from the homepage", () => {
   const fills = new Set();
 
   boxes.forEach((box, index) => {
+    /* **Read from the PANEL, which is the token that still names the tint.**
+       It read `--card-tint-bar` until the marks were thinned to `cc` — a card's
+       bar is a literal hex now, because `color-mix` does not survive the build
+       and an alpha pair does. The panel still says `var(--tint-butter)`, and
+       what this test is about is which of the five tints a card belongs to, not
+       what shade the mark on it happens to be. */
     const card = css.slice(css.indexOf(`.difference-card--${tints[index]} {`));
-    const bar = card.slice(0, card.indexOf("}")).match(/--card-tint-bar:\s*var\((--[\w-]+)\)/);
-    assert.ok(bar, `card ${tints[index]} names no bar colour`);
+    const panel = card.slice(0, card.indexOf("}")).match(/--card-tint:\s*var\(--tint-(\w+)\)/);
+    assert.ok(panel, `card ${tints[index]} names no tint`);
+    const bar = [null, `--tint-${panel[1]}-bar`];
 
     const page = PAGE[box];
     assert.ok(page, `homepage box "${box}" has no service page`);
