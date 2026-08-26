@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import { Container } from "../../components/layout/Container";
 import { SiteFooter } from "../../components/layout/SiteFooter";
 import { HeaderSpace } from "../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../components/motion/SectionEnter";
+import { MediaReveal } from "../../components/motion/MediaReveal";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
 import { PixelArrow } from "../../components/ui/PixelArrow";
 import { about } from "../../content/about";
@@ -38,6 +40,7 @@ export default function AboutPage() {
     <>
       <SectionEnter />
       <ServicePageEntry />
+      <MediaReveal />
 
       <main
         className="service-page service-page--about"
@@ -107,6 +110,71 @@ export default function AboutPage() {
           />
         </section>
 
+        {/* **No heading, and it is a `data-route-section` all the same.** That
+            attribute is what hands a block the site's entrance, and SectionEnter
+            reads `trigger: inner ?? heading ?? section` — a section without one
+            triggers on itself. Giving it a heading would mean writing a line of
+            copy nobody asked for so that a motion hook could find something.
+
+            **Back inside the `Container`.** It was full-bleed for a version —
+            owner asked for full width and then for not-full-width — so the plate
+            takes the page's own column and stands on the same left and right
+            edges as the heading and the sentence above it. */}
+        <section className="about-plate" data-route-section>
+          <Container>
+            {/* **Five copies of one picture, each clipped to a fifth of the
+                frame.** The slices arrive staggered and land flush, which is the
+                entrance the owner picked from four.
+
+                Copies rather than one image with five masks, because each slice
+                has to move on its own — and copies rather than five background
+                images, because a background cannot carry `srcset` and the
+                responsive ladder is the reason a phone gets 107KB instead of
+                947. Every copy is the same URL, so it is one request and one
+                decode; only the first carries the alt, since it is one
+                photograph however many boxes it is drawn in. */}
+            <figure
+              className="about-plate__frame"
+              data-media-reveal
+              style={{ "--slices": about.photo.slices } as CSSProperties}
+            >
+              {Array.from({ length: about.photo.slices }, (_, slice) => (
+                <div
+                  className="about-plate__slice"
+                  key={slice}
+                  data-plate-slice
+                  style={{ "--slice": slice } as CSSProperties}
+                >
+                  <img
+                    className="about-plate__image"
+                    src={about.photo.src}
+                    srcSet={about.photo.widths
+                      .map((width) => `/about-office-${width}.webp ${width}w`)
+                      .join(", ")}
+                    /* The plate is the page's COLUMN, not the page, so the
+                       gutters come off before a rung is chosen. Written out
+                       rather than as `var(--page-gutter)`: `sizes` is parsed
+                       before the cascade exists and custom properties are not
+                       available to it, so a `var()` here is not a smaller
+                       number, it is an invalid value and the whole attribute is
+                       dropped. The gutter is `clamp(1rem, 4vw, 2.5rem)`. */
+                    sizes="calc(100vw - 2 * clamp(1rem, 4vw, 2.5rem))"
+                    alt={slice === 0 ? about.photo.alt : ""}
+                    aria-hidden={slice === 0 ? undefined : true}
+                    width={about.photo.width}
+                    height={about.photo.height}
+                    /* Lazy is safe BECAUSE the frame reserves its own height
+                       through `aspect-ratio`: nothing below it moves when the
+                       picture arrives, so no scroll trigger is measured against
+                       a page that is about to grow. */
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              ))}
+            </figure>
+          </Container>
+        </section>
       </main>
 
       <SiteFooter />

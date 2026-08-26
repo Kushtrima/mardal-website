@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 
 /**
  * About, and the third page to leave `content/placeholders.ts`.
@@ -223,6 +223,232 @@ test("the sentence is set as prose, and beats the rules it has to beat", () => {
     2,
     "there is not exactly one desktop rule and one phone rule for the sentence",
   );
+});
+
+test("the photograph is under the hero, and says only what it shows", async () => {
+  const html = await (await render("/about")).text();
+
+  /* A direct child of `main`, carrying `data-route-section`. That attribute is
+     the whole of how a block gets the site's entrance — SectionEnter collects
+     `main > section[data-route-section]` — so the plate is animated by being one
+     of the page's sections rather than by anything of its own. */
+  assert.match(html, /<\/section><section class="about-plate" data-route-section="true">/);
+
+  /* **The page's column, not the page.** It was full-bleed for a version and the
+     owner ruled that out, so the figure is back inside a container and stands on
+     the same left and right edges as the heading above it. Asserted as
+     adjacency, because the container coming back out is one deleted line and the
+     plate would silently run to the screen edges again. */
+  assert.match(
+    html,
+    /<section class="about-plate"[^>]*><div class="container"><figure class="about-plate__frame"/,
+  );
+
+  /* Its own pixels, so the box is the right shape before the picture decodes and
+     nothing below it moves when it arrives — which is also what makes lazy safe.
+     It was `eager` for a version on the belief that it had to be, which was
+     never true once the frame carried a ratio. */
+  assert.match(html, /width="4000"/);
+  assert.match(html, /height="2250"/);
+  assert.match(html, /loading="lazy"/);
+
+  /* **Five slices, each carrying the whole picture, clipped to a fifth.** The
+     owner's pick from four entrances. Copies rather than one image with masks,
+     because each slice has to move on its own; copies rather than five
+     backgrounds, because a background cannot carry `srcset` and that ladder is
+     why a phone gets 107KB instead of 947. */
+  const plate = html.slice(
+    html.indexOf('class="about-plate"'),
+    html.indexOf("</figure>"),
+  );
+  assert.equal((plate.match(/data-plate-slice/g) ?? []).length, 5);
+  assert.equal((plate.match(/<img/g) ?? []).length, 5);
+  for (const slice of [0, 1, 2, 3, 4]) {
+    assert.match(plate, new RegExp(`--slice:\\s*${slice}`), `slice ${slice} is unnumbered`);
+  }
+  assert.match(plate, /--slices:\s*5/);
+
+  /* **One photograph, however many boxes it is drawn in.** The alt is on the
+     first copy and the other four are hidden — without that a screen reader
+     meets the same description five times, which reads as five pictures. */
+  assert.equal((plate.match(/aria-hidden="true"/g) ?? []).length, 4);
+  assert.equal((plate.match(/alt=""/g) ?? []).length, 4);
+
+  /* **Five rungs, not one file.** The original is 1.2MB and a phone needs 1200px
+     of it. `sizes` is the fact that lets the browser choose, and it names the
+     COLUMN rather than the viewport — the gutters come off first. Written out
+     rather than as `var(--page-gutter)`: `sizes` is parsed before the cascade
+     exists, so a custom property there is not a smaller number, it is an invalid
+     value and the attribute is dropped whole. */
+  assert.match(html, /sizes="calc\(100vw - 2 \* clamp\(1rem, 4vw, 2\.5rem\)\)"/);
+  assert.doesNotMatch(html, /sizes="[^"]*var\(/);
+  for (const width of [1200, 1800, 2400, 3200, 4000]) {
+    assert.match(
+      html,
+      new RegExp(`/about-office-${width}\\.webp ${width}w`),
+      `the ${width}px rung is missing from srcset`,
+    );
+  }
+
+  /* **The alt describes the room and does not say whose it is.** Nothing states
+     that this is Mardal's own office, and an `alt` is where an invented fact is
+     least likely to be checked. Asserted as an absence, because the tempting
+     rewrite — "our studio" — is one word long. */
+  const described = html
+    .match(/alt="([^"]+)"/g)
+    .map((a) => a.toLowerCase())
+    .find((a) => a.includes("open-plan"));
+  assert.ok(described, "the photograph has no descriptive alt");
+  assert.doesNotMatch(described, /\bour\b|mardal|\bstudio\b|\bteam\b|\bwe\b/);
+});
+
+test("the plate is the column wide, and every rung of it is on disk", () => {
+  const at = CSS.indexOf(".about-plate__frame {");
+  assert.ok(at > 0, "the plate has no frame rule");
+  const rule = CSS.slice(at, CSS.indexOf("}", at));
+
+  assert.match(rule, /width:\s*100%/);
+  assert.match(rule, /aspect-ratio:\s*16 \/ 9/);
+
+  /* **What makes five clipped columns one seamless picture.** Each copy is the
+     whole frame wide and slid left by its own index, so every one of them lands
+     on the same absolute left edge — measured, all five at 40px, and no gap
+     between any two slices. Both terms are the composite; either alone is five
+     pictures side by side or one picture five times over. */
+  const at2 = CSS.indexOf(".about-plate__image {");
+  const image = CSS.slice(at2, CSS.indexOf("}", at2));
+  assert.match(image, /width:\s*calc\(100% \* var\(--slices\)\)/);
+  assert.match(image, /left:\s*calc\(var\(--slice\) \* -100%\)/);
+
+  /* **`min-width`, and it has to be `min-width`.** The base stylesheet holds
+     every `img` to `max-width: 100%`, which clamps each copy to its own slice.
+     `max-width: none` is the obvious answer and it is not enough — see the
+     built-stylesheet test below, which is where that was caught. */
+  assert.match(image, /min-width:\s*calc\(100% \* var\(--slices\)\)/);
+
+  /* Flex children rather than absolute boxes at 20% intervals: adjacent flex
+     items share an edge and tile without a gap at fractional widths. */
+  const at3 = CSS.indexOf(".about-plate__slice {");
+  assert.match(CSS.slice(at3, CSS.indexOf("}", at3)), /flex:\s*1 1 0/);
+
+  /* **`100%` and never `100vw`.** `100%` is the container it now sits in; `100vw`
+     was what the full-bleed version wanted and it is wrong twice over — the
+     plate is not the page any more, and inside `#smooth-content` `100vw`
+     includes the scrollbar, so the page would gain a horizontal scroll of
+     exactly that width on every screen with one. */
+  assert.doesNotMatch(rule, /100vw/);
+
+  /* Every width named in `srcset` has to exist, or a browser picks a rung and
+     gets a 404 — which shows as no picture at all, only at some window sizes. */
+  let total = 0;
+  for (const width of [1200, 1800, 2400, 3200, 4000]) {
+    const file = statSync(
+      new URL(`../public/about-office-${width}.webp`, import.meta.url),
+    );
+    assert.ok(file.size > 0, `the ${width}px rung is empty`);
+    total += file.size;
+  }
+  assert.ok(total > 0);
+
+  /* And the file it replaced is gone rather than left behind unreferenced. */
+  assert.throws(() =>
+    statSync(new URL("../public/about-office.jpeg", import.meta.url)),
+  );
+});
+
+test("the plate survives the minifier, not just the stylesheet", () => {
+  /* **The one thing a test on `globals.css` cannot see.**
+     `.about-plate__image` carried `max-width: none` to defeat the base rule
+     `img { max-width: 100% }`. The source was right; the BUILD was not. The
+     minifier drops `max-width: none` as an initial value without accounting for
+     the lower-specificity rule it exists to override, so what shipped had no
+     `max-width` at all — every copy clamped to its own 281px slice while sitting
+     at `left: -281px`, which put four of the five entirely outside their own
+     clip. They drew nothing. The owner saw one column of photograph and four
+     empty ones, and every assertion in this file passed.
+
+     So this reads the built stylesheet. `min-width` is what carries the size
+     now: it wins over `max-width` by the cascade's own rule, and it is not an
+     initial value, so nothing can decide it is redundant. */
+  const assets = new URL("../dist/client/assets/", import.meta.url);
+  const sheets = readdirSync(assets).filter((name) => name.endsWith(".css"));
+  assert.ok(sheets.length, "the build produced no stylesheet");
+
+  const built = sheets
+    .map((name) => readFileSync(new URL(name, assets), "utf8"))
+    .join("\n");
+
+  const rule = built.match(/\.about-plate__image\s*\{[^}]*\}/);
+  assert.ok(rule, "the plate image rule did not survive the build");
+
+  assert.match(rule[0], /min-width:\s*calc\(100% \* var\(--slices\)\)/);
+  assert.match(rule[0], /left:\s*calc\(var\(--slice\) \* -100%\)/);
+
+  /* And the rule it is there to beat is still in the build, so this is not
+     guarding against something that has quietly gone away. */
+  assert.match(built, /max-width:\s*100%/);
+});
+
+test("the reveal is tied to scroll position and resolves", () => {
+  /* **Read with the prose stripped out, once, and used for everything below.**
+     Three assertions in this file have now been written against the raw text and
+     caught the file's own comments instead of its code — a sentence saying it
+     does not use `Math.random`, one saying "moving 800 to 2500px a second", and
+     one saying "clip-path rather than width". A component that explains what it
+     deliberately does NOT do will always trip a guard looking for that thing. */
+  const raw = readFileSync(
+    new URL("../components/motion/MediaReveal.tsx", import.meta.url),
+    "utf8",
+  );
+  const code = raw.replace(/\/\*[\s\S]*?\*\//g, "");
+
+  assert.match(code, /"use client"/);
+  assert.match(code, /prefers-reduced-motion:\s*reduce/);
+  /* It bails before touching anything, rather than building the tween and
+     leaving it paused. Anchored to `gsap.set`, which is now the first thing it
+     would do — anchored to `gsap.fromTo` this silently passed nothing once the
+     construction changed, because `indexOf` returns -1 and every index is
+     greater than that. */
+  const guard = code.indexOf("prefers-reduced-motion");
+  const firstWrite = code.indexOf("gsap.set");
+  assert.ok(firstWrite > 0, "the reveal never writes anything");
+  assert.ok(guard > 0 && guard < firstWrite);
+
+  /* **Slices that land.** Fourth treatment this plate has had and the owner's
+     own pick from four: a scale-settle, a sideways open and a downward uncover
+     came before it. They start displaced along the frame's short axis,
+     alternating up and down so the run reads as a set of pieces rather than one
+     thing leaning, and come home at staggered times.
+
+     **Set, then tweened — not a staggered `fromTo`.** That was the obvious way
+     to write it and it does not work: a staggered `fromTo` renders each target's
+     from-values when that target's turn arrives, so at the head of the window
+     only the first slice was displaced. Measured at `126/0.35` on the first and
+     `0/1.00` on the other four — four fifths of the picture never moved.
+     `immediateRender: true` does not reach the staggered sub-tweens either; it
+     was tried and measured the same. Set up front, every slice holds its start
+     because the start is simply where it already is. Measured after:
+     `+126/-126/+126/-126/+126`, all at 0.35. */
+  assert.match(code, /gsap\.set\(slices, \{/);
+  assert.match(code, /index % 2 \? -TRAVEL : TRAVEL/);
+  assert.match(code, /stagger: \{ each: APART \}/);
+  assert.doesNotMatch(code, /fromTo/);
+
+  /* **And it RESOLVES**, every slice to exactly zero. Parallax keeps its offset
+     and drifts forever; an end value of anything but 0 is the difference, and
+     both look plausible in a still. */
+  assert.match(code, /yPercent: 0,/);
+  assert.match(code, /opacity: 1,/);
+
+  /* Never fully transparent on the way in: a slice can be faint for a moment,
+     but a blank column reads as a picture that failed to load. */
+  assert.match(code, /const FAINT = 0\.\d+;/);
+  assert.doesNotMatch(code, /opacity: 0,/);
+
+  /* Attached by attribute, so the next photograph gets this by carrying the
+     attribute rather than by being named here. */
+  assert.match(code, /\[data-media-reveal\]/);
+  assert.doesNotMatch(code, /about/i);
 });
 
 test("About is out of the placeholder module, and out of its test", () => {

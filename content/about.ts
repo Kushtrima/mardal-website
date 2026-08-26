@@ -63,6 +63,45 @@ export const about = {
     "Our core team is small on purpose, but highly skilled, so you get the right talent and expertise, all the time.",
 
   /**
+   * The photograph under the hero, and what is said about it.
+   *
+   * The owner's file, `Open office-1.webp` off his desktop, 4000x2250 and 16:9.
+   * It replaced a 739x415 one, which is why the plate can be full width now:
+   * the first file was drawn at its own resolution at 736px and would have been
+   * a 3.68x upscale on a retina screen at the page width.
+   *
+   * **Five widths rather than one.** The original is 1.2MB, and a phone that
+   * needs 1200px of it should not be sent 4000. `sizes="100vw"` tells the
+   * browser the plate is the page width, and it takes the rung it needs — 107KB
+   * on a phone against 947KB for the whole thing.
+   *
+   * **The alt describes the room and does not say whose it is.** Nothing I have
+   * been told says this is Mardal's own office, and on a page ABOUT the company
+   * a caption is a claim: "our studio in Gjilan" would be a fact invented in an
+   * `alt` attribute, where it is least likely to be checked. Written as what is
+   * in the picture, which is true either way. One edit if he tells me otherwise.
+   */
+  photo: {
+    /**
+     * How many vertical slices the plate is drawn in.
+     *
+     * The owner's pick from four entrances, 2026-08-26, after three others were
+     * replaced: slices that arrive staggered and land flush. Five because it is
+     * what he chose from, and because it echoes the redaction bars the service
+     * heroes carry — the same language, on a photograph.
+     */
+    slices: 5,
+    /** The rung a browser takes if it ignores `srcset` entirely. */
+    src: "/about-office-2400.webp",
+    widths: [1200, 1800, 2400, 3200, 4000],
+    /** The source's own pixels, so the box reserves the right shape before it
+     *  loads and nothing below it jumps. */
+    width: 4000,
+    height: 2250,
+    alt: "An open-plan office: desks with monitors and mesh chairs, glass-walled rooms beyond, and daylight from a full-height window.",
+  },
+
+  /**
    * The way out. Every hero on this site ends on one, and until there are
    * sections below this one there is nowhere else for it to go — the
    * placeholder pointed at `/#company`, which was the nearest real thing while

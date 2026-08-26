@@ -5863,6 +5863,82 @@ video {
   fill: var(--tint-clay-bar);
 }
 
+/* ── About: the photograph under the hero ──
+
+   Owner, 2026-08-26, in three instructions: this image after the hero; then full
+   width; then not full width, only the width of the column — and a new entrance
+   each time.
+
+   **The page's column, not the page.** It was full-bleed for a version, outside
+   `.container` entirely, and it is back inside one: the plate stands on the same
+   left and right edges as the heading and the sentence above it, which is the
+   only line anything on this page has kept.
+
+   The file carries it either way. It is 4000x2250, so at a 1300px column it is
+   drawn at 0.33x and at 0.65x on a retina screen — sharp, where the 739px file
+   it replaced would have been a 1.84x upscale at the same width.
+
+   `aspect-ratio` from its own pixels: the box is the right shape before it
+   decodes, which is what makes `loading="lazy"` safe and keeps every trigger
+   below it still. */
+.about-plate {
+  padding-block: clamp(4rem, 12vh, 9rem) clamp(5rem, 14vh, 11rem);
+}
+
+/* **The frame is five slices of one picture.** `MediaReveal` offsets them
+   vertically at the top of the scroll window, alternating up and down, and
+   brings them home staggered so they land flush — the entrance the owner picked
+   from four, after a scale-settle, a sideways open and a downward uncover were
+   each replaced.
+
+   Clipped, because the whole effect is slices standing where the frame is not:
+   without this they show above and below the plate while they are still out.
+
+   Flex children with `flex: 1 1 0` rather than absolute positioning: adjacent
+   flex items share an edge and the browser tiles them without a gap at
+   fractional widths, which absolute boxes at `left: 20%` intervals do not. */
+.about-plate__frame {
+  display: flex;
+  overflow: clip;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin: 0;
+}
+
+.about-plate__slice {
+  position: relative;
+  overflow: clip;
+  flex: 1 1 0;
+}
+
+/* Each copy is the WHOLE picture, sized to the frame and slid left by its own
+   index, so five clipped columns compose one photograph. `100%` here is the
+   slice, so the frame is `100% * var(--slices)`.
+
+   **`min-width` carries the size, and that is not a style preference.** The base
+   stylesheet holds every `img` to `max-width: 100%`, which clamps each copy to
+   its own slice — and the obvious answer, `max-width: none` on this rule, is
+   correct in the source and does not survive the build. The minifier drops it as
+   an initial value without accounting for the lower-specificity rule it was
+   written to defeat, so the served stylesheet had `width` and no `max-width` at
+   all. What shipped was five copies each 281px wide with `left: -281px` and
+   worse — four of the five sat entirely to the left of their own clip and drew
+   nothing, which is exactly what the owner saw.
+
+   `min-width` wins over `max-width` by the cascade's own rule — where they
+   conflict, the minimum is what the used width takes — and it is not an initial
+   value, so nothing can decide it is redundant. `width` stays beside it because
+   it is what the rule MEANS; `min-width` is what makes it survive. */
+.about-plate__image {
+  position: absolute;
+  top: 0;
+  left: calc(var(--slice) * -100%);
+  width: calc(100% * var(--slices));
+  min-width: calc(100% * var(--slices));
+  height: 100%;
+  object-fit: cover;
+}
+
 /* The blog draws its bars from the vector it already has rather than from a
    trace of a PNG of one. The box takes the drawing's own 716x336 rather than
    the 1447x1087 the service artwork is cut at: RedactedLines is
