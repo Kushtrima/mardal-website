@@ -21,50 +21,107 @@
  * the browser reads it as the same document and simply scrolls, so nothing is
  * reloaded for the shorter form's sake.
  */
+/**
+ * ⚠ **Each of these lines is longer than the owner wrote it.** 2026-08-27: add
+ * more services for each industry. Twenty more kinds of organisation, twenty
+ * five to forty five, two or three a sector.
+ *
+ * **They are mine, and they are categories rather than claims.** Every one names
+ * a KIND of organisation that exists in that sector — payment providers, dental
+ * practices, freight forwarders — not a client, a capability or a number. That
+ * is the same thing the original words did; nothing here says Mardal has worked
+ * for one of them, and the page carries no count of them any more either.
+ *
+ * **The grammar is load-bearing.** `audiencesOf` splits these on commas and the
+ * final `and`, so no phrase may contain an `and` of its own and every one has to
+ * be a noun phrase that stands alone. `tests/rendered-html.test.mjs` rejoins
+ * them and compares against the sentence they came from, which is what catches
+ * a line rewritten past that rule.
+ */
 export const industries = [
   {
     id: "finance",
     title: "Finance",
     descriptor:
-      "Banks, insurance companies, fintech platforms and financial service providers.",
+      "Banks, insurance companies, fintech platforms, payment providers, asset managers, credit unions and financial service providers.",
   },
   {
     id: "healthcare",
     title: "Healthcare",
     descriptor:
-      "Hospitals, clinics, pharmacies and organizations delivering health services.",
+      "Hospitals, clinics, pharmacies, dental practices, diagnostic laboratories, care providers and organizations delivering health services.",
   },
   {
     id: "manufacturing",
     title: "Manufacturing",
     descriptor:
-      "Factories, production companies and businesses managing industrial operations.",
+      "Factories, production companies, engineering firms, component suppliers, assembly plants and businesses managing industrial operations.",
   },
   {
     id: "automotive",
     title: "Automotive",
     descriptor:
-      "Dealerships, repair services, vehicle platforms and mobility companies.",
+      "Dealerships, repair services, parts distributors, fleet operators, leasing companies, vehicle platforms and mobility companies.",
   },
   {
     id: "retail",
     title: "Retail",
     descriptor:
-      "Physical stores, e-commerce businesses and consumer-focused brands.",
+      "Physical stores, e-commerce businesses, marketplaces, wholesalers, franchise networks and consumer-focused brands.",
   },
   {
     id: "logistics",
     title: "Logistics",
     descriptor:
-      "Transport companies, warehouses, distributors and delivery service providers.",
+      "Transport companies, warehouses, freight forwarders, courier networks, distributors and delivery service providers.",
   },
   {
     id: "public-sector",
     title: "Public Sector",
     descriptor:
-      "Government institutions, municipalities and organizations providing public services.",
+      "Government institutions, municipalities, public agencies, schools, utilities and organizations providing public services.",
   },
 ] as const;
+
+/**
+ * The organisations a descriptor names, as its own words.
+ *
+ * The seven sectors are the section's headings; these are its content. Read end
+ * to end they are a portrait of everyone Mardal builds for — banks, pharmacies,
+ * factories, warehouses, municipalities — and that breadth is the claim the
+ * section is making. `IndustriesSection` sets them as one run.
+ *
+ * **Split from the descriptor rather than written out beside it.** A second copy
+ * of the same words is a second thing to keep in step, and this one would drift
+ * the first time a sector's line was edited. The split is safe on this copy
+ * because no phrase contains its own `and` — checked, and pinned in
+ * `rendered-html.test.mjs` by rejoining them and comparing against the
+ * descriptor they came from, so a rewrite that breaks the rule fails rather
+ * than quietly producing half a phrase.
+ */
+function audiencesOf(descriptor: string): string[] {
+  return descriptor
+    .replace(/\.$/, "")
+    .split(/,\s*|\s+and\s+/)
+    .map((phrase) => phrase.trim())
+    .filter(Boolean);
+}
+
+/**
+ * Every organisation the seven descriptors name, in order, each carrying the
+ * sector it came from.
+ *
+ * Twenty-five of them, and the number is nowhere in the source: the section
+ * counts this array. A typed count is a fact that goes stale silently, and this
+ * one was already wrong once — the design that proposed the section said
+ * twenty-six.
+ */
+export const audiences = industries.flatMap((industry) =>
+  audiencesOf(industry.descriptor).map((name) => ({
+    sector: industry.id,
+    name,
+  })),
+);
 
 /**
  * The site's menu, and the only copy of it.
@@ -392,6 +449,18 @@ export const solutions = {
   eyebrow: "Who we build for",
   title: "Technology shaped around the realities of your sector.",
   lede: "Built across industries",
+  /**
+   * The same line, broken where the owner broke it: `Built across` / `industries`.
+   *
+   * Authored rather than left to the box, which is this site's practice for a
+   * heading — the hero and the About page both carry their own breaks, for the
+   * same reason: where a heading turns is a decision about the copy, not a
+   * consequence of how wide its column happens to be that day.
+   *
+   * `lede` stays as the unbroken sentence. It is what a screen reader is given
+   * and what anything else reading this object gets.
+   */
+  ledeLines: ["Built across", "industries"],
   /* The seven, from the one declaration at the top of this file. The header's
      Clients panel is built from the same list, so a sector cannot be renamed in
      one place and not the other. */

@@ -1,340 +1,161 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
+import { Fragment } from "react";
 import Link from "next/link";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Container } from "../layout/Container";
 import { PixelArrow } from "../ui/PixelArrow";
-import { solutions } from "../../content/home";
-import { createWheelGate } from "../../lib/wheel-gate";
-
-/** The rule beside each industry takes the next of the four brand colours. */
-const TINTS = ["one", "two", "three", "four"] as const;
-
-/** How long each industry holds before the next one takes over, on the clock
- *  rather than the scrollbar. */
-const HOLD_MS = 3000;
+import { audiences, solutions } from "../../content/home";
 
 /**
- * How much page each industry is given while the section is held.
+ * Who Mardal builds for — as a roll call rather than a list of seven.
  *
- * A fraction of the window, so the run takes the same number of wheel turns on
- * a laptop as on a monitor.
+ * Rebuilt 2026-08-26 after the owner rejected the section it replaces and then
+ * rejected three redesigns of it, all of which were ways of setting the same
+ * seven rows. What was wrong with it was not the layout:
+ *
+ *   - **Six of the seven were unreadable at any moment.** The section held one
+ *     industry and dimmed the rest almost to the ground. For a list whose whole
+ *     job is naming an audience, the reader could not scan it, and grey at that
+ *     weight reads as disabled rather than as waiting.
+ *   - **The left column was empty for four fifths of its height** — the heading
+ *     used 194px of a 1,034px section and nothing stood under it.
+ *   - **The section already had copy it never showed.** `solutions.eyebrow` and
+ *     `solutions.title` were both written and neither was rendered. That is what
+ *     the empty column is for, and it is where they are now.
+ *
+ * So the seven sector names stop being the content. The descriptors already name
+ * twenty-five kinds of organisation, and read end to end they are the breadth
+ * the section is claiming — shown rather than summarised.
+ *
+ * **The hover adds; it never takes away.** Passing a sector name draws a rule
+ * under that sector's own words. Nothing dims, and every word on the page is at
+ * full strength at all times, which is the exact inversion of what was here.
+ *
+ * **No JavaScript at all**, and the section is no longer a client component. The
+ * highlight is `:has()` in the stylesheet, so it works before hydration and on a
+ * page whose script never arrives. What went with it: a wheel-momentum
+ * recogniser, a step lock, a three-second hold, a pin, and the ScrollTrigger
+ * that drove them — about 200 lines whose entire visible output was a grey row
+ * turning black.
+ *
+ * **The colour is one accent, not seven.** The design this came from had a tint
+ * per sector, and the site has five brand tints, so seven would have meant
+ * inventing two. Only one sector is ever lit, so one accent does the same work.
+ * Two more values from the owner is all it would take.
  */
-const STEP_VH = 0.45;
-
-/**
- * The quiet needed before a wheel event counts as a new push.
- *
- * A flick does not arrive as one event. It arrives as a burst, and then as a
- * tail of momentum that keeps firing for a second or more — on a trackpad,
- * often two. Timing the tail out cannot work: any limit short enough to feel
- * responsive is shorter than some tails, and one flick then walks two or three
- * industries, which is exactly what it did at 700ms.
- *
- * So the tail is not timed, it is recognised. Momentum arrives as a steady
- * stream a frame or so apart; a hand pushing again always leaves a gap first.
- * Only an event with quiet in front of it starts a step, so a flick is worth
- * one industry whatever its tail does afterwards.
- */
-const GESTURE_GAP_MS = 120;
-
-/**
- * The floor under the time between steps.
- *
- * The gap rule above catches a trackpad, whose momentum arrives as one
- * unbroken stream. A wheel is the opposite: one roll of a finger is two or
- * three separate notches, each its own event, with real pauses between them —
- * pauses long enough to look like separate pushes, which is why a single roll
- * was still taking two or three industries.
- *
- * So a step also closes the door behind it for a full second. One roll of a
- * wheel lands inside that and is worth one industry. It is deliberately longer
- * than it needs to be for the mechanism: this is the dial that decides how fast
- * the run can be walked, and it is set slow on purpose — there is a sentence to
- * read at every stop.
- */
-const STEP_LOCK_MS = 1000;
-
-/**
- * When the run is driven by the scrollbar rather than the clock.
- *
- * This is the rule in globals.css written the other way round. The layout
- * stacks at `(max-width: 64rem), (hover: none)`, and the run may only be held
- * while there are two columns to hold — so this is the negation of that, not a
- * round number chosen beside it. It was 60rem before, which left 960 to 1024
- * pinning a layout that had already stacked.
- */
-const TWO_COLUMN = "(min-width: 64.01rem) and (hover: hover)";
-const NO_MOTION = "(prefers-reduced-motion: reduce)";
-
 export function IndustriesSection() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  /**
-   * Which of the two drivers is running, kept in step with the window.
-   *
-   * This was a function called once inside each effect, and once was not
-   * enough: a window resized past the breakpoint left the wrong driver in
-   * place until the page was reloaded — pinning a layout that had stacked, or
-   * running the clock under a layout that could have been held. Held as state
-   * instead, both effects follow it.
-   */
-  const [scrollDriven, setScrollDriven] = useState(false);
-  const listRef = useRef<HTMLUListElement>(null);
-  const sectionRef = useRef<HTMLElement>(null);
-  /* What the wheel counts from. The rendered index comes from the scroll
-     position; this follows it so a gesture knows which step it is leaving. */
-  const indexRef = useRef(0);
-
-  useEffect(() => {
-    const twoColumn = window.matchMedia(TWO_COLUMN);
-    const noMotion = window.matchMedia(NO_MOTION);
-
-    function sync() {
-      setScrollDriven(twoColumn.matches && !noMotion.matches);
-    }
-
-    sync();
-    twoColumn.addEventListener("change", sync);
-    noMotion.addEventListener("change", sync);
-
-    return () => {
-      twoColumn.removeEventListener("change", sync);
-      noMotion.removeEventListener("change", sync);
-    };
-  }, []);
-
-  /**
-   * Held in place, and stepped through one industry per gesture.
-   *
-   * The section stops under the header and the scroll position IS the index, so
-   * scrolling back up walks the list backwards, which a timer can never do.
-   *
-   * The wheel is taken over while the section is held, and that is the point of
-   * this rather than a detail of it. Left to the page, how many industries went
-   * by depended on how hard the wheel was turned, and a firm flick took four or
-   * five of them before anything could be read. Here a gesture is worth exactly
-   * one industry however hard it is made: the page is sent to the next stop and
-   * the wheel is ignored until it has settled there.
-   *
-   * At either end of the list the wheel is handed straight back, so the section
-   * lets go and the page carries on as it always did — there is no way to get
-   * stuck in it.
-   */
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section || !scrollDriven) return;
-
-    gsap.registerPlugin(ScrollTrigger);
-
-    const count = solutions.items.length;
-    let trigger: ScrollTrigger | undefined;
-    /* The rule that decides what counts as a fresh push lives in lib, where it
-       is tested against both devices' event patterns. It had been written twice
-       here and was wrong both times. */
-    const isFreshPush = createWheelGate(GESTURE_GAP_MS, STEP_LOCK_MS);
-
-    function onWheel(event: WheelEvent) {
-      if (!trigger || !trigger.isActive) return;
-
-      const direction = event.deltaY > 0 ? 1 : -1;
-      const next = indexRef.current + direction;
-
-      /* Off either end: give the wheel back rather than swallowing it, so the
-         page scrolls out of the section the way it arrived. */
-      if (next < 0 || next > count - 1) return;
-
-      /* Swallowed either way — momentum must not reach the page and scroll it
-         underneath the run, even on the events that do not step. */
-      event.preventDefault();
-
-      if (!isFreshPush(performance.now())) return;
-
-      /* Sent to the middle of the step rather than its edge: the smoother
-         glides rather than jumps, and a target on the boundary would sit one
-         pixel from tipping into the industry next door. */
-      const step = (trigger.end - trigger.start) / count;
-      window.scrollTo(0, Math.round(trigger.start + (next + 0.5) * step));
-    }
-
-    const context = gsap.context(() => {
-      trigger = ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: () => `+=${count * STEP_VH * window.innerHeight}`,
-        pin: true,
-        invalidateOnRefresh: true,
-        /* The scroll position stays the one source of the index, whatever
-           moved it — the wheel, a dragged scrollbar, a keyboard. The gesture
-           above only chooses where to send the page. */
-        onUpdate: (self) => {
-          const index = Math.min(count - 1, Math.floor(self.progress * count));
-          indexRef.current = index;
-          setActiveIndex(index);
-        },
-      });
-    }, section);
-
-    window.addEventListener("wheel", onWheel, { passive: false });
-
-    return () => {
-      window.removeEventListener("wheel", onWheel);
-      context.revert();
-    };
-  }, [scrollDriven]);
-
-  /* The clock is the fallback, not a second driver: where the section is held,
-     the scrollbar owns the run and a timer underneath it would fight for the
-     same index. */
-  useEffect(() => {
-    const list = listRef.current;
-    if (!list) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (scrollDriven) return;
-
-    let timer: number | undefined;
-
-    function start() {
-      if (timer) return;
-
-      timer = window.setInterval(() => {
-        setActiveIndex((index) => (index + 1) % solutions.items.length);
-      }, HOLD_MS);
-    }
-
-    function stop() {
-      if (!timer) return;
-
-      window.clearInterval(timer);
-      timer = undefined;
-    }
-
-    /* The run belongs to the section: it starts when the list comes into view
-       and stops when it leaves, rather than ticking away out of sight. */
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          start();
-          return;
-        }
-
-        stop();
-      },
-      { rootMargin: "-20% 0px -20% 0px" },
-    );
-    observer.observe(list);
-
-    return () => {
-      observer.disconnect();
-      stop();
-    };
-  }, [scrollDriven]);
-
   return (
     <section
       className="industries-section"
       id={solutions.id}
       aria-labelledby="industries-title"
       data-route-section
-      ref={sectionRef}
     >
-      {/* The drawing is centred on this block, with the words either side of
-          it: the line and the way on to the left, the industries to the
-          right.
+      <Container className="industries-layout" data-industries>
+        <div className="industries-header">
+          {/* Broken where the owner broke it. `aria-label` carries the sentence
+              whole, because the two spans are rendered adjacent and a screen
+              reader meeting them would otherwise read `Built acrossindustries`.
+              The hero solves the same thing with a leading space; a label is
+              cleaner here, since this heading has no phone layout that sets the
+              spans inline. */}
+          <h2
+            className="industries-title"
+            id="industries-title"
+            aria-label={solutions.lede}
+          >
+            {solutions.ledeLines.map((line) => (
+              <span className="industries-title__line" key={line}>
+                {line}
+              </span>
+            ))}
+          </h2>
 
-          data-enter-mode="none" opts the section out of the arrival every other
-          section gets. That arrival is a scroll-driven transform on this same
-          element, and a pin is measured while its ancestor's transform is
-          applied — the two would fight over where the section rests. */}
-      <div className="industries-body" data-enter data-enter-mode="none">
-        <Container className="industries-layout">
-          <div className="industries-header">
-            <h2
-              className="industries-title"
-              id="industries-title"
-            >
-              {solutions.lede}
-            </h2>
-          </div>
+          {/* **A legend, not a control.** These go nowhere — the owner settled
+              that on 2026-08-25, and the run below is readable without ever
+              touching one. So they are not buttons and take no tab stop: a
+              keyboard landing on seven things that only tint some text is a
+              worse outcome than not landing on them, and nothing is lost by
+              passing over them, because the words they light are already
+              black. */}
+          <ul className="industries-keys">
+            {solutions.items.map((industry) => (
+              /* **The id stays on the key.** The header's Clients panel links
+                 to `#finance` and the six below it, so these seven are anchor
+                 targets whatever else the section becomes — and they moved with
+                 the names when the run they used to sit on was replaced. */
+              <li
+                className="industries-key"
+                key={industry.id}
+                id={industry.id}
+                data-key={industry.id}
+              >
+                {industry.title}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          <div className="industries-intro">
-            <ul className="industries-list" ref={listRef}>
-              {solutions.items.map((industry, index) => (
-                <li key={industry.id}>
-                  {/* **Not a link — owner's call, 2026-08-25.** The seven
-                      names say who Mardal builds for; `Explore All` under them
-                      is the one thing that goes anywhere.
+        {/* One paragraph, and it is the seven descriptors run together.
 
-                      They have been three things now. Anchors to a run further
-                      down this same page, which only ever scrolled you. Then
-                      links to `/case-studies/{id}`, a sector view of the
-                      Clients page. Then, when that taxonomy was removed, seven
-                      links all pointing at `/case-studies` — which is the state
-                      this replaces, and it was the weakest of the three: seven
-                      different words promising one destination.
+            `aria-label` carries it as a sentence: the words are in separate
+            spans so each can be lit, and a screen reader meeting a paragraph of
+            spans reads it as fragments. The service pages and the About page
+            solve it the same way. */}
+        <div className="industries-roll">
+          <p
+            className="industries-run"
+            aria-label={solutions.items
+              .map((industry) => industry.descriptor)
+              .join(" ")}
+          >
+            {audiences.map((audience, index) => (
+              <Fragment key={`${audience.sector}-${audience.name}`}>
+                {/* **Real whitespace around the separator, and it is
+                    load-bearing.** The spans are written adjacent with nothing
+                    between them, so the only places this paragraph could break
+                    were the spaces inside phrases — and the moment a phrase was
+                    told not to break, the whole run became one unbreakable word
+                    and ran off the page.
 
-                      What went with the anchor, and why none of it is a loss:
+                    A no-break space before the dot and an ordinary one after it:
+                    the dot stays with the phrase it follows, and the line may
+                    turn after it. */}
+                {index > 0 ? (
+                  <Fragment>
+                    {"\u00a0"}
+                    <span className="industries-run__dot" aria-hidden="true">
+                      ·
+                    </span>{" "}
+                  </Fragment>
+                ) : null}
+                {/* Only the first word of the run keeps its capital, so the
+                    twenty-five read as one sentence rather than as seven lists
+                    pushed together. Safe on this copy because no phrase begins
+                    with a proper noun — every one of them is a common noun for
+                    a kind of organisation. */}
+                <span className="industries-who" data-sector={audience.sector}>
+                  {index === 0
+                    ? audience.name
+                    : audience.name.charAt(0).toLowerCase() +
+                      audience.name.slice(1)}
+                </span>
+              </Fragment>
+            ))}
+          </p>
 
-                      `data-cursor` gave the finger. There is nothing to press,
-                      so the finger was the promise being withdrawn here.
-
-                      `onFocus` moved the run to whichever name had been tabbed
-                      to. It existed because six of the seven are dimmed almost
-                      to the ground while the run is on another one, so a
-                      keyboard landing on a link it could not read was a trap. A
-                      `div` is not focusable, so there is nothing to land on and
-                      nothing to rescue — the trap is gone with the tab stop
-                      rather than worked around.
-
-                      The id stays. It is what the section answers to, and the
-                      run reads these elements by position either way. */}
-                  <div
-                    className={`industries-item industries-item--${TINTS[index % TINTS.length]}`}
-                    id={industry.id}
-                    data-active={index === activeIndex}
-                  >
-                    <span className="industries-item__name">
-                      {/* A rule out to the left of the name, shown only on the
-                          industry the run is on. A second copy of it turns
-                          upright a moment later and the two make a cross. */}
-                      <span className="industries-item__mark" aria-hidden="true" />
-                      <span
-                        className="industries-item__mark industries-item__mark--cross"
-                        aria-hidden="true"
-                      />
-                      {industry.title}
-                    </span>
-                    <span className="industries-item__note">
-                      {industry.descriptor}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            {/* Under the run rather than beside the heading: it is where you go
-                once you have read the list, so it belongs at the end of it.
-                Inside this block rather than the grid, because the block
-                carries the indent that puts the list where it is — placed as a
-                grid row it landed 286px to the left of the names, level with
-                nothing at all. */}
-            {/* **The only thing in this section that goes anywhere.** It has
-                narrowed to that: the seven names above it were links until
-                2026-08-25 and are now text, so this is not "all of them beside
-                seven of them" any more, it is the way out. It pointed at
-                `#contact` while the Clients page did not exist. */}
-            <Link className="industries-explore" href={solutions.ctaHref}>
-              {solutions.cta}
-              <PixelArrow
-                className="industries-explore__arrow"
-                direction="up-right"
-                size="small"
-              />
-            </Link>
-          </div>
-        </Container>
-      </div>
+          {/* The way out, and the only thing in this section that goes
+              anywhere. It stood at the end of a line counting the run — twenty
+              five kinds of organisation across seven sectors — which the owner
+              took out along with the two lines of copy above the keys. */}
+          <Link className="industries-explore" href={solutions.ctaHref}>
+            {solutions.cta}
+            <PixelArrow
+              className="industries-explore__arrow"
+              direction="up-right"
+              size="small"
+            />
+          </Link>
+        </div>
+      </Container>
     </section>
   );
 }

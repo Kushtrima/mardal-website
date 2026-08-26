@@ -92,21 +92,29 @@ test("server-renders the Mardal homepage", async () => {
      Both halves are asserted, because each catches the other's failure. Seven
      items still render — a name silently losing its element would otherwise
      pass — and none of them is an anchor. */
-  /* The item itself, not its children. `industries-item__name`, `__mark` and
-     `__note` all begin with the block's own name, so a prefix match found 35
-     elements where there are 7 — the modifier is what tells the block from the
-     things inside it. */
-  const industryItems = [
-    ...html.matchAll(/<(\w+) [^>]*class="industries-item industries-item--\w+"/g),
-  ];
-  assert.equal(industryItems.length, 7);
-  assert.deepEqual([...new Set(industryItems.map((m) => m[1]))], ["div"]);
+  /* **The seven are a legend now, not a run.** The section was rebuilt on
+     2026-08-26 as a roll call of the twenty-five organisations the descriptors
+     name; the sector titles moved to the side of it as keys that light their own
+     words. `industries-item` and everything under it is gone with the run.
 
-  /* The way out is still a link, and it is the only one on this run. */
+     Still seven, and still not links — that half of the assertion is what it
+     always was. */
+  const keys = [
+    ...html.matchAll(/<(\w+) class="industries-key" id="([\w-]+)" data-key="\2"/g),
+  ];
+  assert.equal(keys.length, 7);
+  assert.deepEqual([...new Set(keys.map((m) => m[1]))], ["li"]);
+  assert.doesNotMatch(html, /class="industries-item/);
+
+  /* The way out is still a link, and it is the only one on this section. */
   assert.match(html, /<a [^>]*class="industries-explore"[^>]*href="\/case-studies"|<a [^>]*href="\/case-studies"[^>]*class="industries-explore"/);
 
-  /* And nothing here promises a press: the finger came off with the link. */
-  assert.doesNotMatch(html, /class="industries-item[^"]*"[^>]*data-cursor/);
+  /* And nothing here promises a press: the finger came off with the link, and
+     the keys that replaced the names are `li`, not buttons — seven tab stops
+     that only tint some words is a worse outcome than no tab stop, because the
+     words they light are already black. */
+  assert.doesNotMatch(html, /class="industries-key[^"]*"[^>]*data-cursor/);
+  assert.doesNotMatch(html, /<button[^>]*industries-key|<a[^>]*industries-key/);
 
   /* And the one that does not narrow. `Explore` pointing at `#contact` was the
      only destination this run had before the Clients page existed — seven
@@ -1933,4 +1941,327 @@ test("the Why boxes start where the Fusion block starts", () => {
     { column: "1", row: "2" },
     { column: "2", row: "2" },
   ]);
+});
+
+test("the industries section is a roll call, and it is all legible", async () => {
+  const html = await (await render("/")).text();
+  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  const at = main.indexOf('class="industries-section"');
+  assert.ok(at > 0, "the industries section is not on the page");
+  const section = main.slice(at, main.indexOf("</section>", at));
+
+  /* **The twenty-five organisations the seven descriptors name, run together.**
+     The sector titles used to BE the content; they are a legend beside it now.
+
+     Split from the descriptors rather than written out beside them — a second
+     copy of the same words is a second thing to keep in step. This is the check
+     that the split still produces the descriptor it came from: rejoin the
+     phrases of a sector with the commas and the `and`, and the sentence has to
+     come back whole. It fails the day a line is rewritten with an `and` inside
+     one of its phrases. */
+  const WHO = {
+    finance: "Banks, insurance companies, fintech platforms, payment providers, asset managers, credit unions and financial service providers.",
+    healthcare: "Hospitals, clinics, pharmacies, dental practices, diagnostic laboratories, care providers and organizations delivering health services.",
+    manufacturing: "Factories, production companies, engineering firms, component suppliers, assembly plants and businesses managing industrial operations.",
+    automotive: "Dealerships, repair services, parts distributors, fleet operators, leasing companies, vehicle platforms and mobility companies.",
+    retail: "Physical stores, e-commerce businesses, marketplaces, wholesalers, franchise networks and consumer-focused brands.",
+    logistics: "Transport companies, warehouses, freight forwarders, courier networks, distributors and delivery service providers.",
+    "public-sector": "Government institutions, municipalities, public agencies, schools, utilities and organizations providing public services.",
+  };
+
+
+  let counted = 0;
+  for (const [sector, descriptor] of Object.entries(WHO)) {
+    const said = [
+      ...section.matchAll(
+        new RegExp(`<span class="industries-who" data-sector="${sector}">([^<]+)</span>`, "g"),
+      ),
+    ].map((m) => m[1]);
+    assert.ok(said.length > 0, `${sector} names nobody`);
+    counted += said.length;
+
+    const rejoined =
+      said.length > 1
+        ? `${said.slice(0, -1).join(", ")} and ${said[said.length - 1]}.`
+        : `${said[0]}.`;
+    assert.equal(
+      rejoined.toLowerCase(),
+      descriptor.toLowerCase(),
+      `${sector}'s words do not rejoin into its descriptor`,
+    );
+  }
+  /* Forty five, up from twenty five: the owner asked for more per sector on
+     2026-08-27 and the extra twenty are written in `content/home.ts` with a note
+     saying they are mine. They are categories, not claims — a kind of
+     organisation that exists in the sector, never a client. */
+  assert.equal(counted, 45);
+
+  /* **The heading is broken where the owner broke it**, and it is spans rather
+     than a `<br>` — this site authors its heading breaks, because where a
+     heading turns is a decision about the copy and not a consequence of how wide
+     its column happens to be that day.
+
+     `aria-label` carries the sentence whole: the two spans render adjacent, and
+     without it a screen reader reads `Built acrossindustries`. */
+  assert.match(
+    section,
+    /<h2 class="industries-title" id="industries-title" aria-label="Built across industries">/,
+  );
+  assert.match(section, /<span class="industries-title__line">Built across<\/span>/);
+  assert.match(section, /<span class="industries-title__line">industries<\/span>/);
+  assert.doesNotMatch(section, /<br/);
+
+  /* **Three blocks came out on the owner's word**: the kicker over the heading,
+     the line under it, and the tally that counted the run. Asserted as absences,
+     because each was added deliberately and the temptation on the next pass is
+     to put one back to fill a gap.
+
+     The way out stays. It is the only thing in this section that goes
+     anywhere. */
+  assert.doesNotMatch(section, /industries-kicker|Who we build for/);
+  assert.doesNotMatch(section, /industries-lede|Technology shaped around/);
+  assert.doesNotMatch(section, /industries-tally|kinds of organisation/);
+
+  /* **Nothing is dimmed, and nothing needs to be.** The section it replaced held
+     one industry and took the other six almost to the ground — six of seven
+     unreadable at any moment, on a list whose whole job is naming an audience.
+     No `data-active` survives, and neither does the machinery that set it. */
+  assert.doesNotMatch(section, /data-active/);
+
+  /* And no client component drives it: the highlight is `:has()` in the
+     stylesheet, so it works before hydration and on a page whose script never
+     arrives. */
+  /* Comments stripped first. The component's own note explains what came out —
+     "the ScrollTrigger that drove them" — and a guard read against the raw file
+     matches that sentence and reports the machinery as still present. */
+  const code = readFileSync(
+    new URL("../components/home/IndustriesSection.tsx", import.meta.url),
+    "utf8",
+  ).replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.doesNotMatch(code, /"use client"/);
+  assert.doesNotMatch(code, /ScrollTrigger|createWheelGate|useEffect|useState/);
+
+  /* The run is one paragraph to a screen reader, not twenty-five fragments. */
+  assert.match(section, /<p class="industries-run" aria-label="Banks, insurance/);
+
+  /* **There is real whitespace between the phrases, and it is load-bearing.**
+     The spans are written adjacent, so the only break opportunities in this
+     paragraph were the spaces INSIDE phrases — and the moment a phrase was told
+     not to break, the whole run became one unbreakable word and ran off the
+     page at full width.
+
+     A no-break space before each separator and an ordinary one after: the dot
+     stays with the phrase it follows and the line may turn after it. */
+  assert.match(section, /<\/span>\u00a0<span class="industries-run__dot"/);
+  assert.match(section, /<\/span> <span class="industries-who"/);
+});
+
+test("the roll call adds a rule and never takes one away", () => {
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  const bare = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
+
+  /* **The highlight is drawn under a phrase; the others are untouched.** That
+     inversion is the whole point of the rebuild — the section it replaced made
+     six of seven rows unreadable to emphasise one — so what is asserted is that
+     the lit rule GROWS a background and that nothing anywhere dims a sibling. */
+  const who = bare.indexOf(".industries-who {");
+  assert.ok(who > 0, "the words have no rule");
+  const rest = bare.slice(who, bare.indexOf("\n}", who));
+  assert.match(rest, /background-size:\s*0% 0\.07em/);
+  assert.match(rest, /transition:\s*background-size/);
+  assert.match(rest, /linear-gradient\(var\(--sector\), var\(--sector\)\)/);
+  assert.doesNotMatch(rest, /opacity/);
+
+  /* **Grey at rest, ink on hover** — owner, 2026-08-27 — and the distinction
+     from the section this replaced is the number, not the idea. That one held
+     one industry and took the other six to about 1.5:1: six of seven singled out
+     as unreadable. This is uniform. `--ink-muted` measures 6.68:1 on the canvas,
+     AA for small text and this is large, so the whole run reads before a pointer
+     ever arrives.
+
+     A token, not a literal: a grey written into this rule is a grey nobody has
+     measured. `--ink-quiet` is 3.53:1 on the light canvas and 3.51 on the dark,
+     both above the 3:1 floor for large text, and this run is large by
+     construction at 29 to 48px. Nothing else on the site uses it. */
+  const runColour = bare.indexOf(".industries-run {");
+  assert.match(
+    bare.slice(runColour, bare.indexOf("\n}", runColour)),
+    /color:\s*var\(--ink-quiet\)/,
+  );
+  /* ⚠ **1.94:1, well under the line.** WCAG asks 3:1 of large text. Asked for
+     five times — 6.68, 3.53, 3.07, 2.47, this — with the number given each time.
+     The owner's call, and settled.
+
+     What keeps it from being the fault this section was rebuilt to fix: that one
+     took six of seven rows to about 1.5 while leaving one black, so most of the
+     section was unreadable and singled out as such. This is uniform, it is a
+     resting state, every phrase goes to full ink the moment its sector is
+     pointed at from either end, and the names beside it are black throughout. */
+  assert.match(bare, /--ink-quiet:\s*light-dark\(#bbb9c3, #3f3d47\)/);
+
+  /* **The gap before the way out is on the container, not on the link.** It was
+     `margin-top` on `.industries-explore` and it did nothing twice: a shared
+     tap-target rule further down the file gives that class
+     `margin-block: -0.6875rem` to cancel its own padding, and being later with
+     the same specificity it won. A column gap cannot be overridden by the
+     child. */
+  const rollBlock = bare.indexOf(".industries-roll {");
+  const rollRule = bare.slice(rollBlock, bare.indexOf("\n}", rollBlock));
+  assert.match(rollRule, /flex-direction:\s*column/);
+  assert.match(rollRule, /gap:\s*clamp\(5rem, 13vh, 9rem\)/);
+  const way = bare.indexOf(".industries-explore {");
+  assert.doesNotMatch(bare.slice(way, bare.indexOf("\n}", way)), /margin-top/);
+
+  const lit = bare.indexOf(".industries-layout:has(");
+  assert.ok(lit > 0, "there is no lit state");
+  const rule = bare.slice(lit, bare.indexOf("\n}", lit));
+  assert.match(rule, /background-size:\s*100% 0\.07em/);
+  /* Full ink, which is the other half of what hovering adds to the words. */
+  assert.match(rule, /color:\s*var\(--ink\)/);
+  assert.doesNotMatch(rule, /opacity/);
+
+  /* **The names rest in ink and take their tint on hover** — owner, 2026-08-27:
+     black, and on hover change to the specific colour. They rested in the muted
+     grey and went to ink before that.
+
+     ⚠ His call, made after the numbers. The names are about 17px, where AA asks
+     4.5:1 — the large-text 3:1 does not apply until 24 — and as type on the
+     canvas only Finance clears it: 4.94, then Retail 2.56, Public Sector 2.43,
+     Logistics 1.97, Automotive 1.84, Healthcare 1.68, Manufacturing 1.41.
+
+     What keeps it defensible: the tint is a hover state, the name is fully black
+     at rest, and nothing is available only in colour — the words it lights go to
+     ink at the same moment. */
+  const named = bare.indexOf(".industries-layout:has(", bare.indexOf("\n}", lit));
+  assert.ok(named > 0, "the names do not light");
+  const nameRule = bare.slice(named, bare.indexOf("\n}", named));
+  assert.match(nameRule, /color:\s*var\(--sector\)/);
+  assert.doesNotMatch(nameRule, /background-size/);
+
+  const keyRest = bare.indexOf(".industries-key {");
+  assert.match(
+    bare.slice(keyRest, bare.indexOf("\n}", keyRest)),
+    /color:\s*var\(--ink\)/,
+  );
+
+  /* **Either end lights the pair.** Owner, 2026-08-27: hovering the run should
+     activate its part the way hovering the name does. So a sector answers to a
+     pointer on its name OR on any of its words, and the name and the words
+     respond together — the legend is a second entrance rather than the only
+     one.
+
+     All seven name themselves twice, and both halves are checked: a sector
+     missing its `[data-sector]:hover` condition lights only from the legend,
+     which is the state this replaced and looks identical from a screenshot. */
+  for (const sector of [
+    "finance",
+    "healthcare",
+    "manufacturing",
+    "automotive",
+    "retail",
+    "logistics",
+    "public-sector",
+  ]) {
+    assert.ok(
+      rule.includes(`:has([data-key="${sector}"]:hover, [data-sector="${sector}"]:hover)`),
+      `${sector} does not light from both ends`,
+    );
+    assert.ok(
+      rule.includes(`.industries-who[data-sector="${sector}"]`),
+      `${sector} does not light its words`,
+    );
+    assert.ok(
+      nameRule.includes(`.industries-key[data-key="${sector}"]`) &&
+        nameRule.includes(`:has([data-key="${sector}"]:hover, [data-sector="${sector}"]:hover)`),
+      `${sector} does not light its name from both ends`,
+    );
+  }
+
+  /* **Ragged, not justified.** The design this came from justified the run and
+     at this size it opened word gaps wide enough to read as columns of their
+     own. Justification spreads slack across word spaces, and two- and
+     three-word noun phrases at 2rem have almost none to spread it over. */
+  const run = bare.indexOf(".industries-run {");
+  assert.ok(run > 0, "the run has no rule");
+  const runRule = bare.slice(run, bare.indexOf("\n}", run));
+  assert.doesNotMatch(runRule, /text-align/);
+
+  /* **23em, and the number is the difference between the design and the build.**
+
+     The first build gave the run the whole two-column block — 1,147px at a 1808
+     window, which is 34em of this face: six long lines, and a block wider than
+     it is tall. Measured in the real face at this tracking, the twenty-five
+     phrases and their separators are 183.1em end to end, so:
+
+         20em   11 lines
+         23em   10 lines      <- the design
+         26em    9 lines
+         30em    7 lines
+         34em    6 lines      <- what shipped first
+
+     Same type size in both. The measure is the whole of what made one read as a
+     statement and the other as a caption. In `em`, so the line count holds at
+     every size rather than re-breaking as the clamp grows. */
+  assert.match(runRule, /max-width:\s*26em/);
+  /* **2.44vw is the type scaled to the column, not the column shrunk to the
+     type.** The run takes about 63% of the window and 26em of it is 2.44
+     hundredths — 29.3px in a 743px column at 1200, 44.1px in an 1,147px column
+     at 1808. The version before this one capped the measure at 23em and left the
+     type at 34px, which gave the design's measure and none of its proportion: a
+     792px strip inside an 1,147px column with dead space beside it. */
+  assert.match(runRule, /font-size:\s*clamp\(1\.25rem, 2\.44vw, 3rem\)/);
+
+  /* And a phrase never breaks across two lines above the phone: these are names
+     for kinds of organisation, and `financial service providers` split over
+     three lines reads as three fragments. */
+  const nowrap = bare.indexOf("@media (min-width: 48rem)");
+  assert.ok(nowrap > 0, "the phrases can break anywhere");
+  assert.match(bare.slice(nowrap, nowrap + 200), /\.industries-who \{\s*white-space: nowrap/);
+
+  /* **A colour per sector, set once for the dot and the words together.** The
+     first build gave every dot one neutral and lit every phrase in one accent,
+     which is a legend promising a colour the highlight does not deliver.
+
+     Six of the seven already existed — `--accent` and the five tint bars — and
+     `--sector-public` is the only new value. Asserted as PAIRS: a mapping that
+     names the key without the words, or the words without the key, is a sector
+     whose dot and underline disagree. */
+  const sectors = {
+    finance: "var(--accent)",
+    healthcare: "var(--tint-mint-bar)",
+    manufacturing: "var(--tint-butter-bar)",
+    automotive: "var(--tint-sky-bar)",
+    retail: "var(--tint-clay-bar)",
+    logistics: "var(--tint-lilac-bar)",
+    "public-sector": "var(--sector-public)",
+  };
+  for (const [sector, colour] of Object.entries(sectors)) {
+    const pair = new RegExp(
+      `\\.industries-key\\[data-key="${sector}"\\],\\s*\\n\\s*\\.industries-who\\[data-sector="${sector}"\\] \\{\\s*--sector: ${colour.replace(/[()\-]/g, "\\$&")};`,
+    );
+    assert.match(bare, pair, `${sector} does not map its key and its words to one colour`);
+  }
+  assert.match(bare, /--sector-public:\s*#4fb98a/);
+
+  /* **Nothing beside the names.** They were dots, then short rules, and the
+     owner took the mark off entirely on 2026-08-27: on hover, change the colour
+     of the text and nothing else. Asserted as an absence in both the stylesheet
+     and the markup, because the temptation on the next pass is to put a mark
+     back to carry the sector's colour. */
+  assert.ok(bare.indexOf(".industries-key__dot") === -1, "the legend still has a mark");
+
+  /* And the colour it changes to is `--ink`, not the sector's own. The tints are
+     drawn to be a ground or a rule and several are unreadable as type — butter
+     measures 1.33:1 on the canvas, so `Manufacturing` would vanish at the moment
+     it was pointed at. The tint stays where it works, under the words. */
+  assert.match(rule, /color:\s*var\(--ink\)/);
+
+  /* The section sits on the page's three columns, with the roll where the
+     Fusion statement and the Why boxes start. */
+  const layout = bare.indexOf(".industries-layout {");
+  const grid = bare.slice(layout, bare.indexOf("\n}", layout));
+  assert.match(grid, /grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(grid, /gap:\s*var\(--column-gap\)/);
+  const roll = bare.indexOf(".industries-roll {");
+  assert.match(bare.slice(roll, bare.indexOf("}", roll)), /grid-column:\s*2 \/ -1/);
 });
