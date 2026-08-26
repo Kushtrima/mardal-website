@@ -15,6 +15,87 @@
  */
 
 import { contactEmail } from "./home";
+import { clientEntries } from "./case-studies";
+
+/**
+ * The delivered archive, recorded in PRODUCT.md and confirmed by the owner on
+ * 2026-08-05 as work Mardal may name and describe as its own.
+ *
+ * Written exactly as recorded, legal suffixes included: `Spitex Schwab AG`,
+ * `Stolzbau GmbH`. Trimming those is editing a company's name.
+ */
+const DELIVERED = [
+  "ANDI SPORT",
+  "EN NUR",
+  "Henor",
+  "Jetonikeramika",
+  "Spitex Schwab AG",
+  "Stolzbau GmbH",
+  "ZEN",
+];
+
+/**
+ * ⚠ **INVENTED. NOT CLIENTS. MUST NOT SHIP.**
+ *
+ * Owner, 2026-08-26, after being told the archive holds seven and no more: add
+ * some example names. So this is a filled-out list rather than a true one, and
+ * it is his decision knowingly made — but the decision that remains mine is how
+ * hard it is to forget, and the answer this codebase already uses is a marked
+ * array and a test that fails the day someone publishes.
+ *
+ * **Borrowed rather than re-invented**, as far as it went. The Clients page
+ * already carries eight placeholder companies, so those are imported rather
+ * than retyped: replace them in `content/case-studies.ts` and this list
+ * follows. It stopped going far enough when he asked for more — there were only
+ * ever eight — so fifteen more are written below, and the site now has two
+ * invented vocabularies to delete rather than one.
+ *
+ * They are pinned in `tests/about.test.mjs` the way the Clients page's are in
+ * `tests/rendered-html.test.mjs` — so publishing means deleting an assertion on
+ * purpose rather than forgetting a comment. Delete both with the commit that
+ * puts real names in.
+ */
+const BORROWED = clientEntries.map((entry) => entry.name);
+
+/**
+ * ⚠ **INVENTED. NOT CLIENTS. MUST NOT SHIP.**
+ *
+ * Owner, 2026-08-26, twice: add some example names, then add some more. The
+ * eight above are all the placeholders this site had, so these fifteen are new
+ * — which is the thing the borrowing was meant to avoid, and it is his call.
+ * They are here rather than in `case-studies.ts` because they belong to no
+ * page's data: nothing filters or links on them, they exist to give this list
+ * the length of the layout he pointed at.
+ *
+ * Invented to read as companies and to match nothing. Checked against the sort
+ * of name that would be a claim if it landed by accident: no real business is
+ * knowingly among them, and none is a place, a person or a product this project
+ * has a record of.
+ *
+ * Pinned in `tests/about.test.mjs` with the other eight. Delete both arrays and
+ * that assertion in the commit that puts real names in.
+ */
+const INVENTED = [
+  "Astrel",
+  "Brimhold",
+  "Corvane",
+  "Delmara",
+  "Fennik",
+  "Grisal",
+  "Halvorn",
+  "Ivrell",
+  "Jarnek",
+  "Kolvi",
+  "Lestad",
+  "Myrek",
+  "Oskra",
+  "Rendal",
+  "Varek",
+];
+
+/** ⚠ Every name that is not a client: the Clients page's eight and the fifteen
+ *  written for this list. Twenty-three of the thirty names on the page. */
+const EXAMPLES = [...BORROWED, ...INVENTED];
 
 export const about = {
   title: "About",
@@ -114,7 +195,7 @@ export const about = {
    */
   story: {
     title: "Built Over Time",
-    paragraphs: [
+      paragraphs: [
       "Our story began in 2008, when we opened our first small studio with a lot of enthusiasm and a simple idea: to create meaningful digital work. Over time, that small beginning evolved into something more focused, experienced, and ambitious.",
       "From 2020, we began concentrating more on UX/UI, branding, websites, and software. Today, that journey continues under a new name: Mardal, with new offices, expanded services, and a clearer focus on the work we do and the direction we want to take.",
     ],
@@ -209,22 +290,24 @@ export const about = {
    * rather than a repeat, and cutting either would be editing his copy — but
    * worth knowing they are the same sentence twice.
    */
-  values: {
-    title: "Small by choice",
-    paragraphs: [
-      "No layers. No middlemen. You work directly with the people shaping the strategy, designing the experience, and building the final product.",
-      "Our team brings together engineers, designers, AI researchers, and psychologists, people who understand technology, design, and how people think and behave.",
-      "We keep the process open, move quickly, and focus on work that creates real value. Expectations are made clear from the start, so everyone stays aligned throughout the project. We believe the best work comes from strong collaboration, clear communication, and relationships built on trust.",
-    ],
-  },
+  notes: [
+    {
+      title: "Small by choice",
+      paragraphs: [
+        "No layers. No middlemen. You work directly with the people shaping the strategy, designing the experience, and building the final product.",
+        "Our team brings together engineers, designers, AI researchers, and psychologists, people who understand technology, design, and how people think and behave.",
+        "We keep the process open, move quickly, and focus on work that creates real value. Expectations are made clear from the start, so everyone stays aligned throughout the project. We believe the best work comes from strong collaboration, clear communication, and relationships built on trust.",
+      ],
+    },
 
   /**
    * The products side, under the note on how the studio works. Verbatim.
    *
-   * **On white, on the owner's instruction** — "but in white background". The
-   * yellow runs from the big photograph to the end of `values`, and this sits
-   * after it, so the page has two grounds and this section is the second. The
-   * drain was retimed to finish before this arrives rather than under it; see
+   * **After the yellow.** He asked for it on white — "but in white background" —
+   * and then for the yellow to turn into `#ffd7eb` rather than fade back, so
+   * this section sits on that instead. The page has three grounds and this is
+   * the third; the change was retimed to finish before this arrives rather than
+   * under it, which is what "not in the yellow part" needs either way. See
    * `SectionWash`.
    *
    * The claims here are all his and all unquantified: own products, own tools,
@@ -234,13 +317,79 @@ export const about = {
    * figure. The three products this company does have are named on the homepage;
    * pulling them in here would be a connection nobody asked me to draw.
    */
-  venture: {
-    title: "AI-native venture studio",
-    paragraphs: [
-      "We are also a venture studio. We create our own products because building things ourselves keeps us moving beyond the perspective of a consultant or traditional design studio.",
-      "Our products are the backbone of how we keep evolving as innovators. They allow us to test ideas in the real world, build our own tools, and move beyond the limitations of relying only on existing platforms — often translating directly into value for our clients.",
-      "AI is changing how creative work gets made, and we want to show that it can be an enabler of better creative thinking, not a shortcut around it. The aim is real value, not simply adding a layer of AI to existing workflows.",
-    ],
+    {
+      title: "AI-native venture studio",
+      paragraphs: [
+        "We are also a venture studio. We create our own products because building things ourselves keeps us moving beyond the perspective of a consultant or traditional design studio.",
+        "Our products are the backbone of how we keep evolving as innovators. They allow us to test ideas in the real world, build our own tools, and move beyond the limitations of relying only on existing platforms — often translating directly into value for our clients.",
+        "AI is changing how creative work gets made, and we want to show that it can be an enabler of better creative thinking, not a shortcut around it. The aim is real value, not simply adding a layer of AI to existing workflows.",
+      ],
+    },
+  ],
+
+  /**
+   * The line the page ends on. The owner's words, verbatim.
+   *
+   * **Set as a title rather than as a paragraph**, which is what he asked for:
+   * the display face, centred, large. It is the same distinction the history
+   * heading marks — that face is for what a reader stops at, the sans is for
+   * what they move through — so this takes the type of a heading without being
+   * one.
+   *
+   * It is a `<p>` in the markup all the same. 211 characters is not a landmark:
+   * a reader moving through the page by heading would meet the entire sentence
+   * announced as one. How it is set and what it is in the outline are two
+   * different questions, and "as a title" answers only the first.
+   *
+   * **It closes on the theme the page opens with**, from the other side: the
+   * hero says the studio is small on purpose, the first note says small by
+   * choice, and this says the companies started small too. That is his shape for
+   * this page rather than a repeat to flatten.
+   *
+   * Nothing in it is a fact that could be wrong — no count of companies, no
+   * name, no year. "Many of the companies we work with" is his own hedge and it
+   * stays exactly as he wrote it.
+   */
+  closing:
+    "Every great achievement, company, and brand you know has one thing in common — they started small. One step, one idea, one tiny victory at a time. And many of the companies we work with started that way with us.",
+
+  /**
+   * The client list, under the closing line.
+   *
+   * **Seven of these thirty are real and twenty-three are not**, and the split is
+   * kept in the source because the page cannot show it: alphabetised together,
+   * `Nordvik` reads exactly like `Jetonikeramika` to anyone looking at it.
+   * `DELIVERED` is the archive; `EXAMPLES` is invented and marked as such where
+   * it is declared.
+   *
+   * The owner asked for the examples after being told the archive holds seven
+   * and no more, and then for more of them, so it is his call knowingly made
+   * twice. What is not his to forget is the shipping: every invented name is
+   * pinned by a test, and publishing this page means deleting that assertion on
+   * purpose.
+   *
+   * ⚠ **The other outstanding decision, unchanged**: PRODUCT.md records that
+   * per-client sign-off for naming the real seven publicly "has not been
+   * separately recorded". His authorisation covers Mardal claiming the work;
+   * whether each client is content to appear on a public page is a separate
+   * question and his to answer.
+   *
+   * **Alphabetical**, which is the one order that does not rank them — and here
+   * it does a second job: sorted together, the real names are not a block at
+   * the top with the filler beneath, which would be the arrangement that
+   * quietly tells a reader which is which.
+   *
+   * Nothing is added to any of them: no sector, no year, no country, no count.
+   * A name is the largest true thing that can be said about each without a
+   * brief, and for twenty-three of them it is not true either.
+   */
+  clients: {
+    title: "Our clients",
+    /** The real ones. See `DELIVERED`. */
+    delivered: DELIVERED,
+    /** ⚠ The invented ones. See `EXAMPLES`. */
+    examples: EXAMPLES,
+    names: [...DELIVERED, ...EXAMPLES].sort((a, b) => a.localeCompare(b, "en")),
   },
 
   /**

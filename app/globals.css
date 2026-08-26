@@ -81,6 +81,40 @@
      17.6:1 against the dark page's ink. If he wants a different one it is this
      one value. */
   --wash-about: light-dark(#faff89, #191a0f);
+
+  /* **What the yellow turns into rather than what it fades back to.** Owner,
+     2026-08-26: the colour should transition from that yellow to this.
+
+     `#ffd7eb` is his, used exactly as given. It holds from the end of the note
+     down through the rest of the page, so it is a second ground rather than a
+     moment — and it is safe under everything that sits on it: 15.4:1 against
+     `--ink` and 5.7 against the muted grey. White is 1.30 and fails, which is
+     the same limit the yellow has and the same reason it does not matter — the
+     footer carries its own slab.
+
+     The dark half is derived the way the yellow's was: hue held at 330,
+     saturation 100 to 26, lightness 92 to 8. It reads as a tint of the same pink
+     rather than a different colour, and holds 16.6:1 against the dark page's
+     ink. One value if he wants a different one. */
+  --wash-about-end: light-dark(#ffd7eb, #1a0f14);
+
+  /* **A fourth ground, under the line the page ends on.** Owner, 2026-08-26,
+     with a swatch: transition to this colour on the new text.
+
+     `#ffa769` is his, used exactly as given. The closing line is set in `--ink`
+     and reads at 10.5:1 on it. The muted grey is 3.5, which is AA for large
+     text and under it for small — and nothing muted sits here: the only thing
+     on this ground is that one sentence, and the footer below it is a purple
+     slab of its own. The same limit the yellow and the pink have, for the same
+     reason.
+
+     The dark half is derived exactly as theirs were — hue held at 25,
+     saturation 100 to 26, lightness 71 to 8 — so it reads as a tint of the same
+     orange rather than a different colour, and holds 16.3:1 against the dark
+     page's ink. One value if he wants a different one. */
+  --wash-about-close: light-dark(#ffa769, #1a130f);
+
+
   /* The ground a panel sits on: the mega menu, the Why Mardal cards, the boxes.
      On black it is white, because a lit panel is how those read against the
      page. On white it steps down to the lavender it wore when the page was
@@ -6065,6 +6099,282 @@ video {
   .about-prose__title {
     max-width: none;
     margin-bottom: 1.25rem;
+  }
+}
+
+/* ── About: the notes that replace one another ──
+
+   Owner, pointing at a service page: that movement, with the heading staying
+   where it is and changing rather than travelling with its copy.
+
+   So the layout is the prose block's — heading on the left, copy to the right of
+   centre, the page's own twelve columns — with one difference that is the whole
+   design: the heading is OUTSIDE the stage. In the service journey it belongs to
+   the card and leaves with it; here it holds its column and its text is swapped.
+
+   The stage is a positioning context and the cards are stacked in it, ONE
+   visible at a time. They were 48% with the next parked beside the current — the
+   service layout, where cards are half the stage and the pair reads as a set —
+   and here it read as two notes side by side, which the owner asked to change.
+   Full width now, and the incoming one waits off the stage until the one before
+   it has gone.
+
+   The measure stays on the paragraph rather than the card: a note at the full
+   width of this column runs to about ninety characters a line. */
+.about-journey {
+  padding-block: 0 clamp(5rem, 14vh, 11rem);
+}
+
+.about-journey__viewport {
+  display: flex;
+  align-items: center;
+  min-height: 70svh;
+}
+
+.about-journey__layout {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(1rem, 1.35vw, 1.4rem);
+}
+
+.about-journey__title {
+  grid-column: 1 / span 4;
+  align-self: start;
+  max-width: none;
+  margin: 0;
+  font-family: var(--type-title);
+  font-size: clamp(2.25rem, 4vw, 4rem);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-heading-xl);
+}
+
+.about-journey__stage {
+  position: relative;
+  grid-column: 6 / -1;
+  /* The tallest note sets it, so the block does not resize as they swap. The
+     cards are taken out of flow below, which would otherwise leave it at zero. */
+  min-height: 22rem;
+}
+
+.about-journey__card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.about-journey__paragraph {
+  max-width: 52ch;
+  margin: 0 0 1.25em;
+  font-size: var(--text-copy);
+  line-height: var(--service-leading-copy, 1.55);
+}
+
+.about-journey__paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* One column below 64rem, and no pin: a stage 48% of a phone's width is a
+   column two words across. Stacked, the notes are simply two blocks of prose
+   one after the other, which is what they are without the movement. */
+@media (max-width: 64rem) {
+  .about-journey__viewport {
+    display: block;
+    min-height: 0;
+  }
+
+  .about-journey__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .about-journey__title,
+  .about-journey__stage {
+    grid-column: 1 / -1;
+  }
+
+  .about-journey__title {
+    margin-bottom: 1.25rem;
+  }
+
+  .about-journey__stage {
+    display: grid;
+    min-height: 0;
+    gap: clamp(2rem, 8vw, 3rem);
+  }
+
+  .about-journey__card {
+    position: static;
+    width: 100%;
+  }
+}
+
+/* ── About: the line the page ends on ──
+
+   Owner: at the end of the scrolling notes, this text as a title, in the middle,
+   in our title font. So it is the display face, centred, at a heading's size —
+   and a paragraph in the markup, because a 211-character heading is a landmark
+   nobody can navigate by. See the comment on `about.closing`.
+
+   **21em, and the number is the balance point.** The measure is in `em` rather
+   than `ch` or pixels, so the line count does not change with the size: it is
+   the same four lines on a phone and on a 27". Measured in the real face at this
+   tracking, the whole sentence is 77.1em long, so four even lines want 19.3em
+   each. Greedy wrapping at 21em gives 20.2 / 19.6 / 18.5 / 18.2 — within an em
+   of even before anything balances it.
+
+   Wider is worse rather than better: 23em still breaks to four and leaves the
+   last at 9em, a quarter-length line under three full ones. 20em breaks to five
+   and ends on `us.`
+
+   `text-wrap: balance` refines what the measure already gets close to; it is not
+   what holds the shape. With it off the sentence is still four lines within an
+   em of each other, which is what the 21em was chosen for.
+
+   The size is bounded by the page's column so the measure never has to give way
+   to it: 21em at 3.4vw is 857px inside a 1120px column at 1200, and 1028 inside
+   1360 at 1440. Capped at 3.5rem so it stops growing before the column does.
+   Below about 600px the column is the narrower of the two and the sentence takes
+   the lines it needs. */
+.about-statement {
+  padding-block: 0 clamp(5rem, 14vh, 11rem);
+}
+
+.about-statement__line {
+  max-width: 21em;
+  margin: 0 auto;
+  font-family: var(--type-title);
+  font-size: clamp(1.5rem, 3.4vw, 3.5rem);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-heading);
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* ── About: who the work was for ──
+
+   Owner, with a reference, and then with a correction: the same design and
+   layout as the example — the label in the normal face and smaller, the names
+   further right and closer together.
+
+   **Measured off the reference rather than eyeballed.** The capture is a 2874px
+   retina shot of a 1437px window, so everything in it halves:
+
+     names begin at        0.658 of the width      here 0.664-0.667
+     second column at      0.812
+     row pitch             29.5px                  here 29.0 at 1440
+     the label             about 15.5px            here --text-copy, 17.5 at 1440
+     the names             about 16-17px           here 16.6 at 1440
+
+   The label was on the display face at up to 64px, which is this page's
+   treatment for a section heading — the history and the notes both carry it —
+   and it is not the reference's: there the label is a small quiet marker in the
+   same face as everything else, and the names are the only thing being read.
+
+   **Columns 9 to 12, which is the 0.658 in this page's own grid.** Four of
+   twelve puts the left edge at 0.664 of the window and holds there across every
+   width — 0.667 at 2560 and 0.664 at 1025 — because the gutter and the gap are
+   both clamped and the drift between them is under half a column.
+
+   **The pitch is 1.75em**, set as 1.2 leading and 0.55 of a line under each
+   name. It was 2.05 — 1.2 and 0.85 — which is 37 to 49px against the
+   reference's 29.5.
+
+   Two columns hold at every width: the longest name, `Spitex Schwab AG`, is
+   8.62em of Geist, so 155px at the top of the size clamp against a 386px column
+   at 2560, and 129px against 142 at 1025. Below 24rem there is not room for two
+   and it falls to one — 360px phones exist, and that name wrapping beside `ZEN`
+   is not a column, it is a wrap.
+
+   `break-inside: avoid` because multi-column will otherwise split a name
+   between the columns, and a name is not a paragraph. */
+.about-clients {
+  padding-block: 0 clamp(5rem, 14vh, 11rem);
+}
+
+/* **The rule above it.** Owner: a black horizontal line on top.
+
+   `var(--ink)` rather than `black`: it is #08080a on the light page — black to
+   look at — and it turns over with the theme, which a literal `black` would not.
+   A hairline that stays black on the dark page is an invisible line, and the
+   token block above says as much in as many words: a colour that does not
+   follow the page is a bug rather than a shade.
+
+   Full strength, not `--line-soft`. That token is the ink at 16% and is what
+   this site rules a list of rows with — Careers, the story index, the footer
+   groups. He asked for black, and on the orange ground a 16% line would be a
+   crease rather than a rule.
+
+   It sits on the INNER, so the line runs gutter to gutter with the label and
+   the names rather than edge to edge with the window: it belongs to the block
+   it heads, and the page has no full-bleed rule anywhere else.
+
+   `padding-top` is what keeps the line off the text — the same figure the story
+   index pays under its own ink rule. The space ABOVE the line is the closing
+   line's bottom padding, so the two blocks stay one section-gap apart. */
+.about-clients__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  padding-top: clamp(1.25rem, 3vh, 2rem);
+  border-top: 1px solid var(--ink);
+  gap: clamp(1rem, 1.35vw, 1.4rem);
+}
+
+/* The normal face, at reading size. `letter-spacing` is written out rather than
+   left off: `--tracking-display` is -0.03em and is set for type at 40px and up,
+   where it closes gaps the eye reads as slack. At 17px it is just tight. */
+.about-clients__title {
+  grid-column: 1 / span 4;
+  align-self: start;
+  margin: 0;
+  font-family: var(--type-body);
+  font-size: var(--text-copy);
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.2;
+}
+
+.about-clients__list {
+  grid-column: 9 / -1;
+  margin: 0;
+  padding: 0;
+  columns: 2;
+  column-gap: clamp(1rem, 2vw, 2.5rem);
+  list-style: none;
+}
+
+.about-clients__name {
+  break-inside: avoid;
+  margin-block-end: 0.55em;
+  font-size: clamp(0.9375rem, 1.15vw, 1.125rem);
+  line-height: 1.2;
+}
+
+.about-clients__name:last-child {
+  margin-block-end: 0;
+}
+
+/* Stacked at the same width the history and the notes stack at, and for the
+   same reason: four of twelve columns is a comfortable block at 1200 and a
+   squeeze at 800. The names give up the right-hand quarter here — it is a
+   position on a twelve-column grid, and below the split there is no grid to
+   hold it. */
+@media (max-width: 64rem) {
+  .about-clients__title,
+  .about-clients__list {
+    grid-column: 1 / -1;
+  }
+
+  .about-clients__title {
+    margin-bottom: 1.25rem;
+  }
+}
+
+@media (max-width: 24rem) {
+  .about-clients__list {
+    columns: 1;
   }
 }
 

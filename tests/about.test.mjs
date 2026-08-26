@@ -55,6 +55,65 @@ const STORY = [
   "Today, that journey continues under a new name: Mardal, with new offices, expanded services, and a clearer focus on the work we do and the direction we want to take.",
 ];
 
+/** The delivered archive, alphabetically — the real seven, not the eight
+ *  placeholders the Clients page carries. PRODUCT.md records them and the owner
+ *  confirmed on 2026-08-05 that they may be named as Mardal's work. Legal
+ *  suffixes included: trimming those is editing a company's name. */
+const CLIENTS = [
+  "ANDI SPORT",
+  "EN NUR",
+  "Henor",
+  "Jetonikeramika",
+  "Spitex Schwab AG",
+  "Stolzbau GmbH",
+  "ZEN",
+];
+
+/** ⚠ The eight placeholder companies the Clients page carries, reused on About
+ *  at the owner's request. NOT clients. Written out here, not imported, so this
+ *  file states plainly what it is pinning. */
+const BORROWED_NAMES = [
+  "Nordvik",
+  "Alturi",
+  "Solvei",
+  "Marren",
+  "Brekk",
+  "Vantor",
+  "Lumea",
+  "Kestrel",
+];
+
+/** ⚠ The fifteen written for this list when the owner asked for more, after the
+ *  eight above ran out. NOT clients. Kept apart from them because the two are
+ *  declared differently — those are imported, these are typed — and the test
+ *  below holds each to its own rule. */
+const INVENTED_NAMES = [
+  "Astrel",
+  "Brimhold",
+  "Corvane",
+  "Delmara",
+  "Fennik",
+  "Grisal",
+  "Halvorn",
+  "Ivrell",
+  "Jarnek",
+  "Kolvi",
+  "Lestad",
+  "Myrek",
+  "Oskra",
+  "Rendal",
+  "Varek",
+];
+
+/** ⚠ Everything on the page that is not a client: twenty-three of thirty. */
+const EXAMPLE_NAMES = [...BORROWED_NAMES, ...INVENTED_NAMES];
+
+/** The line the page ends on, verbatim. His words, and the whole of them —
+ *  a closing statement asserted by its first clause is a statement half
+ *  covered, which is the mistake `VALUES` records. */
+const CLOSING =
+  "Every great achievement, company, and brand you know has one thing in common — they started small. One step, one idea, one tiny victory at a time. And many of the companies we work with started that way with us.";
+
 test("About is a written page, not a placeholder any more", async () => {
   const response = await render("/about");
   assert.equal(response.status, 200);
@@ -789,7 +848,7 @@ test("the page washes from the open picture to the end of the note", async () =>
      is the point of naming the ends rather than writing scroll positions. */
   assert.match(
     html,
-    /class="about-prose" aria-labelledby="about-values-title"[^>]*data-wash-end/,
+    /class="about-journey"[^>]*data-wash-end/,
   );
 
   /* **Exactly one of each, and that is load-bearing.** `SectionWash` takes the
@@ -812,6 +871,19 @@ test("the page washes from the open picture to the end of the note", async () =>
      the dark page would be a lamp. Verified by flipping the theme: #faff89 on
      the light page, #191a0f on the dark one, 17.6:1 against its ink. */
   assert.match(CSS, /--wash-about:\s*light-dark\(#faff89, #191a0f\)/);
+
+  /* **And what the yellow turns INTO.** Owner: the colour should transition from
+     that yellow to this. So the page had three grounds — white above the
+     photograph, yellow through the middle, `#ffd7eb` from the note down — and a
+     fourth under the closing line since. Each holds where it stops: a scrubbed tween holds its end state past the
+     trigger, so the final section and the footer carry it.
+
+     His, exactly as given, and safe under everything on it: 15.4:1 against
+     `--ink`, 5.7 against the muted grey. Dark half derived the same way as the
+     yellow's — hue held at 330, S 100 to 26, L 92 to 8 — and measured in the
+     browser: #ffd7eb on the light page, #1a0f14 on the dark one, 16.6:1 against
+     its ink. */
+  assert.match(CSS, /--wash-about-end:\s*light-dark\(#ffd7eb, #1a0f14\)/);
 
   /* **No CSS toggle, and no transition on the body.** Both are from the version
      this replaced, and either left behind would fight the tween — a 700ms
@@ -860,11 +932,24 @@ test("the wash begins where the pin lets go", () => {
 
   /* Ends against a different element, so one tween covers the whole run. */
   assert.match(code, /endTrigger: to/);
-  /* **The drain finishes before the white section arrives, not under it.** The
-     venture note below the wash is on white by instruction, and at `bottom top`
-     the colour was still going while that section filled the screen — which
-     reads as the yellow following you down the page. */
-  assert.match(code, /end: "bottom center"/);
+  /* **The change finishes before the next section arrives, not under it.** At
+     `bottom top` the colour was still moving while that section filled the
+     screen, which reads as the page's colour following you down rather than as a
+     section arriving.
+
+     It was `bottom center` until the owner asked for the orange below to start
+     earlier, 2026-08-26. The orange begins exactly where this ends, so this is
+     what moved. Asserted here AND in the fourth-ground test, as a pair: half of
+     this change applied is two grounds painting the same pixels. */
+  assert.match(code, /end: "bottom bottom"/);
+
+  /* **It turns into the second colour rather than draining back.** Both ends are
+     read from tokens, so the component still knows no colours — and asserting
+     the target is what keeps "transition to pink" from quietly becoming "fade to
+     white" again, which is what it did before and looks almost the same in a
+     still of the middle of the run. */
+  assert.match(code, /resolve\("var\(--wash-about-end\)"\)/);
+  assert.equal((code.match(/resolve\("var\(--canvas\)"\)/g) ?? []).length, 1);
 
   /* Held in between. A colour that starts leaving the moment it arrives never
      reads as the page's colour, only as a tint passing over it. Measured: full
@@ -907,8 +992,82 @@ test("the wash begins where the pin lets go", () => {
     );
   }
 
-  /* And every surface it painted is cleaned up, not just the first. */
-  assert.match(code, /for \(const surface of surfaces\)/);
+  /* And every surface it painted is cleaned up, not just the first. Matched
+     with the body of the loop, because the fourth ground below paints through a
+     loop of the same shape and a bare `for (const surface of surfaces)` would
+     be satisfied by that one. */
+  assert.match(
+    code,
+    /for \(const surface of surfaces\) \{\s*surface\.style\.removeProperty\("background-color"\)/,
+  );
+});
+
+test("the page turns once more under the closing line", () => {
+  /* Owner, 2026-08-26, with a swatch: transition to this colour on the new
+     text. So the page has FOUR grounds — white, `#faff89` through the middle,
+     `#ffd7eb` from the end of the notes, and this under the last sentence. */
+  assert.match(CSS, /--wash-about-close:\s*light-dark\(#ffa769, #1a130f\)/);
+
+  /* His colour exactly as given, and the closing line is set in `--ink`: 10.5:1.
+     The muted grey is 3.5, AA for large text and under it for small — and
+     nothing muted sits on this ground, the only thing on it is that sentence
+     and the footer's own purple slab. The same limit the yellow (7.0) and the
+     pink (5.2) have, for the same reason.
+
+     Dark half derived as theirs were: hue held at 25, S 100 to 26, L 71 to 8,
+     16.3:1 against the dark page's ink. */
+
+  const raw = readFileSync(
+    new URL("../components/motion/SectionWash.tsx", import.meta.url),
+    "utf8",
+  );
+  const code = raw.replace(/\/\*[\s\S]*?\*\//g, "");
+
+  assert.match(code, /querySelector<HTMLElement>\("\[data-wash-close\]"\)/);
+
+  /* **It does not tween the background at all**, which is what lets it coexist
+     with the run above it. Two scrubbed tweens on one property fight: whichever
+     renders last in a frame wins and the loser goes on re-applying its own
+     start value from outside its own range. This one tweens a plain object and
+     paints from its progress.
+
+     A `.to()` on that object does not render until it is reached, so nothing is
+     painted at load — a `fromTo` here would paint the whole page pink from the
+     hero down. */
+  assert.match(code, /gsap\.to\(state, \{/);
+  assert.match(code, /gsap\.utils\.interpolate\(from, to, state\.t\)/);
+
+  /* Silent at rest, and this one line is the whole of it: at `t` zero the run
+     above owns the colour, and painting there would fight it. */
+  assert.match(code, /if \(state\.t <= 0\) return;/);
+
+  /* **Its start is the run above's end, exactly.** That one ends at the
+     journey's `bottom bottom`; this begins at the statement's `top bottom`, and
+     the two sections share a border edge — so both resolve to the same scroll
+     position without either being told about the other.
+
+     Asserted as a pair, because the identity is what matters and either one
+     changed alone breaks it: earlier and the two overlap and fight for the same
+     pixels, later and the page sits finished-pink for a stretch.
+
+     Both were `center` and both moved together when the owner asked for the
+     orange sooner — half a window earlier, to the moment the closing section's
+     top edge appears. Moving THIS one alone is the tempting version, because it
+     is the one he asked about, and it is the bug the pair exists to catch. */
+  assert.match(code, /end: "bottom bottom"/);
+  assert.match(code, /start: "top bottom"/);
+
+  /* Half a screen, and longer than the two above it (0.1 of a ~2100px run, so
+     about 210px each) because nothing else is happening here: those arrive
+     under a photograph opening and under notes replacing one another, and this
+     arrives under one sentence that is not moving. */
+  assert.match(code, /const CLOSE = 0\.5;/);
+  assert.match(code, /"\+=" \+ window\.innerHeight \* CLOSE/);
+
+  /* Resolved once rather than per frame — `resolve` puts a probe in the document
+     and reads it back — and taken again on refresh, which is when a theme change
+     lands. Without that the orange would stay the light page's after a flip. */
+  assert.match(code, /onRefresh: \(\) => \{\s*from = resolve\("var\(--wash-about-end\)"\);\s*to = resolve\("var\(--wash-about-close\)"\);/);
 });
 
 test("the note on how the studio works is his, whole", async () => {
@@ -929,7 +1088,7 @@ test("the note on how the studio works is his, whole", async () => {
   assert.doesNotMatch(html, /\b\d+\s*(engineers|designers|researchers|psychologists)\b/i);
 });
 
-test("the prose sections are one shape, rendered three times", async () => {
+test("the history is the one prose section left, and it still takes the entrance", async () => {
   const html = await (await render("/about")).text();
 
   /* One block written once and called twice — the history above the rooms and
@@ -938,22 +1097,20 @@ test("the prose sections are one shape, rendered three times", async () => {
      made the difference matter. Counted in the markup rather than assumed from
      the component, because a copy-paste of the JSX would render identically and
      drift from here on. */
+  /* **One, not three.** The two notes below the photographs became a journey —
+     one block that replaces itself — so this shape is the history alone now.
+     Counted, because leaving a stray `.about-prose` behind would render a note
+     twice: once here and once inside the journey's stage. */
   const sections = html.match(/<section class="about-prose"/g) ?? [];
-  assert.equal(sections.length, 3);
+  assert.equal(sections.length, 1);
 
   assert.match(html, /aria-labelledby="about-prose-title"/);
-  assert.match(html, /aria-labelledby="about-values-title"/);
-  assert.match(html, /aria-labelledby="about-venture-title"/);
+  assert.doesNotMatch(html, /about-values-title|about-venture-title/);
 
-  /* **The third one is on white, which is where it sits rather than what it is
-     styled as.** The wash ends at the section above it, so this is simply after
-     the coloured run — and the only thing that keeps it that way is being the
-     one WITHOUT `data-wash-end`. Ordering matters here: moving the marker down
-     to this one would put it on yellow. */
-  const venture = html.slice(
-    html.indexOf('aria-labelledby="about-venture-title"'),
-  );
-  assert.doesNotMatch(venture.slice(0, 200), /data-wash-end/);
+  /* The history is above the photographs and above the coloured run, so it must
+     not carry the marker that ends it. */
+  const history = html.slice(html.indexOf('aria-labelledby="about-prose-title"'));
+  assert.doesNotMatch(history.slice(0, 200), /data-wash-end/);
 
   /* **Both take the section entrance**, unlike the plate and the rooms, which
      decline it because they animate themselves. Two entrances on one block is
@@ -961,7 +1118,7 @@ test("the prose sections are one shape, rendered three times", async () => {
      what `SectionEnter` was written for. */
   assert.equal(
     (html.match(/<section class="about-prose"[^>]*data-route-section/g) ?? []).length,
-    3,
+    1,
   );
   for (const block of html.match(/<section class="about-prose"[\s\S]*?<\/section>/g) ?? []) {
     assert.doesNotMatch(block, /data-enter/);
@@ -987,6 +1144,574 @@ test("the venture note is his, whole, and claims nothing measured", async () => 
   for (const product of ["Arvena", "Ftesa", "Ihrauto"]) {
     assert.doesNotMatch(prose, new RegExp(product, "i"));
   }
+});
+
+test("the prose arrives a few words at a time, from the right", async () => {
+  const html = await (await render("/about")).text();
+
+  /* Every paragraph is split into words, and every paragraph carries the whole
+     sentence as `aria-label` — a paragraph of separate spans is read as
+     fragments otherwise. The service pages solve it the same way. */
+  const lines = html.match(/<p class="about-prose__paragraph"[^>]*>/g) ?? [];
+  /* Two: the history alone. The six below it belong to the journey, which takes
+     their words AWAY on scroll rather than bringing them in, and marks them with
+     its own attribute so the two treatments cannot both claim a word. */
+  assert.equal(lines.length, 2);
+  for (const line of lines) {
+    assert.match(line, /aria-label="/);
+    assert.match(line, /data-prose-line/);
+  }
+  assert.ok((html.match(/data-prose-word/g) ?? []).length > 60);
+  assert.ok((html.match(/data-journey-word/g) ?? []).length > 150);
+
+  const raw = readFileSync(
+    new URL("../components/motion/ProseReveal.tsx", import.meta.url),
+    "utf8",
+  );
+  const code = raw.replace(/\/\*[\s\S]*?\*\//g, "");
+
+  assert.match(code, /"use client"/);
+  assert.match(code, /prefers-reduced-motion:\s*reduce/);
+  const guard = code.indexOf("prefers-reduced-motion");
+  assert.ok(guard > 0 && guard < code.indexOf("gsap.context"));
+
+  /* **The service run's own numbers**, copied deliberately so the two read as
+     one idea: three words to a group, a 0.22 window per group over a 0.78
+     spread, smoothstepped, drifting 14px. There it is `renderWordExit` and the
+     copy LEAVES toward the left; here the same shape runs forwards and the words
+     arrive from the right. */
+  assert.match(code, /const GROUP = 3;/);
+  assert.match(code, /const DRIFT = 14;/);
+  assert.match(code, /const WINDOW = 0\.22;/);
+  assert.match(code, /const SPREAD = 0\.78;/);
+  assert.match(code, /local \* local \* \(3 - 2 \* local\)/);
+
+  /* **The stagger itself, not just the constant that feeds it.** Asserting
+     `SPREAD = 0.78` passes with the whole calculation deleted — the constant
+     sits there unused and every word arrives at once, which is a fade, not this.
+     The expression is what makes it a stagger. */
+  assert.match(code, /\(group \/ \(groups - 1\)\) \* SPREAD/);
+  assert.match(code, /\(progress - start\) \/ WINDOW/);
+
+  /* **`opacity`, never `autoAlpha`.** The service version uses autoAlpha, which
+     sets `visibility: hidden` at zero — fine where words start visible and are
+     being taken away. Here they start hidden, and hidden text is out of the
+     accessibility tree and out of find-in-page until it arrives. */
+  assert.match(code, /opacity: eased/);
+  assert.doesNotMatch(code, /autoAlpha/);
+
+  /* Per paragraph. A note here is three paragraphs and most of a screen tall;
+     staggered as one block the last words arrive long after they are read. */
+  assert.match(code, /trigger: paragraph/);
+  assert.match(code, /scrub:/);
+});
+
+test("the two notes are one block that replaces itself", async () => {
+  const html = await (await render("/about")).text();
+
+  const journey = html.slice(
+    html.indexOf('class="about-journey"'),
+    html.indexOf("</section>", html.indexOf('class="about-journey"')),
+  );
+
+  /* Both notes are cards in one stage, each carrying its own heading as data —
+     that is what the swap reads from. */
+  assert.equal((journey.match(/data-journey-card/g) ?? []).length, 2);
+  assert.match(journey, /data-journey-heading="Small by choice"/);
+  assert.match(journey, /data-journey-heading="AI-native venture studio"/);
+
+  /* **The heading is OUTSIDE the stage, and that is the whole difference the
+     owner named.** In the service journey the heading belongs to the card and
+     leaves with it; here it holds its column and its text is swapped. Asserted
+     as document order — the title element before the stage opens — because a
+     heading moved inside would still render and would then travel. */
+  const title = journey.indexOf("data-journey-title");
+  const stage = journey.indexOf("data-journey-stage");
+  assert.ok(title > 0 && stage > 0 && title < stage, "the heading is inside the stage");
+
+  /* It changes without the page navigating, so a reader who cannot see the swap
+     gets nothing without this. */
+  assert.match(journey, /aria-live="polite"/);
+
+  /* The page's colour ends over this block, which the pin makes the longest
+     thing on the page. */
+  assert.match(html, /class="about-journey"[^>]*data-wash-end/);
+
+  /* It animates itself, so it declines the section entrance — two entrances on
+     one block is what broke the plate. */
+  assert.match(html, /class="about-journey"[^>]*data-enter-mode="none"/);
+
+  /* **A card is the whole stage**, one at a time. At 48% the next note parked
+     beside the current one and both were readable, which is the thing that was
+     wrong. The measure stays on the paragraph, because a note at the full width
+     of this column runs to about ninety characters a line. */
+  const card = CSS.indexOf(".about-journey__card {");
+  assert.match(CSS.slice(card, CSS.indexOf("}", card)), /width:\s*100%/);
+  const line = CSS.indexOf(".about-journey__paragraph {");
+  assert.match(CSS.slice(line, CSS.indexOf("}", line)), /max-width:\s*52ch/);
+});
+
+test("the journey pins, hands over, and takes the words leftward", () => {
+  const raw = readFileSync(
+    new URL("../components/motion/AboutJourney.tsx", import.meta.url),
+    "utf8",
+  );
+  const code = raw.replace(/\/\*[\s\S]*?\*\//g, "");
+
+  assert.match(code, /"use client"/);
+  assert.match(code, /prefers-reduced-motion:\s*reduce/);
+
+  /* **Gated on the same width the stylesheet stacks at.** Below 64rem the stage
+     is a static grid with nothing stacked to slide, and pinning a phone for two
+     screens to move a column two words wide is worse than not moving it. Both
+     read 64rem so the two cannot disagree. */
+  assert.match(code, /max-width: 64rem/);
+
+  /* The pin is the mechanism, and its length is per note. Measured: the spacer
+     added 1641px against an expected 1642 on a 912px window. */
+  assert.match(code, /pin: viewport/);
+  assert.match(code, /const PER_NOTE = 0\.9;/);
+  assert.match(code, /window\.innerHeight \* PER_NOTE \* cards\.length/);
+
+  /* **One note on screen at a time, which is a correction.** The service journey
+     shows two — the one being read and the next standing a column over — which
+     is right there, where cards are half the stage and the pair reads as a set.
+     Here it read as two notes side by side, and the owner asked for one at a
+     time, the second arriving as the first goes.
+
+     So the outgoing words are gone by LEAVES and the incoming one does not begin
+     until HANDOVER, with air between them; and the incoming card is invisible
+     until it starts moving, so nothing shows through the one still being read.
+     Measured at rest: card A at x 0 fully opaque, card B at opacity 0 and x 885,
+     one whole stage width off to the right. */
+  assert.match(code, /const LEAVES = 0\.5;/);
+  assert.match(code, /const HANDOVER = 0\.55;/);
+  assert.match(code, /\(progress - 0\.02\) \/ \(LEAVES - 0\.02\)/);
+  assert.match(code, /opacity: isCurrent \? 1 : isNext \? handover : 0/);
+
+  /* A card is the stage now, so it travels a stage's width rather than a column
+     of one. */
+  assert.match(code, /const column = stage\.clientWidth;/);
+  assert.match(code, /\(1 - handover\) \* column/);
+
+  /* And the outgoing one's words leave LEFTWARD in groups of three — the service
+     run's own shape and its own numbers. */
+  assert.match(code, /const GROUP = 3;/);
+  assert.match(code, /x: eased \* -DRIFT/);
+  assert.match(code, /\(group \/ \(groups - 1\)\) \* SPREAD/);
+
+  /* `opacity`, not `autoAlpha`: hidden text is out of find-in-page, and here a
+     whole note is hidden at a time rather than a word. */
+  assert.doesNotMatch(code, /autoAlpha: 1 - eased|opacity: 1 - eased.*autoAlpha/);
+  assert.match(code, /opacity: 1 - eased/);
+
+  /* **The heading goes before it changes and comes back after.** It swapped its
+     text on one frame, which is a cut in the middle of a block where everything
+     else is scrubbed. It leaves upward as the note under it dissolves, the text
+     is written while nothing is on screen to see it change, and it arrives from
+     below with the note it belongs to.
+
+     Checked as arithmetic, since the run cannot be scrolled in the automation
+     tab: solid to 0.32, fading and lifting to -6.5 by 0.49, opacity 0 at 0.50
+     where the swap happens, invisible through the gap to 0.55, then rising from
+     +8 to 0 by the end. The `y` jump at the swap is unseen because it happens
+     at zero — which is the whole reason the swap is placed there. */
+  assert.match(code, /const TITLE_FADE = 0\.18;/);
+  assert.match(code, /const TITLE_LIFT = 8;/);
+  assert.match(code, /const swapped = !last && local >= LEAVES;/);
+  assert.match(code, /const opacity = last \? 1 : Math\.max\(1 - leaving, handover\)/);
+
+  /* **And that the heading is actually SET from it.** Asserting the calculation
+     exists passes with `opacity: 1` written into the `gsap.set` and the variable
+     left sitting there unused — the heading cuts again and the arithmetic above
+     is still perfect. Third time in this file that a computed value has been
+     asserted without asserting its use. */
+  assert.match(code, /gsap\.set\(heading, \{\s*opacity,/);
+
+  /* Away upward, back from below — not the same direction twice, which reads as
+     the heading sliding past rather than as one leaving and another coming. */
+  assert.match(code, /\(1 - handover\) \* TITLE_LIFT/);
+  assert.match(code, /-leaving \* TITLE_LIFT/);
+
+  /* **The heading is written only when it changes.** Setting the same string
+     every frame makes a polite live region announce on every one of them. */
+  assert.match(code, /if \(showing !== announced\)/);
+});
+
+test("the page ends on the owner's line, whole and last", async () => {
+  const html = await (await render("/about")).text();
+  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+
+  /* Written out here rather than imported. A test that reads the module the
+     page reads asserts only that a file equals itself, and this is his
+     sentence — changing a word of it has to be a decision made twice. */
+  assert.ok(main.includes(CLOSING), "the closing line is not on the page");
+
+  /* **Last, and after the notes.** He asked for it at the end of the scrolling
+     text, so the journey has to be above it. Compared inside `<main>`: the RSC
+     payload repeats the markup further down the document, and a position taken
+     from the whole file can land in the copy. */
+  const notes = main.indexOf('class="about-journey"');
+  const line = main.indexOf(CLOSING);
+  assert.ok(notes > 0, "the journey is not on the page");
+  assert.ok(line > notes, "the closing line is above the notes it should follow");
+
+  /* **One section below it, and it is the client list.** He asked for the line
+     at the end of the scrolling text and then for the clients under it, so
+     "last" means last of the two now. The way out below both is the footer's.
+
+     Written as a count rather than as "no sections after", which is what this
+     said while the line really was last — an assertion that has to be rewritten
+     every time something is added to the page is one that will be rewritten
+     without being read. */
+  const below = main.slice(line).match(/<section[^>]*class="([\w-]+)"/g) ?? [];
+  assert.deepEqual(below, ['<section class="about-clients"']);
+
+  /* **Set as a title, not marked as one.** 211 characters announced as a
+     landmark is not a heading, whatever face it wears — a reader moving through
+     this page by heading would meet the whole sentence as one stop. Asserted on
+     the document rather than on the section, so wrapping it in an `<h2>`
+     anywhere fails. */
+  for (const level of [1, 2, 3, 4, 5, 6]) {
+    for (const heading of main.match(new RegExp(`<h${level}[^>]*>[\\s\\S]*?</h${level}>`, "g")) ?? []) {
+      assert.ok(
+        !heading.includes(CLOSING.slice(0, 40)),
+        `the closing line is set as an h${level}`,
+      );
+    }
+  }
+  assert.match(main, /<p class="about-statement__line">/);
+
+  /* It takes the site's entrance, which is what a section with nothing of its
+     own moving is for — and it has no heading to trigger on, so SectionEnter
+     falls back to the section's own box. The plate above does the same.
+
+     `data-wash-close` is the page's fourth ground: the colour turns orange
+     under this sentence. One on the page, and it is this section. */
+  assert.match(
+    main,
+    /<section class="about-statement" data-route-section="true" data-wash-close="true">/,
+  );
+  assert.equal((main.match(/data-wash-close/g) ?? []).length, 1);
+
+  /* **It is not a second wash marker.** The colour ends at the journey; a
+     `data-wash-end` down here would stretch the change over this block too and
+     the page would still be turning pink while the last line was being read.
+     One on the page, and it is above this. */
+  assert.equal((main.match(/data-wash-end/g) ?? []).length, 1);
+  assert.doesNotMatch(main.slice(line), /data-wash-end/);
+});
+
+test("the client list is seven real names and twenty-three examples", async () => {
+  const html = await (await render("/about")).text();
+  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  const at = main.indexOf('<section class="about-clients"');
+  assert.ok(at > 0, "there is no client section");
+  const section = main.slice(at, main.indexOf("</section>", at));
+
+  /* **The seven are the delivered archive**, recorded in PRODUCT.md and
+     confirmed by the owner on 2026-08-05 as work Mardal may name. Written out
+     here rather than imported: a test that reads the module the page reads
+     asserts only that a file equals itself, and which names go on a public page
+     is the one decision on this section worth making twice. */
+  for (const name of CLIENTS) {
+    assert.ok(section.includes(name), `${name} is missing from the client list`);
+  }
+
+  /* **And twenty-three are examples**, added at the owner's request after he was
+     told the archive holds seven and no more, and extended when he asked for
+     more. Eight are the Clients page's own placeholders; fifteen were written
+     for this list because there were only ever eight. See the test below, which
+     is what stops any of them shipping. */
+  for (const name of EXAMPLE_NAMES) {
+    assert.ok(section.includes(name), `${name} is missing from the client list`);
+  }
+
+  /* **A name and nothing else.** No sector, no country, no year, no count —
+     none of those is recorded per client and every one is the kind of fact that
+     goes unchecked once it is set in type. Asserted by reading the section's
+     whole visible text: anything added to it has to be added here too. */
+  const words = section
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const shown = [...CLIENTS, ...EXAMPLE_NAMES].sort((a, b) => a.localeCompare(b, "en"));
+  assert.equal(words, ["Our clients", ...shown].join(" "));
+
+  /* **Alphabetical over the whole list, which is doing two jobs.** It is the one
+     order that does not rank them — PRODUCT.md lists the real ones by how strong
+     the artefact is, and carrying that onto a public page turns a list into a
+     league table. And sorted TOGETHER, the real names are not a block at the top
+     with the filler beneath, which is the arrangement that quietly tells a
+     reader which is which.
+
+     Derived, not restated: the order asserted above is computed from the two
+     lists, so this checks the page agrees with it. */
+  const order = shown.map((name) => section.indexOf(name));
+  assert.deepEqual(order, [...order].sort((a, b) => a - b));
+
+  /* A real list. Thirty names in two columns is a list whatever it is drawn as,
+     and "list, 30 items" is what a screen reader has instead of the columns. */
+  assert.match(section, /<ul class="about-clients__list">/);
+  assert.equal(
+    (section.match(/<li class="about-clients__name"/g) ?? []).length,
+    shown.length,
+  );
+
+  /* Named for the outline, and taking the site's entrance like the prose does. */
+  assert.match(section, /aria-labelledby="about-clients-title"/);
+  assert.match(section, /data-route-section="true"/);
+});
+
+test("the example names are invented, marked, and cannot ship quietly", async () => {
+  const source = readFileSync(
+    new URL("../content/about.ts", import.meta.url),
+    "utf8",
+  );
+
+  /* ⚠ **TWENTY-THREE OF THE THIRTY NAMES ON THIS PAGE ARE INVENTED AND MUST NOT
+     SHIP.**
+
+     Pinned the way the Clients page's are in `rendered-html.test.mjs`, and for
+     the same reason: so publishing means deleting a test on purpose rather than
+     forgetting a comment, which is exactly what nobody is reading on the day
+     this goes live. None of these is a company Mardal has worked for. Under a
+     heading reading "Our clients", alphabetised in among the real seven, a
+     reader has no way at all to tell which is which.
+
+     Delete this test in the same commit that puts real names in. */
+  const html = await (await render("/about")).text();
+  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  for (const invented of EXAMPLE_NAMES) {
+    assert.ok(main.includes(invented), `${invented} is not on the page`);
+  }
+
+  /* **The eight are borrowed, not re-invented.** The Clients page already carries
+     them; typing them again here would give the site a third place to delete
+     them from. Imported, replacing them in `content/case-studies.ts` carries
+     this list with it — and this assertion is what keeps that true, because the
+     tempting edit is to paste the strings in. */
+  assert.match(source, /const BORROWED = clientEntries\.map\(\(entry\) => entry\.name\)/);
+  assert.match(source, /import \{ clientEntries \} from "\.\/case-studies"/);
+  for (const borrowed of BORROWED_NAMES) {
+    assert.ok(
+      !source.includes(`"${borrowed}"`),
+      `${borrowed} is typed into content/about.ts instead of imported`,
+    );
+  }
+
+  /* **The fifteen are declared here, in one array, under the warning.** They had
+     to be written somewhere — there were only ever eight placeholders — and the
+     thing that matters is that they are in ONE place with a marker on it, not
+     scattered into the real list where nothing records what they are. */
+  const invented = source.indexOf("const INVENTED = [");
+  assert.ok(invented > 0, "the written examples are not declared");
+  assert.deepEqual(
+    [...source.slice(invented, source.indexOf("]", invented)).matchAll(/"([^"]+)"/g)].map(
+      (m) => m[1],
+    ),
+    INVENTED_NAMES,
+  );
+  const warned = source.slice(0, invented);
+  assert.match(warned.slice(warned.lastIndexOf("/**")), /INVENTED|MUST NOT SHIP/);
+
+  /* **The real list holds only the real names.** The failure this catches is an
+     example being appended to `DELIVERED` — after which nothing on the page,
+     and nothing in the source, records that it was never a client. */
+  const at = source.indexOf("const DELIVERED = [");
+  assert.ok(at > 0, "the delivered archive is not declared");
+  const delivered = [
+    ...source.slice(at, source.indexOf("]", at)).matchAll(/"([^"]+)"/g),
+  ].map((m) => m[1]);
+  assert.deepEqual(delivered, CLIENTS);
+
+  /* And the borrowed set says what it is too, in the place someone editing it
+     looks. */
+  const marker = source.slice(0, source.indexOf("const BORROWED"));
+  assert.match(marker.slice(marker.lastIndexOf("/**")), /INVENTED|MUST NOT SHIP/);
+});
+
+test("the client list is a label beside two columns", () => {
+  const at = CSS.indexOf(".about-clients__list {");
+  assert.ok(at > 0, "the client list has no rule");
+  const list = CSS.slice(at, CSS.indexOf("}", at));
+
+  /* **Columns 9 to 12, and the number came off the reference.** The capture is a
+     2874px retina shot of a 1437px window, so everything in it halves: the names
+     begin at 0.658 of the width and the second column at 0.812. Four of twelve
+     puts the left edge at 0.664 and holds there — 0.667 at 2560, 0.664 at 1025 —
+     because the gutter and the gap are both clamped and the drift between them
+     is under half a column.
+
+     It was 6 / -1, which is where this page puts prose beside a heading. That is
+     0.427 of the window: a reading column, not the reference's right-hand
+     quarter. */
+  assert.match(list, /grid-column:\s*9 \/ -1/);
+  assert.match(list, /columns:\s*2/);
+  assert.match(list, /list-style:\s*none/);
+
+  /* **A black rule on top.** Owner's word: black. `var(--ink)` is #08080a on the
+     light page and turns over with the theme, which a literal `black` would not
+     — a hairline that stays black on the dark page is an invisible line.
+
+     Full strength, not `--line-soft`: that token is the ink at 16% and is what
+     this site rules rows with. On the orange ground it would be a crease.
+
+     On the INNER, so the line runs gutter to gutter with the label and the names
+     rather than edge to edge with the window. */
+  const inner = CSS.indexOf(".about-clients__inner {");
+  assert.ok(inner > 0, "the client section has no inner rule");
+  const box = CSS.slice(inner, CSS.indexOf("}", inner));
+  assert.match(box, /border-top:\s*1px solid var\(--ink\)/);
+  assert.doesNotMatch(box, /--line-soft|:\s*black|#000/);
+  assert.match(box, /padding-top:/);
+
+  const head = CSS.indexOf(".about-clients__title {");
+  assert.ok(head > 0, "the client label has no rule");
+  const title = CSS.slice(head, CSS.indexOf("}", head));
+  assert.match(title, /grid-column:\s*1 \/ span 4/);
+
+  /* **The normal face, at reading size.** Owner: the title in the normal font
+     and smaller. It was `--type-title` at up to 64px — this page's treatment for
+     a section heading, which the history and the notes both carry — and it is
+     not the reference's: there the label is a quiet marker in the same face as
+     everything else and the names are the only thing being read. */
+  assert.match(title, /font-family:\s*var\(--type-body\)/);
+  assert.doesNotMatch(title, /--type-title|--type-display/);
+  assert.match(title, /font-size:\s*var\(--text-copy\)/);
+
+  /* Written out rather than left off. `--tracking-display` is -0.03em, set for
+     type at 40px and up where it closes gaps the eye reads as slack; at 17px it
+     is just tight, and a heading rule that inherits it is the easy mistake when
+     this block is copied from the one above. */
+  assert.match(title, /letter-spacing:\s*normal/);
+  assert.doesNotMatch(title, /--tracking-display/);
+
+  /* **The pitch is 1.75em**, which is the reference's 29.5px at the size the
+     names take at 1440 (16.6px). It was 2.05 — 1.2 leading and 0.85 under each
+     name — which is 37 to 49px, and "closer" is what the owner asked for. */
+  const row = CSS.indexOf(".about-clients__name {");
+  assert.ok(row > 0, "the names have no rule");
+  const rule = CSS.slice(row, CSS.indexOf("}", row));
+  assert.match(rule, /line-height:\s*1\.2/);
+  assert.match(rule, /margin-block-end:\s*0\.55em/);
+  assert.match(rule, /font-size:\s*clamp\(0\.9375rem, 1\.15vw, 1\.125rem\)/);
+
+  /* Multi-column will split a name between the columns without this, and a name
+     is not a paragraph. */
+  assert.match(rule, /break-inside:\s*avoid/);
+
+  /* **Two columns run out at about 363px of window**, measured with the real
+     face: the longest name is 8.62em of Geist, which is 155px at the small end
+     of the size clamp, and a column is (container - gap) / 2. The fallback is
+     at 24rem because 360px phones exist, and `Spitex Schwab AG` wrapping to two
+     lines beside `ZEN` is not a column, it is a wrap. */
+  const narrow = CSS.indexOf("@media (max-width: 24rem)", at);
+  assert.ok(narrow > 0, "the columns never collapse");
+  assert.match(CSS.slice(narrow, CSS.indexOf("}\n}", narrow)), /columns:\s*1/);
+
+  /* And it stacks where the rest of the page stacks. */
+  const stack = CSS.indexOf("@media (max-width: 64rem)", at);
+  assert.ok(stack > 0 && stack < narrow, "the client section never stacks");
+  const query = CSS.slice(stack, CSS.indexOf("}\n}", stack));
+  assert.match(query, /\.about-clients__title,\s*\n\s*\.about-clients__list \{/);
+  assert.match(query, /grid-column:\s*1 \/ -1/);
+});
+
+test("the closing line is set on the display face, and balanced", () => {
+  const at = CSS.indexOf(".about-statement__line {");
+  assert.ok(at > 0, "the closing line has no rule");
+  const rule = CSS.slice(at, CSS.indexOf("}", at));
+
+  /* Owner: in our title font. That is `--type-title`, the face the hero and the
+     history heading carry — not `--type-display`, which is the sans. */
+  assert.match(rule, /font-family:\s*var\(--type-title\)/);
+  assert.doesNotMatch(rule, /var\(--type-display\)/);
+
+  /* Owner: in the middle. */
+  assert.match(rule, /text-align:\s*center/);
+  assert.match(rule, /margin:\s*0 auto/);
+
+  /* **21em, and the unit is the point.** A measure in `em` is a measure in
+     characters, so the sentence is the same four lines at every size rather
+     than re-breaking as the clamp grows. Measured in the real face at this
+     tracking: the whole sentence is 77.1em, four even lines want 19.3em each,
+     and greedy wrapping at 21em gives 20.2 / 19.6 / 18.5 / 18.2.
+
+     Asserted as `em` explicitly. The obvious "tidy-up" here is a round pixel
+     number or a `ch`, and both of them break the line count loose from the
+     size — 21ch is a third of the width, and 21em at the small end of the clamp
+     is not the same column as 21em at the large end unless it is written in the
+     unit that follows it. */
+  assert.match(rule, /max-width:\s*21em/);
+
+  /* Bounded so the measure never has to give way to the page's column: 21em at
+     3.4vw is 857px inside a 1120px column at 1200 and 1028 inside 1360 at 1440,
+     and the cap stops it growing before the column does. */
+  assert.match(rule, /font-size:\s*clamp\(1\.5rem, 3\.4vw, 3\.5rem\)/);
+
+  /* A refinement, not the thing holding the shape — the sentence is four lines
+     within an em of even with it turned off. It is here because it costs
+     nothing and evens the last line where it is supported. */
+  assert.match(rule, /text-wrap:\s*balance/);
+
+  /* Not the heading leading. `--leading-heading-xl` is 0.94, set for a
+     three-word title on one line; four lines of it collide. */
+  assert.match(rule, /line-height:\s*var\(--leading-heading\)/);
+  assert.doesNotMatch(rule, /--leading-heading-xl/);
+});
+
+test("the closing line's measure survives the build", () => {
+  /* The stylesheet is not what ships. `max-width: none` was dropped by the
+     minifier as an initial value and four of five slice copies drew nothing
+     because of it, so a measure that decides a line count is checked in the
+     built file rather than in the source. */
+  const dist = new URL("../dist/client/assets/", import.meta.url);
+  const sheet = readdirSync(dist).find((name) => name.endsWith(".css"));
+  assert.ok(sheet, "no built stylesheet");
+  const built = readFileSync(new URL(sheet, dist), "utf8");
+
+  const at = built.indexOf(".about-statement__line{");
+  assert.ok(at > 0, "the closing line's rule is not in the built stylesheet");
+  const rule = built.slice(at, built.indexOf("}", at));
+
+  assert.match(rule, /max-width:21em/);
+  assert.match(rule, /text-wrap:balance/);
+  assert.match(rule, /text-align:center/);
+  assert.match(rule, /font-family:var\(--type-title\)/);
+});
+
+test("every card's pattern is its own tint, thinned", () => {
+  /* Owner: on all five boxes make the pattern a little pale, around 20%
+     transparent. So each mark is its tint's bar with `cc` on the end.
+
+     **Derived here rather than trusted, because it is written out.**
+     `color-mix` was the obvious way to express it and does not survive the
+     build — it compiles to an `@supports` block whose fallback the build makes
+     itself by dropping the percentage, serving the colour at full strength to
+     anything without it. Six hex digits and an alpha pair compile to themselves,
+     and the price is that the mark no longer follows its token automatically.
+     `--tint-butter-bar` has been three different colours in one afternoon, so
+     this is the check that a fourth cannot land without its card following. */
+  const bars = Object.fromEntries(
+    [...CSS.matchAll(/--tint-(\w+)-bar: (#[0-9a-f]{6});/g)].map((m) => [m[1], m[2]]),
+  );
+  assert.equal(Object.keys(bars).length, 5);
+
+  for (const [tint, hex] of Object.entries(bars)) {
+    const card = CSS.indexOf(`--card-tint: var(--tint-${tint});`);
+    assert.ok(card > 0, `${tint} is not on a card`);
+    const rule = CSS.slice(card, CSS.indexOf("}", card));
+    assert.match(
+      rule,
+      new RegExp(`--card-tint-bar: ${hex}cc;`),
+      `${tint}'s mark is not its own bar thinned — the bar is ${hex}`,
+    );
+  }
+
+  /* And the panels are untouched: it was built the other way round first, with
+     the panel derived from the bar, and that was the wrong half. */
+  assert.equal((CSS.match(/--card-tint: var\(--tint-\w+\);/g) ?? []).length, 5);
 });
 
 test("About is out of the placeholder module, and out of its test", () => {

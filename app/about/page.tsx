@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
+import { Fragment } from "react";
 import { Container } from "../../components/layout/Container";
 import { SiteFooter } from "../../components/layout/SiteFooter";
 import { HeaderSpace } from "../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../components/motion/SectionEnter";
 import { MediaCluster } from "../../components/motion/MediaCluster";
+import { AboutJourney } from "../../components/motion/AboutJourney";
+import { ProseReveal } from "../../components/motion/ProseReveal";
 import { SectionWash } from "../../components/motion/SectionWash";
 import { MediaReveal } from "../../components/motion/MediaReveal";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
@@ -80,8 +83,22 @@ function ProseSection({
 
         <div className="about-prose__copy">
           {paragraphs.map((paragraph) => (
-            <p className="about-prose__paragraph" key={paragraph.slice(0, 24)}>
-              {paragraph}
+            /* **`aria-label` carries the whole sentence.** The words are split
+               into spans so they can arrive in groups, and a screen reader
+               meeting a paragraph of separate spans reads it as fragments. The
+               service pages solve it the same way — see `ServiceWords`. */
+            <p
+              className="about-prose__paragraph"
+              key={paragraph.slice(0, 24)}
+              aria-label={paragraph}
+              data-prose-line
+            >
+              {paragraph.split(/\s+/).map((word, index, all) => (
+                <Fragment key={`${word}-${index}`}>
+                  <span data-prose-word>{word}</span>
+                  {index < all.length - 1 ? " " : null}
+                </Fragment>
+              ))}
             </p>
           ))}
         </div>
@@ -98,6 +115,8 @@ export default function AboutPage() {
       <MediaReveal />
       <MediaCluster />
       <SectionWash />
+      <ProseReveal />
+      <AboutJourney />
 
       <main
         className="service-page service-page--about"
@@ -300,21 +319,123 @@ export default function AboutPage() {
             wash spans from the big picture opening to whatever carries
             `data-wash-end`, so extending it is moving that marker rather than
             retuning anything. */}
-        <ProseSection
-          id="about-values-title"
-          title={about.values.title}
-          paragraphs={about.values.paragraphs}
-          washEnd
-        />
+        {/* **The two notes are one block that replaces itself.** Owner, pointing
+            at a service page: that movement, with the heading staying where it
+            is and changing rather than travelling with its copy. So the heading
+            sits outside the stage — which is also what lets it be announced.
 
-        {/* **On white, and that is the instruction rather than an oversight.**
-            The yellow runs to the end of the section above; this one sits after
-            it, so the page has two grounds and this is the second. */}
-        <ProseSection
-          id="about-venture-title"
-          title={about.venture.title}
-          paragraphs={about.venture.paragraphs}
-        />
+            It carries `data-wash-end`: the page's colour changes over this
+            block, and the pin makes it the longest thing on the page. */}
+        <section
+          className="about-journey"
+          aria-labelledby="about-journey-title"
+          data-route-section
+          data-enter
+          data-enter-mode="none"
+          data-wash-end
+        >
+          <div className="about-journey__viewport" data-journey>
+            <Container className="about-journey__layout">
+              {/* Swapped by `AboutJourney` as the note behind it changes.
+                  `aria-live` because the text under it changes without the page
+                  navigating, and a reader who cannot see the swap gets nothing
+                  otherwise. */}
+              <h2
+                className="about-journey__title"
+                id="about-journey-title"
+                data-journey-title
+                aria-live="polite"
+              >
+                {about.notes[0].title}
+              </h2>
+
+              <div className="about-journey__stage" data-journey-stage>
+                {about.notes.map((note) => (
+                  <article
+                    className="about-journey__card"
+                    key={note.title}
+                    data-journey-card
+                    data-journey-heading={note.title}
+                  >
+                    {note.paragraphs.map((paragraph) => (
+                      /* `aria-label` carries the unsplit sentence; the spans are
+                         only there so the words can leave in groups. */
+                      <p
+                        className="about-journey__paragraph"
+                        key={paragraph.slice(0, 24)}
+                        aria-label={paragraph}
+                      >
+                        {paragraph.split(/\s+/).map((word, index, all) => (
+                          <Fragment key={`${word}-${index}`}>
+                            <span data-journey-word>{word}</span>
+                            {index < all.length - 1 ? " " : null}
+                          </Fragment>
+                        ))}
+                      </p>
+                    ))}
+                  </article>
+                ))}
+              </div>
+            </Container>
+          </div>
+        </section>
+
+        {/* **The last thing on the page, and the owner asked for it as a
+            title.** So it wears the display face at a heading's size, centred,
+            and it is a `<p>` — 211 characters announced as a landmark is not a
+            heading, whatever it is set in. See `about.closing`.
+
+            No `aria-labelledby`, and that is not an omission: the section has
+            nothing to name it but the sentence itself, and SectionEnter reads
+            `inner ?? heading ?? section`, so a section without one triggers on
+            its own box. The plate above does the same.
+
+            It sits on the page's third ground. The wash finishes at the journey
+            above — `data-wash-end` — and a scrubbed tween holds its end state
+            past its trigger, so everything below carries `--wash-about-end`
+            rather than draining back to white. */}
+        <section
+          className="about-statement"
+          data-route-section
+          data-wash-close
+        >
+          <Container>
+            <p className="about-statement__line">{about.closing}</p>
+          </Container>
+        </section>
+
+        {/* **The client list, in the arrangement the owner pointed at**: the
+            label on the left, the names in two columns on the right. That is
+            also this page's own shape — the history and the notes both put a
+            heading on columns 1-4 and their content on 6-12 — so the reference
+            supplies the arrangement and the page supplies the type.
+
+            A real `<ul>`. Seven names in two columns is a list whatever it is
+            drawn as, and a screen reader that announces "list, 7 items" is
+            telling the reader something the columns tell everyone else.
+
+            The names themselves are the delivered archive, not the invented
+            eight on the Clients page — see `about.clients` for which is which
+            and for the one thing the owner should decide knowingly. */}
+        <section
+          className="about-clients"
+          aria-labelledby="about-clients-title"
+          data-route-section
+        >
+          <Container className="about-clients__inner">
+            <h2 className="about-clients__title" id="about-clients-title">
+              {about.clients.title}
+            </h2>
+
+            <ul className="about-clients__list">
+              {about.clients.names.map((name) => (
+                <li className="about-clients__name" key={name}>
+                  {name}
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </section>
 
       </main>
 
