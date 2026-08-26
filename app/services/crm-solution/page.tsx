@@ -5,9 +5,12 @@ import { SiteFooter } from "../../../components/layout/SiteFooter";
 import { HeaderSpace } from "../../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
+import { PatternDrift } from "../../../components/services/PatternDrift";
+import { ServiceHeroBars } from "../../../components/services/ServiceHeroBars";
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
 import { crmSolution } from "../../../content/crm-solution";
 import { products } from "../../../content/home";
+import { crmSolutionPattern } from "../../../lib/crm-solution-pattern";
 import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
@@ -37,6 +40,7 @@ export default function CrmSolutionsPage() {
     <>
       <SectionEnter />
       <ServicePageMotion />
+      <PatternDrift />
 
       <main
         className="service-page service-page--crm-solution"
@@ -69,7 +73,12 @@ export default function CrmSolutionsPage() {
               className="service-hero__pattern service-hero__pattern--crm-solution"
               aria-hidden="true"
               data-service-hero-pattern
-            />
+            >
+              <ServiceHeroBars
+                className="service-hero__bars"
+                pattern={crmSolutionPattern}
+              />
+            </div>
 
             <p className="service-hero__support" data-service-hero-support>
               {crmSolution.support}

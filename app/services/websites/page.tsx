@@ -5,9 +5,12 @@ import { SiteFooter } from "../../../components/layout/SiteFooter";
 import { HeaderSpace } from "../../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
+import { PatternDrift } from "../../../components/services/PatternDrift";
+import { ServiceHeroBars } from "../../../components/services/ServiceHeroBars";
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
 import { websites } from "../../../content/websites";
 import { products } from "../../../content/home";
+import { websitesPattern } from "../../../lib/websites-pattern";
 import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
@@ -37,6 +40,7 @@ export default function WebPlatformsAppsPage() {
     <>
       <SectionEnter />
       <ServicePageMotion />
+      <PatternDrift />
 
       <main
         className="service-page service-page--websites"
@@ -69,7 +73,12 @@ export default function WebPlatformsAppsPage() {
               className="service-hero__pattern service-hero__pattern--websites"
               aria-hidden="true"
               data-service-hero-pattern
-            />
+            >
+              <ServiceHeroBars
+                className="service-hero__bars"
+                pattern={websitesPattern}
+              />
+            </div>
 
             <p className="service-hero__support" data-service-hero-support>
               {websites.support}

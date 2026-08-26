@@ -5791,88 +5791,87 @@ video {
   }
 }
 
-/* The cleaned alpha channel is used as a mask: the geometry stays byte-for-
-   byte identical while every fragment takes one flat brand purple. */
+/* **The heroes draw their bars; none of them is a mask any more.** Owner,
+   2026-08-26: the same movement on every service pattern, each keeping its OWN
+   drawing rather than taking Branding's. A bar inside a mask is pixels — there
+   is no element to move — so all five PNGs were read back out of their own alpha
+   channels by `SVG/trace-pattern.py` and are drawn as paths.
+
+   So this rule is geometry and nothing else now. It used to carry a flat
+   `background` and the AI page's mask, which every other variant then had to
+   undo — `--lines` and `--drawn` have been undoing it since the Blog and Case
+   Studies started drawing their own bars, and each new drawing added a third
+   place to keep in step. A base that does not paint has nothing to undo.
+
+   The PNGs stay in `public/`. They are the source each of these was traced
+   from, and the tracer is repeatable against them. */
 .service-hero__pattern {
   position: absolute;
   top: 50%;
   right: 0;
   width: min(100%, 30rem);
   aspect-ratio: 1447 / 1087;
-  background: var(--accent);
   transform: translateY(calc(-50% - 50px));
-  -webkit-mask-image: url("/ai-automation-pattern.png");
-  mask-image: url("/ai-automation-pattern.png");
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  mask-size: contain;
 }
 
 /* Every service keeps the same artwork box and responsive dimensions while
-   supplying its own geometry through a page-specific mask. */
-/* **The drawing System Integration left behind, on the page that replaced it in
-   the list.** Owner's call, 2026-08-24, looking at the new hero: it needs a
-   pattern like the others, and that one. So the artwork was recovered from the
-   commit that deleted it and renamed for the page that carries it now — the
-   file was `system-integration-pattern-v2.png` and a page called UX/UI &
-   Branding should not be masked by a file named after a service the site no
-   longer offers.
+   supplying its own geometry, and its own colour, on top of it.
 
-   Butter, which is the tint that came with it and the one tint no other hero
-   pattern is using: mint, sky and lilac are taken by the three below and
-   AI & Automation asks for `--accent` from the base rule. Four services with a
-   pattern each and four tints, so the set closes. */
-.service-hero__pattern--branding {
-  background: var(--tint-butter-bar);
-  -webkit-mask-image: url("/ux-ui-branding-pattern.png");
-  mask-image: url("/ux-ui-branding-pattern.png");
+   **Each hero wears its own card's colour.** Owner, 2026-08-26, with the
+   homepage Different section on screen: take the stronger colour from each card,
+   not the pale background. So the pairing below is not a choice made here — it
+   is read off `.difference-card--one` through `--five` and the order the boxes
+   are authored in, and `pattern-drift.test.mjs` asserts the two agree.
+
+       Branding         box 1   lilac
+       Websites         box 2   butter
+       Software         box 3   mint
+       CRM Solution     box 4   sky
+       AI & Automation  box 5   clay
+
+   Every one of the five moved. The old set was a permutation of this one —
+   Branding had butter and Websites lilac, Software had sky and CRM mint — which
+   is what happens when colours are assigned a page at a time as the pages get
+   written, rather than from the one place that already names them.
+
+   `--accent` stays as the fallback for a hero that names no tint. There is no
+   such hero now: AI & Automation was it, wearing the brand purple because it was
+   the drawing the base rule masked with, and it has a modifier of its own. */
+.service-hero__bars {
+  width: 100%;
+  height: 100%;
+  fill: var(--accent);
 }
 
-/* This was one of two patterns naming a colour instead of asking for one; the
-   other belonged to System Integration and its drawing is directly above. The
-   mint was #ace5ca, which is not any of the four tints and not a fifth one the
-   site is allowed to have, so it joins the family its siblings are already in. */
-.service-hero__pattern--crm-solution {
-  background: var(--tint-mint-bar);
-  -webkit-mask-image: url("/crm-solutions-pattern-v5.png");
-  mask-image: url("/crm-solutions-pattern-v5.png");
+.service-hero__pattern--branding .service-hero__bars {
+  fill: var(--tint-lilac-bar);
 }
 
-/* Same redaction language as the AI page -- bars snapped to a shared column
-   grid, several to a row -- in a different arrangement. Drawn at 1447x1087 like
-   the rest, so it no longer needs the mask-size correction the old artwork did. */
-.service-hero__pattern--software {
-  background: var(--tint-sky-bar);
-  -webkit-mask-image: url("/custom-software-pattern-v5.png");
-  mask-image: url("/custom-software-pattern-v5.png");
+.service-hero__pattern--websites .service-hero__bars {
+  fill: var(--tint-butter-bar);
 }
 
-/* Same redaction language as the AI page, different arrangement. */
-.service-hero__pattern--websites {
-  background: var(--tint-lilac-bar);
-  -webkit-mask-image: url("/web-platforms-apps-pattern-v6.png");
-  mask-image: url("/web-platforms-apps-pattern-v6.png");
+.service-hero__pattern--software .service-hero__bars {
+  fill: var(--tint-mint-bar);
 }
 
-/* The blog draws its bars instead of masking them. Same language as the five
-   above, but as the vector it already has rather than a sixth PNG of one, so
-   everything the mask variants set has to be undone rather than swapped: the
-   flat fill would paint a block behind the drawing and the mask would cut it
-   to the AI page's geometry.
+.service-hero__pattern--crm-solution .service-hero__bars {
+  fill: var(--tint-sky-bar);
+}
 
-   The box takes the drawing's own 716x336 rather than the 1447x1087 every mask
-   is cut at. RedactedLines is preserveAspectRatio="none", so it stretches to
-   whatever box it is given and would simply have been drawn wrong in the
-   masks' shape rather than letterboxed inside it. */
+.service-hero__pattern--ai-automation .service-hero__bars {
+  fill: var(--tint-clay-bar);
+}
+
+/* The blog draws its bars from the vector it already has rather than from a
+   trace of a PNG of one. The box takes the drawing's own 716x336 rather than
+   the 1447x1087 the service artwork is cut at: RedactedLines is
+   preserveAspectRatio="none", so it stretches to whatever box it is given and
+   would simply have been drawn wrong in the services' shape rather than
+   letterboxed inside it. */
 .service-hero__pattern--lines {
   width: min(100%, 34rem);
   aspect-ratio: 716 / 336;
-  background: none;
-  -webkit-mask-image: none;
-  mask-image: none;
 }
 
 .service-hero__lines {
@@ -5882,10 +5881,7 @@ video {
 }
 
 /* Case Studies draws its bars too, but from the generator rather than from a
-   stored vector: BlogPattern at plate density, seeded on the route. Everything
-   the mask variants set has to be undone the same way it is for the Blog above
-   — the flat fill would paint a block behind the drawing and the mask would
-   cut it to the AI page's geometry.
+   stored vector: BlogPattern at plate density, seeded on the route.
 
    The box takes the plate's own 242x136 (22 columns x 11 units by 17 rows x 8),
    which is near enough 16:9. The drawing is preserveAspectRatio="xMidYMid meet"
@@ -5894,9 +5890,6 @@ video {
 .service-hero__pattern--drawn {
   width: min(100%, 32rem);
   aspect-ratio: 242 / 136;
-  background: none;
-  -webkit-mask-image: none;
-  mask-image: none;
 }
 
 .service-hero__drawing {

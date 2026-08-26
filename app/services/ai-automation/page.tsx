@@ -5,9 +5,12 @@ import { SiteFooter } from "../../../components/layout/SiteFooter";
 import { HeaderSpace } from "../../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { ServicePageMotion } from "../../../components/services/ServicePageMotion";
+import { PatternDrift } from "../../../components/services/PatternDrift";
+import { ServiceHeroBars } from "../../../components/services/ServiceHeroBars";
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
 import { aiAutomation } from "../../../content/ai-automation";
 import { products } from "../../../content/home";
+import { aiAutomationPattern } from "../../../lib/ai-automation-pattern";
 import { buildServiceCards } from "../../../lib/service-cards";
 
 export const metadata: Metadata = {
@@ -43,6 +46,7 @@ export default function AiAutomationPage() {
     <>
       <SectionEnter />
       <ServicePageMotion />
+      <PatternDrift />
 
       <main
         className="service-page service-page--ai-automation"
@@ -73,10 +77,15 @@ export default function AiAutomationPage() {
             </div>
 
             <div
-              className="service-hero__pattern"
+              className="service-hero__pattern service-hero__pattern--ai-automation"
               aria-hidden="true"
               data-service-hero-pattern
-            />
+            >
+              <ServiceHeroBars
+                className="service-hero__bars"
+                pattern={aiAutomationPattern}
+              />
+            </div>
 
             <p className="service-hero__support" data-service-hero-support>
               {aiAutomation.support}

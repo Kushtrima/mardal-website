@@ -445,10 +445,20 @@ test("server-renders the AI & Automation service page", async () => {
   assert.match(html, /Turn repetitive work/);
   assert.match(html, /into intelligent workflows\./);
   assert.match(html, /Build smarter operations with AI agents\./);
-  assert.match(html, /class="service-hero__pattern"/);
+  /* It has a modifier of its own now. It was the one hero without one — the
+     drawing the base rule masked with, so it took the brand purple by being
+     first — and it wears its homepage card's clay like the other four. */
+  assert.match(
+    html,
+    /class="service-hero__pattern service-hero__pattern--ai-automation"/,
+  );
+  /* `service-hero__bar` is bounded because `service-hero__bars` — the class the
+     traced drawing renders under since all five heroes stopped being masks — is
+     a prefix of it, and an unbounded guard failed the day that arrived. This is
+     the third time a prefix match has caught something it was not written for. */
   assert.doesNotMatch(
     html,
-    /service-hero__kicker|service-hero__bar|service-hero__pattern-image/,
+    /service-hero__kicker|service-hero__bar(?![\w-])|service-hero__pattern-image/,
   );
 
   // The band of bars that used to sit under the heading is gone, and nothing
@@ -600,6 +610,9 @@ test("server-renders the Branding service page", async () => {
     /class="service-hero__pattern service-hero__pattern--branding"/,
   );
 
+  /* The drawing is in the HTML rather than in a mask — counted for all five
+     heroes together in "every service hero draws its own bars" below. */
+
   /* **It is a real page now, not the placeholder.** Both halves: the journey
      exists, and the heading that stood in for one is gone. A route that was
      half-converted would still render and still say Branding. */
@@ -699,6 +712,61 @@ test("server-renders the Software service page", async () => {
   assert.doesNotMatch(html, /service-overview/);
   assert.doesNotMatch(html, /When standard software no longer fits/);
   assert.doesNotMatch(html, /Custom software is built for a specific/);
+});
+
+test("every service hero draws its own bars", async () => {
+  /* **The owner's instruction in one test.** 2026-08-26: the same movement on
+     every service pattern, each page keeping its OWN drawing rather than taking
+     Branding's. All five were PNGs used as CSS masks; a bar in a mask is pixels,
+     with no element to move, so each was traced back out of its own alpha.
+
+     The counts are what makes this bite. Losing a trace and rendering an empty
+     `<svg>`, or wiring two pages to one data file, would leave every other
+     assertion on those pages passing and the heroes wrong. */
+  const HEROES = [
+    { path: "/services/branding", bands: 16, bars: 303 },
+    { path: "/services/ai-automation", bands: 16, bars: 355 },
+    { path: "/services/software", bands: 15, bars: 40 },
+    { path: "/services/crm-solution", bands: 16, bars: 44 },
+    { path: "/services/websites", bands: 14, bars: 46 },
+  ];
+
+  const drawings = new Map();
+
+  for (const { path, bands, bars } of HEROES) {
+    const html = await (await render(path)).text();
+    const svg = html.match(/<svg[^>]*data-pattern-bars[\s\S]*?<\/svg>/);
+    assert.ok(svg, `${path} draws no bars`);
+
+    /* Two paths per band, one canvas width apart, which is what makes the belt
+       loop without a seam; the second copy is outside the viewBox until
+       something moves it, so nothing is visible twice. */
+    assert.equal((svg[0].match(/data-pattern-band=/g) ?? []).length, bands, path);
+    assert.equal((svg[0].match(/<path/g) ?? []).length, bands * 2, path);
+    assert.equal((svg[0].match(/M-?\d+ -?\d+h/g) ?? []).length, bars * 2, path);
+
+    /* Paths rather than one rect per bar — two `<rect>`s sharing an edge are
+       rasterised separately and leave a pale line along the join, which is what
+       the owner saw the first time this shipped. On Branding it is the
+       difference between 572 pale pixels and 9. */
+    assert.equal((svg[0].match(/<rect/g) ?? []).length, 0, path);
+
+    assert.deepEqual(
+      [...new Set(svg[0].match(/translate\([^)]*\)/g) ?? [])].sort(),
+      ["translate(-1447 0)", "translate(1447 0)"],
+      path,
+    );
+
+    /* Server-rendered, which is the whole reason the motion is a separate client
+       component: no `<svg>` here would mean a hero blank until hydration and
+       blank forever with scripting off. */
+    assert.match(svg[0], /class="service-hero__bars"/);
+    drawings.set(path, svg[0]);
+  }
+
+  /* **Five drawings, not one copied five times.** Every count above would still
+     pass if all five pages imported the same data file. */
+  assert.equal(new Set(drawings.values()).size, HEROES.length);
 });
 
 test("server-renders the CRM Solution service page", async () => {
