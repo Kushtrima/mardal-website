@@ -1847,3 +1847,90 @@ test("the fusion reveal draws the mark and uncovers the words", () => {
      a page that no longer has the section. */
   assert.match(code, /context\.revert\(\)/);
 });
+
+test("the Why boxes start where the Fusion block starts", () => {
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  const bare = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
+
+  /* **One left edge for both sections, and it is a grid line.**
+
+     Fusion was centred on a 700 measure and the boxes sat on equal thirds — two
+     rules that can only agree at ONE window width, solved: 2207px. At 1808 they
+     were 65px apart and the distance grew with the window, which is the kind of
+     near-miss that reads as a mistake rather than a decision.
+
+     Both ways of closing it were built. Deriving the boxes' first column from
+     the centred edge — `calc(50% - measure / 2 - gap)` — aligned exactly and
+     cost the brick, because a first column narrower than the other two cannot
+     hold a card. The owner wants the brick, so the Fusion block moved onto the
+     grid instead. */
+  assert.match(bare, /--statement-measure:\s*700px/);
+  assert.match(bare, /--column-gap:\s*clamp\(0\.65rem, 0\.9vw, 0\.85rem\)/);
+
+  /* The measure is kept and the centring is gone: the block is three columns of
+     the page's own grid with its content on 2 to 3. */
+  const fusion = bare.indexOf(".container.fusion-container {");
+  assert.ok(fusion > 0, "the fusion column has no rule");
+  const container = bare.slice(fusion, bare.indexOf("\n}", fusion));
+  assert.match(container, /grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(container, /gap:\s*var\(--column-gap\)/);
+  assert.doesNotMatch(container, /max-width/);
+
+  const placed = bare.indexOf(".fusion-title,\n.fusion-copy {");
+  assert.ok(placed > 0, "the fusion content is not placed on the grid");
+  const rule = bare.slice(placed, bare.indexOf("\n}", placed));
+  assert.match(rule, /grid-column:\s*2 \/ -1/);
+  assert.match(rule, /max-width:\s*var\(--statement-measure\)/);
+
+  /* **The three grids are the same three columns.** The Fusion container, the
+     Why heading and the Why cards — a column count or a gap changed in one and
+     not the others puts the heading, the boxes and the statement above them out
+     of line with each other. */
+  for (const selector of [".why-intro {", ".why-grid {"]) {
+    const at = bare.indexOf(selector);
+    assert.ok(at > 0, `${selector} has no rule`);
+    const grid = bare.slice(at, bare.indexOf("\n}", at));
+    assert.match(grid, /grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\)/);
+    assert.match(grid, /gap:\s*var\(--column-gap\)/, `${selector} sets its own gap`);
+  }
+
+  /* The identity, checked as arithmetic rather than as a string: three equal
+     columns and one gap put every one of these blocks on the same line. */
+  for (const V of [1025, 1200, 1440, 1808, 2560]) {
+    const gutter = Math.min(Math.max(0.04 * V, 16), 40);
+    const gap = Math.min(Math.max(0.009 * V, 10.4), 13.6);
+    const column = (V - 2 * gutter - 2 * gap) / 3;
+    const line = gutter + column + gap;
+    assert.ok(column > 200, `a column is ${column}px at ${V}`);
+    /* **And the statement is the smaller of its measure and its column**, which
+       is what a `max-width` does everywhere else on this site. It gets the full
+       700 from about 1130 up; between the 64rem split and there the two columns
+       are the narrower of the two and it sits at 627 to 700. That is the block
+       narrowing gracefully, not a break — but it is a real change from the
+       centred version, which held 700 down to a 780px window. */
+    const statement = Math.min(700, 2 * column + gap);
+    assert.ok(statement >= 600, `the statement block is ${statement}px at ${V}`);
+    assert.ok(line > gutter, `the line is at the gutter at ${V}`);
+  }
+
+  /* **The brick: 2 and 3 on the first row, 1 and 2 on the second.** It steps
+     left by exactly one column as it comes down, which is only true while the
+     three columns are equal — and is why the alignment is solved on the Fusion
+     block rather than here. It was briefly a 2x2 in the right-hand two thirds
+     and the owner asked for the arrangement back. */
+  const places = ["one", "two", "three", "four"].map((name) => {
+    const at = bare.indexOf(`.why-card--${name} {`);
+    assert.ok(at > 0, `card ${name} has no placement`);
+    const card = bare.slice(at, bare.indexOf("}", at));
+    return {
+      column: card.match(/grid-column:\s*(\d+)/)?.[1],
+      row: card.match(/grid-row:\s*(\d+)/)?.[1],
+    };
+  });
+  assert.deepEqual(places, [
+    { column: "2", row: "1" },
+    { column: "3", row: "1" },
+    { column: "1", row: "2" },
+    { column: "2", row: "2" },
+  ]);
+});

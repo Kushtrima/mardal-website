@@ -485,6 +485,25 @@
      there. A flat 40 would cost a 390 screen 48px of content, which is the
      room the product facts need to hold one line. */
   --page-gutter: clamp(1rem, 4vw, 2.5rem);
+
+  /* **The page's statement column, and the one number two sections share.**
+
+     The Fusion block is held to this and centred; the Why Mardal block starts
+     where it starts. Before 2026-08-26 the second was a coincidence rather than
+     a rule — Fusion sat on a centred 700 and Why sat on equal thirds, and the
+     two edges could only meet at ONE window width. Solved: 2207px. Everywhere
+     else they were apart, by 65px at 1808 and by more as the window widened,
+     which is the distance that reads as a mistake rather than as a decision.
+
+     Now the Why grid's first column is derived from this, so the edges are the
+     same line by construction and cannot drift. Move this and both move.
+
+     `--column-gap` is a token for the same reason, and is named for the page
+     rather than for a section: the Fusion statement, the Why Mardal boxes and
+     the industries roll all sit on these three columns, and a gap changed in one
+     of them and not the others puts three sections on three different edges. */
+  --statement-measure: 700px;
+  --column-gap: clamp(0.65rem, 0.9vw, 0.85rem);
   /* The space between any two sections, top to bottom. Each section pays half
      of it either side, so this is the number you actually see — not twice it.
      The one exception is the section under the hero, which pays the whole
@@ -2127,15 +2146,39 @@ video {
   padding-block: var(--section-space-lg);
 }
 
-/* The one block on the page that does not fill the glass. Held to 900 and
-   centred, so the two halves stand near enough to read as one statement rather
-   than as two things at opposite ends of a 1360px line. Written against
-   `.container` because that rule sets `max-width: none` to beat a Tailwind
-   utility of the same name, and a single class would lose to it. Below 900 the
-   container's own width is the smaller of the two and this never binds, so the
-   phone layout is untouched without a query. */
+/* **On the page's own grid, and left-aligned on it rather than centred.**
+
+   The measure has not changed: the two halves are still held to
+   `--statement-measure` so they stand near enough to read as one statement
+   rather than as two things at opposite ends of a 1360px line. What changed is
+   where that block sits. It was centred on the window, and the Why Mardal boxes
+   below sit on equal thirds — two rules that can only agree at one width, solved:
+   2207px. At 1808 they were 65px apart and the distance grew with the window,
+   which is the kind of near-miss that reads as a mistake rather than a decision.
+
+   Owner, with a line drawn down a screenshot: the boxes should start where this
+   does. Both ways of closing it were built. Deriving the boxes' first column
+   from this block's centred edge aligned perfectly and cost the brick — a
+   narrow first column cannot hold a card. So this moved instead: same three
+   columns as the section below, content on 2 to 3, capped at the measure.
+
+   The block is no longer centred on the page. Its left edge is a grid line the
+   heading and all four boxes share, and the empty third to its left is the same
+   third the label and the paragraph stand in below. One column system rather
+   than an island in the middle of one.
+
+   Written against `.container` because that rule sets `max-width: none` to beat
+   a Tailwind utility of the same name, and a single class would lose to it. */
 .container.fusion-container {
-  max-width: 700px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--column-gap);
+}
+
+.fusion-title,
+.fusion-copy {
+  grid-column: 2 / -1;
+  max-width: var(--statement-measure);
 }
 
 .fusion-title {
@@ -2263,10 +2306,27 @@ video {
   padding-block: var(--section-space-lg);
 }
 
+/* **Equal thirds, and the Fusion block above comes to THEM.**
+
+   The first attempt at aligning the two sections derived this column from the
+   Fusion block's centred edge — `calc(50% - measure / 2 - gap)`. It aligned
+   exactly, at every width, and it cost the arrangement: a first column narrower
+   than the other two cannot hold a card, so the brick had to become a 2x2. The
+   owner wants the brick.
+
+   A brick needs equal columns — the second row is the first row moved by exactly
+   one of them — so the columns went back and `.fusion-container` moved onto this
+   grid instead. Its edge is now a grid line rather than a centred one, which is
+   the only arrangement that gives all three of: equal cards, a second row offset
+   by one, and one left edge shared with the section above.
+
+   The intro and the grid below share one gap. They were 1rem and 0.85rem, which
+   put the heading and the cards under it 0.8px apart — invisible, and two grids
+   that happen to nearly agree rather than one that does. */
 .why-intro {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(0.75rem, 1vw, 1rem);
+  gap: var(--column-gap);
   align-items: start;
 }
 
@@ -2298,7 +2358,7 @@ video {
 .why-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(0.65rem, 0.9vw, 0.85rem);
+  gap: var(--column-gap);
   /* The lede sits in this grid's first column, so this one margin carries the
      whole block — the copy and the four cards move together. Less the 120px it
      has been pulled up by. */
@@ -2992,6 +3052,11 @@ video {
   }
 }
 
+/* **A brick: 2 and 3 on the first row, 1 and 2 on the second.** The block steps
+   left by exactly one column as it comes down, which is only true while the
+   three columns are equal — and it is why the alignment with the section above
+   is solved up there rather than here. It was briefly a 2x2 in the right-hand
+   two thirds; the owner asked for the arrangement back. */
 .why-card--one {
   grid-column: 2;
   grid-row: 1;
@@ -5110,6 +5175,15 @@ video {
 
   .hero-copy__line {
     display: inline;
+  }
+
+  /* No three-column structure down here, so the Fusion block goes back to being
+     a centred measure of its own — the container is already narrower than it
+     from about 780 down, and this never binds. */
+  .container.fusion-container {
+    display: block;
+    max-width: var(--statement-measure);
+    margin-inline: auto;
   }
 
   .why-intro {
