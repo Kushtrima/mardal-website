@@ -161,8 +161,44 @@
      bars are drawn in — always the same hue, so a card reads as one colour. */
   --tint-lilac: #dacdf9;
   --tint-lilac-bar: #c3aef3;
-  --tint-butter: #f8df9b;
-  --tint-butter-bar: #f1ce6d;
+  /* **The owner's yellow, and a bar derived from it.** 2026-08-26, pointing at
+     the Websites box: this background, and the pattern the same yellow slightly
+     darker.
+
+     `#faff89` is his and is used exactly as given — the same value he gave for
+     the About page's wash, `--wash-about`. They are written twice rather than
+     pointed at each other because they are two decisions that happen to agree: a
+     card tint belongs to this family, a page wash belongs to that page, and
+     coupling them would invent a relationship he has not stated. Worth knowing
+     if one of them ever moves.
+
+     **The bar is set by measured visibility, not by the family's HSL step**, and
+     the reason is this hue. Every other pair here steps down 7 to 12 points of
+     lightness and 3 to 5 of saturation, so that was tried first: S 96, L 67,
+     `#f4fb5a`. Against the panel it measures 1.041:1, where the rest of the
+     family reads at 1.16 to 1.53 — the pattern would have been the faintest on
+     the page rather than one of five that match.
+
+     A fully saturated yellow is already near the top of the luminance range, so
+     taking lightness out of it barely moves what the eye sees: L-10 gives 1.041
+     and L-26 still only gives 1.073. The step in HSL was always a proxy for how
+     visible the bars are, and on this hue the proxy breaks.
+
+     So saturation carries it instead — and then the owner asked for darker
+     again, which is why this ends up outside the family rather than inside it.
+
+     Hue held at 63 throughout. `#e1e774` at 1.24:1 landed between mint and sky,
+     which was the family's range and still read too faint on this panel: a
+     bright panel needs more separation than a mid one to show the same amount of
+     pattern. `#c2c936` is S 58, L 50 and measures 1.69:1 — above clay's 1.53 and
+     the strongest pattern on the page.
+
+     The saturation comes down as the lightness does, deliberately. Holding S at
+     100 and only dropping L turns this hue into a lime by the time it is dark
+     enough to see: `#d7e01f` at the same sort of contrast is a different colour
+     rather than a darker one. Muted, it stays recognisably the panel's yellow. */
+  --tint-butter: #faff89;
+  --tint-butter-bar: #c2c936;
   --tint-mint: #9febc2;
   --tint-mint-bar: #6fdd9f;
   --tint-sky: #b7dbf6;
