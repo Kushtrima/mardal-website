@@ -65,6 +65,22 @@
      here, rather than from the browser three pages in. A new colour token that
      follows the page takes this form or it is a bug. */
   --canvas: light-dark(#ffffff, #000000);
+
+  /* **The wash the About photographs sit on.** Owner, 2026-08-26, with a swatch:
+     this colour when entering that section.
+
+     `#faff89` is his, used exactly as given. It is safe under the text that can
+     appear over it while it is on — 17.7:1 against `--ink`, 16.4 against body
+     copy, 7.0 against the muted grey. White would be 1.06 and fails, which is
+     why nothing white sits on the canvas; the footer carries its own slab.
+
+     **The dark half is derived, not given.** Hue held at 63, saturation dropped
+     from 100 to 26 and lightness to 8, which is where this site's dark canvas
+     sits — a page background at L 77 in dark mode would be a lamp. It reads as
+     a tint of the same yellow rather than as a different colour, and holds
+     17.6:1 against the dark page's ink. If he wants a different one it is this
+     one value. */
+  --wash-about: light-dark(#faff89, #191a0f);
   /* The ground a panel sits on: the mega menu, the Why Mardal cards, the boxes.
      On black it is white, because a lit panel is how those read against the
      page. On white it steps down to the lavender it wore when the page was
@@ -179,7 +195,12 @@
   /* Typography */
   --type-body: var(--font-geist), Arial, Helvetica, sans-serif;
   --type-display: var(--font-geist), Arial, Helvetica, sans-serif;
-  /* h1 only. Everything else stays on --type-display. */
+  /* The display face. It was "h1 only" when that line was written and has not
+     been true for a long time — twenty-one rules reach for it, including the
+     service CTA headings, the card titles and the Different boxes, all of which
+     are h2 and below. What it actually marks is the editorial voice rather than
+     a level: the sans carries anything a reader is meant to move through, this
+     carries the things they are meant to stop at. */
   --type-title: "CS Alistair", var(--font-geist), Arial, Helvetica, sans-serif;
 
   /* Three sizes, and only three. Every piece of text on the site is one of
@@ -5885,58 +5906,246 @@ video {
   padding-block: clamp(4rem, 12vh, 9rem) clamp(5rem, 14vh, 11rem);
 }
 
-/* **The frame is five slices of one picture.** `MediaReveal` offsets them
-   vertically at the top of the scroll window, alternating up and down, and
-   brings them home staggered so they land flush — the entrance the owner picked
-   from four, after a scale-settle, a sideways open and a downward uncover were
-   each replaced.
+/* The frame the picture is held in and resolves into. `MediaReveal` pins it and
+   opens it over the hold, so `overflow: clip` is what the opening is cut by.
 
-   Clipped, because the whole effect is slices standing where the frame is not:
-   without this they show above and below the plate while they are still out.
-
-   Flex children with `flex: 1 1 0` rather than absolute positioning: adjacent
-   flex items share an edge and the browser tiles them without a gap at
-   fractional widths, which absolute boxes at `left: 20%` intervals do not. */
+   It was five clipped columns for a version, each carrying a copy of the whole
+   picture, and that went with the entrance it was built for. So did the
+   `min-width` those copies needed: the base stylesheet holds every `img` to
+   `max-width: 100%`, the obvious `max-width: none` does NOT survive the
+   minifier — it is dropped as an initial value without regard for the rule it
+   overrides — and `min-width` was what could not be dropped. Nothing here needs
+   to beat that rule any more, because the picture is the frame's own width. */
 .about-plate__frame {
-  display: flex;
   overflow: clip;
   width: 100%;
   aspect-ratio: 16 / 9;
   margin: 0;
 }
 
-.about-plate__slice {
-  position: relative;
-  overflow: clip;
-  flex: 1 1 0;
-}
-
-/* Each copy is the WHOLE picture, sized to the frame and slid left by its own
-   index, so five clipped columns compose one photograph. `100%` here is the
-   slice, so the frame is `100% * var(--slices)`.
-
-   **`min-width` carries the size, and that is not a style preference.** The base
-   stylesheet holds every `img` to `max-width: 100%`, which clamps each copy to
-   its own slice — and the obvious answer, `max-width: none` on this rule, is
-   correct in the source and does not survive the build. The minifier drops it as
-   an initial value without accounting for the lower-specificity rule it was
-   written to defeat, so the served stylesheet had `width` and no `max-width` at
-   all. What shipped was five copies each 281px wide with `left: -281px` and
-   worse — four of the five sat entirely to the left of their own clip and drew
-   nothing, which is exactly what the owner saw.
-
-   `min-width` wins over `max-width` by the cascade's own rule — where they
-   conflict, the minimum is what the used width takes — and it is not an initial
-   value, so nothing can decide it is redundant. `width` stays beside it because
-   it is what the rule MEANS; `min-width` is what makes it survive. */
 .about-plate__image {
-  position: absolute;
-  top: 0;
-  left: calc(var(--slice) * -100%);
-  width: calc(100% * var(--slices));
-  min-width: calc(100% * var(--slices));
+  display: block;
+  width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* ── About: a heading beside its prose ──
+
+   Two sections wear this: the history under the big photograph, and the note on
+   how the studio works under the three rooms. It was `.about-story` while there
+   was one of them — a name for the history rather than for the shape — and the
+   second section is what made the difference matter.
+
+   Heading and prose side by side on the page's own twelve columns, which is the
+   arrangement the hero above already uses — the heading holds the left, the
+   reading column sits to the right of centre. A stacked heading-over-paragraphs
+   block was the alternative and gives this page a third full-width left-aligned
+   run after the hero and the plate; the split is what makes it read as a
+   section rather than as more of the same.
+
+   The measure is on the PROSE, not on the column, so the paragraph stops before
+   the grid does at large sizes.
+
+   **52ch, and the number is not the character count.** CSS `ch` is the width of
+   the `0` glyph, which is wider than an average letter — 62ch measured out at
+   about 80 real characters a line, well past the 45 to 75 that running text is
+   comfortable at. 52ch measures at 70. The unit and the thing it is named after
+   are not the same, and the difference here is a quarter of the line.
+
+   Measured at 320, 390, 600, 768, 900, 1024, 1025, 1200, 1440 and 1920: 70
+   characters a line everywhere from 600 up, and the split at 1024/1025 crosses
+   at 70 against 67, so there is no step in the measure at the breakpoint. */
+.about-prose {
+  padding-block: 0 clamp(5rem, 14vh, 11rem);
+}
+
+.about-prose__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(1rem, 1.35vw, 1.4rem);
+}
+
+/* **The display face, and set to be stopped at.** Owner: this in the other font,
+   the premium one, and bigger. It was the sans at 24-30px, which is the size a
+   label takes; this is the face the hero and the CTA headings carry, and the
+   distinction it marks is editorial rather than hierarchical — the sans is for
+   what a reader moves through, this is for what they stop at.
+
+   **On one line at every width, which is what bounds the size.** `Built Over
+   Time` is three words and turning it would be a decision about the copy, so the
+   ceiling is what the four-column slot can hold. Measured with the real face:
+   the heading needs 372px at the 4rem ceiling and the slot is 598 at 1920, 336
+   against 440 at 1440, 277 against 363 at 1200, and 237 against 304 just above
+   the split — where the slot is at its narrowest relative to the text, because
+   the column count changes there and the width does not.
+
+   `align-self: start` because a grid item stretches to its row, and this row is
+   as tall as the prose beside it. Nothing moved without it — text sits at the
+   top of its box either way — but a heading whose box is four lines tall is a
+   thing that reads as wrong the first time someone inspects it. */
+.about-prose__title {
+  grid-column: 1 / span 4;
+  align-self: start;
+  max-width: none;
+  margin: 0;
+  font-family: var(--type-title);
+  font-size: clamp(2.25rem, 4vw, 4rem);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-heading-xl);
+}
+
+.about-prose__copy {
+  display: grid;
+  grid-column: 6 / -1;
+  gap: 1.25em;
+}
+
+.about-prose__paragraph {
+  max-width: 52ch;
+  margin: 0;
+  font-size: var(--text-copy);
+  line-height: var(--service-leading-copy, 1.55);
+}
+
+/* One column below 64rem, not below 48.
+
+   The split was breaking at 48rem and the band just above it was the worst of
+   both: measured at a 769px window the reading column came out 406px, which is
+   49 characters a line — narrower than the phone gets when it stacks, on a
+   window nearly two and a half times as wide. Seven of twelve columns is a
+   comfortable measure at 1200 and a squeeze at 800.
+
+   Stacked, the heading sits over the prose and the paragraph keeps its own cap,
+   so the measure holds at every width below the split rather than tracking the
+   column. */
+@media (max-width: 64rem) {
+  .about-prose__title,
+  .about-prose__copy {
+    grid-column: 1 / -1;
+  }
+
+  .about-prose__title {
+    max-width: none;
+    margin-bottom: 1.25rem;
+  }
+}
+
+/* ── About: three rooms, scattered ──
+
+   Owner: smaller, and not aligned — something creative.
+
+   The first version was a tidy two-column composition with the two edges ending
+   level to within a dozen pixels, and level is exactly what he did not want. So
+   nothing here shares an edge with anything else. The three sit on one grid row
+   and are pushed down by their own amounts, which puts them on a diagonal: the
+   upright at the top left, the wide one starting a sixth of the way down and to
+   the right, the second upright halfway down and back toward the middle.
+
+   **Smaller, too.** Four, five and four columns of twelve, against six and five
+   and four before — so the largest is now 441px at a 1360 container where it was
+   671, and the white around them is most of the block. The space is the
+   arrangement; a scatter with everything packed tight is a grid.
+
+   **Tightened, on the owner's word: too much empty space.** The first scatter
+   put the three on columns 1-4, 7-11 and 5-8 and dropped the last one half the
+   block's width, which made a diagonal 1197px tall with white on three sides of
+   every picture. This one keeps the idea and closes it up: they sit in ADJACENT
+   column runs, 1-4, 5-7 and 8-12, and only the drops hold them apart. The block
+   is 791px where it was 1197, a third shorter, and the pictures read as one
+   thing rather than three adrift.
+
+   **No two share a column now, which is worth more than it looks.** The previous
+   arrangement had the wide one and an upright overlapping columns, so every
+   offset and every depth had to be checked against a clearance — and one of them
+   failed that check by 252px. Side by side there is no vertical clearance to
+   get wrong: they cannot collide whatever the entrance does to them.
+
+   **The offsets are in `cqw`, and getting there cost a bug.** They were written
+   as percentages, on the reasoning that a percentage margin resolves against
+   inline size and so would stay in proportion to the pictures. It does — but the
+   inline size of a GRID ITEM's containing block is its own grid area, not the
+   grid. So `52%` meant 52% of a 440px picture rather than of the 1360px block,
+   every offset came out at a third of what was intended, and the wide one and
+   the lower upright overlapped by 252px at 1920. Measured, not seen: they are
+   opaque and one simply covered the other.
+
+   `cqw` is the unit that means what the percentage was meant to mean, which is
+   why `.about-rooms__inner` is a container. It scales with the block, so the
+   clearances below hold at every width rather than at the one they were checked
+   at.
+
+   The drops are 0, 12 and 30 of the block's width, which at a 1360 container is
+   tops at 0, 163 and 408 and feet at 606, 534 and 791 — six numbers, no two the
+   same, which is the whole of what "not aligned" asks for. */
+.about-rooms {
+  padding-block: 0 clamp(5rem, 14vh, 11rem);
+}
+
+.about-rooms__inner {
+  display: grid;
+  /* So the offsets below can be a fraction of the BLOCK. Without it `cqw` reads
+     whatever the nearest container is, or the viewport. */
+  container-type: inline-size;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(1rem, 1.35vw, 1.4rem);
+}
+
+.about-rooms__frame {
+  /* All three on one row: the vertical placement is the margin below, not the
+     grid. Left to auto-placement, two items sharing a column would be pushed
+     onto rows of their own and the scatter would become a list. */
+  grid-row: 1;
+  overflow: clip;
+  margin: 0;
+  aspect-ratio: var(--room-ratio);
+}
+
+.about-rooms__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-rooms__frame--glass {
+  grid-column: 1 / span 4;
+}
+
+/* The smallest of the three and the one that falls furthest, which is what
+   stops three adjacent columns reading as a row. */
+.about-rooms__frame--timber {
+  grid-column: 5 / span 3;
+  margin-top: 30cqw;
+}
+
+.about-rooms__frame--window {
+  grid-column: 8 / span 5;
+  margin-top: 12cqw;
+}
+
+/* One column below 64rem, and the offsets come off with the grid. Four of twelve
+   is 235px at a 768 window — at that size the scatter is three thumbnails and a
+   lot of white, and a 52% margin is half the screen of nothing. Stacked, each is
+   the full column and reads at the size it was shot at.
+
+   The order is the authored one: tall, wide, short. It is the order in the
+   markup, so nothing has to be re-sorted to get it. */
+@media (max-width: 64rem) {
+  .about-rooms__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .about-rooms__frame--glass,
+  .about-rooms__frame--window,
+  .about-rooms__frame--timber {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    margin-top: 0;
+  }
 }
 
 /* The blog draws its bars from the vector it already has rather than from a

@@ -5,62 +5,56 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /**
- * A photograph arrives in slices that land flush.
+ * The page stops at the photograph while it resolves, then carries on.
  *
- * Each slice carries its own fifth of the picture. They start displaced along
- * the frame's short axis — alternating up and down, so the run reads as a set of
- * pieces rather than as one thing tilted — and come home at staggered times, the
- * last of them a little after the first. When they are all home the picture is
- * whole and nothing marks where the joins were.
+ * The frame is pinned for most of a screen of scroll. Over that hold it opens
+ * from a band across its middle to its whole height, and the picture inside
+ * settles from a little oversized to exactly its own size. Then the pin
+ * releases and the page resumes.
  *
- * **The fourth treatment this plate has had**, and the owner's own pick from
- * four. A scale-settle, a sideways open and a downward uncover came before it.
- * It echoes the redaction bars the five service heroes carry, which is the one
- * visual language this site already has — the same idea, on a photograph.
+ * **The fifth treatment this plate has had, and the owner's pick from what was
+ * left.** A scale-settle, a sideways open, a downward uncover and five slices
+ * came before it. They are named here so the next person does not re-propose
+ * one, and because what is wrong with each is not obvious from a still: the
+ * sideways open animates the width, which was ruled out with the full-width
+ * plate; the slices needed five copies of the picture and a `min-width` to
+ * survive the minifier.
  *
- * **Tied to scroll position, not to a clock**, which is the decision
- * `SectionEnter` is built on and for the same reason — while you are scrolling,
- * everything on screen is already moving 800 to 2500px a second, and a timed
- * entrance is a few percent change in rate that the eye cannot separate. Given
- * back as a fraction of the distance the page travels, it plays fast when you
- * throw the page and sits halfway when you stop halfway.
+ * **What makes this one different in kind:** every other entrance here happens
+ * while the page is moving past. This one holds the page still. It is the only
+ * effect on the site a reader can feel in the scrollbar, and the only one that
+ * makes the page longer — `pinSpacing` inserts the hold as real scroll length.
  *
- * And it RESOLVES: every slice ends at exactly zero, where it locks. Parallax
- * keeps its offset and drifts forever; this arrives.
+ * Still tied to scroll POSITION rather than to a clock, which is the decision
+ * `SectionEnter` is built on: the hold is not a pause on a timer, it is scroll
+ * distance spent in one place, so it plays fast when the page is thrown and
+ * sits halfway when it is stopped halfway.
+ *
+ * And it RESOLVES — `inset(0)` and scale 1, where it locks.
  *
  * Attached by attribute, so the next photograph gets it by carrying
- * `data-media-reveal` with slices inside, and nothing here has to know about it.
+ * `data-media-reveal` and nothing here has to know about it.
  */
+
+/** How much of the frame is covered, top and bottom, when the hold begins. */
+const BANDED = 30;
+
+/** How much larger the picture is than its frame at the start of the hold. */
+const OVERSIZE = 1.1;
 
 /**
- * How far a slice starts from home, as a percentage of the frame's height.
+ * How long the page is held, as a fraction of the window's height.
  *
- * 16 for a version, which is 126px on a 790px frame — large enough that the
- * gaps it opens at the top and bottom of the plate read as a layout fault
- * rather than as pieces on their way in. 10 is 79px, which is a slice clearly
- * out of place and not a hole in the page.
+ * This is the cost of the effect, stated as a number: the page grows by exactly
+ * this much, and `SectionWash` imports it — the wash begins where this hold
+ * ends, and it is the only way to say where that is. A pinned element cannot
+ * express its own release in ScrollTrigger's relative terms: it does not move
+ * while it is held, so `center center` resolves to the GRAB and any offset past
+ * that is delayed by the whole hold again. Below about half a screen the hold is not long enough to read as
+ * one, and above about one screen it stops feeling like a pause and starts
+ * feeling like the page has stopped responding.
  */
-const TRAVEL = 10;
-
-/** Seconds between one slice setting off and the next, against a 1s move. */
-const APART = 0.14;
-
-/**
- * How faint a slice is while it is still out.
- *
- * Never zero: a slice can be faint for a moment, but a blank column reads as a
- * picture that failed to load rather than as one arriving.
- *
- * 0.55 rather than the 0.35 it started at. That number was chosen while the
- * section's own fade was still multiplying into it — 0.62 x 0.35 is 0.217, and
- * the photograph came in as a ghost. With the section entrance off this is the
- * only opacity on the plate, so it can be what it was meant to be.
- */
-const FAINT = 0.55;
-
-/** The window they land over, in the same terms `SectionEnter` uses. */
-const START = "top 92%";
-const END = "top 48%";
+export const HOLD = 0.8;
 
 export function MediaReveal() {
   useEffect(() => {
@@ -72,44 +66,44 @@ export function MediaReveal() {
       const frames = gsap.utils.toArray<HTMLElement>("[data-media-reveal]");
 
       frames.forEach((frame) => {
-        const slices = frame.querySelectorAll<HTMLElement>("[data-plate-slice]");
-        if (!slices.length) return;
+        const picture = frame.querySelector<HTMLElement>("img");
+        if (!picture) return;
 
-        /* **The displacement is SET, then tweened away.** A staggered
-           `fromTo` was the obvious way to write this and it does not work: it
-           renders each target's from-values when that target's turn arrives, so
-           at the head of the window only the first slice was displaced. Measured
-           at `126/0.35` on the first and `0/1.00` on the other four — four fifths
-           of the picture never moved, and the fifth read as a glitch rather than
-           as an entrance. `immediateRender: true` on the tween does not reach
-           the staggered sub-tweens either; it was tried and measured the same.
-
-           Set up front and tweened home, every slice holds its start until its
-           own turn comes, because the start is simply where it already is. */
-        gsap.set(slices, {
-          /* Alternating, so the run is a set of pieces rather than one thing
-             leaning. Percent of the slice's own height, so it holds at every
-             width without being recomputed. */
-          yPercent: (index: number) => (index % 2 ? -TRAVEL : TRAVEL),
-          opacity: FAINT,
-        });
-
-        gsap.to(slices, {
-          yPercent: 0,
-          opacity: 1,
-          /* Linear, like the section entrance: it is the steady difference in
-             rate that the eye picks out, and an ease would vary it. */
-          ease: "none",
-          duration: 1,
-          stagger: { each: APART },
+        const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: frame,
-            start: START,
-            end: END,
-            scrub: 0.4,
+            /* Centred rather than `top top`: the plate is held in the middle of
+               the window, which is where a reader stopped in front of something
+               expects it to be — and it means the hold does not depend on the
+               plate being shorter than the window. */
+            start: "center center",
+            end: () => `+=${window.innerHeight * HOLD}`,
+            pin: frame,
+            pinSpacing: true,
+            /* Short: the hold is already the pause, and a slow scrub on top of a
+               pin reads as lag rather than as smoothing. */
+            scrub: 0.3,
+            /* The distance is derived from the viewport, so it has to be
+               recomputed rather than remembered when that changes. */
             invalidateOnRefresh: true,
           },
         });
+
+        timeline
+          .fromTo(
+            frame,
+            { clipPath: `inset(${BANDED}% 0% ${BANDED}% 0%)` },
+            /* Linear, like the section entrance: it is the steady difference in
+               rate that the eye picks out, and an ease would vary it. */
+            { clipPath: "inset(0% 0% 0% 0%)", ease: "none", duration: 1 },
+            0,
+          )
+          .fromTo(
+            picture,
+            { scale: OVERSIZE },
+            { scale: 1, ease: "none", duration: 1 },
+            0,
+          );
       });
     });
 

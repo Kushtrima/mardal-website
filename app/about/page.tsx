@@ -4,10 +4,28 @@ import { Container } from "../../components/layout/Container";
 import { SiteFooter } from "../../components/layout/SiteFooter";
 import { HeaderSpace } from "../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../components/motion/SectionEnter";
+import { MediaCluster } from "../../components/motion/MediaCluster";
+import { SectionWash } from "../../components/motion/SectionWash";
 import { MediaReveal } from "../../components/motion/MediaReveal";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
 import { PixelArrow } from "../../components/ui/PixelArrow";
 import { about } from "../../content/about";
+
+/**
+ * Which edge each photograph opens from, which is a composition decision rather
+ * than a motion one — so it sits with the arrangement and `MediaCluster` reads
+ * it off the markup.
+ *
+ * They alternate across the block: the tall one on the left opens from its left,
+ * the small one in the middle from its right, the wide one on the right from its
+ * left again. Alternating is what makes three of them a set rather than three
+ * things doing the same thing at different times.
+ */
+const ROOM_OPENS_FROM: Record<string, "left" | "right"> = {
+  glass: "left",
+  timber: "right",
+  window: "left",
+};
 
 export const metadata: Metadata = {
   title: about.title,
@@ -35,12 +53,51 @@ export const metadata: Metadata = {
  * bottom-left and the way in bottom-right, and a 113-character sentence does not
  * fit between them.
  */
+/** A heading beside its prose. Two sections on this page are this shape. */
+function ProseSection({
+  id,
+  title,
+  paragraphs,
+  washEnd = false,
+}: {
+  id: string;
+  title: string;
+  paragraphs: readonly string[];
+  /** Marks where the page's colour drains back. See `SectionWash`. */
+  washEnd?: boolean;
+}) {
+  return (
+    <section
+      className="about-prose"
+      aria-labelledby={id}
+      data-route-section
+      data-wash-end={washEnd ? "" : undefined}
+    >
+      <Container className="about-prose__inner">
+        <h2 className="about-prose__title" id={id}>
+          {title}
+        </h2>
+
+        <div className="about-prose__copy">
+          {paragraphs.map((paragraph) => (
+            <p className="about-prose__paragraph" key={paragraph.slice(0, 24)}>
+              {paragraph}
+            </p>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
 export default function AboutPage() {
   return (
     <>
       <SectionEnter />
       <ServicePageEntry />
       <MediaReveal />
+      <MediaCluster />
+      <SectionWash />
 
       <main
         className="service-page service-page--about"
@@ -120,74 +177,145 @@ export default function AboutPage() {
             owner asked for full width and then for not-full-width — so the plate
             takes the page's own column and stands on the same left and right
             edges as the heading and the sentence above it. */}
+        {/* **No heading, and it is a `data-route-section` all the same.** That
+            attribute is how SectionEnter finds a block, and this one declines
+            what it finds — see the figure. Giving the section a heading would
+            mean writing a line of copy nobody asked for so that a motion hook
+            could find something.
+
+            Inside the `Container`: the plate stands on the same left and right
+            edges as the heading and the sentence above it. */}
         <section className="about-plate" data-route-section>
           <Container>
-            {/* **Five copies of one picture, each clipped to a fifth of the
-                frame.** The slices arrive staggered and land flush, which is the
-                entrance the owner picked from four.
+            {/* **The page holds while the picture resolves.** `MediaReveal` pins
+                this frame for most of a screen of scroll and opens it over that
+                hold, so the reader stops at the photograph rather than passing
+                it. The owner's pick from the three entrances left after the
+                slices; the four before it are recorded there.
 
-                Copies rather than one image with five masks, because each slice
-                has to move on its own — and copies rather than five background
-                images, because a background cannot carry `srcset` and the
-                responsive ladder is the reason a phone gets 107KB instead of
-                947. Every copy is the same URL, so it is one request and one
-                decode; only the first carries the alt, since it is one
-                photograph however many boxes it is drawn in. */}
-            {/* **The plate opts OUT of the section entrance**, which every
-                `data-route-section` gets for free and which this one must not
-                have. `SectionEnter` gives a section a y-lag of 96 to 160px and a
-                fade from 0.62; the slices bring their own displacement and their
-                own fade. Together that is two vertical motions on two different
-                scroll windows, and two opacities that MULTIPLY — the photograph
-                started at 0.217 and arrived through a ghost, a shear and a snap.
+                One picture again. The slices were five copies of it, each
+                clipped to a fifth, and they went with the effect they existed
+                for — along with the `min-width` that kept the minifier from
+                breaking them.
 
-                `data-enter` nominates this block and `data-enter-mode="none"`
-                turns the section's entrance off, which is the opt-out the CTA
-                sections already use. One motion instead of three. */}
+                **It opts OUT of the section entrance.** A block that animates
+                something of its own must not also be animating itself: two
+                y-motions on two scroll windows, and two opacities multiplying to
+                0.217, is what broke the entrance before this one. */}
             <figure
               className="about-plate__frame"
               data-media-reveal
+              data-wash="about"
               data-enter
               data-enter-mode="none"
-              style={{ "--slices": about.photo.slices } as CSSProperties}
             >
-              {Array.from({ length: about.photo.slices }, (_, slice) => (
-                <div
-                  className="about-plate__slice"
-                  key={slice}
-                  data-plate-slice
-                  style={{ "--slice": slice } as CSSProperties}
-                >
-                  <img
-                    className="about-plate__image"
-                    src={about.photo.src}
-                    srcSet={about.photo.widths
-                      .map((width) => `/about-office-${width}.webp ${width}w`)
-                      .join(", ")}
-                    /* The plate is the page's COLUMN, not the page, so the
-                       gutters come off before a rung is chosen. Written out
-                       rather than as `var(--page-gutter)`: `sizes` is parsed
-                       before the cascade exists and custom properties are not
-                       available to it, so a `var()` here is not a smaller
-                       number, it is an invalid value and the whole attribute is
-                       dropped. The gutter is `clamp(1rem, 4vw, 2.5rem)`. */
-                    sizes="calc(100vw - 2 * clamp(1rem, 4vw, 2.5rem))"
-                    alt={slice === 0 ? about.photo.alt : ""}
-                    aria-hidden={slice === 0 ? undefined : true}
-                    width={about.photo.width}
-                    height={about.photo.height}
-                    /* Lazy is safe BECAUSE the frame reserves its own height
-                       through `aspect-ratio`: nothing below it moves when the
-                       picture arrives, so no scroll trigger is measured against
-                       a page that is about to grow. */
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              ))}
+              <img
+                className="about-plate__image"
+                src={about.photo.src}
+                srcSet={about.photo.widths
+                  .map((width) => `/about-office-${width}.webp ${width}w`)
+                  .join(", ")}
+                /* The plate is the page's COLUMN, not the page, so the gutters
+                   come off before a rung is chosen. Written out rather than as
+                   `var(--page-gutter)`: `sizes` is parsed before the cascade
+                   exists and custom properties are not available to it, so a
+                   `var()` here is not a smaller number, it is an invalid value
+                   and the whole attribute is dropped. */
+                sizes="calc(100vw - 2 * clamp(1rem, 4vw, 2.5rem))"
+                alt={about.photo.alt}
+                width={about.photo.width}
+                height={about.photo.height}
+                /* Lazy is safe BECAUSE the frame reserves its own height through
+                   `aspect-ratio`: nothing below it moves when the picture
+                   arrives, so no scroll trigger is measured against a page that
+                   is about to grow. */
+                loading="lazy"
+                decoding="async"
+              />
             </figure>
           </Container>
         </section>
+
+        {/* Two prose sections wear the same shape, so it is written once and
+            called twice. Both take the site's scroll entrance: they are prose
+            with nothing of their own moving, which is what `SectionEnter` was
+            written for. The plate and the rooms decline it because they animate
+            themselves. */}
+        <ProseSection
+          id="about-prose-title"
+          title={about.story.title}
+          paragraphs={about.story.paragraphs}
+        />
+
+        <section
+          className="about-rooms"
+          aria-labelledby="about-rooms-title"
+          data-route-section
+        >
+          {/* Named for a screen reader, which needs the group to be something
+              rather than three loose images. "Inside the studio" was the first
+              try and is the same claim the alts are written to avoid — it says
+              these rooms are Mardal's, which nothing I have been told does. */}
+          <h2 className="visually-hidden" id="about-rooms-title">
+            Workspaces
+          </h2>
+
+          <Container
+            className="about-rooms__inner"
+            data-media-cluster
+            data-enter
+            data-enter-mode="none"
+          >
+            {about.rooms.map((room) => (
+              <figure
+                className={`about-rooms__frame about-rooms__frame--${room.name}`}
+                key={room.name}
+                data-cluster-from={ROOM_OPENS_FROM[room.name]}
+                style={
+                  {
+                    "--room-ratio": `${room.width} / ${room.height}`,
+                  } as CSSProperties
+                }
+              >
+                <img
+                  className="about-rooms__image"
+                  src={`/${room.file}-${room.widths[1]}.webp`}
+                  srcSet={room.widths
+                    .map((width) => `/${room.file}-${width}.webp ${width}w`)
+                    .join(", ")}
+                  sizes={room.sizes}
+                  alt={room.alt}
+                  width={room.width}
+                  height={room.height}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </figure>
+            ))}
+          </Container>
+        </section>
+
+        {/* **The colour runs to the end of this, not to the end of the
+            photographs.** Owner: leave the yellow longer, for this text too. The
+            wash spans from the big picture opening to whatever carries
+            `data-wash-end`, so extending it is moving that marker rather than
+            retuning anything. */}
+        <ProseSection
+          id="about-values-title"
+          title={about.values.title}
+          paragraphs={about.values.paragraphs}
+          washEnd
+        />
+
+        {/* **On white, and that is the instruction rather than an oversight.**
+            The yellow runs to the end of the section above; this one sits after
+            it, so the page has two grounds and this is the second. */}
+        <ProseSection
+          id="about-venture-title"
+          title={about.venture.title}
+          paragraphs={about.venture.paragraphs}
+        />
+
       </main>
 
       <SiteFooter />

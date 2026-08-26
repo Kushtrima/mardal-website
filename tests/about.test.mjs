@@ -30,6 +30,31 @@ const TITLE_LINES = ["A studio shaped by people,", "ideas, and progress."];
 const SUPPORT =
   "Our core team is small on purpose, but highly skilled, so you get the right talent and expertise, all the time.";
 
+/** The products side, under the note on how the studio works, verbatim. */
+const VENTURE = [
+  "We are also a venture studio. We create our own products because building things ourselves keeps us moving beyond the perspective of a consultant or traditional design studio.",
+  "Our products are the backbone of how we keep evolving as innovators. They allow us to test ideas in the real world, build our own tools, and move beyond the limitations of relying only on existing platforms — often translating directly into value for our clients.",
+  "AI is changing how creative work gets made, and we want to show that it can be an enabler of better creative thinking, not a shortcut around it. The aim is real value, not simply adding a layer of AI to existing workflows.",
+];
+
+/** How the studio works, under the three rooms — each paragraph WHOLE.
+ *
+ * The third was held here as its closing sentence only, and a break that cut the
+ * first two thirds of it passed: the fragment survived at the end. A paragraph
+ * asserted by its tail is a paragraph half covered. */
+const VALUES = [
+  "No layers. No middlemen. You work directly with the people shaping the strategy, designing the experience, and building the final product.",
+  "Our team brings together engineers, designers, AI researchers, and psychologists, people who understand technology, design, and how people think and behave.",
+  "We keep the process open, move quickly, and focus on work that creates real value. Expectations are made clear from the start, so everyone stays aligned throughout the project. We believe the best work comes from strong collaboration, clear communication, and relationships built on trust.",
+];
+
+/** The history under the photograph, verbatim. */
+const STORY = [
+  "Our story began in 2008, when we opened our first small studio with a lot of enthusiasm and a simple idea: to create meaningful digital work.",
+  "From 2020, we began concentrating more on UX/UI, branding, websites, and software.",
+  "Today, that journey continues under a new name: Mardal, with new offices, expanded services, and a clearer focus on the work we do and the direction we want to take.",
+];
+
 test("About is a written page, not a placeholder any more", async () => {
   const response = await render("/about");
   assert.equal(response.status, 200);
@@ -75,20 +100,50 @@ test("the heading is the owner's sentence, broken where he broke it", async () =
   );
 });
 
-test("the sentence under it is his too, and is the only claim on the page", async () => {
+test("the sentence under the heading is his, and so is the history", async () => {
   const html = await (await render("/about")).text();
 
   assert.match(html, new RegExp(SUPPORT.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 
-  /* **Nothing about the company was supplied beyond these two lines**, and
-     PRODUCT.md's standing answer to an unsupplied fact is an absence rather than
-     a plausible guess — which on a page ABOUT the company is where a guess would
-     do the most damage. So: no team size, no founding year, no names, no
-     quantified outcome. Every one of those is a sentence I would have written. */
+  /* Both paragraphs of the history, whole. Asserted verbatim because this is the
+     only page on the site that states anything about the company, and a
+     paraphrase of an owner's sentence is a different sentence. */
+  assert.match(html, /Built Over Time/);
+  for (const line of STORY) {
+    assert.match(html, new RegExp(line.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+
+  /* One character was changed from what he sent: `Mardal ,with` to
+     `Mardal, with`. A misplaced comma is a typo, not a phrasing. */
+  assert.doesNotMatch(html, /Mardal ,/);
+});
+
+test("the only facts on the page are the ones the owner gave", async () => {
+  const html = await (await render("/about")).text();
   const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
-  assert.doesNotMatch(main, /\b(19|20)\d{2}\b/, "About names a year");
-  assert.doesNotMatch(main, /\b\d+\s*(people|employees|designers|engineers|years)\b/i);
-  assert.doesNotMatch(main, /\b\d+\s*%|\bfounded\b|\bsince\b/i);
+
+  /* **This assertion used to be "no year at all", and that was right until it
+     was not.** The page carried no year, no headcount and no history because
+     nothing had been supplied, and PRODUCT.md's answer to an unsupplied fact is
+     an absence rather than a plausible guess.
+
+     The owner then supplied two years. The rule has not loosened — it has been
+     answered — so the guard becomes an allow-list rather than a ban. A third
+     year appearing on this page is a year nobody gave me. */
+  /* Read from the TEXT, with the tags stripped. Written against the markup it
+     also read every attribute, and the photographs are 1920 tall and one of
+     their rungs is 2000 wide — so a guard on what the page SAYS was failing on
+     the size of a picture. */
+  const prose = main.replace(/<[^>]*>/g, " ");
+  const years = [...new Set(prose.match(/\b(?:19|20)\d{2}\b/g) ?? [])].sort();
+  assert.deepEqual(years, ["2008", "2020"]);
+
+  /* And everything a reader would expect NEXT to those years is still absent,
+     because he did not say any of it: how many people, how many clients, where
+     the new offices are, what the studio was called before. Each is one
+     plausible sentence away. */
+  assert.doesNotMatch(prose, /\b\d+\s*(people|employees|designers|engineers|clients|projects|years)\b/i);
+  assert.doesNotMatch(prose, /\b\d+\s*%|\bfounded\b|\bsince \d/i);
 });
 
 test("the hero carries the artwork-less arrangement, and turns it over", async () => {
@@ -265,27 +320,16 @@ test("the photograph is under the hero, and says only what it shows", async () =
   assert.match(html, /height="2250"/);
   assert.match(html, /loading="lazy"/);
 
-  /* **Five slices, each carrying the whole picture, clipped to a fifth.** The
-     owner's pick from four entrances. Copies rather than one image with masks,
-     because each slice has to move on its own; copies rather than five
-     backgrounds, because a background cannot carry `srcset` and that ladder is
-     why a phone gets 107KB instead of 947. */
+  /* **One picture, and one `<img>`.** It was five copies for a version, each
+     clipped to a fifth for the slice entrance; they went with the effect they
+     existed for. Counted, because leaving one behind is silent — a second copy
+     renders exactly on top of the first. */
   const plate = html.slice(
     html.indexOf('class="about-plate"'),
     html.indexOf("</figure>"),
   );
-  assert.equal((plate.match(/data-plate-slice/g) ?? []).length, 5);
-  assert.equal((plate.match(/<img/g) ?? []).length, 5);
-  for (const slice of [0, 1, 2, 3, 4]) {
-    assert.match(plate, new RegExp(`--slice:\\s*${slice}`), `slice ${slice} is unnumbered`);
-  }
-  assert.match(plate, /--slices:\s*5/);
-
-  /* **One photograph, however many boxes it is drawn in.** The alt is on the
-     first copy and the other four are hidden — without that a screen reader
-     meets the same description five times, which reads as five pictures. */
-  assert.equal((plate.match(/aria-hidden="true"/g) ?? []).length, 4);
-  assert.equal((plate.match(/alt=""/g) ?? []).length, 4);
+  assert.equal((plate.match(/<img/g) ?? []).length, 1);
+  assert.doesNotMatch(plate, /data-plate-slice|--slices?:/);
 
   /* **Five rungs, not one file.** The original is 1.2MB and a phone needs 1200px
      of it. `sizes` is the fact that lets the browser choose, and it names the
@@ -323,26 +367,18 @@ test("the plate is the column wide, and every rung of it is on disk", () => {
   assert.match(rule, /width:\s*100%/);
   assert.match(rule, /aspect-ratio:\s*16 \/ 9/);
 
-  /* **What makes five clipped columns one seamless picture.** Each copy is the
-     whole frame wide and slid left by its own index, so every one of them lands
-     on the same absolute left edge — measured, all five at 40px, and no gap
-     between any two slices. Both terms are the composite; either alone is five
-     pictures side by side or one picture five times over. */
+  /* The picture is the frame's own width, so nothing here has to beat the base
+     `img { max-width: 100% }` any more. The slice version did — five copies each
+     sized to the WHOLE frame — and needed `min-width` to survive the minifier;
+     both went with the entrance they were for. */
   const at2 = CSS.indexOf(".about-plate__image {");
   const image = CSS.slice(at2, CSS.indexOf("}", at2));
-  assert.match(image, /width:\s*calc\(100% \* var\(--slices\)\)/);
-  assert.match(image, /left:\s*calc\(var\(--slice\) \* -100%\)/);
+  assert.match(image, /width:\s*100%/);
+  assert.match(image, /object-fit:\s*cover/);
+  assert.doesNotMatch(CSS, /about-plate__slice/);
 
-  /* **`min-width`, and it has to be `min-width`.** The base stylesheet holds
-     every `img` to `max-width: 100%`, which clamps each copy to its own slice.
-     `max-width: none` is the obvious answer and it is not enough — see the
-     built-stylesheet test below, which is where that was caught. */
-  assert.match(image, /min-width:\s*calc\(100% \* var\(--slices\)\)/);
-
-  /* Flex children rather than absolute boxes at 20% intervals: adjacent flex
-     items share an edge and tile without a gap at fractional widths. */
-  const at3 = CSS.indexOf(".about-plate__slice {");
-  assert.match(CSS.slice(at3, CSS.indexOf("}", at3)), /flex:\s*1 1 0/);
+  /* The clip the hold opens is cut by this. */
+  assert.match(rule, /overflow:\s*clip/);
 
   /* **`100%` and never `100vw`.** `100%` is the container it now sits in; `100vw`
      was what the full-bleed version wanted and it is wrong twice over — the
@@ -369,20 +405,18 @@ test("the plate is the column wide, and every rung of it is on disk", () => {
   );
 });
 
-test("the plate survives the minifier, not just the stylesheet", () => {
-  /* **The one thing a test on `globals.css` cannot see.**
+test("the plate's rule survives the build, not just the stylesheet", () => {
+  /* **The one thing a test on `globals.css` cannot see, and it has bitten once.**
      `.about-plate__image` carried `max-width: none` to defeat the base rule
-     `img { max-width: 100% }`. The source was right; the BUILD was not. The
-     minifier drops `max-width: none` as an initial value without accounting for
-     the lower-specificity rule it exists to override, so what shipped had no
-     `max-width` at all — every copy clamped to its own 281px slice while sitting
-     at `left: -281px`, which put four of the five entirely outside their own
-     clip. They drew nothing. The owner saw one column of photograph and four
-     empty ones, and every assertion in this file passed.
+     `img { max-width: 100% }` while the plate was five clipped copies. The
+     source was right; the BUILD was not — the minifier drops `max-width: none`
+     as an initial value without accounting for the lower-specificity rule it
+     exists to override, so what shipped had no `max-width` at all and four of
+     the five copies drew nothing. Every assertion in this file passed.
 
-     So this reads the built stylesheet. `min-width` is what carries the size
-     now: it wins over `max-width` by the cascade's own rule, and it is not an
-     initial value, so nothing can decide it is redundant. */
+     That declaration is gone with the slices, and this check is not: a rule that
+     reaches the browser different from how it was written is a class of failure,
+     not one incident. */
   const assets = new URL("../dist/client/assets/", import.meta.url);
   const sheets = readdirSync(assets).filter((name) => name.endsWith(".css"));
   assert.ok(sheets.length, "the build produced no stylesheet");
@@ -391,24 +425,21 @@ test("the plate survives the minifier, not just the stylesheet", () => {
     .map((name) => readFileSync(new URL(name, assets), "utf8"))
     .join("\n");
 
-  const rule = built.match(/\.about-plate__image\s*\{[^}]*\}/);
-  assert.ok(rule, "the plate image rule did not survive the build");
-
-  assert.match(rule[0], /min-width:\s*calc\(100% \* var\(--slices\)\)/);
-  assert.match(rule[0], /left:\s*calc\(var\(--slice\) \* -100%\)/);
-
-  /* And the rule it is there to beat is still in the build, so this is not
-     guarding against something that has quietly gone away. */
-  assert.match(built, /max-width:\s*100%/);
+  const frame = built.match(/\.about-plate__frame\s*\{[^}]*\}/);
+  assert.ok(frame, "the plate frame rule did not survive the build");
+  assert.match(frame[0], /aspect-ratio:\s*16\s*\/\s*9/);
+  /* The clip the hold opens is cut by this, and `clip` is not the initial value
+     of `overflow`, so nothing can decide it is redundant. */
+  assert.match(frame[0], /overflow:\s*clip/);
 });
 
-test("the reveal is tied to scroll position and resolves", () => {
+test("the reveal holds the page, and resolves", () => {
   /* **Read with the prose stripped out, once, and used for everything below.**
-     Three assertions in this file have now been written against the raw text and
-     caught the file's own comments instead of its code — a sentence saying it
-     does not use `Math.random`, one saying "moving 800 to 2500px a second", and
-     one saying "clip-path rather than width". A component that explains what it
-     deliberately does NOT do will always trip a guard looking for that thing. */
+     Assertions in this file have three times been written against the raw text
+     and caught the file's own comments instead of its code — a sentence saying
+     it does not use `Math.random`, one saying "moving 800 to 2500px a second",
+     and one saying "clip-path rather than width". A component that explains what
+     it deliberately does NOT do will always trip a guard looking for that thing. */
   const raw = readFileSync(
     new URL("../components/motion/MediaReveal.tsx", import.meta.url),
     "utf8",
@@ -417,54 +448,545 @@ test("the reveal is tied to scroll position and resolves", () => {
 
   assert.match(code, /"use client"/);
   assert.match(code, /prefers-reduced-motion:\s*reduce/);
-  /* It bails before touching anything, rather than building the tween and
-     leaving it paused. Anchored to `gsap.set`, which is now the first thing it
-     would do — anchored to `gsap.fromTo` this silently passed nothing once the
-     construction changed, because `indexOf` returns -1 and every index is
-     greater than that. */
+
+  /* It bails before touching anything, rather than building the pin and leaving
+     it paused. A pin left behind would still add its scroll length to the page
+     for a reader who asked for no motion. */
   const guard = code.indexOf("prefers-reduced-motion");
-  const firstWrite = code.indexOf("gsap.set");
-  assert.ok(firstWrite > 0, "the reveal never writes anything");
+  const firstWrite = code.indexOf("gsap.timeline");
+  assert.ok(firstWrite > 0, "the reveal never builds anything");
   assert.ok(guard > 0 && guard < firstWrite);
 
-  /* **Slices that land.** Fourth treatment this plate has had and the owner's
-     own pick from four: a scale-settle, a sideways open and a downward uncover
-     came before it. They start displaced along the frame's short axis,
-     alternating up and down so the run reads as a set of pieces rather than one
-     thing leaning, and come home at staggered times.
+  /* **The pin is the effect.** Every other entrance this plate has had happens
+     while the page moves past; this one holds the page still. Measured: the
+     spacer adds 729px on a 912px window against an expected 730. */
+  assert.match(code, /pin: frame/);
+  assert.match(code, /pinSpacing: true/);
+  assert.match(code, /const HOLD = 0\.8;/);
 
-     **Set, then tweened — not a staggered `fromTo`.** That was the obvious way
-     to write it and it does not work: a staggered `fromTo` renders each target's
-     from-values when that target's turn arrives, so at the head of the window
-     only the first slice was displaced. Measured at `126/0.35` on the first and
-     `0/1.00` on the other four — four fifths of the picture never moved.
-     `immediateRender: true` does not reach the staggered sub-tweens either; it
-     was tried and measured the same. Set up front, every slice holds its start
-     because the start is simply where it already is. Measured after:
-     `+126/-126/+126/-126/+126`, all at 0.35. */
-  assert.match(code, /gsap\.set\(slices, \{/);
-  assert.match(code, /index % 2 \? -TRAVEL : TRAVEL/);
-  assert.match(code, /stagger: \{ each: APART \}/);
-  assert.doesNotMatch(code, /fromTo/);
+  /* Centred rather than `top top`, so the hold does not depend on the plate
+     being shorter than the window — which it is not on a laptop. */
+  assert.match(code, /start: "center center"/);
+  assert.match(code, /window\.innerHeight \* HOLD/);
 
-  /* **And it RESOLVES**, every slice to exactly zero. Parallax keeps its offset
-     and drifts forever; an end value of anything but 0 is the difference, and
-     both look plausible in a still. */
-  assert.match(code, /yPercent: 0,/);
-  assert.match(code, /opacity: 1,/);
+  /* **Scrubbed, not timed.** The hold is not a pause on a timer, it is scroll
+     distance spent in one place — so it plays fast when the page is thrown and
+     sits halfway when it is stopped halfway. A `scrub` removed turns the hold
+     into a fixed-length animation that runs whether the reader moves or not. */
+  assert.match(code, /scrub:/);
+  assert.match(code, /ease: "none"/);
 
-  /* Never fully transparent on the way in: a slice can be faint for a moment,
-     but a blank column reads as a picture that failed to load.
+  /* **And it RESOLVES**, to `inset(0)` and scale 1, where it locks. Parallax
+     keeps its offset and drifts forever; an end value of anything else is the
+     difference, and both look plausible in a still. */
+  assert.match(code, /clipPath: `inset\(\$\{BANDED\}% 0% \$\{BANDED\}% 0%\)`/);
+  assert.match(code, /clipPath: "inset\(0% 0% 0% 0%\)"/);
+  assert.match(code, /\{ scale: OVERSIZE \}/);
+  assert.match(code, /scale: 1,/);
 
-     0.55 rather than the 0.35 it started at, and the number moved because the
-     section's own fade stopped multiplying into it — see the opt-out above. */
-  assert.match(code, /const FAINT = 0\.55;/);
-  assert.doesNotMatch(code, /opacity: 0,/);
+  /* **No opacity anywhere on this plate.** The section entrance fades from 0.62,
+     and the entrance before this one faded too — the two multiplied to 0.217 and
+     the photograph arrived as a ghost. The plate opts out of the section's
+     entrance now, and this keeps the other half of that from coming back. */
+  assert.doesNotMatch(code, /opacity/);
 
   /* Attached by attribute, so the next photograph gets this by carrying the
      attribute rather than by being named here. */
   assert.match(code, /\[data-media-reveal\]/);
   assert.doesNotMatch(code, /about/i);
+});
+
+test("the history takes the section entrance the plate declines", async () => {
+  const html = await (await render("/about")).text();
+
+  /* It names its own heading, which SectionEnter uses as the trigger — sections
+     open with a band of space, and measuring from the top edge spends a third of
+     the movement on empty white. */
+  assert.match(
+    html,
+    /<section class="about-prose" aria-labelledby="about-prose-title" data-route-section="true">/,
+  );
+  assert.match(html, /id="about-prose-title"/);
+
+  /* **And it does NOT opt out.** The plate above it declines the section
+     entrance because it animates itself, and two entrances on one block is what
+     broke that one. This is prose with nothing of its own moving, which is what
+     `SectionEnter` was written for — so the opt-out belongs on exactly one of
+     the two sections on this page. */
+  const story = html.slice(
+    html.indexOf('class="about-prose"'),
+    html.indexOf("</section>", html.indexOf('class="about-prose"')),
+  );
+  assert.doesNotMatch(story, /data-enter/);
+
+  const plate = html.slice(
+    html.indexOf('class="about-plate"'),
+    html.indexOf("</figure>"),
+  );
+  assert.match(plate, /data-enter-mode="none"/);
+});
+
+test("the history's heading is on the display face", () => {
+  /* Owner: this in the other font, the premium one, and bigger. It was the sans
+     at 24-30px, which is the size a label takes.
+
+     The face is `--type-title`, whose own comment used to say "h1 only" — it had
+     not been true for a long time, twenty-one rules reach for it including CTA
+     headings and card titles that are h2 and below. Corrected there. What it
+     marks is editorial rather than hierarchical: the sans is for what a reader
+     moves through, this is for what they stop at. */
+  const at = CSS.indexOf(".about-prose__title {");
+  assert.ok(at > 0, "the history has no heading rule");
+  const rule = CSS.slice(at, CSS.indexOf("}", at));
+
+  assert.match(rule, /font-family:\s*var\(--type-title\)/);
+  assert.doesNotMatch(rule, /var\(--type-display\)/);
+
+  /* **Bounded by fitting on one line**, because turning a three-word heading is
+     a decision about the copy. Measured with the real face at eleven widths: it
+     needs 372px of a 598px slot at 1920, 334 of 440 at 1440, and 238 of 304 just
+     above the split, which is where the slot is narrowest relative to the text
+     because the column count changes there and the width does not. */
+  assert.match(rule, /font-size:\s*clamp\(2\.25rem, 4vw, 4rem\)/);
+
+  /* A grid item stretches to its row, and this row is as tall as the prose
+     beside it. Nothing moves without this — text sits at the top of its box
+     either way — but a one-line heading in a four-line box is a thing that reads
+     as broken the first time anyone inspects it. */
+  assert.match(rule, /align-self:\s*start/);
+});
+
+test("the history is set at a measure running text can hold", () => {
+  const at = CSS.indexOf(".about-prose__paragraph {");
+  assert.ok(at > 0, "the history sets no measure");
+  const rule = CSS.slice(at, CSS.indexOf("}", at));
+
+  /* **52ch, and the number is not the character count.** CSS `ch` is the width
+     of the `0` glyph, which is wider than an average letter: 62ch measured out
+     at about 80 real characters a line, past the 45 to 75 running text is
+     comfortable at. 52ch measures at 70. Asserted with that written down,
+     because the obvious "fix" for a 52 that reads as 70 is to change the 52. */
+  assert.match(rule, /max-width:\s*52ch/);
+
+  /* The split is at 64rem, not 48. It broke at 48 for a version and the band
+     just above was the worst of both — measured at 769 the reading column came
+     out 406px, 49 characters a line, narrower than the phone gets when it
+     stacks, on a window nearly two and a half times as wide. */
+  const stack = CSS.indexOf("@media (max-width: 64rem)", CSS.indexOf(".about-prose"));
+  assert.ok(stack > 0, "the history never stacks");
+  const query = CSS.slice(stack, CSS.indexOf("}\n}", stack));
+  assert.match(query, /\.about-prose__title,\s*\n\s*\.about-prose__copy \{/);
+  assert.match(query, /grid-column:\s*1 \/ -1/);
+});
+
+test("the three rooms are composed, and say only what they show", async () => {
+  const html = await (await render("/about")).text();
+
+  const rooms = html.slice(
+    html.indexOf('class="about-rooms"'),
+    html.indexOf("</section>", html.indexOf('class="about-rooms"')),
+  );
+
+  assert.equal((rooms.match(/<img/g) ?? []).length, 3);
+
+  /* **`src` as well as `srcSet`.** Only the ladder was asserted, and swapping
+     `src` back to the broken path failed nothing — the fallback would have 404d
+     for any browser that ignores `srcset`, and silently. The asset stem and the
+     CSS modifier are different strings on purpose: the files are prefixed and
+     the class is not, and building one from the other shipped `/glass-700.webp`
+     against `about-glass-700.webp`. */
+  for (const stem of ["about-glass", "about-window", "about-timber"]) {
+    assert.match(rooms, new RegExp(`src="/${stem}-\\d+\\.webp"`));
+  }
+
+  /* Three rungs each, and each named by what the room is rather than by its
+     position, so the composition can be rearranged without renaming files. */
+  for (const [name, widths] of [
+    ["about-glass", [700, 1050, 1400]],
+    ["about-window", [900, 1400, 2000]],
+    ["about-timber", [700, 1050, 1400]],
+  ]) {
+    for (const width of widths) {
+      const file = statSync(
+        new URL(`../public/${name}-${width}.webp`, import.meta.url),
+      );
+      assert.ok(file.size > 0, `${name}-${width}.webp is empty`);
+      assert.match(rooms, new RegExp(`/${name}-${width}\\.webp ${width}w`));
+    }
+  }
+
+  /* Each `sizes` names the fraction of the page that picture occupies, and they
+     differ — the tall one is 38vw, the wide one 48, the short one 30. One shared
+     value would send a phone-sized rung to the widest of them. */
+  for (const fraction of ["32vw", "40vw", "24vw"]) {
+    assert.match(rooms, new RegExp(`sizes="[^"]*${fraction}`));
+  }
+
+  /* **The alts describe rooms and do not say whose they are**, and neither does
+     the heading that names the group. "Inside the studio" was the first heading
+     and is the same claim — it says these rooms are Mardal's, which nothing
+     states. */
+  assert.match(rooms, />Workspaces</);
+  assert.doesNotMatch(rooms, /Inside the studio/);
+  for (const alt of rooms.match(/alt="([^"]+)"/g) ?? []) {
+    assert.doesNotMatch(alt.toLowerCase(), /\bour\b|mardal|\bwe\b/);
+  }
+});
+
+test("each room keeps its own proportions, and none of them lines up", () => {
+  /* **The ratio is a variable, not a shared constant.** The three are 0.728,
+     0.854 and 1.5, and making the two uprights share one would crop one of them
+     to force a pair out of two things that are not a pair. */
+  const at = CSS.indexOf(".about-rooms__frame {");
+  assert.ok(at > 0, "the rooms have no frame rule");
+  assert.match(CSS.slice(at, CSS.indexOf("}", at)), /aspect-ratio:\s*var\(--room-ratio\)/);
+
+  /* The arrangement: the tall one holds the left across both rows, the wide one
+     sits across the top right, the short one hangs under it indented from the
+     left. Asserted because it IS the design — three items on `1 / -1` is a
+     column, and nothing else here would notice. */
+  const placement = (name, expected) => {
+    const rule = CSS.indexOf(`.about-rooms__frame--${name} {`);
+    assert.ok(rule > 0, `${name} has no placement`);
+    assert.match(CSS.slice(rule, CSS.indexOf("}", rule)), expected);
+  };
+  placement("glass", /grid-column:\s*1 \/ span 4/);
+  placement("window", /grid-column:\s*8 \/ span 5/);
+  placement("timber", /grid-column:\s*5 \/ span 3/);
+
+  /* **Nothing shares an edge, and the offsets are what make that true.** The
+     first version ended its two columns level to within a dozen pixels, and
+     level is what the owner ruled out. Percentage margins because they resolve
+     against the container's inline size — in `vh` they drift away from pictures
+     that are sized by width. */
+  /* **`cqw`, not `%`.** A percentage margin resolves against the containing
+     block's inline size, and for a grid item that is its own grid area rather
+     than the grid — so 52% meant 52% of a 440px picture, every offset came out a
+     third of what was intended, and the wide one and the lower upright
+     overlapped by 252px at 1920. */
+  placement("window", /margin-top:\s*12cqw/);
+  placement("timber", /margin-top:\s*30cqw/);
+  const inner = CSS.indexOf(".about-rooms__inner {");
+  assert.match(CSS.slice(inner, CSS.indexOf("}", inner)), /container-type:\s*inline-size/);
+
+  /* All three on one grid row. Left to auto-placement, two items sharing a
+     column are pushed onto rows of their own and the scatter becomes a list. */
+  const frame = CSS.indexOf(".about-rooms__frame {");
+  assert.match(CSS.slice(frame, CSS.indexOf("}", frame)), /grid-row:\s*1/);
+
+  /* **No two share a column, and that is a safety property rather than a look.**
+     The first scatter had the wide one and an upright overlapping columns, so
+     every offset and depth had to be checked against a vertical clearance — and
+     one of them failed by 252px. Side by side there is no clearance to get
+     wrong: they cannot collide whatever the entrance does to them.
+
+     Read off the placements rather than restated, so a future rearrangement that
+     reintroduces an overlap fails here instead of on the page. */
+  const spans = ["glass", "timber", "window"].map((name) => {
+    const rule = CSS.indexOf(`.about-rooms__frame--${name} {`);
+    const [, start, count] = CSS.slice(rule, CSS.indexOf("}", rule))
+      .match(/grid-column:\s*(\d+) \/ span (\d+)/);
+    return { start: Number(start), end: Number(start) + Number(count) };
+  });
+  spans.sort((a, b) => a.start - b.start);
+  for (const [at, span] of spans.slice(1).entries()) {
+    assert.ok(
+      span.start >= spans[at].end,
+      `columns ${spans[at].start}-${spans[at].end - 1} and ${span.start}-${span.end - 1} overlap`,
+    );
+  }
+
+  /* Tightened on the owner's word — too much empty space. The first scatter was
+     1197px tall at a 1440 window with white on three sides of every picture;
+     adjacent column runs and smaller drops bring it to 789, a third shorter,
+     with the six edges still all at different heights. */
+  assert.equal(spans[spans.length - 1].end, 13);
+
+  /* Stacked below the split. Six of twelve is 340px at a 768 window and the
+     arrangement stops being a composition and becomes three small pictures. */
+  const stack = CSS.indexOf("@media (max-width: 64rem)", CSS.indexOf(".about-rooms"));
+  assert.ok(stack > 0, "the rooms never stack");
+  assert.match(CSS.slice(stack, stack + 700), /grid-template-columns:\s*minmax\(0, 1fr\)/);
+});
+
+test("each room is drawn open from an edge, and the picture moves against it", () => {
+  const raw = readFileSync(
+    new URL("../components/motion/MediaCluster.tsx", import.meta.url),
+    "utf8",
+  );
+  const code = raw.replace(/\/\*[\s\S]*?\*\//g, "");
+
+  assert.match(code, /"use client"/);
+  assert.match(code, /prefers-reduced-motion:\s*reduce/);
+  const guard = code.indexOf("prefers-reduced-motion");
+  const firstWrite = code.indexOf("gsap.context");
+  assert.ok(firstWrite > 0, "the cluster never builds anything");
+  assert.ok(guard > 0 && guard < firstWrite);
+
+  /* **The frame opens from one edge and the picture behind it moves the other
+     way**, over the same scroll. What reads is a photograph being revealed
+     rather than a box growing — the image holds still against the page while its
+     window widens. Both halves, because either alone is a different effect. */
+  assert.match(code, /"inset\(0% 100% 0% 0%\)"/);
+  assert.match(code, /"inset\(0% 0% 0% 100%\)"/);
+  assert.match(code, /clipPath: "inset\(0% 0% 0% 0%\)"/);
+  assert.match(code, /const COUNTER = 14;/);
+  assert.match(code, /xPercent: fromLeft \? -COUNTER : COUNTER/);
+  assert.match(code, /xPercent: 0,/);
+
+  /* Which edge is a composition decision, so it lives in the markup. */
+  assert.match(code, /dataset\.clusterFrom/);
+
+  /* **Everything happens inside the frame**, which is why there is no separate
+     behaviour for a stacked layout any more. The effect before this moved the
+     frames themselves, so every offset had to be checked against the neighbours
+     it might hit — and it did hit them twice, once by 252px and once by 77.
+     Nothing here leaves its own box, so `gsap.matchMedia` and the stacked-rise
+     branch it existed for are both gone. */
+  assert.doesNotMatch(code, /matchMedia\(\s*"\(m/);
+  assert.doesNotMatch(code, /STACKED_RISE|TRAVEL|clusterDepth/);
+
+  /* Each picture triggers on ITSELF. Keyed to the group, the block is 1361px
+     tall on a 912px window and the lower two finished arriving 677px below the
+     fold — only the first appeared to do anything. */
+  assert.match(code, /trigger: item,/);
+  assert.doesNotMatch(code, /trigger: group/);
+
+  assert.match(code, /scrub:/);
+  assert.match(code, /ease: "none"/);
+
+  /* No opacity, for the reason the plate has none: the section entrance fades
+     from 0.62 and two fades multiply. */
+  assert.doesNotMatch(code, /opacity/);
+});
+
+test("the three open from alternating edges", async () => {
+  const html = await (await render("/about")).text();
+  const rooms = html.slice(
+    html.indexOf('class="about-rooms"'),
+    html.indexOf("</section>", html.indexOf('class="about-rooms"')),
+  );
+
+  /* **Alternating is what makes three of them a set** rather than three things
+     doing the same thing at different times. Asserted in document order — left,
+     right, left across the block — because a set that all opened the same way
+     would render identically and read as a repeat. */
+  const sides = [...rooms.matchAll(/data-cluster-from="(left|right)"/g)].map(
+    (match) => match[1],
+  );
+  assert.deepEqual(sides, ["left", "right", "left"]);
+});
+
+test("the page washes from the open picture to the end of the note", async () => {
+  const html = await (await render("/about")).text();
+
+  /* The plate's frame starts it and one section ends it — one tween spanning
+     both, because two scrubbed tweens on one property fight over it. */
+  assert.match(html, /class="about-plate__frame"[^>]*data-wash="about"/);
+
+  /* **It ends after the note, not after the photographs.** Owner: leave the
+     yellow longer, for that text too. Extending it is moving this marker, which
+     is the point of naming the ends rather than writing scroll positions. */
+  assert.match(
+    html,
+    /class="about-prose" aria-labelledby="about-values-title"[^>]*data-wash-end/,
+  );
+
+  /* **Exactly one of each, and that is load-bearing.** `SectionWash` takes the
+     FIRST match for either end; a second `data-wash-end` left on an earlier
+     section would silently win and the colour would drain where it used to.
+
+     Counted inside `<main>`: Next writes the whole tree a second time as its RSC
+     payload, so a document-wide count of this attribute reads 3 and means 1. */
+  const markup = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  assert.equal((markup.match(/data-wash-end/g) ?? []).length, 1);
+  assert.equal((markup.match(/data-wash="about"/g) ?? []).length, 1);
+
+  /* **The owner's colour, used exactly as given.** Safe under everything that
+     can appear over it — 17.7:1 against `--ink`, 7.0 against the muted grey.
+     White would be 1.06 and fails, which is why nothing white sits on the
+     canvas; the footer carries its own slab.
+
+     **The dark half is derived, and recorded rather than hidden.** Hue held at
+     63, saturation 100 to 26, lightness 77 to 8 — a page background at L 77 on
+     the dark page would be a lamp. Verified by flipping the theme: #faff89 on
+     the light page, #191a0f on the dark one, 17.6:1 against its ink. */
+  assert.match(CSS, /--wash-about:\s*light-dark\(#faff89, #191a0f\)/);
+
+  /* **No CSS toggle, and no transition on the body.** Both are from the version
+     this replaced, and either left behind would fight the tween — a 700ms
+     transition on a property being scrubbed turns every frame into a chase. */
+  assert.doesNotMatch(CSS, /body\[data-wash/);
+  const body = CSS.indexOf("\nbody {");
+  assert.doesNotMatch(CSS.slice(body, CSS.indexOf("}", body)), /transition/);
+});
+
+test("the wash begins where the pin lets go", () => {
+  const raw = readFileSync(
+    new URL("../components/motion/SectionWash.tsx", import.meta.url),
+    "utf8",
+  );
+  const code = raw.replace(/\/\*[\s\S]*?\*\//g, "");
+
+  assert.match(code, /"use client"/);
+
+  /* **The colour is read, never written here**, so the token stays the one place
+     it is decided and the dark page gets its own half without this knowing. */
+  assert.doesNotMatch(code, /#[0-9a-f]{3,8}\b|rgb\(/i);
+  assert.match(code, /var\(--wash-about\)/);
+  assert.match(code, /var\(--canvas\)/);
+
+  /* **Scrubbed, which is a correction.** This was a toggle with a CSS cross-fade
+     on the reasoning that a colour has no travel to compete with the page's. The
+     owner asked for the opposite in as many words — start when the image is
+     open, and change as he scrolls — and he was right: the wash is not an effect
+     ON the section, it is the section arriving. */
+  assert.match(code, /scrub:/);
+  assert.doesNotMatch(code, /onEnter|onLeave|dataset\.wash =/);
+
+  /* **The start is arithmetic, not a relative expression, and that is the whole
+     finding.** A pinned element cannot express its own release: it does not move
+     while it is held, so every position on it resolves to the GRAB and every
+     offset past that is delayed by the hold again. Four relative expressions
+     were tried against the real page and all four were wrong.
+
+     So it imports the hold and works the release out: the pin grabs when the
+     frame's centre meets the window's centre, and lets go `HOLD` screens later.
+     Measured after: white at a scroll of 1750 with the picture still opening at
+     `inset(0.76%)`, colour starting at 1850 the moment it reads `inset(0%)`. */
+  assert.match(code, /import \{ HOLD \} from ".\/MediaReveal"/);
+  assert.match(code, /window\.innerHeight \* HOLD/);
+  assert.match(code, /start: \(\) => \{/);
+
+  /* Ends against a different element, so one tween covers the whole run. */
+  assert.match(code, /endTrigger: to/);
+  /* **The drain finishes before the white section arrives, not under it.** The
+     venture note below the wash is on white by instruction, and at `bottom top`
+     the colour was still going while that section filled the screen — which
+     reads as the yellow following you down the page. */
+  assert.match(code, /end: "bottom center"/);
+
+  /* Held in between. A colour that starts leaving the moment it arrives never
+     reads as the page's colour, only as a tint passing over it. Measured: full
+     from 1950 through 3200, which is the whole time the rooms are on screen. */
+  assert.match(code, /const IN = 0\.1;/);
+  assert.match(code, /const OUT = 0\.1;/);
+
+  /* **It washes the `<main>`, not only the body, and that is the whole reason
+     this did nothing for four attempts.** `.service-page` sets
+     `background: var(--service-surface)` on the main — an opaque white layer
+     over the body for the height of the page. Washing the body underneath it
+     changed a property nothing could see.
+
+     It was "verified" the whole time by reading
+     `getComputedStyle(document.body).backgroundColor`, which reported the colour
+     changing correctly at every scroll position. The property WAS changing.
+     Measuring the property is not measuring the page. */
+  assert.match(code, /closest\("main"\)/);
+
+  /* **And every OTHER ground too, or the colour ends in a hard line.** `html`
+     and `.site-footer` both carry `background: var(--canvas)` as well, so washing
+     only the main stopped the yellow exactly where the main's box ends and let
+     white take over below it — which is what the owner saw as an abrupt edge. A
+     wash that misses one ground is not a paler wash, it is a seam.
+
+     `html` is the one most easily forgotten and matters most: it has a
+     background of its own, so the body's does NOT propagate to the canvas and
+     everything the main does not cover is painted by the root element.
+
+     Listed rather than derived. Deriving it from the stylesheet was tried and is
+     the wrong shape: a great many rules carry `background: var(--canvas)` —
+     `.service-hero`, `.why-section`, `.difference-section` and more — and almost
+     all of them are homepage sections that never share a screen with this wash.
+     The four that matter are the ones that paint UNDER the About page's own
+     content, and knowing which those are is a fact about this page. */
+  for (const ground of ["documentElement", "body", 'closest("main")', "site-footer"]) {
+    assert.ok(
+      code.includes(ground),
+      `the wash does not cover ${ground}, which paints the page's ground`,
+    );
+  }
+
+  /* And every surface it painted is cleaned up, not just the first. */
+  assert.match(code, /for \(const surface of surfaces\)/);
+});
+
+test("the note on how the studio works is his, whole", async () => {
+  const html = await (await render("/about")).text();
+
+  assert.match(html, /Small by choice/);
+  for (const line of VALUES) {
+    assert.match(html, new RegExp(line.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+
+  /* **The disciplines are named without counts, and that is what keeps them a
+     description rather than a claim.** "engineers, designers, AI researchers,
+     and psychologists" says who is on the team; "four engineers" would say how
+     big it is, which nothing states. The page-wide fact guard already refuses a
+     number in front of any of those words — this is the sentence that makes that
+     guard load-bearing rather than theoretical. */
+  assert.match(html, /engineers, designers, AI researchers, and psychologists/);
+  assert.doesNotMatch(html, /\b\d+\s*(engineers|designers|researchers|psychologists)\b/i);
+});
+
+test("the prose sections are one shape, rendered three times", async () => {
+  const html = await (await render("/about")).text();
+
+  /* One block written once and called twice — the history above the rooms and
+     the note below them. It was `.about-story` while there was one of them, a
+     name for the history rather than for the shape; the second section is what
+     made the difference matter. Counted in the markup rather than assumed from
+     the component, because a copy-paste of the JSX would render identically and
+     drift from here on. */
+  const sections = html.match(/<section class="about-prose"/g) ?? [];
+  assert.equal(sections.length, 3);
+
+  assert.match(html, /aria-labelledby="about-prose-title"/);
+  assert.match(html, /aria-labelledby="about-values-title"/);
+  assert.match(html, /aria-labelledby="about-venture-title"/);
+
+  /* **The third one is on white, which is where it sits rather than what it is
+     styled as.** The wash ends at the section above it, so this is simply after
+     the coloured run — and the only thing that keeps it that way is being the
+     one WITHOUT `data-wash-end`. Ordering matters here: moving the marker down
+     to this one would put it on yellow. */
+  const venture = html.slice(
+    html.indexOf('aria-labelledby="about-venture-title"'),
+  );
+  assert.doesNotMatch(venture.slice(0, 200), /data-wash-end/);
+
+  /* **Both take the section entrance**, unlike the plate and the rooms, which
+     decline it because they animate themselves. Two entrances on one block is
+     what broke the plate, and prose with nothing of its own moving is exactly
+     what `SectionEnter` was written for. */
+  assert.equal(
+    (html.match(/<section class="about-prose"[^>]*data-route-section/g) ?? []).length,
+    3,
+  );
+  for (const block of html.match(/<section class="about-prose"[\s\S]*?<\/section>/g) ?? []) {
+    assert.doesNotMatch(block, /data-enter/);
+  }
+});
+
+test("the venture note is his, whole, and claims nothing measured", async () => {
+  const html = await (await render("/about")).text();
+
+  assert.match(html, /AI-native venture studio/);
+  for (const line of VENTURE) {
+    assert.match(html, new RegExp(line.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+
+  /* **The strongest thing it says is "often".** No product is named, no count of
+     them is given, no outcome is measured. This company does have three products
+     and they are named on the homepage; pulling them in here would be a
+     connection nobody asked me to draw. */
+  assert.match(html, /often translating directly into value/);
+  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  const prose = main.replace(/<[^>]*>/g, " ");
+  assert.doesNotMatch(prose, /\b\d+\s*(products|ventures|startups|tools)\b/i);
+  for (const product of ["Arvena", "Ftesa", "Ihrauto"]) {
+    assert.doesNotMatch(prose, new RegExp(product, "i"));
+  }
 });
 
 test("About is out of the placeholder module, and out of its test", () => {
