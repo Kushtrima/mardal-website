@@ -1,5 +1,5 @@
 /**
- * The eleven pages that exist as an address before they exist as writing.
+ * The ten pages that exist as an address before they exist as writing.
  *
  * Every word in the header and the footer used to promise a page; four of them
  * pointed at nothing at all and five only scrolled the homepage, which from any
@@ -18,6 +18,10 @@
  * was live, in the menu, and rendering, and every test here passed without ever
  * fetching it — a table of routes only covers the routes someone remembered to
  * put in it.
+ *
+ * Ten on 2026-08-26: About was written and left, and `tests/about.test.mjs` took
+ * over. Three have graduated now and all three went the same way — an entry
+ * deleted from the module, a route written, a row removed from here.
  *
  * The copy is written out here rather than imported from
  * `content/placeholders.ts`, deliberately: a test that reads the same module
@@ -100,13 +104,6 @@ const pages = [
     ctaHref: "/#company",
   },
   {
-    path: "/about",
-    label: "About",
-    support: "The people and the thinking behind the work.",
-    cta: "Why Mardal",
-    ctaHref: "/#company",
-  },
-  {
     path: "/contact",
     label: "Contact",
     support: "Email, phone and address are in the footer.",
@@ -142,7 +139,7 @@ const pages = [
  *  a test that imports the module the page reads asserts only that a file
  *  equals itself — and the cost of that is a table that goes quietly out of
  *  date, which it did the day this line was written. */
-const PLACEHOLDER_PAGES = 11;
+const PLACEHOLDER_PAGES = 10;
 
 test("every unwritten page is a page", async () => {
   assert.equal(
@@ -159,8 +156,8 @@ test("every unwritten page is a page", async () => {
 
     /* Named in the tab and named on the page. The root layout completes the
        title as "%s — Mardal"; the eyebrow is the only thing on the page that
-       tells the twelve apart, so a page that lost it would be indistinguishable
-       from the other eleven and would still pass everything below. */
+       tells them apart, so a page that lost it would be indistinguishable from
+       the other nine and would still pass everything below. */
     assert.match(
       html,
       new RegExp(`<title>${literal(page.label)} — Mardal</title>`, "i"),
@@ -240,7 +237,7 @@ test("the unwritten heroes carry no artwork, except the one service", async () =
      that is a SERVICE: it stands in a list of five beside four written service
      pages that each carry a drawing, so a bare hero there reads as the
      unfinished one rather than as restraint. The rule is not "placeholders have
-     no artwork" any more, it is "these eleven have none and that one has this",
+     no artwork" any more, it is "these ten have none and that one has this",
      and both halves are asserted — an exception nobody can see the edge of is
      how the other eleven quietly get their pictures back. */
   let withArtwork = 0;

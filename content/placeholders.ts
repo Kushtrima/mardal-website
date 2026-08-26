@@ -28,10 +28,10 @@
  * from twelve to eleven. UX/UI & Branding brought it back to twelve on
  * 2026-08-24 — a service named in the menu with no copy written for it yet —
  * and went the other way on 2026-08-25, when the owner asked for it written.
- * It is `content/branding.ts` now and the count is eleven again. Careers went
- * first and this went second; both left the same way, by deleting an entry
- * here and writing a route. `PlaceholderKey` is derived from these keys, so
- * removing one makes the compiler find every reference to it.
+ * About was the third, on 2026-08-26, and takes the count to ten. All three
+ * left the same way, by deleting an entry here and writing a route.
+ * `PlaceholderKey` is derived from these keys, so removing one makes the
+ * compiler find every reference to it.
  */
 
 import { contactEmail } from "./home";
@@ -44,7 +44,7 @@ import { contactEmail } from "./home";
 export const placeholderTitleLines = ["Working", "on it."] as const;
 
 export type Placeholder = {
-  /** The small line above the heading — which page this is. Without it eleven
+  /** The small line above the heading — which page this is. Without it ten
    *  pages would be indistinguishable from one another. */
   readonly label: string;
   /** `<title>`, which the root layout completes as "%s — Mardal". */
@@ -79,9 +79,9 @@ const getInTouch = {
 } as const;
 
 /**
- * Keyed by route, and the keys are read by the test that walks all eleven.
+ * Keyed by route, and the keys are read by the test that walks all ten.
  * `/products/arvena-ai` is written `products/arvena-ai` — the leading slash is
- * added where it is needed rather than stored eleven times.
+ * added where it is needed rather than stored ten times.
  */
 export const placeholders = {
   products: {
@@ -134,14 +134,6 @@ export const placeholders = {
     title: "Company",
     description: "Who Mardal is and how it works.",
     support: "Who we are and how we work.",
-    cta: "Why Mardal",
-    ctaHref: "/#company",
-  },
-  about: {
-    label: "About",
-    title: "About",
-    description: "The people and the thinking behind the work.",
-    support: "The people and the thinking behind the work.",
     cta: "Why Mardal",
     ctaHref: "/#company",
   },

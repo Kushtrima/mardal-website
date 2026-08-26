@@ -6186,6 +6186,131 @@ video {
   --hero-max: 5.5rem;
 }
 
+/* ── About: the longest heading on the site, and the only one that is a
+   sentence ──
+
+   Owner, 2026-08-26: his sentence about the studio, as the big text in the hero.
+   The five service heroes hold two authored lines of about 20 characters; this
+   holds four of about 30, and it cannot simply take their size.
+
+   **The measure comes off first.** The base caps the heading at
+   `min(21ch, 100cqw - 30rem - 2rem)`, and the second term reserves 30rem for a
+   drawing this page has not got — the same correction Clients needed when its
+   plate came out.
+
+   **Then the column.** The intro is placed `1 / span 8` of twelve, which is
+   right beside artwork and wrong beside nothing: measured at a 1300px window it
+   gave the heading 807px of a 1220px row, and lines two and three turned inside
+   it. Row 1 is the intro's alone — the bare hero's aside sits at `2 / -1` — so
+   taking the full width costs nothing and is what stops the turn.
+
+   **Then the size, which divides rather than declares.** An authored line must
+   never wrap; where a heading turns is a decision about the copy. So the largest
+   this page can be set is its column over the width of its longest line. `A
+   studio shaped by people,` is 9.904em, measured with the real face rather than
+   estimated — see the note at `--hero-line` for how, and mind that the webfont
+   has to have loaded or the fallback's metrics answer instead.
+
+   **Its own slope, not `--text-heading-xl`.** Owner, 2026-08-26: bigger. The
+   shared token caps at 72px and was the binding term at every width from 1300
+   up, while the division would have allowed 118 there and 240 at 2560 — the
+   container has no maximum, so the column keeps growing and the heading was not.
+   Clients sets its own slope for the same reason and goes further, to 160px.
+
+   8vw and not 9: the division works out to about 9.11vw for a line this wide, so
+   a 9vw slope and the quotient are the same curve and the heading would run to
+   the gutters at every width. At 8 it fills about seven eighths of the column.
+
+   The quotient no longer binds at this ceiling, and is kept rather than dropped:
+   it is what makes a LONGER line safe, and this page has already had one. The
+   first heading here was 13.196em and turned at every width but 1600 until the
+   division went in.
+
+   Rendered at 320 through 2560: one line box per span at every width, and the
+   size lands at 104px from 1300 up, 82 at 1024 and 62 at 769 — where the phone
+   below it ends at 56, so the two now step the right way at the breakpoint. It
+   used to drop from 56 to 43 on the way out of the phone rule. */
+.service-page--about .service-hero__intro {
+  grid-column: 1 / -1;
+}
+
+.service-page--about .service-hero__title {
+  --hero-line: 9.904;
+
+  max-width: none;
+  font-size: min(clamp(3rem, 8vw, 6.5rem), calc(96cqi / var(--hero-line)));
+}
+
+/* **The sentence on the left, the way in on the right — the arrangement every
+   other page here uses.** Owner, 2026-08-26: the link was on the left and needs
+   to be on the right like the other pages.
+
+   `service-hero--bare` gathers the two into one block, which is what Clients,
+   Careers and the unwritten pages carry, and that is not this. But its PHONE
+   half is a fix for a real collision rather than a preference — built without
+   the class first, and measured at 320, 375, 390, 430 and 600, this sentence ran
+   underneath the link at every one of them, because the base rule pins the
+   support bottom-LEFT and the way in bottom-RIGHT and 113 characters do not fit
+   between them.
+
+   So the class stays for the phone and steps out of the way above it.
+   `display: contents` removes the wrapper from the box tree without removing it
+   from the markup, so the sentence and the link become grid items of the hero
+   again and take the base placements — column 1 and column 9 of twelve, which is
+   the arrangement asked for. Below 48rem the wrapper is a flex column again and
+   the two stack, which is the whole reason it is there.
+
+   **Given here and taken back on the phone, rather than scoped to a minimum
+   width.** It was `@media (min-width: 48.0625rem)` for a version — the
+   complement this file uses elsewhere — and a complement of `max-width: 48rem`
+   at that precision leaves a sliver: 768 < w < 769 matches neither, and in it
+   the wrapper was a flex block standing on the right. A fractional viewport is
+   not hypothetical, it is what zoom and a fractional device pixel ratio produce,
+   and it is what the 769px measurement that found this was reading.
+
+   Written the other way round there is no width that matches neither. */
+.service-page--about .service-hero--bare .service-hero__aside {
+  display: contents;
+}
+
+/* **A sentence, not a fragment.** The service pages hold their support to 16ch
+   and `--bare` to 26, both written for a phrase standing beside something. This
+   is 113 characters and the only prose on the page, so it takes a wider column
+   and a wider measure.
+
+   **The size is the shared one.** It was set at 20-26px for an hour and the
+   owner caught it: smaller than the other pages. `--service-text-support` is one
+   pixel scale for every service page, and a page quietly opting out of it is how
+   a scale stops being one — so the override is the measure, which is about this
+   copy, and not the size, which is about the site.
+
+   Specificity is three classes on purpose: `.service-hero--bare
+   .service-hero__support` is also two and is written further down this file, so
+   an equal selector here loses on order. That is not hypothetical — the link
+   override went in at two classes first and stood 170 to 321px inside a left
+   edge the sentence above it was already meeting. */
+.service-page--about .service-hero--bare .service-hero__support {
+  grid-column: 1 / span 6;
+  max-width: 30ch;
+  margin-bottom: 0;
+  font-size: var(--service-text-support);
+}
+
+/* And the link takes its own place back. `--bare` sets `justify-self: auto` and
+   `align-self: flex-start` on it, which is right for a link INSIDE the block —
+   there the base rule's "push to the right-hand edge" would push it to the edge
+   of the block rather than of the page, which is the one place it must not be.
+
+   With the wrapper out of the box tree the link is a grid item of the hero
+   again, and those two resets leave it sitting wherever the sentence's column
+   ends: measured, 95px in from the right at 769 and 469px at 1920, drifting
+   further out the wider the window got. Both come back to what the base sets, so
+   it stands where it stands on the five service pages. */
+.service-page--about .service-hero--bare .service-hero__cta {
+  align-self: end;
+  justify-self: end;
+}
+
 /* ── `service-hero--bare`: a hero with no artwork ──
 
    ONE class, carried by the page, rather than a list of page names that has to
@@ -7972,6 +8097,61 @@ video {
 
   .service-page--careers .service-hero__title-line {
     display: inline;
+  }
+
+  /* **And About gives its break up for the same reason, at the same width.**
+     Four authored lines of thirty characters have no large setting on a 288px
+     column: holding them, the division above lands the heading at 21px, which
+     is smaller than this page's body text. So the spans go inline here too, the
+     browser balances the sentence, and the size is free of the break.
+
+     What bounds it now is the longest unbreakable WORD — `innovation`, 4.011em,
+     which would allow 69px at 320. That is not the limit worth taking: 122
+     characters at 69px is fourteen lines. The ceiling below is set for the shape
+     instead, and lands the sentence in six lines at 320 and 390 and four at 768.
+
+     2.8rem rather than a round 3 so the two sides of the breakpoint MEET: the
+     division above lands at 45px at an 800px window, and a 48px ceiling here
+     stepped the heading up three pixels on the way down. Measured either side
+     rather than assumed — the same care `.service-page--case-studies` took where
+     its phone rule and its desktop clamp cross.
+
+     `balance` rather than `pretty`, matching Careers: it evens the lines rather
+     than filling each and orphaning the last, which is what keeps a break nobody
+     authored from reading as a break nobody noticed. */
+  .service-page--about .service-hero__title {
+    font-size: clamp(2.75rem, 13vw, 3.5rem);
+    text-wrap: balance;
+  }
+
+  .service-page--about .service-hero__title-line {
+    display: inline;
+  }
+
+  /* The block is on the left here too, so the two mirrors `--bare` sets for the
+     right-hand edge come off: it right-aligns the type so the ragged edge falls
+     inward, and pushes the link to the block's end. Left-aligned, the ragged
+     edge is already on the correct side and the link already sits under the
+     start of the sentence. */
+  /* The wrapper is a flex column here — `display: contents` is scoped above this
+     width — and this is what it holds. `--bare` sets the block to its right-hand
+     edge and right-aligns the type with it, which is right for a 26ch fragment
+     and wrong for three lines of prose: it would re-set the sentence to be read
+     from a ragged left. Stretched instead, so the sentence keeps its left edge
+     and the link keeps the right one it has on every other page. */
+  .service-page--about .service-hero--bare .service-hero__aside {
+    /* The wrapper comes back. It is `display: contents` above, and without this
+       the phone has no wrapper to stack in — the two go back to being grid items
+       pinned to the same bottom line and overlap, which is the whole thing this
+       class is carried for. */
+    display: flex;
+    align-items: stretch;
+    text-align: left;
+  }
+
+  .service-page--about .service-hero--bare .service-hero__support {
+    max-width: none;
+    margin-bottom: 0.9rem;
   }
 
   /* ── The foot of an artwork-less hero on a phone ──

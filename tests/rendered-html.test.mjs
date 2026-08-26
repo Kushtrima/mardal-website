@@ -648,8 +648,16 @@ test("server-renders the Branding service page", async () => {
      quantified outcomes anywhere on this site and no per-client sign-off for
      naming anyone, so the copy was written as what the WORK is rather than what
      it achieved. This is the assertion that keeps it that way — the pull when
-     editing a service page is to add the number that would make it persuasive. */
-  assert.doesNotMatch(html, /\d+\s*%|\d+x\b|increased|boosted|doubled|ROI/i);
+     editing a service page is to add the number that would make it persuasive.
+
+     **Read from `<main>`, not from the document.** Written page-wide it also
+     read the `<head>`, where every `modulepreload` carries a build hash — and it
+     failed the day a new component changed those hashes and produced
+     `SiteHeader-Croi8rhe.js` and `layout-segment-context-Bb2ymA6X.js`. "roi" and
+     "6X" are not claims about branding work. A guard on prose has to be scoped
+     to where the prose is, or it eventually fails on a random string. */
+  const prose = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  assert.doesNotMatch(prose, /\d+\s*%|\d+x\b|increased|boosted|doubled|ROI/i);
   for (const client of ["EN NUR", "Spitex", "Stolzbau", "Henor", "ANDI SPORT", "Jetonikeramika"]) {
     assert.doesNotMatch(html, new RegExp(client, "i"), `${client} is named on a service page`);
   }
