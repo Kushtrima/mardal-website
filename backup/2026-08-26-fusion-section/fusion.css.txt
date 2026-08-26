@@ -1,0 +1,81 @@
+   two halves hold the outer margins, the plus takes the midpoint of whatever is
+   left between them, and the composition stays balanced however long the words
+   are. Both halves set flush left inside their own block, so the second reads
+   as a second statement rather than the tail of the first. */
+.fusion-section {
+  position: relative;
+  background: var(--canvas);
+  padding-block: var(--section-space-lg);
+}
+
+/* The one block on the page that does not fill the glass. Held to 900 and
+   centred, so the two halves stand near enough to read as one statement rather
+   than as two things at opposite ends of a 1360px line. Written against
+   `.container` because that rule sets `max-width: none` to beat a Tailwind
+   utility of the same name, and a single class would lose to it. Below 900 the
+   container's own width is the smaller of the two and this never binds, so the
+   phone layout is untouched without a query. */
+.container.fusion-container {
+  max-width: 700px;
+}
+
+.fusion-title {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  justify-content: space-between;
+  /* A floor, not the spacing: space-between hands the leftover width to the
+     two gaps, so whenever there is room this is overridden and the mark sits
+     evenly between the halves regardless. It only has to be low enough that
+     the three columns cannot outgrow 700 — at 4rem they came within 6px of
+     it, which a font fallback or a rounding difference would have spent. */
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+  align-items: center;
+  margin: 0;
+  font-family: var(--type-title);
+  font-size: var(--text-heading-xl);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-heading-xl);
+}
+
+.fusion-title__line {
+  display: block;
+}
+
+/* Just under two thirds of the height of the two lines it stands beside. The
+   height is still taken from the leading rather than typed, so the mark cannot
+   come loose from the type; it simply no longer competes with it. The arms are
+   a fraction of that height, and now sit a little under the stem weight of a
+   430-weight face, so the mark reads as a hairline join rather than a glyph. */
+.fusion-plus {
+  --fusion-plus-size: calc(2 * var(--leading-heading-xl) * 0.62em);
+  --fusion-plus-arm: calc(var(--fusion-plus-size) * 0.055);
+
+  position: relative;
+  width: var(--fusion-plus-size);
+  height: var(--fusion-plus-size);
+}
+
+.fusion-plus::before,
+.fusion-plus::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  background: currentcolor;
+  content: "";
+}
+
+.fusion-plus::before {
+  width: 100%;
+  height: var(--fusion-plus-arm);
+}
+
+.fusion-plus::after {
+  width: var(--fusion-plus-arm);
+  height: 100%;
+}
+
+/* Set exactly as the body paragraphs elsewhere on the page are — the same size
+   token, tracking and leading as .difference-intro__text. It was on
+   --text-heading, a step above every other paragraph on the site, which made it

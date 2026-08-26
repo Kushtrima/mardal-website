@@ -1,0 +1,561 @@
+.why-section {
+  position: relative;
+  background: var(--canvas);
+  padding-block: var(--section-space-lg);
+}
+
+.why-intro {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.75rem, 1vw, 1rem);
+  align-items: start;
+}
+
+/* `.section-label` is the same treatment for every section added below. */
+.why-label,
+.section-label {
+  margin: 0;
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.025em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.why-title__line {
+  display: block;
+}
+
+.why-title {
+  grid-column: 2 / -1;
+  margin: 0;
+  font-family: var(--type-title);
+  font-size: var(--text-heading-xl);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-heading-xl);
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.65rem, 0.9vw, 0.85rem);
+  /* The lede sits in this grid's first column, so this one margin carries the
+     whole block — the copy and the four cards move together. Less the 120px it
+     has been pulled up by. */
+  margin-top: calc(clamp(10rem, 17vw, 16rem) - 120px);
+}
+
+/* Leading is looser than the display copy elsewhere: this now runs to nine
+   lines, where the tighter setting read as a block rather than a paragraph. */
+.why-copy {
+  grid-column: 1;
+  grid-row: 1;
+  max-width: 18rem;
+  margin: 0;
+  font-size: var(--text-copy);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.025em;
+  line-height: var(--leading-body);
+}
+
+/* Every drawing takes its colour from the card it sits in, so a card is
+   recoloured in one place. All four now carry the same light purple: they were
+   a muted purple, butter, mint and sky, borrowed from the tint boxes further
+   down the page, and on a white ground four hues across one row read as four
+   unrelated drawings rather than one set. The lilac bar is the same step in its
+   own family as the three it replaces. */
+.why-card {
+  --art-accent: var(--tint-lilac-bar);
+
+  position: relative;
+  display: flex;
+  min-width: 0;
+  /* Sized by its own copy — the row stretches every card to match the tallest,
+     so a title that wraps can never be clipped. */
+  min-height: clamp(17rem, 25vw, 25rem);
+  flex-direction: column;
+  padding: clamp(1.25rem, 1.75vw, 2rem);
+  overflow: hidden;
+  border-radius: var(--shape-card);
+  background: var(--surface);
+  /* No shadow, either way up — owner's call, 2026-08-24. It carried
+     `var(--panel-shadow)`, which is nothing on the dark page and a real drop on
+     the light one, so this only ever showed in light mode. The tint is left to
+     be the whole of the separation, which is what `.difference-card` — the same
+     lavender panel further down the page — has always done. */
+}
+
+/* The label sits in the top-right corner, opposite the drawing. */
+.why-card__label {
+  position: absolute;
+  top: clamp(1.25rem, 1.75vw, 2rem);
+  right: clamp(1.25rem, 1.75vw, 2rem);
+  max-width: 45%;
+  margin: 0;
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-align: right;
+}
+
+/* The product cards' corner marker. */
+.card-plus {
+  position: relative;
+  width: clamp(1.65rem, 1.8vw, 2.05rem);
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  border: 1.25px solid var(--ink);
+  border-radius: var(--radius-circle);
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+
+.card-plus::before,
+.card-plus::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 43%;
+  height: 1.25px;
+  background: var(--ink);
+  content: "";
+  transform: translate(-50%, -50%);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.card-plus::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+@media (hover: hover) {
+  .product-card:hover .card-plus {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .product-card:hover .card-plus::before,
+  .product-card:hover .card-plus::after {
+    background: var(--accent-contrast);
+  }
+}
+
+/* Balanced rather than greedy, so each title breaks at its own sentence
+   instead of at the box edge, with two lines' height always reserved so the
+   copy underneath starts on the same line across a row. */
+/* The display face, as the headings above them are. Its tracking comes with it:
+   -0.045em is drawn to hold the grotesque together and is too loose under a
+   face this tight. The weight does not change and must not — CS Alistair ships
+   Regular only, so 400 is the one weight there is and anything else would be
+   synthesised. The leading does not change either, because min-height below is
+   two lines of it and the four titles only align while the two agree. */
+.why-card__title {
+  /* In em, not ch. ch is the width of the zero, which is a property of the
+     face — swapping to CS Alistair narrowed 16ch from about 9.6em to 7.23em
+     without a number changing, and "Built with you. Improved as you grow."
+     needs 7.38em to hold two lines, so it fell to three and stood taller than
+     the other three cards. Measured, the four want between 7.38em (that title)
+     and 9.37em (the point where "Everything working together" would come up
+     onto one line); this sits in the middle of that band. */
+  max-width: 8.4em;
+  /* Two lines of the leading below, and it has to be edited with it: this is
+     what holds the four titles to one height so the paragraphs under them line
+     up, and it only does that while the two agree. */
+  min-height: 2.24em;
+  margin: clamp(1.5rem, 2.4vw, 2.25rem) 0 0;
+  font-family: var(--type-title);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-heading);
+  text-wrap: balance;
+}
+
+.why-card__copy {
+  max-width: 30ch;
+  margin: clamp(0.65rem, 0.9vw, 0.9rem) 0 0;
+  /* The panel's ink rather than its muted grey, so it reads as black and sits
+     at the same weight of colour as the title above it. */
+  color: var(--ink);
+  font-size: var(--text-copy);
+  letter-spacing: -0.015em;
+  line-height: var(--leading-body);
+}
+
+/* The drawing opens the card, held to the left edge. */
+.why-card__art {
+  display: flex;
+  height: clamp(11rem, 19vw, 19.5rem);
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* One height for all four, so the drawings sit on a common line however wide
+   each one happens to be. Each carries its own margin inside its viewBox, so
+   what gets pulled to the card's left edge is the drawing, not its box. */
+.why-card__image {
+  width: auto;
+  max-width: none;
+  height: 100%;
+  transform: translateX(calc(var(--art-ink-inset, 0%) * -1));
+  object-fit: contain;
+}
+
+/* Its columns fill the viewBox edge to edge, where the other three leave a
+   margin, so it is held back a little to match them optically. */
+.why-card__image--ipo {
+  --art-ink-inset: 6%;
+
+  height: 85%;
+  overflow: visible;
+}
+
+.ipo-column {
+  --ipo-delay: -1s;
+
+  color: var(--art-surface);
+  animation: ipo-column-color 15s ease-in-out infinite;
+  animation-delay: var(--ipo-delay);
+}
+
+.ipo-column--phase-2 {
+  --ipo-delay: -13s;
+}
+
+.ipo-column--phase-3 {
+  --ipo-delay: -10s;
+}
+
+.ipo-column--phase-4 {
+  --ipo-delay: -7s;
+}
+
+.ipo-column--phase-5 {
+  --ipo-delay: -4s;
+}
+
+.ipo-column__face {
+  fill: currentColor;
+  stroke: var(--ink);
+  stroke-width: 0.55;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+@keyframes ipo-column-color {
+  0% {
+    color: var(--art-surface);
+  }
+
+  5%,
+  18% {
+    color: var(--art-accent);
+  }
+
+  25%,
+  100% {
+    color: var(--art-surface);
+  }
+}
+
+/* Same case as the handoff drawing: room inside the viewBox to make up for. */
+.why-card__image--recurring {
+  --art-ink-inset: 25.5%;
+
+  height: 118%;
+  overflow: visible;
+}
+
+.recurring-sphere__cover {
+  fill: var(--art-surface);
+}
+
+.recurring-sphere {
+  --ball-rise: -18px;
+
+  transform-box: view-box;
+  transform-origin: center;
+  animation: recurring-sphere-sequence 10s ease-in-out infinite;
+  animation-delay: -0.8s;
+  will-change: transform;
+}
+
+.recurring-sphere--two {
+  --ball-rise: -14px;
+}
+
+.recurring-sphere--three {
+  --ball-rise: -10px;
+}
+
+.recurring-sphere__fill {
+  fill: var(--art-surface);
+  animation: recurring-ball-sequence 10s ease-in-out infinite;
+  animation-delay: -0.8s;
+}
+
+.recurring-layer {
+  fill: var(--art-accent);
+  opacity: 0;
+  animation-duration: 10s;
+  animation-timing-function: ease-in-out;
+  animation-delay: -0.8s;
+  animation-iteration-count: infinite;
+}
+
+.recurring-layer--one {
+  animation-name: recurring-layer-one;
+}
+
+.recurring-layer--two {
+  animation-name: recurring-layer-two;
+}
+
+.recurring-layer--three {
+  animation-name: recurring-layer-three;
+}
+
+.recurring-layer--four {
+  animation-name: recurring-layer-four;
+}
+
+.recurring-layer--five {
+  animation-name: recurring-layer-five;
+}
+
+@keyframes recurring-layer-one {
+  0%,
+  14% {
+    opacity: 0.62;
+  }
+
+  24%,
+  90% {
+    opacity: 0;
+  }
+
+  96%,
+  100% {
+    opacity: 0.62;
+  }
+}
+
+@keyframes recurring-layer-two {
+  0%,
+  14% {
+    opacity: 0;
+  }
+
+  20%,
+  34% {
+    opacity: 0.62;
+  }
+
+  44%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes recurring-layer-three {
+  0%,
+  34% {
+    opacity: 0;
+  }
+
+  40%,
+  54% {
+    opacity: 0.62;
+  }
+
+  64%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes recurring-layer-four {
+  0%,
+  54% {
+    opacity: 0;
+  }
+
+  60%,
+  74% {
+    opacity: 0.62;
+  }
+
+  84%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes recurring-layer-five {
+  0% {
+    opacity: 0.62;
+  }
+
+  8%,
+  74% {
+    opacity: 0;
+  }
+
+  80%,
+  100% {
+    opacity: 0.62;
+  }
+}
+
+@keyframes recurring-sphere-sequence {
+  0% {
+    transform: translateY(var(--ball-rise));
+  }
+
+  8%,
+  76% {
+    transform: translateY(0);
+  }
+
+  82%,
+  100% {
+    transform: translateY(var(--ball-rise));
+  }
+}
+
+@keyframes recurring-ball-sequence {
+  0% {
+    fill: var(--art-accent);
+  }
+
+  8%,
+  76% {
+    fill: var(--art-surface);
+  }
+
+  82%,
+  100% {
+    fill: var(--art-accent);
+  }
+}
+
+.why-card__image--support {
+  --art-ink-inset: 18%;
+
+  overflow: visible;
+}
+
+.support-color-part {
+  fill: var(--art-accent);
+  opacity: 0;
+  animation: support-color-cycle 8s ease-in-out infinite;
+}
+
+.support-color-part--small {
+  animation-delay: -0.5s;
+}
+
+.support-color-part--middle {
+  animation-delay: -6.5s;
+}
+
+.support-color-part--large {
+  animation-delay: -4.5s;
+}
+
+.support-color-part--ball {
+  animation-delay: -2.5s;
+}
+
+.support-outline-overlay {
+  mix-blend-mode: multiply;
+}
+
+@keyframes support-color-cycle {
+  0% {
+    opacity: 0;
+  }
+
+  6%,
+  18% {
+    opacity: 0.62;
+  }
+
+  30%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* The opposite case to the columns: its drawing sits well inside its viewBox,
+   so it is pushed past the shared height to match the others optically. */
+.why-card__image--recommendations {
+  --art-ink-inset: 26%;
+
+  height: 118%;
+  overflow: visible;
+}
+
+.recommendation-wall {
+  fill: var(--art-accent);
+  opacity: 0;
+}
+
+.recommendation-wall--rear {
+  animation: recommendation-wall-cycle 12s ease-in-out infinite;
+}
+
+.recommendation-wall--right {
+  animation: recommendation-wall-cycle 12s 3s ease-in-out infinite;
+}
+
+.recommendation-wall--front {
+  animation: recommendation-wall-cycle 12s 6s ease-in-out infinite;
+}
+
+.recommendation-wall--left {
+  animation: recommendation-wall-cycle 12s 9s ease-in-out infinite;
+}
+
+@keyframes recommendation-wall-cycle {
+  0% {
+    opacity: 0;
+  }
+
+  4%,
+  21% {
+    opacity: 0.52;
+  }
+
+  25%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.why-card--one {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.why-card--two {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.why-card--three {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.why-card--four {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+/* ----------------------------- Isometric art ------------------------------ */
+
+/* Same drawing language as the Why Mardal illustrations: opaque fill so the
+   edges behind are hidden, ink hairline, and a slow tint cycle. */
