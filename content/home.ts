@@ -251,34 +251,66 @@ export const whyMardal = {
   titleLines: ["Build smarter.", "Scale faster."],
   copy:
       "We help your business work better by building and connecting the technology you use every day, from AI and automation to CRM, custom software, web platforms and apps. Everything is shaped around your team, your processes and the way your business actually works.",
+  /**
+   * The four boxes, rebuilt 2026-08-26 from a reference the owner sent: a
+   * number, a short title, a great deal of air, and a plus mark in the corner.
+   *
+   * **What went, and it was most of it.** Each card carried an animated
+   * isometric drawing, a label in the opposite corner — Applied AI, Automation,
+   * Connected Systems, Technology Partnership — a two-line serif title and a
+   * line of copy under it. Owner: remove the animation icons, and these titles.
+   * The whole previous section is in `backup/2026-08-26-why-mardal/`, files and
+   * stylesheet both, with a note on putting it back.
+   *
+   * ⚠ **The four drawings are still in the tree and nothing renders them.**
+   * `AnimatedIpoImage`, `AnimatedRecurringImage`, `AnimatedRecommendationsImage`
+   * and `AnimatedSupportImage` were imported by `WhyMardal` and by nothing else,
+   * and so are the ~340 lines of `.why-card__image--*` rules that dress them.
+   * They are left standing rather than deleted because removing four components
+   * is a decision of its own and this was a content change.
+   *
+   * **No number is stored.** They are the position in this array, written by the
+   * component — a number in the data can disagree with where the card sits, and
+   * `01` on the second box is the kind of thing nobody sees until a client does.
+   *
+   * **The copy came back on 2026-08-26, for the hover.** Owner, with the
+   * reference's hover state: the text has to appear from below. So each box has
+   * a paragraph again — held under the fold of the card and rising into it.
+   *
+   * ⚠ **These four paragraphs are mine, not his and not the reference's.** Every
+   * claim in them is already made somewhere on this site — the lede above them
+   * ("shaped around your team, your processes and the way your business actually
+   * works"), the four cards this section replaced ("where it can make work
+   * faster, decisions clearer, and services more useful", "we stay involved
+   * beyond launch, adapting and improving your technology as your business
+   * changes"), and the About page's note on expectations. Nothing new is
+   * claimed: no number, no client, no capability the site does not already state.
+   *
+   * The reference's own paragraph for box 01 was NOT taken. Its titles are
+   * generic phrases; forty words of another company's marketing prose is their
+   * writing, and it is about their business rather than this one. Four lines to
+   * replace if he has his own.
+   */
   cards: [
     {
       position: "one",
-      art: "columns",
-      label: "Applied AI",
-      title: "Solving real business problems with AI",
-      copy: "We use AI where it can make work faster, decisions clearer, and services more useful.",
+      title: "We think strategically",
+      copy: "We start from how your business actually works — your team, your processes, the decisions you need to make — and shape the technology around that, rather than the other way round.",
     },
     {
       position: "two",
-      art: "cycle",
-      label: "Automation",
-      title: "Less repetition. More progress.",
-      copy: "We automate routine work so your team can focus on customers, decisions, and growth.",
+      title: "Technology",
+      copy: "AI and automation, CRM, custom software, web platforms and apps. We build what you need and connect it to what you already have, so information moves without unnecessary manual work.",
     },
     {
       position: "three",
-      art: "handoff",
-      label: "Connected Systems",
-      title: "Everything working together",
-      copy: "We connect your CRM, software, data, and platforms so information moves without unnecessary manual work.",
+      title: "We understand business",
+      copy: "We use technology where it makes work faster, decisions clearer and services more useful — not where it only adds a layer. What is measured is the outcome, not the stack.",
     },
     {
       position: "four",
-      art: "orbit",
-      label: "Technology Partnership",
-      title: "Built with you. Improved as you grow.",
-      copy: "We stay involved beyond launch, adapting and improving your technology as your business changes.",
+      title: "Engagement",
+      copy: "We stay involved beyond launch, adapting and improving what we have built as your business changes. Expectations are set at the start, so everyone stays aligned throughout.",
     },
   ],
 } as const;

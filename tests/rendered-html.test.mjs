@@ -1426,3 +1426,424 @@ test("server-renders the one customer story", async () => {
   assert.match(html, /class="site-nav"/);
   assert.match(html, /<footer class="site-footer"/);
 });
+
+/** The four boxes under "Why Mardal?", rebuilt 2026-08-26 from a reference the
+ *  owner sent: a number, a short title, a lot of air, a plus in the corner.
+ *
+ *  Written out here rather than imported. The section this replaced had NO test
+ *  at all — the whole of it could be swapped, drawings and copy together, and
+ *  the suite stayed green, which is how a change this size arrives unnoticed. */
+const WHY_COPY = [
+  "We start from how your business actually works",
+  "AI and automation, CRM, custom software, web platforms and apps.",
+  "We use technology where it makes work faster",
+  "We stay involved beyond launch",
+];
+
+const WHY_TITLES = [
+  "We think strategically",
+  "Technology",
+  "We understand business",
+  "Engagement",
+];
+
+test("the Why Mardal boxes are a number, a title and a mark", async () => {
+  const html = await (await render("/")).text();
+  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  const at = main.indexOf('<div class="why-grid">');
+  assert.ok(at > 0, "the Why Mardal grid is not on the page");
+  const grid = main.slice(at, main.indexOf("</section>", at));
+
+  const cards = grid.match(/<article class="why-card why-card--\w+"[\s\S]*?<\/article>/g) ?? [];
+  assert.equal(cards.length, 4, `found ${cards.length} boxes`);
+
+  cards.forEach((card, index) => {
+    /* **The number is the position, written by the component.** A number stored
+       beside its title can disagree with where the card sits, and `01` on the
+       second box is the sort of thing nobody notices until a client does.
+       Padded, because `9` then `10` is a step in width the eye reads as a
+       wobble down the column. */
+    const number = String(index + 1).padStart(2, "0");
+    assert.match(
+      card,
+      new RegExp(`<p class="why-card__number">${number}</p>`),
+      `box ${index + 1} does not carry ${number}`,
+    );
+    assert.match(
+      card,
+      new RegExp(`<h3 class="why-card__title">${WHY_TITLES[index]}</h3>`),
+      `box ${index + 1} is not "${WHY_TITLES[index]}"`,
+    );
+
+    /* A mark, not a control: nothing here opens, so it is silent to a screen
+       reader rather than announced as something to press. */
+    assert.match(card, /<span class="card-plus why-card__mark" aria-hidden="true"/);
+
+    /* **The paragraph is in the markup at rest.** The pointer reveals it; it is
+       never removed from the document to be hidden, so a screen reader has it
+       whether or not a pointer ever crosses the card, and a phone — which has
+       no hover to give — simply shows it. A hover-only disclosure that is not
+       in the DOM is content nobody without a mouse can reach. */
+    assert.match(
+      card,
+      new RegExp(`<p class="why-card__copy">${WHY_COPY[index]}`),
+      `box ${index + 1} has no paragraph, or not its own`,
+    );
+    assert.doesNotMatch(card, /aria-hidden="true"[^>]*why-card__copy|why-card__copy[^>]*hidden/);
+  });
+
+  /* **Nothing of the section it replaced.** It carried an animated isometric
+     drawing per card, a label in the opposite corner and a line of copy under
+     each title; all three are gone and the copy went with them. Asserted as
+     absences because the failure being caught is a half-applied revert — one
+     card left with its drawing, or a stray label — which reads as a bug rather
+     than as a design. The whole previous section is in
+     `backup/2026-08-26-why-mardal/`. */
+  for (const gone of [
+    "why-card__art",
+    "why-card__label",
+    "why-card__image",
+    "Applied AI",
+    "Connected Systems",
+    "Technology Partnership",
+    "Solving real business problems",
+  ]) {
+    assert.ok(!grid.includes(gone), `${gone} is still in the Why Mardal grid`);
+  }
+
+  /* The lede above them is untouched — he changed the boxes, not the section. */
+  assert.match(grid, /class="why-copy"/);
+  assert.match(grid, /We help your business work better/);
+});
+
+test("the Why Mardal box is built on air and a floor", () => {
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  const at = CSS.indexOf(".why-card {");
+  assert.ok(at > 0, "the box has no rule");
+  const card = CSS.slice(at, CSS.indexOf("\n}", at));
+
+  /* **The air is the design.** Measured off the reference: its card is 672 by
+     795, a portrait of 1.183, holding a number, a title and a mark with the rest
+     empty. 36vw is that ratio at this grid's own column — a third of the page
+     less its gutters is about 445px at 1440, and 1.183 of it is 526 against the
+     518 this gives. Without it, removing the drawing left four squat boxes with
+     the plus tucked under the title. */
+  assert.match(card, /min-height:\s*clamp\(19rem, 36vw, 33rem\)/);
+  assert.match(card, /flex-direction:\s*column/);
+
+  /* The mark is pinned to the card's floor by the column's own spare space,
+     which is also why the empty middle needs no filler element. */
+  const mark = CSS.indexOf(".why-card__mark {");
+  assert.ok(mark > 0, "the mark has no rule");
+  assert.match(CSS.slice(mark, CSS.indexOf("}", mark)), /margin-top:\s*auto/);
+
+  /* **All four titles sit on one line**, which is what the cap has to allow.
+     Measured in the real face at this tracking: `We understand business` is
+     8.54em, `We think strategically` 7.78, `Engagement` 4.20, `Technology`
+     3.93. It was 8.4em, which broke the longest onto a second line while the
+     other three stayed on one. */
+  const title = CSS.indexOf(".why-card__title {");
+  assert.ok(title > 0, "the title has no rule");
+  /* Comments stripped before the absence is checked. The note explaining WHY the
+     reserved second line went says `min-height` in prose, and a guard read
+     against the raw rule matches its own explanation — which is a test that
+     passes on the comment and would go on passing if the declaration came
+     back. */
+  const rule = CSS.slice(title, CSS.indexOf("\n}", title)).replace(
+    /\/\*[\s\S]*?\*\//g,
+    "",
+  );
+  assert.match(rule, /max-width:\s*9em/);
+  assert.doesNotMatch(rule, /min-height/);
+
+  /* **Its own size, not `--text-heading`.** Owner: a little bigger. That token
+     is on twelve rules across the site, and moving it would take every one of
+     them along for a change asked of these four boxes.
+
+     Lifted rather than capped higher, the same reason as `--text-copy`: the old
+     `clamp(24px, 2.35vw, 30px)` was already at its ceiling from 1277 up, so
+     raising only the ceiling gives a 1280 window a third of a pixel. Lifted,
+     1280 goes 30.0 to 33.3 and 1440 goes 30.0 to 34.0. */
+  assert.match(rule, /font-size:\s*clamp\(1\.625rem, 2\.6vw, 2\.125rem\)/);
+  assert.doesNotMatch(rule, /var\(--text-heading\)/);
+
+  /* Figures in a column: `01` over `02` sits a hair out of line without this. */
+  const number = CSS.indexOf(".why-card__number {");
+  assert.ok(number > 0, "the number has no rule");
+  const figures = CSS.slice(number, CSS.indexOf("\n}", number)).replace(
+    /\/\*[\s\S]*?\*\//g,
+    "",
+  );
+  assert.match(figures, /font-variant-numeric:\s*tabular-nums/);
+
+  /* **The same coral as the plus, at rest and on hover both.** Owner: the
+     numbers in the mark's colour. It was `--ink-muted` going to `--accent`
+     under the pointer, which is the reference's behaviour; one colour throughout
+     is his.
+
+     ⚠ 2.31:1 on the grey panel, against the 4.5:1 WCAG asks of text this size —
+     3:1 applies only from 24px and these are about 20. The mark can be under it
+     because it is `aria-hidden` and decorative; a number is neither. `#df0303`
+     is the same hue at 4.56:1. Recorded, not enforced: it is his colour, and the
+     point of the assertion is that nobody changes it without meeting the note. */
+  assert.match(figures, /color:\s*var\(--why-mark\)/);
+  assert.doesNotMatch(figures, /--ink-muted/);
+
+  /* **The number is the paragraph's size**, owner 2026-08-26 — and it is the
+     same TOKEN, not the number that token happens to resolve to, so the two stay
+     equal when either moves. One of them moved today: the whole copy ramp was
+     lifted for a 16in laptop.
+
+     Compared rather than pinned, so tuning the pair stays free while the
+     equality does not. */
+  const paragraph = CSS.indexOf(".why-card__copy {");
+  const sizeOf = (from) => {
+    const rule = CSS.slice(from, CSS.indexOf("\n}", from)).replace(
+      /\/\*[\s\S]*?\*\//g,
+      "",
+    );
+    const value = rule.match(/font-size:\s*([^;]+);/);
+    assert.ok(value, "no font-size");
+    return value[1].trim();
+  };
+  assert.equal(sizeOf(number), sizeOf(paragraph));
+
+  /* **The paragraph is plain where there is no pointer.** Its base rule sets no
+     opacity and no transform: everything that hides it lives in the hover query
+     below, so a phone gets the text instead of a card it cannot open. */
+  const copy = CSS.indexOf(".why-card__copy {");
+  assert.ok(copy > 0, "the paragraph has no rule");
+  const base = CSS.slice(copy, CSS.indexOf("\n}", copy)).replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.doesNotMatch(base, /opacity|transform|display|visibility/);
+  assert.match(base, /margin:\s*auto 0 0/);
+
+  /* And the hiding is inside `@media (hover: hover)`, which is the whole of
+     that guarantee. */
+  const query = CSS.indexOf("@media (hover: hover) {", copy);
+  assert.ok(query > 0, "the reveal is not behind a hover query");
+  const hover = CSS.slice(query, CSS.indexOf("\n}\n", query));
+  assert.match(hover, /\.why-card__copy \{[\s\S]*?opacity:\s*0/);
+  assert.match(hover, /transform:\s*translateY\(1\.5rem\)/);
+  assert.match(hover, /\.why-card:hover \.why-card__copy/);
+
+  /* **Opacity and transform only — never display, visibility or height.** The
+     first two take the paragraph out of the accessible tree; the third changes
+     the card's height, and a row that resizes every time a pointer crosses one
+     of four boxes is the jump this avoids. */
+  const reveal = hover.slice(hover.indexOf(".why-card:hover .why-card__copy"));
+  assert.doesNotMatch(reveal.slice(0, reveal.indexOf("}")), /display|visibility|height/);
+
+  /* **The plus is the owner's coral, and its own token.** 2026-08-26, with the
+     value. It is the same `#fd7979` as `--tint-clay-bar` and deliberately not an
+     alias of it: that one is AI & Automation's, the pattern on its hero and the
+     mark on its homepage box, and pointing this at it would mean the next change
+     to that service's colour silently repainting four plusses on an unrelated
+     section.
+
+     2.56:1 on the white disc, under the 3:1 WCAG asks of a meaningful graphic —
+     and this one is not one: it is `aria-hidden`, nothing opens, and it carries
+     nothing the card does not already show. The purple it replaces was 4.94. */
+  assert.match(CSS, /--why-mark:\s*#fd7979/);
+  const plus = CSS.indexOf(".why-card__mark::before,");
+  assert.ok(plus > 0, "the plus has no rule");
+  const strokes = CSS.slice(plus, CSS.indexOf("\n}", plus)).replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.match(strokes, /background:\s*var\(--why-mark\)/);
+  assert.doesNotMatch(strokes, /var\(--accent\)|var\(--tint-clay-bar\)/);
+
+  /* **The plus becomes a minus, and is not removed.** Owner, 2026-08-26: do not
+     remove it on hover, make it a `-`. It was fading out with the paragraph,
+     which left the corner empty.
+
+     The two strokes are the disc's `::before` and `::after`, one horizontal and
+     one turned 90deg, so the minus is the upright one laid down on the other —
+     turned rather than hidden, because fading it out gives the same still image
+     and none of the sense that the mark closed. */
+  assert.match(
+    hover,
+    /\.why-card:hover \.why-card__mark::after[\s\S]*?transform:\s*translate\(-50%, -50%\) rotate\(0deg\)/,
+  );
+  assert.doesNotMatch(hover, /\.why-card:hover \.why-card__mark,[\s\S]{0,120}?opacity:\s*0/);
+
+  /* **And the number no longer changes under the pointer.** It went to
+     `--accent` there — grey at rest, coloured on hover, which is the reference's
+     behaviour. The owner has made it the mark's colour at rest instead, so there
+     is nothing left for the hover to say: coral turning purple would be the card
+     changing colour rather than opening. */
+  assert.doesNotMatch(hover, /\.why-card:hover \.why-card__number/);
+});
+
+test("the Why Mardal boxes are a light grey panel on the page's own ground", () => {
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  /* **The section paints the page's ground and nothing of its own**, and it has
+     been three other things in a day. The owner asked for `#faff89` inside this
+     section, and it went through a flat fill on this box — a hard line across
+     the top, because a rectangle has edges at every opacity — a gradient inside
+     the box, which lost the line but arrived as a shape travelling up the window
+     while the header and the sections either side stayed white, and then a
+     page-wide wash on every surface that paints. Then: take the yellow out
+     completely and make the boxes light grey.
+
+     Asserted as an absence as much as a value. Each of those three left
+     something behind — a token, a gradient, a client component — and a stray one
+     is a colour nobody asked for arriving on scroll. */
+  const at = CSS.indexOf(".why-section {");
+  assert.ok(at > 0, "the section has no rule");
+  const section = CSS.slice(at, CSS.indexOf("\n}", at)).replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.match(section, /background:\s*var\(--canvas\)/);
+  assert.doesNotMatch(section, /linear-gradient|--why-ground/);
+  /* Comments stripped, and the declaration form matched rather than the name.
+     The note on `--why-mark` explains that it is deliberately not an alias of
+     `--tint-clay-bar`, "the same reason `--why-ground` was not an alias of
+     `--wash-about`" — and a guard read against the raw file matches that
+     sentence and reports the token as still present. */
+  const declared = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.doesNotMatch(declared, /--why-ground\s*:/);
+
+  const why = readFileSync(
+    new URL("../components/home/WhyMardal.tsx", import.meta.url),
+    "utf8",
+  );
+  assert.doesNotMatch(why, /WhyWash|WhyGround/);
+  for (const driver of ["WhyWash", "WhyGround"]) {
+    assert.throws(
+      () =>
+        readFileSync(
+          new URL(`../components/home/${driver}.tsx`, import.meta.url),
+          "utf8",
+        ),
+      `${driver}.tsx is back, and the yellow with it`,
+    );
+  }
+
+  /* **`--surface-raised`, not a grey written here.** It is the site's own answer
+     to exactly this — a panel raised off the page rather than a second colour on
+     it — and it is defined as a few percent of the OPPOSITE of the ground, so it
+     lifts on the white page and on the black one alike. A literal `#f3f3f3`
+     would be a light grey card on a light page and a light grey card on a dark
+     one.
+
+     It lands at #f3f3f3 over white against the #f8f9f9 of the reference: a shade
+     deeper, the same idea. */
+  const card = CSS.indexOf(".why-card {");
+  const rule = CSS.slice(card, CSS.indexOf("\n}", card)).replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.match(rule, /background:\s*var\(--surface-raised\)/);
+  assert.doesNotMatch(rule, /var\(--surface\)|var\(--canvas\)|#[0-9a-f]{3,8}/i);
+});
+
+test("the fusion mark is two strokes, and still says nothing", async () => {
+  const html = await (await render("/")).text();
+  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  const at = main.indexOf('class="fusion-section"');
+  assert.ok(at > 0, "the fusion section is not on the page");
+  const section = main.slice(at, main.indexOf("</section>", at));
+
+  /* **Two spans rather than `::before` and `::after`**, since the mark is drawn
+     one stroke at a time and a tween cannot reach a pseudo-element. Nothing
+     about how it looks changed — same size vars, same `currentcolor`. */
+  assert.match(section, /class="fusion-plus"[^>]*aria-hidden="true"/);
+  assert.match(section, /class="fusion-plus__stroke fusion-plus__stroke--up"/);
+  assert.match(section, /class="fusion-plus__stroke fusion-plus__stroke--across"/);
+
+  /* The upright is written FIRST, and that is the order it is drawn in. Markup
+     order is not what drives the timeline, but a reader meeting `across` above
+     `up` would reasonably assume it is. */
+  assert.ok(
+    section.indexOf("--up") < section.indexOf("--across"),
+    "the crossbar is written above the upright it is drawn after",
+  );
+
+  /* A drawn mark leaves nothing at the join for a screen reader, so the heading
+     carries its own spoken name and the mark stays out of the tree. Splitting it
+     into two elements doubles the ways that can go wrong. */
+  assert.match(
+    section,
+    /aria-label="Human Creativity plus Artificial Intelligence"/,
+  );
+  assert.equal((section.match(/aria-hidden="true"/g) ?? []).length, 1);
+
+  /* Both halves are addressable, and named by side rather than by index: the
+     reveal uncovers one from its left edge and one from its right, and a
+     `[0]`/`[1]` pair would swap silently if the markup were ever reordered. */
+  assert.match(section, /class="fusion-title__half" data-fusion-half="left"/);
+  assert.match(section, /class="fusion-title__half" data-fusion-half="right"/);
+
+  /* **It declines the site's section entrance.** A block that holds itself in
+     place cannot also be arriving — a pin is measured while its ancestor's lag
+     is applied and then rests exactly that far out, which is a real bug this
+     codebase has had before. */
+  assert.match(section, /data-enter-mode="none"/);
+});
+
+test("the fusion reveal draws the mark and uncovers the words", () => {
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  const code = readFileSync(
+    new URL("../components/home/FusionReveal.tsx", import.meta.url),
+    "utf8",
+  ).replace(/\/\*[\s\S]*?\*\//g, "");
+
+  /* **The stylesheet no longer draws the plus too.** Leaving the pseudo-elements
+     behind would put two crossbars in the mark, one of them undrawable. */
+  const strokes = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.doesNotMatch(strokes, /\.fusion-plus::(before|after)/);
+
+  /* **And nothing is hidden in CSS.** No clip-path, no opacity: the start state
+     is written by the reveal on its first frame, so a page with the script
+     blocked shows the heading whole rather than a permanently clipped one. */
+  const half = strokes.indexOf(".fusion-title__half {");
+  assert.ok(half > 0, "the half has no rule");
+  const rule = strokes.slice(half, strokes.indexOf("}", half));
+  assert.match(rule, /will-change:\s*clip-path/);
+  assert.doesNotMatch(rule, /clip-path:\s*inset|opacity/);
+
+  /* It pins, and for long enough that the strokes read as being drawn rather
+     than as appearing — under about two screens they simply arrive. */
+  assert.match(code, /const HOLD = 2\.5;/);
+  assert.match(code, /pin: true/);
+  assert.match(code, /start: "top top"/);
+  assert.match(code, /"\+=" \+ window\.innerHeight \* HOLD/);
+  assert.match(code, /scrub: 0\.4/);
+
+  /* **The upright draws out of its own foot.** The origin at the bottom is what
+     makes `scaleY` run upward instead of from the middle — the difference
+     between a line being drawn and a line being stretched, and the one
+     declaration the whole idea rests on. */
+  assert.match(code, /transformOrigin: "50% 100%"/);
+  assert.match(code, /\{ scaleY: 0,/);
+
+  /* And the crossbar opens from the centre, a little past its width and back.
+     The one ease on this page that overshoots. */
+  assert.match(code, /transformOrigin: "50% 50%"/);
+  assert.match(code, /"back\.out\(1\.7\)"/);
+
+  /* **Clipped, not sized.** A width animated across a heading re-wraps it on
+     every frame; a clip leaves the type laid out at its final size. The insets
+     run past the box by a fifth of an em so ascenders and descenders are never
+     shaved by a rounding difference. */
+  assert.match(code, /clipPath: "inset\(-0\.2em 100% -0\.2em 0\)"/);
+  assert.match(code, /clipPath: "inset\(-0\.2em 0 -0\.2em 100%\)"/);
+  assert.doesNotMatch(code, /width:|maxWidth:/);
+
+  /* The two halves close on the mark from opposite edges, the right four percent
+     behind the left so the pair reads as a pair rather than as one movement
+     mirrored. */
+  assert.match(code, /const LEFT = \{ at: 0\.5, run: 0\.3 \}/);
+  assert.match(code, /const RIGHT = \{ at: 0\.54, run: 0\.3 \}/);
+
+  /* **Reduced motion keeps the order and drops the travel.** Being drawn is the
+     idea rather than the decoration, so the strokes still draw and the clips
+     still open; what goes is everything that flies. */
+  assert.match(code, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)/);
+  assert.match(code, /y: still \? 0 : 90/);
+  assert.match(code, /y: still \? 0 : 48/);
+
+  /* An empty tween holding the end, and it is not filler: a scrub maps the whole
+     scroll to the timeline's duration, so without it the paragraph lands at the
+     exact moment the pin lets go. */
+  assert.match(code, /timeline\.to\(\{\}, \{ duration: HELD \}/);
+
+  /* Reverted on unmount, or a route change leaves a pin and its spacer behind on
+     a page that no longer has the section. */
+  assert.match(code, /context\.revert\(\)/);
+});

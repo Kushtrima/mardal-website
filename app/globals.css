@@ -304,17 +304,45 @@
      and those are read at a glance rather than along a line. Change paragraph
      size here and nowhere else.
 
-     14 to 16 for a while, and now back to where it started: 16 to 18, the whole
-     ramp lifted two pixels rather than tilted, so it still settles at the same
-     two window widths and still runs on the same 0.286vw slope as the size
-     above it. The two never drift apart as the page is resized — at the moment
-     they are the same size, which is what asking for 18px paragraphs means.
+     14 to 16 for a while, then back to where it started at 16 to 18, and now a
+     step above that: owner, 2026-08-26, reading the site on a 16in laptop —
+     paragraphs a little bigger.
 
-     Written out rather than pointed at --text-body, even though the values are
-     identical today. The split is the whole reason this token exists: aliasing
-     it would mean the next change to labels silently moved every paragraph on
-     the site with it, which is the thing the split was made to stop. */
-  --text-copy: clamp(16px, calc(13.43px + 0.286vw), 18px);
+     **The ramp is lifted, not tilted.** Same 0.286vw slope as the size above,
+     the base moved from 13.43 to 14.06 and the ceiling from 18 to 19. That is
+     deliberate: a steeper slope would have made the change arrive only at the
+     top of the range, and a 16in laptop is not one width — the MacBook reports
+     1728 at its default scaling, a Windows 16 at 125% reports 1536, and at 200%
+     it reports 1280. Lifting the whole ramp gives every one of them the same
+     step:
+
+       1024   16.36 -> 17.00
+       1280   17.09 -> 17.72
+       1440   17.55 -> 18.18
+       1536   17.82 -> 18.45
+       1728   18.00 -> 19.00
+
+     **The measure does not move with it.** Paragraph widths are capped in `ch`,
+     which scales with the font — 52ch is 70 characters at any size — so the
+     reading column grows in pixels and stays the same length in words. Checked
+     that the cap still fits its column at the new size: 52ch is 592px at 19px
+     against a 785px column at 1440.
+
+     The floor holds from 678 down rather than 900, which is where the lifted
+     ramp meets 16px. Between those two a tablet gains about a quarter of a
+     pixel — 16.27 at 768 — which is the price of moving the ramp rather than
+     the ceiling alone, and it is under the width of a hairline.
+
+     **This is the paragraph size only.** `--text-body` above is still 16 to 18
+     and still carries the nav, the buttons and the labels; they were separated
+     precisely so one could move without the other. The two are no longer the
+     same size, which they were until now — one line here if the whole page
+     should follow.
+
+     Written out rather than pointed at --text-body. The split is the whole
+     reason this token exists: aliasing it would mean the next change to labels
+     silently moved every paragraph on the site with it. */
+  --text-copy: clamp(16px, calc(14.06px + 0.286vw), 19px);
   /* The home hero's own line, a step above the display size. It is the one
      heading on the site with a whole viewport to itself and nothing beside it
      to match, and at the shared size it read small against that much air. The
@@ -2133,6 +2161,26 @@ video {
   display: block;
 }
 
+/* **The half is clipped, and that is the whole of how the words arrive.**
+
+   Owner, 2026-08-26, choosing between three models: the plus drawn stroke by
+   stroke, and the type uncovered from its outer edge inward rather than slid in
+   from the side. A word that travels is a word being moved; a word behind a
+   moving edge is a word being drawn, which is the same act as the mark beside
+   it. Two gestures became one.
+
+   **Nothing is set here.** No `clip-path`, no opacity, no transform: the start
+   state is written by `FusionReveal` on the first frame it renders, so a page
+   with the script blocked shows the heading whole rather than a permanently
+   clipped one. Every reveal on this site is built that way.
+
+   `will-change` because a clip animated across large type is a repaint of the
+   whole half on every frame, and it is the one hint that reliably keeps it off
+   the main thread. */
+.fusion-title__half {
+  will-change: clip-path;
+}
+
 /* Just under two thirds of the height of the two lines it stands beside. The
    height is still taken from the leading rather than typed, so the mark cannot
    come loose from the type; it simply no longer competes with it. The arms are
@@ -2147,22 +2195,30 @@ video {
   height: var(--fusion-plus-size);
 }
 
-.fusion-plus::before,
-.fusion-plus::after {
+/* **Two real spans, not `::before` and `::after`.** They were pseudo-elements
+   until 2026-08-26, and the reveal is what changed it: the mark is drawn one
+   stroke at a time now, and a tween cannot reach a pseudo-element. Nothing about
+   how they look moved — the same size vars, the same `currentcolor`, the same
+   centring — and they stay out of the accessible tree with the mark, which
+   carries `aria-hidden` and leaves the heading to speak for itself.
+
+   `translate` rather than `transform` for the centring, which is what they
+   already used and is now load-bearing: it is an independent property, so the
+   reveal's `transform` composes on top of it instead of overwriting it. */
+.fusion-plus__stroke {
   position: absolute;
   top: 50%;
   left: 50%;
   translate: -50% -50%;
   background: currentcolor;
-  content: "";
 }
 
-.fusion-plus::before {
+.fusion-plus__stroke--across {
   width: 100%;
   height: var(--fusion-plus-arm);
 }
 
-.fusion-plus::after {
+.fusion-plus__stroke--up {
   width: var(--fusion-plus-arm);
   height: 100%;
 }
@@ -2191,6 +2247,16 @@ video {
   line-height: var(--leading-body);
 }
 
+/* Plain canvas, and it has been three other things today.
+
+   Owner asked for the page to turn `#faff89` inside this section, and it went
+   through a flat fill on this box (a hard line across the top of it, because a
+   rectangle has edges at every opacity), a gradient inside the box (no line,
+   but the colour arrived as a shape travelling up the window while the header
+   and the sections either side stayed white), and then a page-wide wash on
+   every surface that paints. Then: remove the yellow completely, and make the
+   boxes light grey. So the ground is the page's own again and the separation is
+   the boxes'. */
 .why-section {
   position: relative;
   background: var(--canvas);
@@ -2266,12 +2332,36 @@ video {
   min-width: 0;
   /* Sized by its own copy — the row stretches every card to match the tallest,
      so a title that wraps can never be clipped. */
-  min-height: clamp(17rem, 25vw, 25rem);
+  /* **The air is the design.** Measured off the reference: its card is 672 by
+     795, a portrait of 1.183, and it holds a number, a title and a mark with
+     the rest empty. Removing the drawing without this left four squat boxes
+     with the plus sitting under the title.
+
+     36vw is that ratio at this grid's own column: a third of the page less the
+     gutters is about 445px at 1440, and 1.183 of it is 526 against the 518 this
+     gives. Capped at 33rem, where a card 700px tall stops being a card. */
+  min-height: clamp(19rem, 36vw, 33rem);
   flex-direction: column;
   padding: clamp(1.25rem, 1.75vw, 2rem);
   overflow: hidden;
   border-radius: var(--shape-card);
-  background: var(--surface);
+  /* **Light grey, on the page's own white.** Owner, 2026-08-26, after the
+     yellow came out: these in light grey. It was `--surface`, the lavender
+     panel, and white for the hour the yellow ground existed.
+
+     `--surface-raised` rather than a grey written here. It is the site's own
+     answer to exactly this — a panel raised off the page rather than a second
+     colour on it — and it is defined as a few percent of the OPPOSITE of the
+     ground, so it lifts on the white page and on the black one alike. A literal
+     `#f3f3f3` would be a light grey card on a light page and a light grey card
+     on a dark one.
+
+     It lands at #f3f3f3 over white, against the #f8f9f9 of the reference he
+     sent: a shade deeper, and the same idea. The separation is 1.06:1 either
+     way — panel-on-ground rather than text, read as a lift rather than as a
+     contrast — so the number is low by design and a hairline is the fix if the
+     edges ever want one. */
+  background: var(--surface-raised);
   /* No shadow, either way up — owner's call, 2026-08-24. It carried
      `var(--panel-shadow)`, which is nothing on the dark page and a real drop on
      the light one, so this only ever showed in light mode. The tint is left to
@@ -2279,18 +2369,40 @@ video {
      lavender panel further down the page — has always done. */
 }
 
-/* The label sits in the top-right corner, opposite the drawing. */
-.why-card__label {
-  position: absolute;
-  top: clamp(1.25rem, 1.75vw, 2rem);
-  right: clamp(1.25rem, 1.75vw, 2rem);
-  max-width: 45%;
+/* The number opens the card, above its title.
+
+   **The paragraph's size, and the same token as the paragraph.** Owner,
+   2026-08-26: the numbers at the same px as the paragraphs. Written as
+   `--text-copy` rather than as the number that token happens to resolve to, so
+   the two stay equal when either moves — and one of them moved today, when the
+   whole copy ramp was lifted for a 16in laptop.
+
+   It was its own ramp, `clamp(1.05rem, 1.4vw, 1.3rem)`, measured off the
+   reference: its number is 30px in a 672px card, which is 4.46% of the card's
+   width and about 20px at this grid's 445px column. That is a shade larger than
+   the paragraph and the owner's call is that they match.
+
+   `tabular-nums` because these are a column of figures, and `01` over `02` with
+   proportional digits sits a hair out of line. */
+.why-card__number {
   margin: 0;
-  font-size: var(--text-body);
+  /* **The same coral as the plus.** Owner, 2026-08-26. It was `--ink-muted`, and
+     grey until a pointer arrived is what the reference does; his is one colour
+     throughout.
+
+     ⚠ **2.31:1 on the grey panel, which fails AA for text.** WCAG asks 4.5:1 at
+     this size — 3:1 only from 24px, and these run 16 to 19 with the paragraphs.
+     The mark below can be under it because it is `aria-hidden` and decorative;
+     a number is neither.
+     `#df0303` is the same hue at 4.5:1 if he wants it to pass — and it is a
+     noticeably harder red, which is what 4.5:1 costs on this hue. His value stands;
+     the number is written here so the choice is visible rather than discovered. */
+  color: var(--why-mark);
+  font-size: var(--text-copy);
   font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
   line-height: 1.2;
-  text-align: right;
 }
 
 /* The product cards' corner marker. */
@@ -2352,37 +2464,189 @@ video {
      the other three cards. Measured, the four want between 7.38em (that title)
      and 9.37em (the point where "Everything working together" would come up
      onto one line); this sits in the middle of that band. */
-  max-width: 8.4em;
-  /* Two lines of the leading below, and it has to be edited with it: this is
-     what holds the four titles to one height so the paragraphs under them line
-     up, and it only does that while the two agree. */
-  min-height: 2.24em;
-  margin: clamp(1.5rem, 2.4vw, 2.25rem) 0 0;
+  /* **All four sit on one line, which is what the cap has to allow.** Measured
+     in the real face at this tracking: `We understand business` is the longest
+     at 8.54em, `We think strategically` 7.78, `Engagement` 4.20, `Technology`
+     3.93. It was 8.4em, which broke the longest of the four onto a second line
+     while the other three stayed on one — the reference sets all of them on
+     one.
+
+     9em rather than 8.6 so a slightly longer title later still holds, and the
+     card has the room either way: 8.54em is 256px at the 30px cap against a
+     394px column at 1440.
+
+     The `min-height: 2.24em` that used to be here reserved a second line so the
+     paragraphs under the four titles lined up. There are no paragraphs now, and
+     the mark below is pinned to the card's floor rather than to the title, so
+     nothing needs the reservation. */
+  max-width: 9em;
+  margin: clamp(0.4rem, 0.7vw, 0.6rem) 0 0;
   font-family: var(--type-title);
-  font-size: var(--text-heading);
+  /* **Its own size, not `--text-heading`.** Owner, 2026-08-26: a little bigger.
+     That token is on twelve rules across the site and moving it would take every
+     one of them along for a change asked of these four boxes.
+
+     The ramp is lifted rather than the ceiling raised — the same reason as
+     `--text-copy`: a 16in laptop is not one width. It was `clamp(24px, 2.35vw,
+     30px)`, which is already at its cap from 1277 up, so raising only the cap
+     would give a 1280 window a third of a pixel and a 1728 window four. Lifted,
+     every laptop gains about the same:
+
+       1024   24.1 -> 26.6
+       1280   30.0 -> 33.3
+       1440   30.0 -> 34.0
+       1728   30.0 -> 34.0
+
+     Against the reference, which sets its title at 7.29% of its card's width:
+     this is 8.5% at 1280 and 7.6% at 1440, so a touch larger than the drawing it
+     came from. That is what "bigger" was asked for.
+
+     `max-width` above still holds all four on one line at the new size: the
+     longest is 8.54em, which is 290px at the 34px cap against a 394px column at
+     1440, and 228 against 273 just above the split. */
+  font-size: clamp(1.625rem, 2.6vw, 2.125rem);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading);
   text-wrap: balance;
 }
 
+/* The reference's corner mark: a filled disc with a plus in it, on the card's
+   floor at the left.
+
+   Built on `.card-plus`, which is the site's own plus and is what the product
+   cards carry, rather than a second one drawn here — the geometry of the cross
+   stays in one rule and this changes only its size and its colours.
+
+   **11.6% of the card's width**, which is 78px of the reference's 672 and about
+   52 of this grid's 445 at 1440. The product cards' own size is half that and
+   reads as a marker; at this size it reads as the button the reference draws.
+
+   ⚠ **The reference's plus is orange and this one is not.** Orange is not a
+   colour this site has — the nearest is `--tint-clay-bar`, a coral used on one
+   homepage box — so adopting it here would be introducing a brand colour inside
+   a content change. `--accent` is the site's own, and it is one value if he
+   wants the reference's.
+
+   `margin-top: auto` is what puts it on the floor: the card is a flex column,
+   so the mark takes all the space the number and title leave. That is also why
+   the empty middle of the card needs no filler element. */
+.why-card__mark {
+  width: clamp(2.6rem, 3.5vw, 3.25rem);
+  margin-top: auto;
+  border-color: transparent;
+  background: var(--canvas);
+}
+
+.why-card__mark::before,
+.why-card__mark::after {
+  width: 34%;
+  /* Thicker than the product cards' hairline, in proportion with the disc. */
+  height: 2px;
+  /* 2.56:1 on the white disc it sits in. Under the 3:1 that WCAG asks of a
+     meaningful graphic — and this one is not: it is `aria-hidden`, nothing
+     opens, and it carries no information the card does not already show. Worth
+     the number being written down rather than discovered if it is ever given
+     something to do. */
+  background: var(--why-mark);
+}
+
+/* ── The box's paragraph, and how it arrives ──
+
+   Owner, 2026-08-26, with the reference's hover state: the text has to appear
+   from below.
+
+   **It is written for the pointer, and the page works without one.** The
+   paragraph is plain and visible here; everything that hides it is inside
+   `@media (hover: hover)` below. A phone has no hover and would otherwise get a
+   card with a title, a lot of white and no way to open it — the content would
+   be there in the markup and unreachable, which is the failure mode of every
+   hover-only disclosure.
+
+   **`margin-top: auto` puts it on the floor of the card**, which is where the
+   reference sets it: the number and title at the top, the paragraph across the
+   bottom half, the air in between. It shares the floor with the mark rather
+   than replacing it, and the two trade places on hover.
+
+   28ch because the box is narrow — about 39 real characters a line at this
+   face, four to five lines for these paragraphs, which is the shape in the
+   reference. */
 .why-card__copy {
-  max-width: 30ch;
-  margin: clamp(0.65rem, 0.9vw, 0.9rem) 0 0;
-  /* The panel's ink rather than its muted grey, so it reads as black and sits
-     at the same weight of colour as the title above it. */
-  color: var(--ink);
+  max-width: 28ch;
+  margin: auto 0 0;
+  color: var(--ink-muted);
   font-size: var(--text-copy);
   letter-spacing: -0.015em;
   line-height: var(--leading-body);
 }
 
-/* The drawing opens the card, held to the left edge. */
-.why-card__art {
-  display: flex;
-  height: clamp(11rem, 19vw, 19.5rem);
-  align-items: center;
-  justify-content: flex-start;
+/* No pointer, no mark: the paragraph is already showing, and a plus that opens
+   nothing is a control that lies. */
+.why-card__mark {
+  display: none;
+}
+
+@media (hover: hover) {
+  .why-card__mark {
+    display: block;
+  }
+
+  /* **The plus becomes a minus.** Owner, 2026-08-26: do not remove it on hover,
+     make it a `-`.
+
+     It was fading out with the paragraph, which left the corner empty. The two
+     strokes are `::before` and `::after` of the same disc — one horizontal, one
+     turned 90deg — so the minus is the upright one laid down on the other. They
+     end exactly on top of each other, which is a single bar.
+
+     Turned rather than hidden. Fading the upright stroke out gives the same
+     still image and none of the sense that the mark closed; a quarter turn is
+     the movement the shape is asking for, and it reverses on the way out. */
+  .why-card__mark::after {
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+
+  .why-card:hover .why-card__mark::after,
+  .why-card:focus-within .why-card__mark::after {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  /* **Down and out, in one move.** The travel is small on purpose: it is a
+     paragraph arriving inside a box, not a section arriving on a page, and
+     anything past about a line and a half of it reads as the text being thrown
+     rather than uncovered. `--duration-base` is the site's own middle speed.
+
+     Opacity and transform only — never `display`, `visibility` or `height`. The
+     first two take it out of the accessible tree, and the third changes the
+     card's height, which would move the whole row every time a pointer crossed
+     one of them.
+
+     The reduced-motion block near the foot of this file already cuts every
+     transition on the page to 0.01ms, so this needs no rule of its own there:
+     the paragraph still arrives, it simply does not travel. */
+  .why-card__copy {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition:
+      opacity var(--duration-base) var(--ease-standard),
+      transform var(--duration-base) var(--ease-standard);
+  }
+
+  /* `focus-within` costs nothing and covers the day one of these boxes is given
+     something to focus. Nothing inside is focusable today, and the cards are
+     not made focusable to fix that: four tab stops that do nothing is a worse
+     answer than the text a screen reader can already read at rest. */
+  .why-card:hover .why-card__copy,
+  .why-card:focus-within .why-card__copy {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* **The number does not change on hover any more.** It went to `--accent`
+     there, which was the other half of the reference's hover state — grey at
+     rest, orange under the pointer. The owner has made it the mark's colour at
+     rest instead, so there is nothing left for the hover to say: coral turning
+     purple would be the card changing colour rather than opening. */
 }
 
 /* One height for all four, so the drawings sit on a common line however wide
@@ -5142,15 +5406,16 @@ video {
   }
 
   .why-card {
+    /* The portrait goes with the grid. Stacked, a card is the full width of the
+       page and 1.183 of that is most of a screen — four of them would be four
+       screens of scroll for four titles. */
+    min-height: 14rem;
     margin-top: 0.75rem;
     padding: 1.25rem;
   }
 
-  .why-card__label {
-  }
-
   .why-card__title {
-    margin-top: 1.5rem;
+    margin-top: 0.4rem;
   }
 
   .difference-grid {
