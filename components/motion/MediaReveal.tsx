@@ -32,15 +32,31 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
  * `data-media-reveal` with slices inside, and nothing here has to know about it.
  */
 
-/** How far a slice starts from home, as a percentage of the frame's height. */
-const TRAVEL = 16;
+/**
+ * How far a slice starts from home, as a percentage of the frame's height.
+ *
+ * 16 for a version, which is 126px on a 790px frame — large enough that the
+ * gaps it opens at the top and bottom of the plate read as a layout fault
+ * rather than as pieces on their way in. 10 is 79px, which is a slice clearly
+ * out of place and not a hole in the page.
+ */
+const TRAVEL = 10;
 
 /** Seconds between one slice setting off and the next, against a 1s move. */
 const APART = 0.14;
 
-/** How faint a slice is while it is still out. Never zero: a slice can be
- *  faint for a moment, but a blank column reads as a picture that failed. */
-const FAINT = 0.35;
+/**
+ * How faint a slice is while it is still out.
+ *
+ * Never zero: a slice can be faint for a moment, but a blank column reads as a
+ * picture that failed to load rather than as one arriving.
+ *
+ * 0.55 rather than the 0.35 it started at. That number was chosen while the
+ * section's own fade was still multiplying into it — 0.62 x 0.35 is 0.217, and
+ * the photograph came in as a ghost. With the section entrance off this is the
+ * only opacity on the plate, so it can be what it was meant to be.
+ */
+const FAINT = 0.55;
 
 /** The window they land over, in the same terms `SectionEnter` uses. */
 const START = "top 92%";

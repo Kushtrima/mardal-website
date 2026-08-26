@@ -228,11 +228,24 @@ test("the sentence is set as prose, and beats the rules it has to beat", () => {
 test("the photograph is under the hero, and says only what it shows", async () => {
   const html = await (await render("/about")).text();
 
-  /* A direct child of `main`, carrying `data-route-section`. That attribute is
-     the whole of how a block gets the site's entrance — SectionEnter collects
-     `main > section[data-route-section]` — so the plate is animated by being one
-     of the page's sections rather than by anything of its own. */
+  /* A direct child of `main`. `data-route-section` is how SectionEnter finds a
+     block — it collects `main > section[data-route-section]` — and the plate
+     carries it while opting straight back out; see below for why. */
   assert.match(html, /<\/section><section class="about-plate" data-route-section="true">/);
+
+  /* **The plate must NOT take the section entrance.** It gets one free from
+     `data-route-section`: a y-lag of 96 to 160px and a fade from 0.62. The
+     slices bring their own displacement and their own fade, so together that is
+     two vertical motions on two different scroll windows and two opacities that
+     MULTIPLY — 0.62 x 0.55 — and the photograph arrived through a ghost, a
+     shear and a snap. That is what the owner reported as broken.
+
+     `data-enter` nominates the block and `data-enter-mode="none"` turns the
+     section's entrance off, which is the opt-out the CTA sections already use.
+     Measured after: the section sits at y 0 and opacity 1 and never moves, and
+     the slices are the only thing animating. */
+  assert.match(html, /class="about-plate__frame"[^>]*data-enter="true"/);
+  assert.match(html, /class="about-plate__frame"[^>]*data-enter-mode="none"/);
 
   /* **The page's column, not the page.** It was full-bleed for a version and the
      owner ruled that out, so the figure is back inside a container and stands on
@@ -441,8 +454,11 @@ test("the reveal is tied to scroll position and resolves", () => {
   assert.match(code, /opacity: 1,/);
 
   /* Never fully transparent on the way in: a slice can be faint for a moment,
-     but a blank column reads as a picture that failed to load. */
-  assert.match(code, /const FAINT = 0\.\d+;/);
+     but a blank column reads as a picture that failed to load.
+
+     0.55 rather than the 0.35 it started at, and the number moved because the
+     section's own fade stopped multiplying into it — see the opt-out above. */
+  assert.match(code, /const FAINT = 0\.55;/);
   assert.doesNotMatch(code, /opacity: 0,/);
 
   /* Attached by attribute, so the next photograph gets this by carrying the

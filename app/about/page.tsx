@@ -133,9 +133,22 @@ export default function AboutPage() {
                 947. Every copy is the same URL, so it is one request and one
                 decode; only the first carries the alt, since it is one
                 photograph however many boxes it is drawn in. */}
+            {/* **The plate opts OUT of the section entrance**, which every
+                `data-route-section` gets for free and which this one must not
+                have. `SectionEnter` gives a section a y-lag of 96 to 160px and a
+                fade from 0.62; the slices bring their own displacement and their
+                own fade. Together that is two vertical motions on two different
+                scroll windows, and two opacities that MULTIPLY — the photograph
+                started at 0.217 and arrived through a ghost, a shear and a snap.
+
+                `data-enter` nominates this block and `data-enter-mode="none"`
+                turns the section's entrance off, which is the opt-out the CTA
+                sections already use. One motion instead of three. */}
             <figure
               className="about-plate__frame"
               data-media-reveal
+              data-enter
+              data-enter-mode="none"
               style={{ "--slices": about.photo.slices } as CSSProperties}
             >
               {Array.from({ length: about.photo.slices }, (_, slice) => (
