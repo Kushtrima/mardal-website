@@ -262,6 +262,18 @@
   --tint-clay: #ffb6a6;
   --tint-clay-bar: #fd7979;
 
+  /* **The plus on the Why Mardal boxes.** Owner, 2026-08-26, with the value.
+     Flat rather than `light-dark()`, which is how every tint above is declared:
+     these are brand colours and they are the same on both pages.
+
+     It is the same `#fd7979` as `--tint-clay-bar` and is deliberately not an
+     alias of it. That one is AI & Automation's — the pattern on its hero and the
+     mark on its homepage box — and pointing this at it would mean the next
+     change to that service's colour silently repainting four plusses on an
+     unrelated section. The same reason `--why-ground` was not an alias of
+     `--wash-about`. */
+  --why-mark: #fd7979;
+
   /* Typography */
   --type-body: var(--font-geist), Arial, Helvetica, sans-serif;
   --type-display: var(--font-geist), Arial, Helvetica, sans-serif;

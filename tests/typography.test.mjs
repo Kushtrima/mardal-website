@@ -129,6 +129,52 @@ test("the tight token is still there for the sans", () => {
  * them, which runs to 76px: the cards would be competing with the thing that
  * indexes them.
  */
+test("the paragraph ramp is lifted, not tilted", () => {
+  /* Owner, 2026-08-26, reading the site on a 16in laptop: paragraphs a little
+     bigger. The two sizes below were identical until then and are not any more,
+     which is what the split between them was for.
+
+     **Asserted as a relationship, not as two numbers.** What must hold is that
+     the paragraph ramp runs on the SAME slope as the label ramp above it — the
+     comment on `--text-body` is explicit that the two must not drift apart as a
+     window is resized, and the way that breaks is someone steepening one of them
+     to reach a size at the top of the range. Both bases and both ceilings are
+     free to move; the slope is not. */
+  const read = (token) => {
+    const value = CSS.match(new RegExp(`${token}:\\s*([^;]+);`))?.[1];
+    assert.ok(value, `${token} is not defined`);
+    const m = value.match(
+      /clamp\(\s*([\d.]+)px,\s*calc\(\s*([\d.]+)px\s*\+\s*([\d.]+)vw\s*\),\s*([\d.]+)px\s*\)/,
+    );
+    assert.ok(m, `${token} is not a floor/slope/ceiling ramp: ${value}`);
+    return { floor: +m[1], base: +m[2], slope: +m[3], ceiling: +m[4] };
+  };
+
+  const body = read("--text-body");
+  const copy = read("--text-copy");
+  assert.equal(copy.slope, body.slope, "the two sizes no longer run in parallel");
+
+  /* Running text is at least as large as the labels, never smaller. */
+  assert.ok(copy.ceiling >= body.ceiling);
+  assert.ok(copy.base >= body.base);
+
+  /* **A 16in laptop is not one width**, which is why the ramp was lifted rather
+     than the ceiling raised alone: a MacBook 16 reports 1728 CSS px at its
+     default scaling, a Windows 16 at 125% reports 1536, and the same panel at
+     200% reports 1280. All three have to gain, so the gain is checked across the
+     band rather than at the top of it. */
+  const at = (r, vw) => Math.min(Math.max(r.base + (r.slope * vw) / 100, r.floor), r.ceiling);
+  for (const vw of [1280, 1440, 1536, 1728]) {
+    assert.ok(
+      at(copy, vw) >= 17.5,
+      `paragraphs are ${at(copy, vw).toFixed(2)}px at ${vw}, which is the size they were before he asked`,
+    );
+  }
+
+  /* The phone is untouched: the floor is the floor. */
+  assert.equal(at(copy, 390), 16);
+});
+
 test("the client card's name leads without borrowing the display face", () => {
   /* Every rule the name is named in, not just the one that carries its size.
      Its face is set in a grouped rule shared with the value under it — reading
