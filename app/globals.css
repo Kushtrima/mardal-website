@@ -463,6 +463,30 @@
      these values instead of introducing smaller one-off type rules. */
   --service-text-support: clamp(30px, 2.7vw, 40px);
   --service-text-action: 20px;
+
+  /* **The one size every arrow link is set at.** Owner, 2026-08-27: one
+     dimension for all of them on desktop, one globally for mobile.
+
+     They were four sizes. `.service-hero__cta` took `--service-text-action` at a
+     flat 20px, `.product__cta` and `.blog-more__all` took `--text-body` at 16 to
+     18, and `.industries-explore` took `--text-copy` at 16 to 19 — a pixel apart
+     from the product link at wide widths for no reason anyone decided. A reader
+     meets two of these on one scroll and they were never the same.
+
+     **A step rather than a clamp**, which is a deliberate departure from every
+     other size on this site: he asked for one value on desktop and one on
+     mobile, and a fluid ramp is by definition neither. 64rem is the split the
+     rest of the page already turns at.
+
+     Desktop went 18 to 20 on 2026-08-27 — a little bigger, his word — which is
+     where `.service-hero__cta` already was before the four were brought
+     together. Mobile stays at 16.
+
+     It does NOT replace `--service-text-action`. That token is the service
+     pages' action size and seven other rules read it — role links, the story
+     way-out, the journey, the cards. Only the hero's CTA leaves it, and only
+     because it is one of the four links this is about. */
+  --text-cta: 16px;
   --service-text-card-title: clamp(52px, 4.2vw, 72px);
   /* Both point at the page's copy size rather than holding their own. They
      were 20 and 18: a service card is read full-screen, which was the argument
@@ -1243,6 +1267,33 @@ video {
   animation-iteration-count: infinite;
   animation-fill-mode: both;
   will-change: opacity;
+}
+
+/* **And it goes purple while it does.** Owner, 2026-08-27: no change of
+   position on hover, only the effect, in purple.
+
+   The nudge that went with it was `translate(2px, -2px)` on the industries link
+   and was the only arrow on the site that moved — one link behaving differently
+   from every other link with an arrow in it.
+
+   `color`, not a background: every dot is `background: currentColor`, so one
+   declaration on the arrow carries all fourteen. It rides on the same
+   `:is(a, button):hover` the reconstruct does, so anything that gets the
+   animation gets the colour, including from the keyboard. */
+:is(a, button):hover .pixel-arrow--animated,
+:is(a, button):focus-visible .pixel-arrow--animated {
+  color: var(--accent);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+/* **Except on the accent panel, where purple on purple is nothing.** The
+   footer's way back up sits inside `.site-footer__panel`, whose background IS
+   `--accent` — the arrow would go invisible at the moment it was pointed at.
+   Its own contrast colour instead, which is what the panel's text already
+   uses. */
+.site-footer__panel :is(a, button):hover .pixel-arrow--animated,
+.site-footer__panel :is(a, button):focus-visible .pixel-arrow--animated {
+  color: var(--accent-contrast);
 }
 
 @keyframes pixel-arrow-matrix-reconstruct {
@@ -3789,6 +3840,34 @@ video {
   }
 }
 
+/* **The label turns purple with its arrow.** Owner, 2026-08-27, and it makes
+   the family agree: this was three different answers to one question. The
+   service hero's CTA and the product link went to `--accent-strong`, the blog's
+   went to `--accent`, and the industries link did nothing at all — two purples
+   and a gap, on four links that do the same job.
+
+   `--accent`, which is the arrow's colour: label and mark change together or the
+   hover reads as two things happening. 4.77:1 on the light canvas and 7.29 on
+   the dark, both AA for text at any size. `--accent-strong` is darker and would
+   pass more comfortably, but it is not what the arrow beside it takes, and this
+   pair has to match. */
+@media (hover: hover) {
+  .service-hero__cta:hover,
+  .product__cta:hover,
+  .industries-explore:hover,
+  .blog-more__all:hover {
+    color: var(--accent);
+  }
+}
+
+/* The desktop half of `--text-cta`. On `:root` so every arrow link turns at
+   once, rather than each carrying its own query. */
+@media (min-width: 64rem) {
+  :root {
+    --text-cta: 20px;
+  }
+}
+
 /* **`:has()`, so the section needs no JavaScript at all.** It was a client
    component with a wheel-momentum recogniser, a step lock, a three-second hold
    and a pin; the highlight is the only interaction left, and the stylesheet can
@@ -3900,18 +3979,8 @@ video {
   align-items: center;
   gap: 0.5rem;
   color: var(--ink);
-  font-size: var(--text-copy);
+  font-size: var(--text-cta);
   text-decoration: none;
-}
-
-.industries-explore__arrow {
-  transition: transform var(--duration-fast) var(--ease-standard);
-}
-
-@media (hover: hover) {
-  .industries-explore:hover .industries-explore__arrow {
-    transform: translate(2px, -2px);
-  }
 }
 
 /* Stacked where the rest of the page stacks. The run keeps its size on a phone:
@@ -5997,16 +6066,10 @@ video {
   justify-self: start;
   gap: 0.55em;
   margin-top: 1.5rem;
-  font-size: var(--text-body);
+  font-size: var(--text-cta);
   letter-spacing: -0.02em;
   line-height: 1;
   transition: color var(--duration-fast) var(--ease-standard);
-}
-
-@media (hover: hover) {
-  .product__cta:hover {
-    color: var(--accent-strong);
-  }
 }
 
 @container products (max-width: 58rem) {
@@ -6410,17 +6473,11 @@ video {
   justify-self: end;
   padding-block: 0.2rem;
   font-family: var(--type-display);
-  font-size: var(--service-text-action);
+  font-size: var(--text-cta);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
   line-height: 1;
   transition: color var(--duration-fast) var(--ease-standard);
-}
-
-@media (hover: hover) {
-  .service-hero__cta:hover {
-    color: var(--accent-strong);
-  }
 }
 
 /* **The heroes draw their bars; none of them is a mask any more.** Owner,
@@ -10161,7 +10218,7 @@ video {
    under the two titles without turning it down. */
 .blog-more__all {
   color: var(--ink);
-  font-size: var(--text-body);
+  font-size: var(--text-cta);
   letter-spacing: -0.02em;
   line-height: 1;
   text-align: center;
@@ -10170,8 +10227,7 @@ video {
 }
 
 @media (hover: hover) {
-  .blog-more__side:hover .blog-more__name,
-  .blog-more__all:hover {
+  .blog-more__side:hover .blog-more__name {
     color: var(--accent);
   }
 }

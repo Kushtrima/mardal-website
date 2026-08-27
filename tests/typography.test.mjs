@@ -228,3 +228,127 @@ test("the client card's name leads without borrowing the display face", () => {
   assert.ok(name > value, "the card name is no larger than the facts under it");
   assert.ok(value > label, "the fact's label is no smaller than its value");
 });
+
+test("every arrow link is one size, and one step", () => {
+  /* Owner, 2026-08-27: one dimension for all of them on desktop, one globally
+     for mobile.
+
+     They were four. `.service-hero__cta` took `--service-text-action` at a flat
+     20px, `.product__cta` and `.blog-more__all` took `--text-body` at 16 to 18,
+     and `.industries-explore` took `--text-copy` at 16 to 19 — a pixel apart
+     from the product link at wide widths, which was drift rather than a
+     decision. A reader meets two of them on one scroll.
+
+     Held as a SET rather than as four assertions of the same value: what has to
+     be true is that they agree, and the token is what makes that structural. */
+  const LINKS = [
+    ".service-hero__cta {",
+    ".product__cta {",
+    ".industries-explore {",
+    ".blog-more__all {",
+  ];
+  const sizes = LINKS.map((selector) => {
+    const at = CSS.indexOf(selector);
+    assert.ok(at > 0, `${selector} has no rule`);
+    const rule = CSS.slice(at, CSS.indexOf("\n}", at)).replace(/\/\*[\s\S]*?\*\//g, "");
+    const size = rule.match(/font-size:\s*([^;]+);/);
+    assert.ok(size, `${selector} sets no size`);
+    return size[1].trim();
+  });
+  assert.deepEqual(new Set(sizes), new Set(["var(--text-cta)"]));
+
+  /* **A step, not a clamp**, and that is a deliberate departure from every other
+     size on this site: one value on desktop and one on mobile is by definition
+     not a fluid ramp. The mobile value sits on `:root` and the desktop one
+     replaces it at the split the rest of the page already turns at, so every
+     link turns together rather than each carrying its own query. */
+  assert.match(CSS, /--text-cta:\s*16px;/);
+  const step = CSS.indexOf("@media (min-width: 64rem) {\n  :root {");
+  assert.ok(step > 0, "there is no desktop half");
+  assert.match(CSS.slice(step, CSS.indexOf("}\n}", step)), /--text-cta:\s*20px/);
+
+  /* **And one purple for the label, matching the arrow.** This was three answers
+     to one question: the service hero's CTA and the product link went to
+     `--accent-strong`, the blog's went to `--accent`, and the industries link
+     did nothing at all — two purples and a gap, on four links that do the same
+     job.
+
+     `--accent` because that is what the arrow beside it takes; label and mark
+     change together or the hover reads as two things happening. 4.77:1 on the
+     light canvas and 7.29 on the dark, AA for text at any size. Held as a set
+     for the same reason the size is. */
+  const hover = CSS.indexOf(".service-hero__cta:hover,");
+  assert.ok(hover > 0, "the labels do not turn together");
+  const rule = CSS.slice(hover, CSS.indexOf("\n  }", hover));
+  for (const link of [
+    ".service-hero__cta:hover",
+    ".product__cta:hover",
+    ".industries-explore:hover",
+    ".blog-more__all:hover",
+  ]) {
+    assert.ok(rule.includes(link), `${link} is not in the family`);
+  }
+  assert.match(CSS.slice(hover, CSS.indexOf("}\n}", hover)), /color:\s*var\(--accent\);/);
+  assert.doesNotMatch(
+    CSS.slice(hover, CSS.indexOf("}\n}", hover)),
+    /--accent-strong/,
+  );
+
+  /* And nowhere else answers it differently. */
+  for (const stray of [
+    ".product__cta:hover {",
+    ".service-hero__cta:hover {",
+  ]) {
+    assert.ok(!CSS.includes(stray), `${stray} still has a hover of its own`);
+  }
+
+  /* **`--service-text-action` is not what changed.** It is the service pages'
+     action size and seven other rules read it — role links, the story way-out,
+     the journey, the cards. Only the hero's CTA left it, and only because it is
+     one of the four links this is about. */
+  assert.match(CSS, /--service-text-action:\s*20px/);
+  assert.ok(
+    (CSS.match(/var\(--service-text-action\)/g) ?? []).length >= 7,
+    "the service action size lost users it should have kept",
+  );
+});
+
+test("the arrow changes colour on hover and never changes place", () => {
+  /* Owner, 2026-08-27: no change of position on hover, only the effect, in
+     purple.
+
+     The nudge that came off was `translate(2px, -2px)` on the industries link,
+     and it was the only arrow on this site that moved — one link behaving
+     differently from every other link with an arrow in it. Asserted as an
+     absence across the whole stylesheet, because a transform on any arrow is
+     the same fault wherever it lands. */
+  const bare = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
+  for (const rule of bare.match(/[^}]*__arrow[^{]*\{[^}]*\}/g) ?? []) {
+    assert.doesNotMatch(
+      rule,
+      /transform:\s*translate/,
+      `an arrow still moves: ${rule.slice(0, 60)}`,
+    );
+  }
+
+  /* **`color`, not a background.** Every dot is `background: currentColor`, so
+     one declaration on the arrow carries all fourteen — and it rides on the same
+     `:is(a, button):hover` the reconstruct animation does, so anything that gets
+     the effect gets the colour, from the keyboard as well as the pointer. */
+  const lit = bare.indexOf(":is(a, button):hover .pixel-arrow--animated,");
+  assert.ok(lit > 0, "the arrow does not take a colour on hover");
+  const rule = bare.slice(lit, bare.indexOf("\n}", lit));
+  assert.match(rule, /:focus-visible \.pixel-arrow--animated/);
+  assert.match(rule, /color:\s*var\(--accent\)/);
+
+  /* **Except on the accent panel, where purple on purple is nothing.** The
+     footer's way back up sits inside `.site-footer__panel`, whose background IS
+     `--accent`: the arrow would go invisible at the moment it was pointed at. */
+  const panel = bare.indexOf(".site-footer__panel :is(a, button):hover");
+  assert.ok(panel > 0, "the footer's arrow disappears into its own panel");
+  assert.match(
+    bare.slice(panel, bare.indexOf("\n}", panel)),
+    /color:\s*var\(--accent-contrast\)/,
+  );
+  assert.ok(panel > lit, "the panel's exception is written before the rule it excepts");
+});
