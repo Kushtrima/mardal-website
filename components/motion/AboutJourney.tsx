@@ -63,13 +63,15 @@ const smooth = (value: number) => value * value * (3 - 2 * value);
 
 export function AboutJourney() {
   useEffect(() => {
+    /* The only gate. It used to be two: this, and `(max-width: 64rem)` for
+       "a phone has nothing stacked to slide".
+
+       That second one went on 2026-08-27 — owner: the same scroll effect on
+       mobile — and the sentence it was written on had stopped being true anyway.
+       The stage stacks its cards at every width now; only a reader who has asked
+       for no motion gets them back in flow, and that reader is already turned
+       away here. The stylesheet no longer has a width where the two disagree. */
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    /* Below the split the notes are two blocks of prose one after the other and
-       the stage is a static grid — there is nothing stacked to slide, and pinning
-       a phone for two screens of scroll to move a column two words wide is worse
-       than not moving it. The stylesheet decides the layout; this reads the same
-       boundary so the two cannot disagree. */
-    if (window.matchMedia("(max-width: 64rem)").matches) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
@@ -80,6 +82,33 @@ export function AboutJourney() {
 
     const cards = gsap.utils.toArray<HTMLElement>("[data-journey-card]", stage);
     if (cards.length < 2) return;
+
+    /* **The stage is as tall as its tallest note, measured rather than declared.**
+
+       The cards are absolute, so the stage has no height of its own and the
+       stylesheet gives it a 22rem floor. That number was written for a column
+       beside a heading on a desktop; one column on a phone is far taller — the
+       third paragraph of the first note alone runs past it at 390px — and the
+       pin would have held a box the note had grown out of, with the words
+       running into whatever came next.
+
+       Read off the cards, which is a number that cannot be wrong at a width
+       nobody tested. `offsetHeight` is the layout box, so the transforms the run
+       puts on these do not disturb it.
+
+       On `refreshInit` rather than once: it fires BEFORE ScrollTrigger takes its
+       measurements, so the height is already correct when the pin is sized. A
+       rotation, a resize, or a web font landing late all arrive through it. */
+    const sizeStage = () => {
+      const tallest = cards.reduce(
+        (most, card) => Math.max(most, card.offsetHeight),
+        0,
+      );
+      if (tallest > 0) stage.style.minHeight = `${Math.ceil(tallest)}px`;
+    };
+
+    sizeStage();
+    ScrollTrigger.addEventListener("refreshInit", sizeStage);
 
     const context = gsap.context(() => {
       const wordGroups = cards.map((card) =>
@@ -189,7 +218,13 @@ export function AboutJourney() {
       });
     });
 
-    return () => context.revert();
+    return () => {
+      ScrollTrigger.removeEventListener("refreshInit", sizeStage);
+      /* Set outside the gsap context, so reverting the context does not take it
+         — and left behind it would pin a stale height onto the flow layout. */
+      stage.style.minHeight = "";
+      context.revert();
+    };
   }, []);
 
   return null;

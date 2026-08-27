@@ -5,34 +5,72 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 
-const DESKTOP_QUERY =
-  "(min-width: 64.0625rem) and (prefers-reduced-motion: no-preference)";
-const MOBILE_QUERY =
-  "(max-width: 48rem) and (prefers-reduced-motion: no-preference)";
-const STACKED_QUERY =
-  "(min-width: 48.0625rem) and (max-width: 64rem), (prefers-reduced-motion: reduce)";
+/**
+ * The run, and the only thing that turns it off.
+ *
+ * **One effect at every width — owner, 2026-08-27.** There were three branches
+ * and three queries: this journey above 1025px, a pinned VERTICAL card stack
+ * below 768, and a native document with an IntersectionObserver for the band
+ * between them. The owner asked for the desktop journey everywhere, so the
+ * vertical stack is gone and this query is what is left of all three.
+ *
+ * **It also closes a hole that could not be closed while it was a width.**
+ * `DESKTOP_QUERY` was `(min-width: 64.0625rem)`, and lib/breakpoints.ts has the
+ * note on why that number is a trap: 64.0625rem is 1025px, so a viewport at
+ * 1024.5 — ordinary under browser zoom or a fractional device pixel ratio —
+ * matched neither it nor the `max-width: 64rem` that un-stacked the cards. A
+ * card rests at `opacity: 0; visibility: hidden`, so a reader one half-pixel
+ * wide saw one card of twelve and nothing else. There is no arithmetic left
+ * here to get wrong.
+ */
+const MOTION_QUERY = "(prefers-reduced-motion: no-preference)";
 
 /**
- * Maps vertical page progress to a horizontal editorial journey on desktop.
- * Smartphones use a pinned vertical stack, while tablets and reduced-motion
- * users keep a native vertical document.
+ * And its exact complement, which is what makes the pair safe.
  *
- * **That last clause was untrue for two years of widths, and the stylesheet is
- * what made it true.** A card rests at `opacity: 0; visibility: hidden`; the
- * desktop run is what reveals them. `DESKTOP_QUERY` excludes anyone who has asked
- * for no motion, so a reduced-motion reader on a wide window entered no branch
- * that reveals anything — and the rules that put the cards back into flow were
- * written under `max-width: 64rem`, so they did not reach that reader either.
- * They saw the first card of twelve and nothing else, with the rest gone from the
- * accessibility tree as well. `STACKED_QUERY` did match them, but its whole body
- * is an IntersectionObserver that rewrites the current title and never touches a
- * card.
+ * Two queries that must cover every reader between them, with no gap and no
+ * overlap. `reduce` and `no-preference` are the only two states of one feature,
+ * so this pair is exhaustive by construction rather than by arithmetic — which
+ * the width-based pair it replaces never was.
+ */
+const CALM_QUERY = "(prefers-reduced-motion: reduce)";
+
+/**
+ * Maps vertical page progress to a horizontal editorial journey, at every width.
+ * A reader who has asked for no motion keeps a native vertical document.
  *
- * The un-stacking now answers to `(max-width: 64rem), (prefers-reduced-motion:
- * reduce)` — see the block beside `.service-journey` in globals.css. **The two
- * conditions have to stay complements:** a term added to `DESKTOP_QUERY` without
- * the matching term there leaves a set of readers that neither the run nor the
- * flow claims, which is exactly the shape of the bug that was here.
+ * ── What this used to be ──
+ * Three branches: the journey above 1025px, a pinned VERTICAL card stack below
+ * 768, and the band between them left as a plain document with an
+ * IntersectionObserver retitling it. The owner asked on 2026-08-27 for the
+ * journey everywhere, so the stack is gone and the observer is now the
+ * reduced-motion branch alone.
+ *
+ * ── Why the pair is safe now, and was not before ──
+ * A card rests at `opacity: 0; visibility: hidden`; the run is what reveals it.
+ * So the query that runs it and the query that puts the cards back in flow MUST
+ * cover every reader between them — a reader claimed by neither sees one card of
+ * twelve, with the other eleven gone from the accessibility tree too.
+ *
+ * That is not a hypothetical: it happened here twice. First a reduced-motion
+ * reader on a wide window matched no branch that revealed anything, because the
+ * un-stacking was written under `max-width: 64rem` and never reached them.
+ * Then, once that was fixed, a one-pixel hole remained at 1024.5 — between
+ * `min-width: 64.0625rem` and `max-width: 64rem` — which browser zoom and
+ * fractional device pixel ratios produce routinely. See lib/breakpoints.ts,
+ * which documents why an exact complement of a width query cannot be written.
+ *
+ * The pair is now `no-preference` and `reduce`: the only two states of one
+ * feature, exhaustive and non-overlapping by construction. There is no width
+ * arithmetic left in this file, and the stylesheet's flow block answers to the
+ * same `reduce` — one condition, spelled once on each side.
+ *
+ * ── The cards' width is read, not assumed ──
+ * `columnOffset` comes from `cards[0].getBoundingClientRect().width`, so the
+ * stylesheet decides how many cards share the stage. Two at 48% on a desktop;
+ * one at 100% below 64rem, where 48% of a phone is a column two words across.
+ * The run needed no arithmetic changed to arrive on a phone — only the width it
+ * reads.
  */
 export function ServiceOfferingsScroll() {
   useEffect(() => {
@@ -169,7 +207,7 @@ export function ServiceOfferingsScroll() {
 
     updateCard(0, true);
 
-    media.add(DESKTOP_QUERY, () => {
+    media.add(MOTION_QUERY, () => {
       let jumpTween: gsap.core.Tween | undefined;
       let groupSwitchTween: gsap.core.Timeline | undefined;
       let skipTransition: gsap.core.Tween | undefined;
@@ -665,179 +703,7 @@ export function ServiceOfferingsScroll() {
       };
     });
 
-    media.add(MOBILE_QUERY, () => {
-      section.classList.add("is-mobile-service-stack");
-
-      let jumpTween: gsap.core.Tween | undefined;
-      let groupSwitchTween: gsap.core.Timeline | undefined;
-      const cardContent = cards.map((card) =>
-        Array.from(
-          card.querySelectorAll<HTMLElement>(
-            ".service-card__mobile-title, .service-card__body, .service-card__number",
-          ),
-        ),
-      );
-
-      cards.forEach((card, index) => {
-        gsap.set(card, {
-          autoAlpha: 1,
-          yPercent: index === 0 ? 0 : 105,
-          zIndex: index + 1,
-        });
-      });
-      gsap.set(cardContent.flat(), { autoAlpha: 1, y: 0 });
-      updateCard(0, true);
-
-      const mobileTimeline = gsap.timeline({
-        defaults: { ease: "none" },
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: () =>
-            `+=${Math.max(
-              (cards.length - 1) * window.innerHeight * 1.08,
-              1,
-            )}`,
-          pin: viewport,
-          scrub: 0.5,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            const cardIndex = Math.min(
-              Math.round(self.progress * (cards.length - 1)),
-              cards.length - 1,
-            );
-            updateCard(cardIndex, true);
-          },
-        },
-      });
-
-      cards.slice(1).forEach((incomingCard, transitionIndex) => {
-        mobileTimeline
-          .to(
-            cardContent[transitionIndex],
-            {
-              autoAlpha: 0,
-              y: -12,
-              duration: 0.34,
-              stagger: 0.025,
-            },
-            transitionIndex,
-          )
-          .fromTo(
-            incomingCard,
-            { autoAlpha: 1, yPercent: 105 },
-            {
-              autoAlpha: 1,
-              yPercent: 0,
-              duration: 1,
-              ease: "power2.out",
-            },
-            transitionIndex + 0.08,
-          );
-      });
-
-      const trigger = mobileTimeline.scrollTrigger;
-
-      const showCardWithTransition = (card: HTMLElement) => {
-        if (!trigger) return;
-        const cardIndex = cards.indexOf(card);
-        if (cardIndex < 0) return;
-
-        jumpTween?.kill();
-        groupSwitchTween?.kill();
-        const progress =
-          cards.length > 1 ? cardIndex / (cards.length - 1) : 0;
-        const destination =
-          trigger.start + (trigger.end - trigger.start) * progress;
-
-        updateCard(cardIndex, true);
-        gsap.set(stage, { autoAlpha: 1, x: 0 });
-        groupSwitchTween = gsap
-          .timeline()
-          .to(stage, {
-            autoAlpha: 0,
-            x: -28,
-            duration: 0.28,
-            ease: "power2.in",
-          })
-          .add(() => {
-            trigger.scroll(destination);
-            mobileTimeline.progress(progress);
-            updateCard(cardIndex, true);
-            ScrollTrigger.update();
-          })
-          .fromTo(
-            stage,
-            { autoAlpha: 0, x: 32 },
-            {
-              autoAlpha: 1,
-              x: 0,
-              duration: 0.44,
-              ease: "power3.out",
-            },
-          );
-      };
-
-      const handleGroupClick = (event: Event) => {
-        const link = event.currentTarget as HTMLAnchorElement;
-        const target = section.querySelector<HTMLElement>(link.hash);
-        if (!target) return;
-        event.preventDefault();
-        showCardWithTransition(target);
-      };
-
-      groupLinks.forEach((link) =>
-        link.addEventListener("click", handleGroupClick),
-      );
-
-      const handleNextClick = (event: Event) => {
-        event.preventDefault();
-
-        const nextGroupCard = firstCardForGroup(activeGroup + 1);
-        if (nextGroupCard) {
-          showCardWithTransition(nextGroupCard);
-          return;
-        }
-
-        if (trigger) {
-          jumpTween?.kill();
-          const scrollState = { value: trigger.scroll() };
-          jumpTween = gsap.to(scrollState, {
-            value: trigger.end + 2,
-            duration: 1.05,
-            ease: "power3.inOut",
-            overwrite: true,
-            onUpdate: () => window.scrollTo(0, scrollState.value),
-          });
-        }
-      };
-
-      nextLink.addEventListener("click", handleNextClick);
-      void document.fonts.ready.then(() => ScrollTrigger.refresh());
-
-      return () => {
-        jumpTween?.kill();
-        groupSwitchTween?.kill();
-        nextLink.removeEventListener("click", handleNextClick);
-        groupLinks.forEach((link) =>
-          link.removeEventListener("click", handleGroupClick),
-        );
-        mobileTimeline.kill();
-        titleTween?.kill();
-        section.classList.remove("is-mobile-service-stack");
-        gsap.set(cards, {
-          clearProps: "opacity,visibility,transform,zIndex",
-        });
-        gsap.set(cardContent.flat(), {
-          clearProps: "opacity,visibility,transform",
-        });
-        gsap.set(currentTitle, { clearProps: "opacity,visibility,transform" });
-        gsap.set(stage, { clearProps: "opacity,visibility,transform" });
-      };
-    });
-
-    media.add(STACKED_QUERY, () => {
+    media.add(CALM_QUERY, () => {
       const observer = new IntersectionObserver(
         (entries) => {
           const visibleEntry = entries

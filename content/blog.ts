@@ -98,10 +98,21 @@ export const blog = {
   title: "Blog",
   lede: "What we learn, written down.",
   /* Two lines, set here rather than in the page: where the line turns is a
-     decision about the copy, not about the markup. The title's measure is
-     13.5ch, which resolved to 439px when it was last read off the page, and
-     both of these sit well inside it. */
-  titleLines: ["What we learn,", "written down."],
+     decision about the copy, not about the markup.
+
+     Owner's words, 2026-08-27, replacing "What we learn, / written down.".
+     Broken after "things" because that is where the sentence has a joint — the
+     alternative that fits, `…things we're` over `exploring`, turns on a
+     possessive and leaves a one-word second line under a nineteen-character
+     first one.
+
+     The note this replaces cited a 13.5ch measure. That number is gone rather
+     than stale: the hero went bare on 2026-08-27 and
+     `.service-hero--bare .service-hero__title` sets `max-width: none`, so what
+     bounds the heading now is the eight-column intro, not a measure. The longest
+     line here is nineteen characters against the fourteen it replaces, which is
+     the reason that was worth checking rather than assuming. */
+  titleLines: ["Notes on the things", "we’re exploring"],
   support: "Notes on software, applied AI, and the systems businesses run on.",
   heroCta: "Get in touch",
 

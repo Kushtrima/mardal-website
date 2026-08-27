@@ -101,12 +101,26 @@ test("the cards are revealed for reduced motion, not for narrow windows alone", 
   );
 });
 
-test("the stylesheet's condition and the script's are still complements", () => {
-  /* The pairing is the invariant. The script builds the run only for
-     `no-preference`; the stylesheet un-stacks for `reduce`. A term added to one
-     without the other leaves a set of readers that neither claims — which is
-     exactly the shape of the bug this file exists for. */
+test("the stylesheet's condition and the script's are exact complements", () => {
+  /* ★ The pairing is the invariant, and since 2026-08-27 it is exact.
+
+     The script builds the run for `no-preference`; the stylesheet un-stacks for
+     `reduce`. A card rests at `opacity: 0; visibility: hidden`, so a reader
+     claimed by NEITHER sees one card of twelve with the rest gone from the
+     accessibility tree too. That has happened here twice.
+
+     It used to be a width pair — `min-width: 64.0625rem` in the script against
+     `max-width: 64rem` in the stylesheet — and lib/breakpoints.ts documents why
+     that shape cannot be made exact: 64.0625rem is 1025px, so 1024.5, which
+     browser zoom and fractional device pixel ratios produce routinely, matched
+     neither. A hole one pixel wide with a card hidden inside it.
+
+     The owner asking for the journey on a phone removed the reason for a width
+     at all. `reduce` and `no-preference` are the only two states of one feature,
+     so the pair is now exhaustive by construction. What this test guards is that
+     nobody reintroduces arithmetic that cannot be exact. */
   assert.match(SCROLL, /prefers-reduced-motion:\s*no-preference/);
+  assert.match(SCROLL, /prefers-reduced-motion:\s*reduce/);
 
   const revealing = mediaBlocks(CSS).find((block) => {
     const rule = ruleFor(block.body, ".service-card");
@@ -114,10 +128,22 @@ test("the stylesheet's condition and the script's are still complements", () => 
   });
 
   assert.ok(revealing, "nothing reveals the service cards");
-  assert.match(revealing.condition, /max-width:\s*64rem/);
-  /* Both halves of the desktop query's own width boundary, so the two cannot be
-     retuned independently: 64rem here, 64.0625rem there. */
-  assert.match(SCROLL, /min-width:\s*64\.0625rem/);
+  assert.equal(
+    revealing.condition.replace(/\s+/g, " ").trim(),
+    "(prefers-reduced-motion: reduce)",
+    `the query that reveals the service cards is "${revealing.condition}" — anything beyond the motion feature makes the pair inexact again`,
+  );
+
+  /* And no width survives on the script's side either. The queries it hands to
+     `matchMedia`/`media.add` are the whole of how it decides; a width in one of
+     them is the 1024.5px hole coming back. */
+  const queries = [...SCROLL.matchAll(/"\(([^"]*)\)"/g)].map((m) => m[1]);
+  const widthQueries = queries.filter((q) => /width:/.test(q));
+  assert.deepEqual(
+    widthQueries,
+    [],
+    `ServiceOfferingsScroll decides on width again (${widthQueries.join("; ")}) — the run and the flow can no longer be proven to cover every reader`,
+  );
 });
 
 test("the un-stacked journey is not left clipped by the held stage", () => {

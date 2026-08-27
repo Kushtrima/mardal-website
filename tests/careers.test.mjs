@@ -88,7 +88,7 @@ test("Careers is a written page now, not a placeholder", async () => {
   assert.match(html, /<footer class="site-footer"/);
 });
 
-test("the Careers opening is sized by two rules that meet", () => {
+test("the bare editorial openings are sized by two rules that meet", () => {
   /* Owner asked for it bigger, twice — once for the page and once for a phone —
      and the second ask is why this page carries two font-size rules where the
      rest of the site carries one clamp and no breakpoint override.
@@ -98,64 +98,98 @@ test("the Careers opening is sized by two rules that meet", () => {
      heading at 44px however much room the page has. Below 48rem the break is
      given up, the spans go inline, and the browser balances the sentence — the
      longest WORD is 1.851em, so the ceiling there is 155px rather than 44. */
-  const sized = [...CSS.matchAll(
-    /\.service-page--careers \.service-hero__title \{([^}]*)\}/g,
-  )].filter((match) => /font-size/.test(match[1]));
+  /* **Blog was given the same setting on 2026-08-27**, and the rules now carry
+     both selectors rather than one. So this reads the selector list rather than
+     matching a rule that stands alone, and every check below runs for each page
+     — the invariant is about a heading crossing its own breakpoint, and that is
+     now true of two headings.
 
-  assert.equal(
-    sized.length,
-    2,
-    `the Careers opening is sized by ${sized.length} rules; it should be one for a phone and one above`,
-  );
+     Split on commas and compared exactly, not substring-matched: the whole
+     point is which pages a rule actually names, and `.includes()` on the raw
+     selector text would pass on a rule that merely mentioned one. */
+  const RULES = [...CSS.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(
+    /([^{}]+)\{([^{}]*)\}/g,
+  )];
+  const sizedFor = (page) =>
+    RULES.filter(
+      (m) =>
+        m[1]
+          .split(",")
+          .map((one) => one.trim().replace(/\s+/g, " "))
+          .includes(`.service-page--${page} .service-hero__title`) &&
+        /font-size/.test(m[2]),
+    );
 
-  const clamps = sized.map((m) => {
-    const c = m[1].match(/clamp\(([\d.]+)rem,\s*([\d.]+)vw,\s*([\d.]+)rem\)/);
-    assert.ok(c, "a Careers title rule is not sized with a clamp");
-    return { floorRem: +c[1], slopeVw: +c[2], ceilRem: +c[3] };
-  });
+  /* The longest authored line of each, in em, read off the rendered page. They
+     are what bounds the ceiling, and Blog's is the wider of the two — 6.667
+     against 6.505 — so it is Blog that binds the shared rule. */
+  for (const { page, longestEm } of [
+    { page: "careers", longestEm: 6.505 },
+    { page: "blog", longestEm: 6.667 },
+  ]) {
+    const sized = sizedFor(page);
 
-  /* Ordered by where they appear: the page rule first, the phone rule inside
-     the 48rem query below it. */
-  const [page, phone] = clamps;
-  assert.deepEqual(page, { floorRem: 2.25, slopeVw: 9.4, ceilRem: 6.5 });
-  assert.deepEqual(phone, { floorRem: 3.5, slopeVw: 17, ceilRem: 4.5 });
+    assert.equal(
+      sized.length,
+      2,
+      `the ${page} opening is sized by ${sized.length} rules; it should be one for a phone and one above`,
+    );
 
-  /* ★ The invariant, and the bug it was written for: the two must MEET.
+    const clamps = sized.map((m) => {
+      const c = m[2].match(/clamp\(([\d.]+)rem,\s*([\d.]+)vw,\s*([\d.]+)rem\)/);
+      assert.ok(c, `a ${page} title rule is not sized with a clamp`);
+      return { floorRem: +c[1], slopeVw: +c[2], ceilRem: +c[3] };
+    });
 
-     The phone rule tops out at its ceiling well before 768px, so the heading is
-     at `phone.ceilRem` when the page rule takes over one pixel later — and the
-     page rule opens at `slope × 7.69`. At 7.2vw that was 55px against 72, so
-     the heading stepped backwards by 17px crossing its own breakpoint, which
-     reads as the page shrinking as the window grows. */
-  const BREAKPOINT_PX = 769;
-  const phoneEndsAt = phone.ceilRem * 16;
-  const pageStartsAt = (page.slopeVw * BREAKPOINT_PX) / 100;
-  assert.ok(
-    pageStartsAt >= phoneEndsAt,
-    `the heading is ${phoneEndsAt}px at 768 and ${pageStartsAt.toFixed(1)}px at 769 — it steps backwards crossing its own breakpoint`,
-  );
+    /* Ordered by where they appear: the page rule first, the phone rule inside
+       the 48rem query below it. */
+    const [pageRule, phone] = clamps;
+    assert.deepEqual(pageRule, { floorRem: 2.25, slopeVw: 9.4, ceilRem: 6.5 });
+    assert.deepEqual(phone, { floorRem: 3.5, slopeVw: 17, ceilRem: 4.5 });
 
-  /* Neither rule may put a line past its column. The page rule is bounded by
-     the authored break at 6.505em; the phone rule by the longest word, since
-     the sentence is balanced there rather than broken. Both checked in the
-     browser across twelve widths from 320 to 1440 — nothing overflows, and the
-     tightest is 320px with 22px spare. */
-  const LONGEST_AUTHORED_EM = 6.505;
-  const COLUMN_AT_769 = 707;
-  assert.ok(
-    pageStartsAt * LONGEST_AUTHORED_EM < COLUMN_AT_769,
-    "the page rule opens wider than the column it opens into",
-  );
+    /* ★ The invariant, and the bug it was written for: the two must MEET.
 
-  /* And the reason it can be this large at all: no artwork, so the intro takes
-     the whole column instead of the eight of twelve that keeps a heading clear
-     of a 30rem pattern. Without it the heading read at 544px on a 1024 window
-     with 944 standing empty beside it. */
-  assert.match(
-    CSS,
-    /\.service-page--careers \.service-hero__intro \{\s*grid-column: 1 \/ -1;/,
-    "the Careers hero reserves room for artwork it does not have",
-  );
+       The phone rule tops out at its ceiling well before 768px, so the heading
+       is at `phone.ceilRem` when the page rule takes over one pixel later — and
+       the page rule opens at `slope × 7.69`. At 7.2vw that was 55px against 72,
+       so the heading stepped backwards by 17px crossing its own breakpoint,
+       which reads as the page shrinking as the window grows. */
+    const BREAKPOINT_PX = 769;
+    const phoneEndsAt = phone.ceilRem * 16;
+    const pageStartsAt = (pageRule.slopeVw * BREAKPOINT_PX) / 100;
+    assert.ok(
+      pageStartsAt >= phoneEndsAt,
+      `the ${page} heading is ${phoneEndsAt}px at 768 and ${pageStartsAt.toFixed(1)}px at 769 — it steps backwards crossing its own breakpoint`,
+    );
+
+    /* Neither rule may put a line past its column. The page rule is bounded by
+       the authored break; the phone rule by the longest word, since the
+       sentence is balanced there rather than broken. Both checked in the
+       browser: careers across twelve widths 320–1440, blog across fifteen
+       320–2560, nothing overflowing either. */
+    const COLUMN_AT_769 = 707;
+    assert.ok(
+      pageStartsAt * longestEm < COLUMN_AT_769,
+      `the ${page} page rule opens wider than the column it opens into`,
+    );
+
+    /* And the reason it can be this large at all: no artwork, so the intro
+       takes the whole column instead of the eight of twelve that keeps a
+       heading clear of a 30rem pattern. Without it the heading read at 544px on
+       a 1024 window with 944 standing empty beside it — measured on Careers
+       before the fix, and measured again on Blog the day it went bare. */
+    assert.ok(
+      RULES.some(
+        (m) =>
+          m[1]
+            .split(",")
+            .map((one) => one.trim().replace(/\s+/g, " "))
+            .includes(`.service-page--${page} .service-hero__intro`) &&
+          /grid-column: 1 \/ -1/.test(m[2]),
+      ),
+      `the ${page} hero reserves room for artwork it does not have`,
+    );
+  }
 
   /* The phone fix that belongs with the aside rules and was not copied with
      them. `grid-column: 7 / -1` on a two-column phone grid builds five implicit
@@ -173,12 +207,36 @@ test("the Careers opening is sized by two rules that meet", () => {
      adjacent, which is invisible while they are blocks and reads `startswith`
      the moment they are inline — and a `::after { content: " " }` version of
      this shipped joined with every measurement passing, because pseudo-element
-     content is not in `textContent`. The space is a real text node now. */
-  assert.match(
-    CSS,
-    /\.service-page--careers \.service-hero__title-line \{\s*display: inline;/,
-    "the phone rule no longer sets the spans inline",
-  );
+     content is not in `textContent`. The space is a real text node now.
+
+     **Both halves, per page, since Blog joined on 2026-08-27.** The CSS and the
+     markup are one change and neither is safe alone: `display: inline` on a page
+     whose spans are rendered adjacent IS the bug, and the space on a page that
+     never goes inline is merely inert. Blog had the adjacent spans and no space
+     the moment before it was given this rule, so the pairing is asserted rather
+     than assumed. */
+  for (const { page, file } of [
+    { page: "careers", file: "../app/careers/page.tsx" },
+    { page: "blog", file: "../app/blog/page.tsx" },
+  ]) {
+    assert.ok(
+      RULES.some(
+        (m) =>
+          m[1]
+            .split(",")
+            .map((one) => one.trim().replace(/\s+/g, " "))
+            .includes(`.service-page--${page} .service-hero__title-line`) &&
+          /display: inline/.test(m[2]),
+      ),
+      `the ${page} phone rule no longer sets the spans inline`,
+    );
+
+    assert.match(
+      readFileSync(new URL(file, import.meta.url), "utf8"),
+      /\{index > 0 \? " " : null\}/,
+      `${page} sets its title spans inline without a real space between them, so the sentence renders joined`,
+    );
+  }
 
   /* ── The foot of the hero on a phone ──
 
@@ -224,10 +282,32 @@ test("the Careers opening is sized by two rules that meet", () => {
     );
   }
 
-  /* And the way in ends on the same edge as the sentence. The shared rule sets
-     `align-self: flex-start`, which is right on a desktop where the block is
-     wide and the two make a corner — on a phone it left the link floating 74 to
-     95px inside an edge everything else met. */
+  /* ★ **The foot is anchored to the right edge — the line, not the box.**
+     Owner, 2026-08-27, on the third pass over this corner.
+
+     `width: fit-content` puts the BOX on the edge, and for a one-line sentence
+     that is the same thing as putting the writing there. For a sentence that
+     wraps it is not: fit-content capped by a max-width resolves to the cap, so
+     Blog sat in a 690px box with its shorter line stopping 240px inside an edge
+     the box was meeting. Measured at 1570 before the fix. Every line and the
+     link now end at the same place — 40px from the hero on a desktop, 16 on a
+     phone, verified across five bare pages at three widths.
+
+     These three properties ARE that guarantee, and none is inside a media query
+     any more: the right edge used to be phone-only, which is exactly how the
+     desktop went three rounds looking wrong. Read off the whole stylesheet
+     rather than a `@media` slice for that reason. */
+  const foot = rules.find(
+    (r) => /\.service-hero--bare \.service-hero__aside\b/.test(r.selector) &&
+      /text-align: right/.test(r.body),
+  );
+  assert.ok(foot, "the bare foot no longer ends its lines on the right edge");
+  assert.match(
+    foot.body,
+    /align-items: flex-end/,
+    "the bare foot right-aligns its type but not the block that holds it",
+  );
+
   const edge = rules.find(
     (r) => /align-self: flex-end/.test(r.body) && /service-hero__cta/.test(r.selector),
   );
@@ -235,7 +315,7 @@ test("the Careers opening is sized by two rules that meet", () => {
   assert.match(
     edge.selector,
     /\.service-hero--bare \.service-hero__cta\b/,
-    "the way in does not end on the same edge as the sentence on a phone",
+    "the way in does not end on the same edge as the sentence",
   );
 
   /* And every hero that needs it actually carries the class, which is the half
@@ -244,6 +324,12 @@ test("the Careers opening is sized by two rules that meet", () => {
   for (const file of [
     "../components/case-studies/ClientsPage.tsx",
     "../app/careers/page.tsx",
+    /* Blog joined them 2026-08-27, when the owner took its redaction bars off
+       the hero. It is the page this guard was written for: it had the base
+       service-page arrangement and real artwork, so losing the drawing without
+       gaining the class would have left it with the artwork-shaped hole rather
+       than an error. */
+    "../app/blog/page.tsx",
   ]) {
     assert.match(
       readFileSync(new URL(file, import.meta.url), "utf8"),

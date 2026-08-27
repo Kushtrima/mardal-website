@@ -2757,9 +2757,21 @@ video {
 
      Turned rather than hidden. Fading the upright stroke out gives the same
      still image and none of the sense that the mark closed; a quarter turn is
-     the movement the shape is asking for, and it reverses on the way out. */
+     the movement the shape is asking for, and it reverses on the way out.
+
+     **On the paragraph's curve and the paragraph's clock — owner, 2026-08-27.**
+     It kept `--duration-base` / `--ease-standard` when the copy moved to the
+     even curve below, and 200ms apart on two different curves is enough to see:
+     the corner had finished turning while the text was still on its way up, so
+     one hover read as two events. They are one — the card opening — and the
+     giveaway that they had come apart was the mark looking like it was racing
+     the text rather than trading places with it.
+
+     Same pair as the copy, deliberately, and the test holds them equal rather
+     than pinning each: whichever of the two is tuned next, the other has to
+     come with it. */
   .why-card__mark::after {
-    transition: transform var(--duration-base) var(--ease-standard);
+    transition: transform var(--duration-slow) var(--ease-handover);
   }
 
   .why-card:hover .why-card__mark::after,
@@ -2767,10 +2779,25 @@ video {
     transform: translate(-50%, -50%) rotate(0deg);
   }
 
-  /* **Down and out, in one move.** The travel is small on purpose: it is a
-     paragraph arriving inside a box, not a section arriving on a page, and
-     anything past about a line and a half of it reads as the text being thrown
-     rather than uncovered. `--duration-base` is the site's own middle speed.
+  /* **Up from further down, and evenly — owner's call, 2026-08-27.**
+
+     It was 1.5rem on `--duration-base` / `--ease-standard`, and the curve is
+     what made it snap rather than the distance: `cubic-bezier(0.22, 1, 0.36, 1)`
+     spends most of its time in the first quarter of the move, which is right for
+     something answering a press and wrong for a paragraph appearing under a
+     pointer that has only just arrived. The site already learned this on the
+     Clients cards' plus, 2026-08-25, and the answer is the same one.
+
+     `--ease-handover` is the even curve — eased at both ends — and
+     `--duration-slow` gives the longer travel room to be watched. 3rem is a
+     little over two lines of this face, twice what it was.
+
+     The note this replaces warned that anything past a line and a half reads as
+     the text being thrown rather than uncovered. That was true where it was
+     written: on a front-loaded curve at 420ms, distance buys speed, so the only
+     way to keep the paragraph from being flung was to give it nowhere to travel
+     from. On an even curve over 620ms distance buys the rise instead, which is
+     the thing that was actually being asked for.
 
      Opacity and transform only — never `display`, `visibility` or `height`. The
      first two take it out of the accessible tree, and the third changes the
@@ -2782,10 +2809,10 @@ video {
      the paragraph still arrives, it simply does not travel. */
   .why-card__copy {
     opacity: 0;
-    transform: translateY(1.5rem);
+    transform: translateY(3rem);
     transition:
-      opacity var(--duration-base) var(--ease-standard),
-      transform var(--duration-base) var(--ease-standard);
+      opacity var(--duration-slow) var(--ease-handover),
+      transform var(--duration-slow) var(--ease-handover);
   }
 
   /* `focus-within` costs nothing and covers the day one of these boxes is given
@@ -6719,8 +6746,35 @@ video {
 
    The measure stays on the paragraph rather than the card: a note at the full
    width of this column runs to about ninety characters a line. */
+/* **The parked note is kept off the page, by this section rather than by luck.**
+
+   The note waiting its turn stands a stage-width to the right — `x: column` in
+   `AboutJourney` — which is outside this section's box and, until 2026-08-27,
+   outside nothing else. On a desktop that was invisible because ScrollSmoother's
+   `#smooth-wrapper` is `overflow: hidden` and clips at the window; the run had
+   never been anywhere without a smoother, so nothing depended on knowing that.
+
+   Bringing the movement to phones is exactly that place. `SmoothScroll` kills
+   the smoother wherever the mobile menu takes over, so on a phone there was no
+   wrapper and no clip: measured on /about, a document 732px wide inside a 390px
+   window, and the same at 768. A page that scrolls sideways.
+
+   `clip` rather than `hidden` because this must not become a scroll container of
+   its own, and on `overflow-x` alone so a note is never cut off at the foot.
+   Paired with `overflow-y: visible`, which is legal only because the other axis
+   is `clip` — with `hidden` there the visible axis would compute to `auto`.
+
+   The boundary is the section, which is the width of the window, so a desktop
+   sees precisely what `#smooth-wrapper` was already showing it. It is not
+   written as the smoother's own query: the fix is "this section keeps its cards"
+   at every width, not "phones need something extra", and one rule that is true
+   everywhere cannot fall in a gap between two that are true separately. While
+   the run is pinned the viewport is `position: fixed`, which escapes this clip
+   and contributes no scrollable overflow of its own either way. */
 .about-journey {
   padding-block: 0 clamp(5rem, 14vh, 11rem);
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .about-journey__viewport {
@@ -6774,15 +6828,19 @@ video {
   margin-bottom: 0;
 }
 
-/* One column below 64rem, and no pin: a stage 48% of a phone's width is a
-   column two words across. Stacked, the notes are simply two blocks of prose
-   one after the other, which is what they are without the movement. */
-@media (max-width: 64rem) {
-  .about-journey__viewport {
-    display: block;
-    min-height: 0;
-  }
+/* One column below 64rem: the heading over the notes rather than beside them.
+   Four columns of twelve is a heading two words wide on a phone.
 
+   **Layout only, since 2026-08-27** — owner: the same scroll effect on mobile.
+   The stage still stacks its cards here and the run still pins; what used to
+   live in this block as well, the cards dropped back into flow, has moved to the
+   reduced-motion block below. That is where it always belonged: it is the
+   answer to "there is no movement", not to "the window is narrow", and putting
+   it here meant a reader who had asked for no motion on a DESKTOP got neither
+   the movement nor the fallback — two notes absolutely positioned on top of each
+   other at full opacity, because the only rule that un-stacked them was a width
+   query they did not match. */
+@media (max-width: 64rem) {
   .about-journey__layout {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -6795,8 +6853,28 @@ video {
   .about-journey__title {
     margin-bottom: 1.25rem;
   }
+}
+
+/* ── No movement asked for: the notes are simply two blocks of prose ──
+
+   The resting state the stacked layout is an enhancement over. `.about-journey`
+   is drawn for the pin — the stage is a positioning context and both cards sit
+   at its origin — so without a script to separate them they overlap, and the
+   script is the first thing `prefers-reduced-motion` turns off.
+
+   The same shape `.service-journey` uses, and for the same reason. That one
+   carried a width clause too — its run was desktop-only — and lost it on
+   2026-08-27, when the owner asked for that journey on a phone as well. Both
+   fallbacks answer to this one condition now, which is the whole of what "no
+   movement" means. */
+@media (prefers-reduced-motion: reduce) {
+  .about-journey__viewport {
+    display: block;
+    min-height: 0;
+  }
 
   .about-journey__stage {
+    position: static;
     display: grid;
     min-height: 0;
     gap: clamp(2rem, 8vw, 3rem);
@@ -7092,22 +7170,18 @@ video {
   }
 }
 
-/* The blog draws its bars from the vector it already has rather than from a
-   trace of a PNG of one. The box takes the drawing's own 716x336 rather than
-   the 1447x1087 the service artwork is cut at: RedactedLines is
-   preserveAspectRatio="none", so it stretches to whatever box it is given and
-   would simply have been drawn wrong in the services' shape rather than
-   letterboxed inside it. */
-.service-hero__pattern--lines {
-  width: min(100%, 34rem);
-  aspect-ratio: 716 / 336;
-}
+/* The blog's hero bars were here — `.service-hero__pattern--lines` and
+   `.service-hero__lines`, the one hero artwork on the site drawn from a vector
+   rather than traced from a PNG. Removed 2026-08-27 with the drawing they
+   styled: owner, pointing at Careers, "remove that pattern design", which is
+   the same call he made on the twelve unwritten pages on 2026-08-19.
 
-.service-hero__lines {
-  width: 100%;
-  height: 100%;
-  fill: var(--accent);
-}
+   Deleted rather than left standing. `PlaceholderPage` composes this class from
+   `content.pattern`, so a `--lines` rule with nothing rendering it is not inert
+   — it is a working pattern name that no longer appears in any markup, and the
+   next person reading this file would find styling for a drawing the site does
+   not have and reasonably conclude something had gone missing. `RedactedLines`
+   itself stays: the blog's empty state and the homepage still draw it. */
 
 /* Case Studies draws its bars too, but from the generator rather than from a
    stored vector: BlogPattern at plate density, seeded on the route.
@@ -7470,75 +7544,27 @@ video {
   font-size: min(clamp(3rem, 8vw, 6.5rem), calc(96cqi / var(--hero-line)));
 }
 
-/* **The sentence on the left, the way in on the right — the arrangement every
-   other page here uses.** Owner, 2026-08-26: the link was on the left and needs
-   to be on the right like the other pages.
+/* **About was the odd one out, and is not any more — owner, 2026-08-27.**
 
-   `service-hero--bare` gathers the two into one block, which is what Clients,
-   Careers and the unwritten pages carry, and that is not this. But its PHONE
-   half is a fix for a real collision rather than a preference — built without
-   the class first, and measured at 320, 375, 390, 430 and 600, this sentence ran
-   underneath the link at every one of them, because the base rule pins the
-   support bottom-LEFT and the way in bottom-RIGHT and 113 characters do not fit
-   between them.
+   Three rules stood here: `display: contents` on the aside above 48rem, which
+   dissolved the wrapper so the sentence took column 1 and the link column 9,
+   plus the support measure and the link placement that arrangement needed. They
+   came from the owner's 2026-08-26 ask — the link was on the left and had to go
+   right "like the other pages" — and at that moment the other pages meant the
+   five service pages, which stand their foot on two edges around artwork.
 
-   So the class stays for the phone and steps out of the way above it.
-   `display: contents` removes the wrapper from the box tree without removing it
-   from the markup, so the sentence and the link become grid items of the hero
-   again and take the base placements — column 1 and column 9 of twelve, which is
-   the arrangement asked for. Below 48rem the wrapper is a flex column again and
-   the two stack, which is the whole reason it is there.
+   Today he asked for the opposite comparison: About, Blog and Contact matching
+   CAREERS, whose foot is one block in the bottom-right corner. That is what
+   plain `service-hero--bare` already does, so About now carries no foot rules of
+   its own — the way Blog, Contact, Clients and the eleven unwritten pages carry
+   none. Measured before removing them: About's support sat 730px from the right
+   edge at a 1440 window where every other bare page's sat at 40.
 
-   **Given here and taken back on the phone, rather than scoped to a minimum
-   width.** It was `@media (min-width: 48.0625rem)` for a version — the
-   complement this file uses elsewhere — and a complement of `max-width: 48rem`
-   at that precision leaves a sliver: 768 < w < 769 matches neither, and in it
-   the wrapper was a flex block standing on the right. A fractional viewport is
-   not hypothetical, it is what zoom and a fractional device pixel ratio produce,
-   and it is what the 769px measurement that found this was reading.
-
-   Written the other way round there is no width that matches neither. */
-.service-page--about .service-hero--bare .service-hero__aside {
-  display: contents;
-}
-
-/* **A sentence, not a fragment.** The service pages hold their support to 16ch
-   and `--bare` to 26, both written for a phrase standing beside something. This
-   is 113 characters and the only prose on the page, so it takes a wider column
-   and a wider measure.
-
-   **The size is the shared one.** It was set at 20-26px for an hour and the
-   owner caught it: smaller than the other pages. `--service-text-support` is one
-   pixel scale for every service page, and a page quietly opting out of it is how
-   a scale stops being one — so the override is the measure, which is about this
-   copy, and not the size, which is about the site.
-
-   Specificity is three classes on purpose: `.service-hero--bare
-   .service-hero__support` is also two and is written further down this file, so
-   an equal selector here loses on order. That is not hypothetical — the link
-   override went in at two classes first and stood 170 to 321px inside a left
-   edge the sentence above it was already meeting. */
-.service-page--about .service-hero--bare .service-hero__support {
-  grid-column: 1 / span 6;
-  max-width: 30ch;
-  margin-bottom: 0;
-  font-size: var(--service-text-support);
-}
-
-/* And the link takes its own place back. `--bare` sets `justify-self: auto` and
-   `align-self: flex-start` on it, which is right for a link INSIDE the block —
-   there the base rule's "push to the right-hand edge" would push it to the edge
-   of the block rather than of the page, which is the one place it must not be.
-
-   With the wrapper out of the box tree the link is a grid item of the hero
-   again, and those two resets leave it sitting wherever the sentence's column
-   ends: measured, 95px in from the right at 769 and 469px at 1920, drifting
-   further out the wider the window got. Both come back to what the base sets, so
-   it stands where it stands on the five service pages. */
-.service-page--about .service-hero--bare .service-hero__cta {
-  align-self: end;
-  justify-self: end;
-}
+   The phone halves went with them. They existed to undo `display: contents`
+   below 48rem and to left-align what the desktop had set left; with the desktop
+   rules gone there is nothing to undo, and `--bare`'s own phone block — one
+   block on the right, the sentence over the way in, lifted off the home
+   indicator — is the arrangement they were working around. */
 
 /* ── `service-hero--bare`: a hero with no artwork ──
 
@@ -7557,9 +7583,10 @@ video {
    nothing said so, because being in a list is not something a page can be
    missing loudly.
 
-   Carrying it: ClientsPage, PlaceholderPage, and the Careers index. Not the
-   Blog, the five service pages or a story — those have artwork, and the base
-   rules are written for exactly that.
+   Carrying it: ClientsPage, PlaceholderPage, the Careers index and — since
+   2026-08-27, when its bars came out — the Blog index. Not the five service
+   pages or a story: those have artwork, and the base rules are written for
+   exactly that.
 
    What it does NOT own is anything to do with the copy: how large a particular
    heading is set, and where its lines break, stay with the page. See
@@ -7587,9 +7614,30 @@ video {
   grid-column: 7 / -1;
   grid-row: 2 / -1;
   flex-direction: column;
-  align-items: flex-start;
+  /* **Every line ends on the right edge — owner, 2026-08-27.**
+
+     `width: fit-content` below puts the BOX on the edge, and for a one-line
+     sentence that is the same thing as putting the writing there: the box is the
+     line. For a sentence that wraps it is not. `fit-content` capped by a
+     max-width resolves to the cap, so Blog's two lines and About's four sat in a
+     690px box left-aligned, and the shorter lines stopped up to 200px short of
+     an edge the box was meeting. Measured on Blog at a 1570 window: the box's
+     right edge at 40px from the hero, the second line's last character at 240.
+     The owner read that as the text not being on the right, and it was not.
+
+     So the edge is given to the lines rather than to their container. This is
+     the arrangement `--bare` already used below 48rem, for this exact reason —
+     it is lifted out of the phone block rather than invented, and that block now
+     keeps only the lift that is genuinely about phones.
+
+     The cost is stated where it was argued: an earlier note here rejected
+     right-aligned type because it re-sets prose to be read from a ragged left.
+     That is true and it is the trade the owner chose, having seen both. It is
+     four lines of support copy in a corner, not body text. */
+  align-items: flex-end;
   align-self: end;
   justify-self: end;
+  text-align: right;
   /* Shrink-wrapped to the sentence, which is capped on the sentence itself —
      `ch` is a unit of the element that reads it, and 26ch here is 26 characters
      of the block's inherited 18px rather than of the 40px the sentence is set
@@ -7616,8 +7664,18 @@ video {
    which places this as a grid item at the far right of the hero's last row —
    inside the block those become an instruction to push it to the right-hand
    edge of the column, which is the one place it must not be. */
+/* And the way in stands on the same edge as the sentence above it, rather than
+   under the sentence's first character. `justify-self` is reset because the base
+   rule pushes this to the right-hand edge of the GRID, and inside the block that
+   would mean the edge of the column rather than of the page.
+
+   This moves Careers, which is worth saying plainly: its sentence is one line,
+   so it was the one page where "under the start of the line" and "on the right
+   edge" were visibly different, and its link sat 137px inside the edge its
+   sentence met. It now meets it too. One rule for five pages beats a rule that
+   is right on four of them. */
 .service-hero--bare .service-hero__cta {
-  align-self: flex-start;
+  align-self: flex-end;
   justify-self: auto;
 }
 
@@ -7663,7 +7721,8 @@ video {
    title to leave room for. Without this the heading was reading at 544px on a
    1024 window while 944 stood empty beside it, and it turned lines the copy had
    turned on purpose. */
-.service-page--careers .service-hero__intro {
+.service-page--careers .service-hero__intro,
+.service-page--blog .service-hero__intro {
   grid-column: 1 / -1;
 }
 
@@ -7675,7 +7734,23 @@ video {
    It was 3.25rem for one commit and wrapped both lines on every phone. The
    check that missed it only went down to 768px, because above that the answer
    had been the same at every width and I stopped. */
-.service-page--careers .service-hero__title {
+/* **Blog takes the same setting — owner, 2026-08-27, "same as the text on
+   careers page".** Listed on the rule rather than copied into one of its own,
+   which is the exception this file makes for copy sizing and is worth stating.
+   The usual doctrine is that how large a heading is set stays with its page,
+   because the number is tuned to that page's longest line. These two are the
+   same number for the same reason — a bare editorial hero opening on one
+   sentence — and two hand-kept copies of `9.4vw` would drift the first time
+   either was touched.
+
+   Blog's line is the one that binds. `Notes on the things` measures 6.667em
+   against Careers' `with the right team.` at 6.506, so anyone retuning this
+   should read it off Blog: at the 6.5rem ceiling that is 693px, in the 1360
+   column a 1440 window gives. Careers' own note below is kept intact — its
+   reasoning for the slope is unchanged, and it is the page the numbers were
+   originally measured on. */
+.service-page--careers .service-hero__title,
+.service-page--blog .service-hero__title {
   /* The slope is set by where this rule STARTS, not by where it ends. Below
      48rem the phone rule runs to 4.5rem, so at 768px the heading is 72px; at
      7.2vw this rule opened at 55px and the heading stepped backwards by 17px
@@ -9319,12 +9394,19 @@ video {
      nothing that reads the page can tell whether the words are joined, and the
      first version of this shipped `startswith` with every measurement passing.
      A real space collapses to nothing when the spans are blocks again. */
-  .service-page--careers .service-hero__title {
+  .service-page--careers .service-hero__title,
+  .service-page--blog .service-hero__title {
     font-size: clamp(3.5rem, 17vw, 4.5rem);
     text-wrap: balance;
   }
 
-  .service-page--careers .service-hero__title-line {
+  /* Blog comes with it and must: without this rule its heading would take the
+     desktop clamp all the way down, where 9.4vw is 30px and the 2.25rem floor
+     catches it at 36 — four pixels SMALLER on a phone than the 40 it rendered
+     at before any of this. The size below is the point of the change, not a
+     side effect of it. */
+  .service-page--careers .service-hero__title-line,
+  .service-page--blog .service-hero__title-line {
     display: inline;
   }
 
@@ -9357,32 +9439,6 @@ video {
     display: inline;
   }
 
-  /* The block is on the left here too, so the two mirrors `--bare` sets for the
-     right-hand edge come off: it right-aligns the type so the ragged edge falls
-     inward, and pushes the link to the block's end. Left-aligned, the ragged
-     edge is already on the correct side and the link already sits under the
-     start of the sentence. */
-  /* The wrapper is a flex column here — `display: contents` is scoped above this
-     width — and this is what it holds. `--bare` sets the block to its right-hand
-     edge and right-aligns the type with it, which is right for a 26ch fragment
-     and wrong for three lines of prose: it would re-set the sentence to be read
-     from a ragged left. Stretched instead, so the sentence keeps its left edge
-     and the link keeps the right one it has on every other page. */
-  .service-page--about .service-hero--bare .service-hero__aside {
-    /* The wrapper comes back. It is `display: contents` above, and without this
-       the phone has no wrapper to stack in — the two go back to being grid items
-       pinned to the same bottom line and overlap, which is the whole thing this
-       class is carried for. */
-    display: flex;
-    align-items: stretch;
-    text-align: left;
-  }
-
-  .service-page--about .service-hero--bare .service-hero__support {
-    max-width: none;
-    margin-bottom: 0.9rem;
-  }
-
   /* ── The foot of an artwork-less hero on a phone ──
 
      Owner asked for this on Careers and then on Clients: put the support line
@@ -9410,23 +9466,12 @@ video {
     margin: 0;
   }
 
-  /* On the edge with the sentence, not under its left end. The shared rule sets
-     `align-self: flex-start` so the way in sits under the START of the sentence
-     — which is right on a desktop, where the block is wide and the two make a
-     corner. On a phone the block is a line or three and that left the link
-     floating 74 to 95px inside an edge everything else meets. */
-  .service-hero--bare .service-hero__cta {
-    align-self: flex-end;
-  }
-
   .service-hero--bare .service-hero__aside {
-    /* Every line ends on the right edge, so the ragged edge falls to the left
-       and the block reads as set to that edge whether it is one line or four.
-       Which is what `text-align` is for here — the box itself already spans the
-       row, because a sentence this long has nothing to shrink-wrap to. */
-    align-items: flex-end;
-    text-align: right;
-    /* The lift. The hero pays no bottom padding at this width, so without it
+    /* The right edge and the link that sits on it used to be set here, and are
+       now unconditional — see the shared rule. What is left is the only part of
+       this that was ever about phones.
+
+       The lift. The hero pays no bottom padding at this width, so without it
        the block sits on the last pixel of the screen — which on a phone is also
        where the home indicator is. */
     margin-bottom: clamp(1.5rem, 5vh, 3rem);
@@ -10608,7 +10653,191 @@ video {
  * and the cost is every visitor briefly seeing twelve cards stacked on top of
  * each other before the script lands. That is a trade to make deliberately, not
  * as a side effect of this. */
-@media (max-width: 64rem), (prefers-reduced-motion: reduce) {
+/* ── The journey on a narrow window ──
+
+   Owner, 2026-08-27: the same scroll effect on mobile. The run itself needed
+   nothing — `columnOffset` is derived from `cards[0].getBoundingClientRect()`,
+   so the stylesheet decides how many cards share the stage and the arithmetic
+   follows. What did need saying is the shape it runs in.
+
+   **One card, not two.** 48% of a 390px window is 180px, which is the reason
+   this journey was desktop-only in the first place — a column two words across.
+   At 100% the offset becomes one stage width and the cards arrive one at a
+   time, which is what `.about-journey` does at every width.
+
+   **The rail goes on top.** The base layout gives it `clamp(12rem, 20vw, 19rem)`
+   beside the stage: 192px of a 390px window, leaving 150px for the card. On top
+   it costs one row, and it scrolls sideways rather than wrapping — five group
+   names wrapped to three lines is a block of text where a rail should be.
+
+   **And the window takes what is left.** The base height is
+   `clamp(25rem, 50vh, 31rem)`, a fixed box tuned for a card at 457px. A card at
+   358px runs taller than that, so here the stage's `minmax(0, 1fr)` row owns the
+   height and the window fills it — the pin is one screen either way, so what the
+   window can be is whatever the rail and the title leave. */
+@media (max-width: 64rem) {
+  .service-journey__layout {
+    grid-template-columns: minmax(0, 1fr);
+    /* Three rows: the rail, the card, and the foot. The foot is a row here
+       rather than an overlay — see the controls rule at the end of this block. */
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  .service-journey__nav {
+    grid-row: 1;
+    grid-column: 1;
+    flex-direction: row;
+    gap: 1.25rem;
+    /* For a page whose chapters outgrow the row even broken over two lines.
+       Inert while they fit, since a label that wraps never overflows, and no
+       scrollbar is drawn across the names when it does engage. */
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .service-journey__nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* **Smaller — owner, 2026-08-27, and then a little of it back.**
+
+     `--service-text-action` is 20px, which is a desktop's rail read at a
+     desktop's distance. In a 358px row it is too large: Branding's three chapter
+     names measure about 505px against the stage, so each broke over two lines
+     and the rail read as a block of text rather than a row of labels. 14px was
+     the first answer and the owner asked for some of it back; this lands at 16px
+     on a 390 window and 18 from 430 up.
+
+     **The break stays, and that is deliberate.** `Visual` over `Identity` is the
+     shape the owner asked for. A flex item shrinks to share the row before it
+     overflows, so wrapping is what these do on their own — this rule sets the
+     size and nothing else. A pass that added `white-space: nowrap` with
+     `flex-shrink: 0` gave one line per label and a rail that scrolled sideways,
+     which hides chapters a reader has no reason to know are there. Two lines
+     that are all visible beats one line that is not.
+
+     Only the rail is resized. The skip and next links share this token and are
+     read one at a time rather than as a row. */
+  .service-journey__nav-link {
+    font-size: clamp(16px, 4.2vw, 18px);
+  }
+
+  .service-journey__stage {
+    grid-row: 2;
+    grid-column: 1;
+  }
+
+  /* The chapter's name, which the run rewrites as the cards turn over.
+     `--service-text-card-title` resolves to 52px, and it is set beside a
+     457px-wide card on a desktop. On a 320px window it was still 52px — a 49px
+     band above a card that has nowhere near that to spare, and oversized for the
+     column besides. */
+  .service-journey__current-title {
+    font-size: clamp(28px, 7vw, 40px);
+  }
+
+  /* `auto`, not `100%`. The base sets a fixed `clamp(25rem, 50vh, 31rem)` and
+     this row is `minmax(0, 1fr)`, so the window should simply fill what the rail
+     and the title leave — which a grid item does on its own, `align-self`
+     defaulting to `stretch`. Asking for `height: 100%` instead resolves against
+     the row and THEN adds the margin below, so the window ended up its own
+     margin past the row's foot: measured 1px into the controls at 390x844 and
+     3px at 768. Stretch subtracts the margin; a percentage does not. */
+  .service-journey__window {
+    height: auto;
+    margin-top: clamp(1.25rem, 2.5vh, 2rem);
+  }
+
+  .service-card {
+    width: 100%;
+  }
+
+  /* **The foot is a row, not an overlay — owner, 2026-08-27: Skip and Let's
+     build were printed on top of each other.**
+
+     Two separate faults, and the second only showed once the first was fixed.
+
+     `.service-page .service-journey__controls` is `position: absolute` with
+     `left: calc(clamp(12rem, 20vw, 19rem) + clamp(2rem, 4vw, 5rem))` — the
+     desktop nav column plus the grid gap, so the foot starts where the stage
+     starts and sits under the card rather than under the rail. That is right
+     while the rail IS a column. Here it is a row on top, so the reservation was
+     pure loss: at 390px it left the two links 150px of a 390px window to share
+     under `justify-content: space-between`, which is the two of them on top of
+     each other.
+
+     Widening it to the page margin fixed the collision and revealed the real
+     one. The foot is positioned from the SECTION's bottom, while the window now
+     takes `height: 100%` of a `minmax(0, 1fr)` row — so the card ran underneath
+     it, measured 92px of overlap at 320x568 with the card's number sitting in
+     the same band as the links. It did not happen on a desktop only because the
+     window's fixed `clamp(25rem, 50vh, 31rem)` stops short of the foot by luck
+     of the arithmetic.
+
+     So the foot joins the grid instead. Row three, static, and the `1fr` row
+     above can no longer take space that belongs to it — the layout stops
+     depending on two heights agreeing and cannot overlap by construction. */
+  .service-page .service-journey__controls {
+    position: static;
+    grid-row: 3;
+    grid-column: 1;
+  }
+}
+
+/* ── The smallest screens, where the tallest card does not quite fit ──
+
+   Measured across all five service pages once the journey came to narrow
+   windows: every size clears the window except a short phone. At 320x568 the
+   tallest card is 465px of content in a 451px box — over by 14. Every other
+   size tested has room, 375x667 by 48px and a 1400 desktop by 23.
+
+   So this is a rule for exactly the case that fails, and it buys the room from
+   spacing rather than from type: the section's padding and the gaps between a
+   card's three paragraphs, which are the two places on a 568px-tall screen with
+   something to give. Type is left alone — a card that fits because its copy was
+   shrunk to 13px fits in the same sense that a folded map does.
+
+   `max-height` as well as `max-width`, because this is a height problem. A
+   320px-wide window that is 900px tall has room to spare and must not be
+   tightened with it. The file already used this pair for the vertical stack it
+   replaces.
+
+   Raised from 40rem to 48rem on 2026-08-27, when the foot became a row of its
+   own and took about 40px out of the card's box: a 375x667 phone had been just
+   outside the old boundary and went 43px over without it. */
+@media (max-width: 48rem) and (max-height: 48rem) {
+  .service-journey__layout {
+    padding-block: clamp(1.75rem, 4vh, 3rem);
+    /* Three rows now, so two gaps — 40px of a 568px screen at the narrow
+       default. */
+    row-gap: clamp(0.75rem, 2vh, 1.25rem);
+  }
+
+  /* The air over the card, which is a desktop's 20px here and does not need to
+     be. Branding is the page that decides this number: nine cards, and the
+     tallest of them missed the window by 3px with only the two rules above. */
+  .service-journey__window {
+    margin-top: clamp(0.75rem, 2vh, 1.5rem);
+  }
+
+  .service-card__body {
+    gap: clamp(0.85rem, 2vh, 1.25rem);
+  }
+}
+
+/* **Only a reader who declined motion, since 2026-08-27.** This said
+   `(max-width: 64rem), (prefers-reduced-motion: reduce)` while the run above it
+   was desktop-only. The run is every width now — owner: the same scroll effect
+   on mobile — so a width clause here would drop cards into flow that the run is
+   still moving, which is the two of them claiming the same twelve elements.
+
+   Its partner is `CALM_QUERY` in ServiceOfferingsScroll. The two are exhaustive
+   by construction rather than by arithmetic: `reduce` and `no-preference` are
+   the only states of one feature. The width pair they replace never was — it
+   left a hole at 1024.5px where a card stayed `visibility: hidden` with nothing
+   left to reveal it. */
+@media (prefers-reduced-motion: reduce) {
   .service-journey {
     height: auto;
     min-height: 0;
@@ -10720,7 +10949,11 @@ video {
 
 /* Shared mobile service foundation. JavaScript progressively enhances the
    offerings into the approved pinned stack when motion is available. */
-@media (max-width: 48rem) {
+/* The phone half of that same flow, and so behind the same condition. The one
+   rule here that was never about the flow — the nav scrolling sideways instead
+   of wrapping — is lifted into the narrow-width journey block below, which
+   needs it for the same reason. */
+@media (max-width: 48rem) and (prefers-reduced-motion: reduce) {
   .service-hero {
     padding-bottom: var(--service-mobile-hero-tail);
   }
@@ -10823,165 +11056,6 @@ video {
 
 /* Smartphone service journey: keep the chapter navigation anchored while
    each service replaces the previous one inside a single pinned viewport. */
-@media (max-width: 48rem) and (prefers-reduced-motion: no-preference) {
-  .service-offerings.is-mobile-service-stack {
-    overflow: hidden;
-  }
-
-  .service-offerings.is-mobile-service-stack .service-journey {
-    height: 100svh;
-    min-height: 0;
-    padding: 0;
-    overflow: hidden;
-  }
-
-  .service-offerings.is-mobile-service-stack .service-journey__layout {
-    display: grid;
-    height: 100%;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    gap: 0;
-    padding-block:
-      max(1.5rem, env(safe-area-inset-top))
-      max(1.5rem, env(safe-area-inset-bottom));
-  }
-
-  .service-offerings.is-mobile-service-stack .service-journey__nav {
-    position: relative;
-    z-index: 20;
-    top: auto;
-    display: flex;
-    grid-row: 1;
-    gap: 1.25rem;
-    margin: 0 0 clamp(1.5rem, 4vh, 2.25rem);
-    padding: 0;
-    overflow: visible;
-    background: transparent;
-  }
-
-  .service-offerings.is-mobile-service-stack .service-journey__stage {
-    position: relative;
-    display: block;
-    min-height: 0;
-    grid-column: 1;
-    grid-row: 2;
-    overflow: hidden;
-  }
-
-  .service-offerings.is-mobile-service-stack .service-journey__window,
-  .service-offerings.is-mobile-service-stack .service-journey__track {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-  }
-
-  .service-offerings.is-mobile-service-stack .service-card {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    padding: 0;
-    border: 0;
-    background: var(--service-surface);
-    opacity: 0;
-    visibility: hidden;
-    will-change: transform;
-  }
-
-  .service-offerings.is-mobile-service-stack .service-card__mobile-title {
-    display: block;
-    max-width: 11ch;
-    margin: 0 0 clamp(1.25rem, 3vh, 1.75rem);
-    font-size: clamp(40px, 10.5vw, 56px);
-    line-height: 0.96;
-  }
-
-  .service-offerings.is-mobile-service-stack .service-card__body {
-    display: grid;
-    max-width: none;
-    align-content: start;
-    gap: clamp(0.85rem, 2vh, 1.2rem);
-    padding: 0;
-  }
-
-  .service-offerings.is-mobile-service-stack .service-card__copy,
-  .service-offerings.is-mobile-service-stack .service-card__capabilities,
-  .service-offerings.is-mobile-service-stack .service-card__example {
-    max-width: 35ch;
-    font-size: var(--service-text-copy-mobile);
-    line-height: var(--service-leading-copy);
-  }
-
-  .service-offerings.is-mobile-service-stack .service-card__number {
-    align-self: end;
-    margin: clamp(1rem, 2.5vh, 1.5rem) 0 0;
-    font-size: var(--service-text-copy-mobile);
-  }
-
-  .service-offerings.is-mobile-service-stack .service-journey__next {
-    position: relative;
-    right: auto;
-    bottom: auto;
-    grid-row: 3;
-    justify-self: end;
-    margin: 1rem 0 0;
-    font-size: var(--service-text-copy-mobile);
-  }
-
-  .service-offerings.is-mobile-service-stack .service-journey__controls {
-    position: relative;
-    right: auto;
-    bottom: auto;
-    left: auto;
-    display: flex;
-    grid-row: 3;
-    align-items: center;
-    justify-content: space-between;
-    margin: 1rem 0 0;
-  }
-
-  .service-offerings.is-mobile-service-stack
-    .service-journey__controls
-    .service-journey__next {
-    margin: 0;
-  }
-}
-
-@media (max-width: 48rem) and (max-height: 44rem) and (prefers-reduced-motion: no-preference) {
-  .service-offerings.is-mobile-service-stack .service-journey__layout {
-    padding-block: 1rem;
-  }
-
-  .service-offerings.is-mobile-service-stack .service-journey__nav {
-    margin-bottom: 1rem;
-  }
-
-  .service-offerings.is-mobile-service-stack .service-card__mobile-title {
-    margin-bottom: 0.9rem;
-    font-size: clamp(36px, 9.5vw, 46px);
-  }
-
-  .service-offerings.is-mobile-service-stack .service-card__body {
-    gap: 0.65rem;
-  }
-
-  .service-offerings.is-mobile-service-stack .service-card__copy,
-  .service-offerings.is-mobile-service-stack .service-card__capabilities,
-  .service-offerings.is-mobile-service-stack .service-card__example {
-    font-size: var(--text-copy);
-    line-height: var(--service-leading-copy);
-  }
-
-  .service-offerings.is-mobile-service-stack .service-card__number,
-  .service-offerings.is-mobile-service-stack .service-journey__controls {
-    margin-top: 0.65rem;
-  }
-}
 
 /* Very narrow phones get a little more clear space between the artwork and
    the bottom row without changing the content order. */

@@ -205,58 +205,42 @@ test("the only facts on the page are the ones the owner gave", async () => {
   assert.doesNotMatch(prose, /\b\d+\s*%|\bfounded\b|\bsince \d/i);
 });
 
-test("the hero carries the artwork-less arrangement, and turns it over", async () => {
+test("the hero carries the artwork-less arrangement, and adds nothing to it", async () => {
   const html = await (await render("/about")).text();
 
-  /* **`--bare` is carried for its phone half only.** Built without the class
-     first: the base rule pins the sentence bottom-LEFT and the way in
-     bottom-RIGHT, absolutely, and measured at 320, 375, 390, 430 and 600 the
-     sentence ran underneath the link at every one of them — 113 characters do
-     not fit between them. Above that width the class is wrong for this page, so
-     the wrapper leaves the box tree and the two take their base placements. */
   assert.match(html, /class="service-hero service-hero--bare"/);
   assert.match(html, /class="service-page service-page--about"/);
   assert.match(html, /class="service-hero__aside"/);
 
-  /* **Given unconditionally and taken back on the phone, never the reverse.**
-     Scoped as `@media (min-width: 48.0625rem)` — the complement this file uses
-     elsewhere — it leaves a sliver at 768 < w < 769 matching neither query, and
-     in it the wrapper stood on the right. A fractional viewport is what zoom and
-     a fractional device pixel ratio produce; it is not hypothetical, and it is
-     what the measurement that found this was reading.
+  /* ★ **And carries NOTHING of its own for the foot — owner, 2026-08-27:
+     About, Blog and Contact are to match Careers.**
 
-     The two are told apart by indentation rather than by slicing from the first
-     `@media (max-width: 48rem)`: there are eight of those blocks in this file and
-     the first opens 1,400 lines ABOVE the unconditional rule, so slicing from it
-     found the desktop rule and read `contents` where it wanted `flex`. */
-  const ASIDE = ".service-page--about .service-hero--bare .service-hero__aside {";
-  const wide = CSS.indexOf(`\n${ASIDE}`);
-  const phone = CSS.indexOf(`\n  ${ASIDE}`);
+     This is asserted as an absence because the absence is the decision. Three
+     rules used to stand here: `display: contents` on the aside above 48rem,
+     which dissolved the wrapper so the sentence took column 1 and the link
+     column 9, plus the support measure and link placement that arrangement
+     needed, plus two more below 48rem undoing the first on a phone. They came
+     from the 2026-08-26 ask to put the link on the right "like the other pages",
+     where the other pages meant the five service pages — which stand their foot
+     on two edges around artwork. Careers has no artwork and gathers its foot
+     into one block in the corner, and that is the comparison now.
 
-  assert.ok(wide > 0, "About does not step the artwork-less wrapper aside");
-  assert.match(CSS.slice(wide, CSS.indexOf("}", wide)), /display:\s*contents/);
+     Measured before the removal: About's sentence sat 730px from the right edge
+     at a 1440 window, where Careers', Blog's and Contact's all sat at 40. After:
+     all four report an identical computed arrangement — same display, same
+     flex-direction, same align-items, same align-self on the link, same
+     text-align — at 390, 1024 and 1440. What still differs between them is the
+     WIDTH of the block, and only because the four sentences are 21, 43, 65 and
+     111 characters long.
 
-  assert.ok(phone > 0, "the phone never gets its wrapper back");
-  assert.match(CSS.slice(phone, CSS.indexOf("}", phone)), /display:\s*flex/);
-
-  /* That the unconditional rule was FOUND unindented is itself the proof it is
-     not nested in a query, so no separate guard is needed — and the one written
-     first was worse than redundant: `assert.doesNotMatch(CSS, /48\.0625rem/)`
-     read the whole stylesheet and failed on a rule belonging to another page
-     entirely. A page-wide guard for a page-scoped fact, which is the third time
-     that shape has caught something it was not written for. */
-
-  /* And the link stands where it stands on the five service pages. `--bare`
-     resets its placement for a link inside the block, and with the wrapper gone
-     those resets left it drifting: 95px in from the right at 769 and 469px at
-     1920. Measured against Branding at 1440, both now sit flush. */
-  const link = CSS.indexOf(
-    ".service-page--about .service-hero--bare .service-hero__cta {",
+     Written against the whole prefix rather than a single property: any rule
+     scoped to this page and this class is the thing that is not wanted, whatever
+     it happens to declare. */
+  assert.doesNotMatch(
+    CSS,
+    /\.service-page--about \.service-hero--bare\b/,
+    "About has page-scoped foot rules again — the foot is `service-hero--bare` and nothing else, as it is on Careers, Blog, Contact and Clients",
   );
-  assert.ok(link > 0, "About does not put the link back on the right");
-  const linkRule = CSS.slice(link, CSS.indexOf("}", link));
-  assert.match(linkRule, /justify-self:\s*end/);
-  assert.match(linkRule, /align-self:\s*end/);
 
   /* No artwork. It is not a service and it has no drawing, so the hero must not
      be reserving room for one. */
@@ -301,41 +285,38 @@ test("the heading sets its own measure and its own size", () => {
   assert.match(CSS.slice(intro, CSS.indexOf("}", intro)), /grid-column:\s*1 \/ -1/);
 });
 
-test("the sentence is set as prose, and beats the rules it has to beat", () => {
-  /* `--bare` holds the support to 26ch and the service pages to 16, both written
-     for a phrase standing beside something. This is 113 characters and the only
-     prose on the page.
+test("the sentence takes the site's support scale, not one of its own", () => {
+  /* What survives from the rule this replaces, and the only part of it that was
+     ever about the site rather than about this page.
 
-     **Three classes, not two, and that is the assertion.** Both of those rules
-     are two classes and both are written FURTHER DOWN this file, so an equal
-     selector here loses on order — which is how the link ended up 170 to 321px
-     inside a left edge the sentence above it was already meeting. */
-  const at = CSS.indexOf(
-    ".service-page--about .service-hero--bare .service-hero__support {",
+     The measure it also carried — 30ch, six columns — went with the rest of
+     About's foot on 2026-08-27; the sentence is held at `--bare`'s 26ch now, the
+     same as every other artwork-less hero. The size is different in kind: it was
+     set at 20-26px for an hour and the owner caught it as smaller than the other
+     pages, and `--service-text-support` is one pixel scale for every service
+     page. A page quietly opting out of it is how a scale stops being one.
+
+     So the assertion inverts. There is no longer a page rule to read the size
+     off — the base rule supplies it, which is the point — and what is checked is
+     that nothing here sets a size of its own again. */
+  const base = CSS.indexOf(".service-hero__support {");
+  assert.ok(base > 0, "the shared support rule is gone");
+  assert.match(
+    CSS.slice(base, CSS.indexOf("}", base)),
+    /font-size:\s*var\(--service-text-support\)/,
+    "the shared support rule no longer carries the shared scale",
   );
-  assert.ok(at > 0, "the support override is not specific enough to win");
-  const rule = CSS.slice(at, CSS.indexOf("}", at));
-  assert.match(rule, /max-width:\s*30ch/);
-  assert.match(rule, /grid-column:\s*1 \/ span 6/);
 
-  /* **The size is the shared one, and that is the assertion.** It was set at
-     20-26px for an hour and the owner caught it: smaller than the other pages.
-     `--service-text-support` is one pixel scale for every service page, and a
-     page quietly opting out of it is how a scale stops being one. The override
-     is the measure, which is about this copy, not the size, which is about the
-     site. Measured after: 39px here and 39px on Branding at 1440. */
-  assert.match(rule, /font-size:\s*var\(--service-text-support\)/);
-  assert.doesNotMatch(rule, /font-size:\s*clamp\(/);
-
-  /* One rule, not two. The first attempt at this left the old override in place
-     as well, and the stale one won on order — which is why the sentence was
-     still 20px after being told to take the shared size. */
+  const pageScoped = [...CSS.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(
+    (m) =>
+      /\.service-page--about\b/.test(m[1]) &&
+      /\.service-hero__support\b/.test(m[1]) &&
+      /font-size/.test(m[2]),
+  );
   assert.equal(
-    CSS.split(
-      ".service-page--about .service-hero--bare .service-hero__support {",
-    ).length - 1,
-    2,
-    "there is not exactly one desktop rule and one phone rule for the sentence",
+    pageScoped.length,
+    0,
+    "About sets a support size of its own again, which is how a shared scale stops being one",
   );
 });
 
@@ -1261,11 +1242,50 @@ test("the journey pins, hands over, and takes the words leftward", () => {
   assert.match(code, /"use client"/);
   assert.match(code, /prefers-reduced-motion:\s*reduce/);
 
-  /* **Gated on the same width the stylesheet stacks at.** Below 64rem the stage
-     is a static grid with nothing stacked to slide, and pinning a phone for two
-     screens to move a column two words wide is worse than not moving it. Both
-     read 64rem so the two cannot disagree. */
-  assert.match(code, /max-width: 64rem/);
+  /* ★ **It runs on a phone too — owner, 2026-08-27.**
+
+     It was gated twice: on reduced motion, and on `(max-width: 64rem)` because
+     below that the stage was a static grid with nothing stacked to slide. The
+     second gate is gone and so is the layout that justified it — the stage
+     stacks its cards at every width now.
+
+     Asserted as an absence, because a width question reappearing in here is
+     precisely the regression: the stylesheet no longer has a width at which the
+     cards are un-stacked, so a script that still bailed at one would leave two
+     notes sitting on top of each other. */
+  assert.doesNotMatch(
+    code,
+    /matchMedia\([^)]*max-width/,
+    "AboutJourney asks a width question again — the stage stacks at every width, so bailing on one leaves the notes overlapping",
+  );
+
+  /* And the one gate that remains still un-stacks them, rather than just
+     stopping the script. Reduced motion is the only state where nothing
+     separates the cards, so the stylesheet has to put them back in flow. */
+  const calm = CSS.indexOf("@media (prefers-reduced-motion: reduce)", CSS.indexOf(".about-journey"));
+  assert.ok(calm > 0, "nothing un-stacks the notes when motion is declined");
+  const calmBlock = CSS.slice(calm, CSS.indexOf("\n}", CSS.indexOf(".about-journey__card", calm)));
+  assert.match(calmBlock, /\.about-journey__card \{[^}]*position:\s*static/);
+
+  /* **The stage is measured, not declared.** The CSS floor is 22rem, written for
+     a desktop column beside a heading. Measured at a 320px window the taller
+     note is 414px — 62px past that floor, which is a note running into whatever
+     follows it. Read from the cards on every refresh instead. */
+  assert.match(code, /offsetHeight/);
+  assert.match(code, /addEventListener\("refreshInit"/);
+  assert.match(code, /removeEventListener\("refreshInit"/);
+
+  /* **And the note waiting its turn cannot widen the page.** It stands a
+     stage-width to the right, which used to be caught only by ScrollSmoother's
+     wrapper — and the smoother is killed wherever the mobile menu takes over.
+     Measured before the clip: a 732px document in a 390px window. */
+  const section = CSS.indexOf(".about-journey {");
+  assert.ok(section > 0, "the journey section has no rule");
+  assert.match(
+    CSS.slice(section, CSS.indexOf("}", section)),
+    /overflow-x:\s*clip/,
+    "the journey no longer keeps its parked note off the page, so /about scrolls sideways on a phone",
+  );
 
   /* The pin is the mechanism, and its length is per note. Measured: the spacer
      added 1641px against an expected 1642 on a 912px window. */

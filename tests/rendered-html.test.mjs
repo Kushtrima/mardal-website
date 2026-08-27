@@ -1632,7 +1632,16 @@ test("the Why Mardal box is built on air and a floor", () => {
   assert.ok(query > 0, "the reveal is not behind a hover query");
   const hover = CSS.slice(query, CSS.indexOf("\n}\n", query));
   assert.match(hover, /\.why-card__copy \{[\s\S]*?opacity:\s*0/);
-  assert.match(hover, /transform:\s*translateY\(1\.5rem\)/);
+  /* **The travel and the curve are the owner's, 2026-08-27** — 3rem on the even
+     curve, up from 1.5rem on the front-loaded one. Both pinned, because the pair
+     is the whole of the change: `--ease-standard` puts most of the move in its
+     first quarter, and over this distance that is the throw the paragraph was
+     asked to stop being. Either one alone undoes it. */
+  assert.match(hover, /transform:\s*translateY\(3rem\)/);
+  assert.match(
+    hover,
+    /\.why-card__copy \{[\s\S]*?transform var\(--duration-slow\) var\(--ease-handover\)/,
+  );
   assert.match(hover, /\.why-card:hover \.why-card__copy/);
 
   /* **Opacity and transform only — never display, visibility or height.** The
@@ -1672,6 +1681,29 @@ test("the Why Mardal box is built on air and a floor", () => {
     /\.why-card:hover \.why-card__mark::after[\s\S]*?transform:\s*translate\(-50%, -50%\) rotate\(0deg\)/,
   );
   assert.doesNotMatch(hover, /\.why-card:hover \.why-card__mark,[\s\S]{0,120}?opacity:\s*0/);
+
+  /* **The turn keeps the paragraph's clock and the paragraph's curve** — owner,
+     2026-08-27. The copy moved to `--duration-slow` / `--ease-handover` and the
+     mark was left on `--duration-base` / `--ease-standard`; 200ms apart on two
+     different curves is visible, and the corner finished turning while the text
+     was still rising, so one hover read as two events.
+
+     Compared rather than pinned. Both are the card opening, and what has to hold
+     is that they are the SAME pair — tuning the reveal stays free, taking the
+     mark along with it does not. */
+  const timingOf = (selector) => {
+    const at = hover.indexOf(selector);
+    assert.ok(at > 0, `no rule for ${selector}`);
+    const rule = hover.slice(at, hover.indexOf("}", at)).replace(/\/\*[\s\S]*?\*\//g, "");
+    const transform = rule.match(/transform (var\(--duration-[\w-]+\) var\(--ease-[\w-]+\))/);
+    assert.ok(transform, `no transform timing on ${selector}`);
+    return transform[1];
+  };
+  assert.equal(
+    timingOf(".why-card__mark::after {"),
+    timingOf(".why-card__copy {"),
+    "the mark and the paragraph have come apart",
+  );
 
   /* **And the number no longer changes under the pointer.** It went to
      `--accent` there — grey at rest, coloured on hover, which is the reference's

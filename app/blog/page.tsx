@@ -24,6 +24,16 @@ export const metadata: Metadata = {
  *
  * ServicePageEntry alone rather than ServicePageMotion, which would also bring
  * ServiceOfferingsScroll. There is no journey here, and no body at all yet.
+ *
+ * **No artwork, 2026-08-27 — owner, pointing at Careers.** The redaction bars
+ * came out of the hero and the foot gathered into one block at the right, which
+ * is `service-hero--bare` and nothing else: one class on the section carries the
+ * foot, the measure and the phone layout. Careers, Clients and the eleven
+ * unwritten pages already open this way; this is the fourth.
+ *
+ * The bars themselves have not left the page — the empty state below still
+ * draws them, and there they are standing in for writing that genuinely is not
+ * there yet rather than decorating a hero.
  */
 export default function BlogPage() {
   return (
@@ -39,7 +49,7 @@ export default function BlogPage() {
         <HeaderSpace />
 
         <section
-          className="service-hero"
+          className="service-hero service-hero--bare"
           aria-labelledby="blog-title"
           data-service-hero
         >
@@ -50,47 +60,54 @@ export default function BlogPage() {
                 id="blog-title"
                 data-service-hero-title
               >
-                {blog.titleLines.map((line) => (
+                {/* The leading space matters and is invisible until it does,
+                    and Careers already shipped the bug it prevents. The spans
+                    are rendered adjacent with nothing between them, which is
+                    fine while they are blocks — and below 48rem they are set
+                    inline so the browser can balance the sentence at a size the
+                    authored break cannot reach on a 288px column. Without this
+                    that reads `thingswe’re`.
+
+                    A real space rather than a `::after`: pseudo-element content
+                    is not in `textContent`, so nothing reading the page could
+                    tell the words had been joined. It collapses to nothing when
+                    the spans are blocks again. */}
+                {blog.titleLines.map((line, index) => (
                   <span className="service-hero__title-line" key={line}>
+                    {index > 0 ? " " : null}
                     {line}
                   </span>
                 ))}
               </h1>
             </div>
 
-            {/* The redaction bars, which are already this site's hero language:
-                every service mask is the same idea drawn as a PNG, and the
-                comments on those call it that. Here the drawing itself is used
-                rather than a picture of one, because it is the one piece of
-                artwork on the site that is literally a page of writing, which
-                is what this page is for.
+            {/* The sentence and the way in, as one block on the right edge.
 
-                It keeps data-service-hero-pattern so the entry clips it in from
-                the right like every other hero artwork. */}
-            <div
-              className="service-hero__pattern service-hero__pattern--lines"
-              aria-hidden="true"
-              data-service-hero-pattern
-            >
-              <RedactedLines className="service-hero__lines" />
+                They were the two ends of the hero's bottom row, which only
+                reads as an arrangement while there is a drawing between them
+                holding the middle. With the bars gone they were two things at
+                opposite edges of an empty row — the same thing Clients found
+                when its plate came out, and Careers and the unwritten pages
+                after it. The wrapper is what `service-hero--bare` places; it is
+                not decoration and must not be flattened away. */}
+            <div className="service-hero__aside">
+              <p className="service-hero__support" data-service-hero-support>
+                {blog.support}
+              </p>
+
+              <a
+                className="service-hero__cta"
+                href={products.ctaHref}
+                data-service-hero-cta
+              >
+                {blog.heroCta}
+                <PixelArrow
+                  className="service-hero__cta-arrow"
+                  direction="up-right"
+                  size="small"
+                />
+              </a>
             </div>
-
-            <p className="service-hero__support" data-service-hero-support>
-              {blog.support}
-            </p>
-
-            <a
-              className="service-hero__cta"
-              href={products.ctaHref}
-              data-service-hero-cta
-            >
-              {blog.heroCta}
-              <PixelArrow
-                className="service-hero__cta-arrow"
-                direction="up-right"
-                size="small"
-              />
-            </a>
           </Container>
 
           {/* The same dissolve the other heroes leave on: a blur boundary
