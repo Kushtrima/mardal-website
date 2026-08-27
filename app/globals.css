@@ -160,10 +160,10 @@
   /* **A quieter grey than `--ink-muted`, and the industries run is the only
      thing set in it.** Owner, 2026-08-27: more grey.
 
-     ⚠ **1.94:1 on the light canvas and 1.97 on the dark, well under the line.**
-     WCAG asks 3:1 of large text. The owner asked for lighter five times — 6.68,
-     3.53, 3.07, 2.47, this — and was given the number each time. His call, and
-     settled; the figure is recorded here rather than argued again.
+     ⚠ **1.61:1 on the light canvas and 1.63 on the dark, well under the line.**
+     WCAG asks 3:1 of large text. Asked for lighter six times — 6.68, 3.53, 3.07,
+     2.47, 1.94, this — with the number given each time. His call, and settled;
+     the figure is recorded here rather than argued again.
 
      What keeps it from being the fault the section was rebuilt to fix: that one
      took SIX of seven rows to about 1.5:1 while leaving one black, so most of the
@@ -176,7 +176,7 @@
 
      Derived rather than picked: the muted grey's own hue and saturation, 256 at
      8%, lightened until the ratio landed. */
-  --ink-quiet: light-dark(#bbb9c3, #3f3d47);
+  --ink-quiet: light-dark(#cccbd2, #323139);
   /* The same job as --ink-muted with the lavender taken out. --ink-muted is
      the page's tint carried down into a quiet ink, and it works on a word or
      two — on a label, a date and three lines of standfirst together it stops
@@ -262,7 +262,7 @@
      a heavier card, and no panel could fix it because the panel was not the
      problem.
 
-     This pair fixes it at the bar. `#fd7979` is L 73 against the panel's 83:
+     This pair fixes it at the bar. `#fd7979` was L 73 against the panel's 83:
      a gap of 9, which is exactly sky's and inside the range all four keep. The
      saturations sit 100 and 97, the same three-point step the other pairs make.
 
@@ -270,8 +270,24 @@
      a hue nothing else here occupies — the four are violet, yellow, green and
      blue, and this is red. Which is the point: it exists because five boxes had
      four colours and two of them matched. */
-  --tint-clay: #ffb6a6;
-  --tint-clay-bar: #fd7979;
+  /* **Both halves replaced 2026-08-27, and they are the owner's values.** It was
+     `#ffb6a6` over `#fd7979`, a coral pair; this is an orange one.
+
+     The measured cost, because this family is held together by contrast rather
+     than by hue: the bar reads **1.24:1** on its panel where it read 1.53, which
+     takes it from the strongest of the five marks to the faintest — below mint's
+     1.21 only because that one is fainter still. Thinned to `cc` on the homepage
+     card it is 1.18 against the 1.41 it had.
+
+     It carries further than the box he was looking at. `--tint-clay-bar` is also
+     the AI & Automation hero's pattern, where it drops from 2.56:1 to 2.09 on
+     the white canvas, and Retail's colour in the industries legend, where the
+     same 2.09 applies to ~17px type — that legend was already below AA on six of
+     seven and this makes one of them a little fainter.
+
+     Ink on the new panel is 11.86:1, so the box's own title is untouched. */
+  --tint-clay: #ffb885;
+  --tint-clay-bar: #ff9b54;
 
   /* **The plus on the Why Mardal boxes.** Owner, 2026-08-26, with the value.
      Flat rather than `light-dark()`, which is how every tint above is declared:
@@ -3535,7 +3551,7 @@ video {
    repeat landed on a card two rows from the one it matched. */
 .difference-card--five {
   --card-tint: var(--tint-clay);
-  --card-tint-bar: #fd7979cc;
+  --card-tint-bar: #ff9b54cc;
 }
 
 .difference-card--four {

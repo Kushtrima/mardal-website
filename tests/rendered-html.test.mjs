@@ -2088,16 +2088,16 @@ test("the roll call adds a rule and never takes one away", () => {
     bare.slice(runColour, bare.indexOf("\n}", runColour)),
     /color:\s*var\(--ink-quiet\)/,
   );
-  /* ⚠ **1.94:1, well under the line.** WCAG asks 3:1 of large text. Asked for
-     five times — 6.68, 3.53, 3.07, 2.47, this — with the number given each time.
-     The owner's call, and settled.
+  /* ⚠ **1.61:1, well under the line.** WCAG asks 3:1 of large text. Asked for
+     six times — 6.68, 3.53, 3.07, 2.47, 1.94, this — with the number given each
+     time. The owner's call, and settled.
 
      What keeps it from being the fault this section was rebuilt to fix: that one
      took six of seven rows to about 1.5 while leaving one black, so most of the
      section was unreadable and singled out as such. This is uniform, it is a
      resting state, every phrase goes to full ink the moment its sector is
      pointed at from either end, and the names beside it are black throughout. */
-  assert.match(bare, /--ink-quiet:\s*light-dark\(#bbb9c3, #3f3d47\)/);
+  assert.match(bare, /--ink-quiet:\s*light-dark\(#cccbd2, #323139\)/);
 
   /* **The gap before the way out is on the container, not on the link.** It was
      `margin-top` on `.industries-explore` and it did nothing twice: a shared
