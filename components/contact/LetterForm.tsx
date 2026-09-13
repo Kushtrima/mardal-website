@@ -18,11 +18,17 @@ import { contactPage } from "../../content/contact";
  *
  * Owner, 2026-09-13, after a plain form and then a box with no form in it:
  * minimal, yet extra. So there is no field chrome at all — no boxes, no labels
- * standing over fields, no tags. The form is one short letter in the display
- * face, and the places to write are the redaction bars this site already draws:
- * a bar where a word is missing, which pales once something is written on it.
- * Every blank has a real label for a screen reader; the sentence around it is
- * what a sighted reader needs.
+ * standing over fields, no tags. The form is one short letter, and the places
+ * to write are the redaction bars this site already draws: a bar where a word
+ * is missing, which pales once something is written on it. Every blank has a
+ * real label for a screen reader; the sentence around it is what a sighted
+ * reader needs.
+ *
+ * **Three clauses, three lines.** The owner kept the blanks inside the
+ * sentences and asked for symmetry: the running text broke wherever the column
+ * ran out, each blank took the width of its own words, and one blank ended up
+ * alone on a line. So each clause has a line of its own, and the last blank on
+ * every line runs to the letter's right edge — see `.letter__clause`.
  *
  * The one authored moment is the blanks drawing themselves in from their left
  * edge as the page arrives — the homepage boxes' redraw, given to the letter.
@@ -52,7 +58,8 @@ function read(data: FormData, key: string) {
 }
 
 /** The letter as an email, for when the site cannot send it itself — the same
- *  sentences the visitor filled in, in the same order. */
+ *  sentences the visitor filled in, in the same order, with the punctuation
+ *  the page leaves to its line breaks. */
 function asEmail(data: FormData) {
   const { letter } = contactPage;
   const name = read(data, "name");
@@ -65,7 +72,7 @@ function asEmail(data: FormData) {
   const body = [
     letter.greeting,
     "",
-    `${letter.name.before} ${name}${from}${letter.topic.before} ${topic.phrase}.`,
+    `${letter.name.before} ${name}${from}, ${letter.topic.before} ${topic.phrase}.`,
     `${letter.email.before} ${read(data, "email")}.`,
     "",
     read(data, "message"),
@@ -221,7 +228,7 @@ export function LetterForm() {
           <PixelArrow
             className="letter__send-arrow"
             direction="up-right"
-            size="medium"
+            size="small"
           />
         </button>
       </div>
@@ -255,13 +262,13 @@ export function LetterForm() {
     >
       <p className="letter__line">{letter.greeting}</p>
 
-      <p className="letter__line">
-        {letter.name.before}{" "}
+      <p className="letter__line letter__clause">
+        <span className="letter__words">{letter.name.before}</span>
         <label className="visually-hidden" htmlFor={`${id}-name`}>
           {letter.name.label}
         </label>
         <input
-          className="letter__blank"
+          className="letter__blank letter__blank--short"
           id={`${id}-name`}
           type="text"
           name="name"
@@ -270,13 +277,13 @@ export function LetterForm() {
           required
           aria-invalid={invalid("name")}
           data-blank
-        />{" "}
-        {letter.company.before}{" "}
+        />
+        <span className="letter__words">{letter.company.before}</span>
         <label className="visually-hidden" htmlFor={`${id}-company`}>
           {letter.company.label}
         </label>
         <input
-          className="letter__blank"
+          className="letter__blank letter__blank--fill"
           id={`${id}-company`}
           type="text"
           name="company"
@@ -284,13 +291,17 @@ export function LetterForm() {
           placeholder={letter.company.placeholder}
           data-blank
         />
-        {letter.topic.before}{" "}
+      </p>
+
+      <p className="letter__line letter__clause">
+        <span className="letter__words">{letter.topic.before}</span>
         <label className="visually-hidden" htmlFor={`${id}-topic`}>
           {letter.topic.label}
         </label>
         {/* Wrapped so the chevron can be drawn: a `<select>` takes no
-            pseudo-elements of its own. */}
-        <span className="letter__choice" data-blank>
+            pseudo-elements of its own. The wrapper is the line's last blank,
+            so it is the one that runs to the edge. */}
+        <span className="letter__choice letter__blank--fill" data-blank>
           <select
             className="letter__blank letter__blank--choice"
             id={`${id}-topic`}
@@ -304,16 +315,15 @@ export function LetterForm() {
             ))}
           </select>
         </span>
-        .
       </p>
 
-      <p className="letter__line">
-        {letter.email.before}{" "}
+      <p className="letter__line letter__clause">
+        <span className="letter__words">{letter.email.before}</span>
         <label className="visually-hidden" htmlFor={`${id}-email`}>
           {letter.email.label}
         </label>
         <input
-          className="letter__blank"
+          className="letter__blank letter__blank--fill"
           id={`${id}-email`}
           type="email"
           name="email"
@@ -324,7 +334,6 @@ export function LetterForm() {
           aria-invalid={invalid("email")}
           data-blank
         />
-        .
       </p>
 
       <label className="letter__line letter__lead" htmlFor={`${id}-message`}>
@@ -358,7 +367,7 @@ export function LetterForm() {
           <PixelArrow
             className="letter__send-arrow"
             direction="up-right"
-            size="medium"
+            size="small"
           />
         </button>
       </div>

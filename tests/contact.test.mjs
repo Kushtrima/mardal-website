@@ -6,13 +6,15 @@ import { readFileSync } from "node:fs";
  * Contact.
  *
  * Rebuilt four times the day it was first written, each time on the owner's
- * word — too many things; a plain form; a box with no form — until the right
- * side became what he asked for: a form that is minimal, yet extra. It is a
- * letter with blanks in it, and the blanks are the site's redaction bars.
+ * word — too many things; a plain form; a box with no form — until the form
+ * became what he kept: a letter with blanks in it, the blanks drawn as the
+ * site's redaction bars. Then pared down around it: the email, phone and address
+ * came off, the question went on top, the letter under it, and the letter's
+ * words went to the plain face with the display face kept for the blanks.
  *
- * So this file holds what the page is for — the question, the three ways in,
- * and the letter — and the absence of what came out, because each of those
- * things is small enough to come back without anyone deciding it should.
+ * So this file holds what the page is for — the question and the letter — and
+ * the absence of what came out, because each of those things is small enough
+ * to come back without anyone deciding it should.
  *
  * The copy is written out rather than imported, for the reason every page test
  * here gives: a test that reads the module the page reads asserts only that a
@@ -53,6 +55,13 @@ const mainOf = (html) => {
 
 const escape = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+/** Every rule in the stylesheet with this exact selector, top level only. */
+const rule = (selector) => {
+  const at = CSS.indexOf(`\n${selector} {`);
+  assert.ok(at > 0, `${selector} has no rule`);
+  return CSS.slice(at, CSS.indexOf("}", at));
+};
+
 test("Contact is a written page", async () => {
   const { status, html } = await render("/contact");
   assert.equal(status, 200);
@@ -63,7 +72,7 @@ test("Contact is a written page", async () => {
   assert.match(html, /<footer class="site-footer"/);
 });
 
-test("the left column: the question, a sentence and the three ways in", async () => {
+test("on top: the question and its sentence, and nothing else", async () => {
   const page = mainOf((await render("/contact")).html);
 
   /* React writes `<!-- -->` between adjacent text children; stripped, because
@@ -81,22 +90,23 @@ test("the left column: the question, a sentence and the three ways in", async ()
      decided to get in touch. */
   assert.doesNotMatch(page, /class="service-hero/);
 
-  /* The footer's three facts, and the country the footer leaves off.
+  /* **The email, phone and address are off the page — owner, 2026-09-13.** The
+     footer under it carries all three, so nothing is lost; a second copy here
+     was a second place to read the same facts. Asserted against the page and
+     not the footer, which must keep them. */
+  assert.doesNotMatch(page, /contact__details|<dl/);
+  assert.doesNotMatch(page, /href="mailto:|href="tel:/);
+  assert.doesNotMatch(page, /Isa Boletini/);
+  assert.match(markup((await render("/contact")).html), /<footer[\s\S]*info@mardal\.co/);
 
-     The address carries the footer's hard spaces — they keep `“Isa Boletini”`
-     on one line and `6000` beside its city — so they are written out as
-     escapes. Typed, a hard space and a space look the same, and a version of
-     this line failed on exactly that. */
-  assert.match(page, /<dt>Email<\/dt><dd><a href="mailto:info@mardal\.co">info@mardal\.co<\/a><\/dd>/);
-  assert.match(page, /<dt>Phone<\/dt><dd><a href="tel:\+38349210999">\+383 49 210 999<\/a><\/dd>/);
-  assert.match(
-    page,
-    /<dt>Address<\/dt><dd>Rr\. “Isa Boletini”, 6000 Gjilan, Kosovo<\/dd>/,
+  /* And the letter comes after the question, not beside it. */
+  assert.ok(
+    page.indexOf('class="contact__title"') < page.indexOf("<form"),
+    "the letter comes before the question",
   );
-  assert.equal((page.match(/class="contact__detail"/g) ?? []).length, 3);
 });
 
-test("the right column is a letter, and the blanks are where you write", async () => {
+test("under it, a letter, and the blanks are where you write", async () => {
   const page = mainOf((await render("/contact")).html);
   const form = page.slice(page.indexOf("<form"), page.indexOf("</form>"));
   assert.ok(form.startsWith("<form"), "there is no letter on the page");
@@ -114,12 +124,17 @@ test("the right column is a letter, and the blanks are where you write", async (
   for (const words of [
     "Hello Mardal,",
     "My name is",
-    ", and I would like to talk about",
+    "from",
+    "and I would like to talk about",
     "You can reach me at",
     "Here is what I have in mind:",
   ]) {
     assert.ok(text.includes(words), `the letter has lost "${words}"`);
   }
+
+  /* Three clauses, three lines: broken where the sentence turns, not where the
+     column runs out. */
+  assert.equal((form.match(/class="letter__line letter__clause"/g) ?? []).length, 3);
 
   /* Read tag by tag, so the order a renderer writes attributes in cannot pass or
      fail anything. */
@@ -258,33 +273,115 @@ test("the letter answers honestly, and draws its blanks in once", () => {
   assert.match(code, /clearProps: "clipPath"/);
 });
 
-test("the blanks are the site's bars, and stay light on the dark page", () => {
-  const rule = (selector) => {
-    const at = CSS.indexOf(`\n${selector} {`);
-    assert.ok(at > 0, `${selector} has no rule`);
-    return CSS.slice(at, CSS.indexOf("}", at));
-  };
+test("the letter is set as the page's paragraph, and only the blanks in the display face", () => {
+  /* Owner, 2026-09-13: Arial, then smaller, then "make text as paragraph" — so
+     the letter's words take the paragraph's own face and size, the sentence
+     under the heading, and the display face stays in the fields. Both halves,
+     because swapping them back is one word in each rule. */
+  const letterRule = rule(".letter");
+  assert.match(letterRule, /font-family:\s*var\(--type-body\)/);
+  assert.match(letterRule, /font-size:\s*var\(--text-copy\)/);
+  assert.doesNotMatch(letterRule, /--type-title|--text-heading|--type-plain/);
+  /* The Arial token went with its only reader. */
+  assert.doesNotMatch(CSS, /--type-plain/);
 
-  assert.match(rule(".contact__inner"), /grid-template-columns:\s*repeat\(12, minmax\(0, 1fr\)\)/);
-  assert.match(rule(".contact__intro"), /grid-column:\s*1 \/ span 5/);
-  assert.match(rule(".contact__panel"), /grid-column:\s*7 \/ -1/);
+  /* A paragraph's distance between the letter's parts, not a line's — owner:
+     more vertical distance between. */
+  assert.match(rule(".letter__line + .letter__line"), /margin-top:\s*1\.25em/);
+
+  /* **Symmetry — owner, 2026-09-13: the letter as it was, but symmetrical.**
+     Each clause its own line, and the last blank on every line runs to the
+     letter's right edge, so every line ends where the message ends. Nothing
+     sizes a blank to its own words any more — that is what clipped "your nam"
+     and gave every bar a length of its own. */
+  assert.match(rule(".letter__clause"), /display:\s*flex/);
+  assert.match(rule(".letter__blank--fill"), /flex:\s*1 1 6em/);
+  assert.match(rule(".letter__blank--short"), /flex:\s*0 0 clamp\(6em, 30%, 9em\)/);
+  assert.doesNotMatch(rule(".letter__blank"), /field-sizing/);
+  assert.doesNotMatch(CSS, /\.letter__rows|\.letter__prompt/);
+  /* And the topic, before anything is chosen, looks as empty as the others. */
+  assert.match(CSS, /\.letter__blank--choice:has\(option\[value=""\]:checked\)\s*\{[^}]*--tint-lilac-bar/);
 
   const blank = rule(".letter__blank");
-  /* Solid while empty, pale once written. */
+  assert.match(blank, /font-family:\s*var\(--type-title\)/);
+  /* After `font: inherit`, or the shorthand would put the plain face back — and
+     the size with it, which is why the quarter up is written after it too. */
+  assert.ok(
+    blank.indexOf("font: inherit") < blank.indexOf("font-family: var(--type-title)"),
+    "the blank's face is reset by the `font` shorthand written after it",
+  );
+  assert.ok(
+    blank.indexOf("font: inherit") < blank.indexOf("font-size: 1.25em"),
+    "the blank's size is reset by the `font` shorthand written after it",
+  );
+
+  /* Solid while empty, pale once written, italic while it is only a prompt. */
   assert.match(blank, /background:\s*var\(--tint-lilac-bar\)/);
   assert.match(rule(".letter__blank:not(:placeholder-shown)"), /background:\s*var\(--tint-lilac\)/);
+  assert.match(rule(".letter__blank::placeholder"), /font-style:\s*italic/);
   /* A tint does not turn over with the theme, so neither may what is written
      on it. */
   assert.match(blank, /color-scheme:\s*light/);
-  assert.match(blank, /field-sizing:\s*content/);
-  assert.match(rule(".letter__blank::placeholder"), /font-style:\s*italic/);
+});
+
+test("the question on the left, the letter under it on the right, one column when narrow", () => {
+  assert.match(rule(".contact__inner"), /grid-template-columns:\s*repeat\(12, minmax\(0, 1fr\)\)/);
+
+  /* Owner, 2026-09-13: the form on the right, not the left — and still under
+     the question, which is what the explicit second row holds. Without it the
+     letter would rise beside the heading, the arrangement he moved it out of. */
+  assert.match(rule(".contact__intro"), /grid-column:\s*1 \/ span 7/);
+  const panel = rule(".contact__panel");
+  assert.match(panel, /grid-column:\s*7 \/ -1/);
+  assert.match(panel, /grid-row:\s*2/);
 
   const stack = CSS.indexOf("@media (max-width: 64rem)", CSS.indexOf("\n.contact {"));
-  assert.ok(stack > 0, "the contact page never stacks");
+  assert.ok(stack > 0, "the contact page never widens");
   assert.match(
     CSS.slice(stack, CSS.indexOf("\n}", stack)),
     /\.contact__intro,\s*\n\s*\.contact__panel \{\s*grid-column:\s*1 \/ -1/,
   );
+
+  /* The rules for the facts went with the facts. */
+  assert.doesNotMatch(CSS, /\.contact__details?\b/);
+});
+
+test("the prompts in the blanks are white, and their contrast is said out loud", () => {
+  /* Owner, 2026-09-13: the placeholder text in white — the four prompts, and the
+     drop-down's "a project" with its chevron while nothing is chosen. */
+  assert.match(rule(".letter__blank::placeholder"), /color:\s*var\(--accent-contrast\)/);
+  assert.match(
+    CSS,
+    /\.letter__blank--choice:has\(option\[value=""\]:checked\)\s*\{[^}]*color:\s*var\(--accent-contrast\)/,
+  );
+  assert.match(CSS, /\.letter__choice:has\(option\[value=""\]:checked\)\s*\{[^}]*color:\s*var\(--accent-contrast\)/);
+
+  /* White only because the light half of the token is white and the bars pin
+     the light scheme. */
+  assert.match(CSS, /--accent-contrast:\s*light-dark\(#ffffff,/);
+  assert.match(rule(".letter__blank"), /color-scheme:\s*light/);
+
+  /* And the open list stays readable: some systems colour its options with the
+     select's own colour, which would be white on a white menu. */
+  assert.match(CSS, /\.letter__blank--choice option\s*\{[^}]*color:\s*var\(--ink\)/);
+
+  /* ⚠ Not a failure — a record, as theme.test.mjs keeps the footer's. White on
+     the empty bar is about 2:1, under AA even for large text; the owner asked
+     for it, and what is not acceptable is it being forgotten. So the number is
+     computed from the two values in the stylesheet and printed on every run. */
+  const bar = CSS.match(/--tint-lilac-bar:\s*(#[0-9a-f]{6})/i)?.[1];
+  assert.ok(bar, "the empty bar's colour is not a hex this can read");
+  const channel = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const luminance = (hex) => {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+    return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+  };
+  const contrast = 1.05 / (luminance(bar) + 0.05);
+  console.log(
+    `    contact blanks: white prompt on ${bar} is ${contrast.toFixed(2)}:1` +
+      (contrast >= 3 ? "" : " — under AA even for large text, kept on the owner's word"),
+  );
+  assert.ok(contrast > 1.5, "the white prompt has disappeared into its bar");
 });
 
 test("the page states the facts it was given and invents none", async () => {

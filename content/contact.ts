@@ -2,38 +2,21 @@
  * Contact.
  *
  * **Rebuilt four times on 2026-09-13, the day it was first written**, each time
- * on the owner's word. The first version carried too many things — facts with
- * copy buttons, topic boxes, a tag on every field. The second kept its left
- * column, which he liked, and put a plain form on the right; the third put the
- * homepage's bar box there instead, with no form. What he asked for in the end
- * is a form that is minimal, yet extra.
+ * on the owner's word — too many things; a plain form; the homepage's bar box
+ * with no form — until the form became a letter with blanks in it, which he
+ * kept. Then the page was pared down around the letter: the email, phone and
+ * address came off, since the footer under the page carries all three, and the
+ * question went to the top with the letter under it.
  *
- * So the right side is a letter: one short note in the display face with blanks
- * in it, and the blanks are the redaction bars this site already draws. This
- * file holds the left column's words and every word of that letter.
+ * So this file holds the question, its sentence, and every word of the letter.
  *
- * **Nothing here is a new fact.** The email, the number and the address are the
- * footer's, read out of `footer.details` so the two cannot disagree. The heading
- * and the sentence are the words approved for the homepage contact section —
- * `contact` in home.ts. No opening hours, reply time or map: none has been
- * supplied, and PRODUCT.md's answer to an unsupplied fact is an absence.
+ * **Nothing here is a new fact.** The heading and the sentence are the words
+ * approved for the homepage contact section — `contact` in home.ts. No opening
+ * hours, reply time or map: none has been supplied, and PRODUCT.md's answer to
+ * an unsupplied fact is an absence.
  */
 
-import { footer, menu } from "./home";
-
-type DetailLabel = (typeof footer.details)[number]["label"];
-
-/** A line of the footer's contact block, found by its label rather than by its
- *  position, so reordering the footer cannot hand this page the wrong fact. */
-function detail(label: DetailLabel) {
-  const found = footer.details.find((entry) => entry.label === label);
-  if (!found) throw new Error(`footer.details in content/home.ts has no ${label}`);
-  return found;
-}
-
-const email = detail("Email");
-const phone = detail("Phone");
-const address = detail("Address");
+import { menu } from "./home";
 
 /**
  * How each service reads inside the letter, keyed by its label in the menu.
@@ -70,7 +53,7 @@ const topics = [
 
 export const contactPage = {
   title: "Contact",
-  description: "Email, phone and address for Mardal in Gjilan, Kosovo.",
+  description: "Write to Mardal, in Gjilan, Kosovo.",
 
   /** The approved `contact.eyebrow` as the heading, broken after `something`:
    *  the only break that does not split a phrase. */
@@ -80,20 +63,16 @@ export const contactPage = {
    *  outcome and says "solution", which is on the banned list. */
   lede: "Tell us what you want to improve, automate, or create.",
 
-  details: [
-    { label: "Email", value: email.value, href: email.href },
-    { label: "Phone", value: phone.value, href: phone.href },
-    /* The footer leaves the country off for room. This page has the room, and a
-       reader in Zürich is better told. */
-    { label: "Address", value: `${address.value}, Kosovo`, href: "" },
-  ],
-
   /**
-   * The letter on the right, word for word.
+   * The letter, word for word.
    *
    * Each blank carries the words that come before it, what it shows while it is
    * empty, and the label a screen reader is given — the sentence around a blank
    * is what a sighted reader needs, and it is not a label.
+   *
+   * **Three clauses, three lines** — see `.letter__clause`. The punctuation
+   * that ended each clause is gone from the page with the line breaks that
+   * replaced it; the email the letter becomes still carries it.
    */
   letter: {
     label: "Write to Mardal",
@@ -104,9 +83,8 @@ export const contactPage = {
       placeholder: "your company",
       label: "Your company, optional",
     },
-    /* Starts with its comma: it follows the company blank directly. */
     topic: {
-      before: ", and I would like to talk about",
+      before: "and I would like to talk about",
       label: "What it is about, optional",
     },
     topics,

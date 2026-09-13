@@ -14,17 +14,20 @@ export const metadata: Metadata = {
 /**
  * Contact.
  *
- * One screen: the question, a sentence and the three ways to reach Mardal on
- * the left — the column the owner kept through every version — and on the right
- * a letter to write in, its blanks drawn as the site's redaction bars. See
+ * The question and its sentence on top, and under them, on the right half, a
+ * letter to write in — its words set as the page's paragraph, its blanks drawn
+ * as the site's redaction bars with the display face inside them. See
  * `LetterForm`.
+ *
+ * **Nothing else.** The email, phone and address came off on the owner's word:
+ * the footer under the page carries all three.
  *
  * **No hero in front of it.** Every other page here opens on a full-screen
  * heading, and on this one that screen would stand between a reader who has
- * already decided to get in touch and the ways to do it. The role page is the
+ * already decided to get in touch and the letter. The role page is the
  * precedent: its opening IS the content.
  *
- * The left column arrives the way the other pages do — ServicePageEntry
+ * The question arrives the way the other pages' openings do — ServicePageEntry
  * animates whatever carries its hooks — and the letter's blanks draw themselves
  * in a beat later.
  */
@@ -65,24 +68,6 @@ export default function ContactPage() {
               <p className="contact__lede" data-service-hero-support>
                 {contactPage.lede}
               </p>
-
-              {/* Before the letter in the document, so on a phone the number
-                  and the address come first — for a lot of readers they are
-                  the whole reason for the visit. */}
-              <dl className="contact__details" data-service-hero-cta>
-                {contactPage.details.map((detail) => (
-                  <div className="contact__detail" key={detail.label}>
-                    <dt>{detail.label}</dt>
-                    <dd>
-                      {detail.href ? (
-                        <a href={detail.href}>{detail.value}</a>
-                      ) : (
-                        detail.value
-                      )}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
             </div>
 
             <div className="contact__panel">

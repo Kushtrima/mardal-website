@@ -8297,18 +8297,16 @@ video {
 /* ── Contact ──
 
    Rebuilt four times on 2026-09-13, the day it was first written, each time on
-   the owner's word: a ruled record with too many things on it; a plain form in a
-   lilac panel; the homepage's bar box with no form at all. What he asked for
-   last is a form that is minimal, yet extra.
+   the owner's word — too many things; a plain form; the homepage's bar box with
+   no form — until the form became a letter with blanks in it, which he kept.
+   Then the page was pared down around it the same day: the email, phone and
+   address came off (the footer under the page carries all three), and the
+   question went to the top.
 
-   The left column stayed through all of it. The right is a letter now: one
-   short note in the display face with blanks where the visitor's words go, and
-   the blanks are the site's redaction bars — a solid bar where a word is
-   missing, pale once something is written on it. No boxes, no labels standing
-   over fields, no tags.
-
-   Twelve columns: the question, a sentence and the three ways in on 1-5, and the
-   letter on 7-12. */
+   On the twelve columns every page stands on: the question and its sentence on
+   1-7, and the letter under them on the right half, 7-12 — a step down and
+   across rather than a second column beside the heading. The step is a long
+   one, on the owner's word: more distance between the two. */
 .contact {
   padding-block: clamp(2.5rem, 8vh, 6rem) clamp(4rem, 12vh, 9rem);
   color: var(--ink);
@@ -8318,12 +8316,18 @@ video {
 .contact__inner {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: clamp(3rem, 7vh, 4.5rem) clamp(1rem, 1.35vw, 1.4rem);
+  gap: clamp(4rem, 11vh, 7.5rem) clamp(1rem, 1.35vw, 1.4rem);
   align-items: start;
 }
 
 .contact__intro {
-  grid-column: 1 / span 5;
+  grid-column: 1 / span 7;
+}
+
+/* Its own row, so it stands under the question rather than beside it. */
+.contact__panel {
+  grid-column: 7 / -1;
+  grid-row: 2;
 }
 
 .contact__title {
@@ -8335,9 +8339,8 @@ video {
   line-height: var(--leading-heading-xl);
 }
 
-/* The authored break, held. Column 6 stands empty beside the heading, so a line
-   running a few pixels past its five columns runs into air, never into the
-   letter. */
+/* The authored break, held. Seven columns take `Have something` at the big
+   header size with room to spare; a phone lets it go, below. */
 .contact__title-line {
   display: block;
   white-space: nowrap;
@@ -8351,64 +8354,19 @@ video {
   line-height: 1.5;
 }
 
-/* Three short lines under one rule: a label and what it labels, and nothing
-   else. */
-.contact__details {
-  display: grid;
-  gap: 1.35rem;
-  margin: clamp(2.5rem, 6vh, 3.5rem) 0 0;
-  padding-top: clamp(1.5rem, 3.5vh, 2rem);
-  border-top: 1px solid var(--line-soft);
-}
-
-.contact__detail dt {
-  margin-bottom: 0.3rem;
-  color: var(--ink-muted);
-  font-size: var(--text-small);
-  line-height: 1.4;
-}
-
-.contact__detail dd {
-  margin: 0;
-  font-size: var(--text-copy);
-  line-height: 1.45;
-}
-
-/* Underlined, faintly, because on this page an address that can be pressed has
-   to look like it can. */
-.contact__detail a {
-  text-decoration: underline;
-  text-decoration-color: var(--line-soft);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.25em;
-  transition:
-    color var(--duration-fast) var(--ease-standard),
-    text-decoration-color var(--duration-fast) var(--ease-standard);
-}
-
-@media (hover: hover) {
-  .contact__detail a:hover {
-    color: var(--accent-strong);
-    text-decoration-color: currentColor;
-  }
-}
-
-.contact__panel {
-  grid-column: 7 / -1;
-}
-
 /* ── The letter ──
 
-   The display face at the header size, on a line tall enough for a bar to sit
-   in without touching the line above it. */
+   Its words are set as the page's paragraph is — the sentence under the
+   heading: the body face at the reading size. The display face stays only
+   inside the blanks. */
 .letter {
   margin: 0;
   color: var(--ink);
-  font-family: var(--type-title);
-  font-size: var(--text-heading);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-display);
-  line-height: 1.8;
+  font-family: var(--type-body);
+  font-size: var(--text-copy);
+  font-weight: var(--weight-body);
+  letter-spacing: normal;
+  line-height: 1.5;
 }
 
 .letter__line {
@@ -8416,41 +8374,79 @@ video {
   margin: 0;
 }
 
-/* The greeting stands on a line of its own, the way a letter opens. */
+/* One distance between every part of the letter — the greeting, each clause,
+   the lead to the message — so the letter keeps one rhythm top to bottom. */
 .letter__line + .letter__line {
-  margin-top: 0.2em;
+  margin-top: 1.25em;
+}
+
+/* ── A clause ──
+
+   Owner, 2026-09-13: the letter as it was — the blanks inside its sentences —
+   with more symmetry. What was not symmetrical was the running text: each blank
+   took the width of its own words and clipped them, the lines broke wherever
+   the column ran out, and "a project" ended up alone on a line.
+
+   So each clause has a line of its own, broken where the sentence turns rather
+   than where the column does, and the last blank on every line runs to the
+   letter's right edge. Every line ends where the message ends: the letter's
+   left edge and its right edge are both straight. */
+.letter__clause {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.5em;
+  align-items: center;
+}
+
+.letter__words {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* The one blank in the middle of a line: long enough for a name, and never so
+   long that the blank after it cannot reach the edge. */
+.letter__blank--short {
+  flex: 0 0 clamp(6em, 30%, 9em);
+}
+
+/* The last blank on a line, which takes whatever the line has left. */
+.letter__blank--fill {
+  flex: 1 1 6em;
+  min-width: 6em;
 }
 
 /* ── A blank ──
 
    A redaction bar you can write on: solid while empty, because the word is
    missing, and pale once something is written, so the letter shows at a glance
-   what is still to fill. Square, as the bars are everywhere else here.
+   what is still to fill. Square, as the bars are everywhere else here. Every
+   bar is one height.
+
+   Inside it, and only inside it, the display face — a quarter larger than the
+   words around it. CS Alistair's lowercase is small for its size, so at the same
+   size the visitor's words would read as a size smaller than the letter's; at
+   1.25em the two lowercases stand at about one height.
 
    It pins `color-scheme: light`. A tint does not turn over with the page, so
    neither may the ink written on it, and every colour token here is
-   `light-dark()`.
-
-   `field-sizing: content` lets a blank grow with what is typed, the way a word
-   takes its own width. Where a browser cannot, the widths in the `@supports`
-   block below hold instead. */
+   `light-dark()`. */
 .letter__blank {
   box-sizing: border-box;
-  min-width: 5ch;
-  max-width: 100%;
-  height: 1.35em;
+  width: 100%;
+  min-width: 0;
+  height: 1.6em;
   margin: 0;
-  padding: 0 0.3em;
+  padding: 0 0.45em;
   border: 0;
   border-radius: 0;
   color: var(--ink);
   font: inherit;
-  letter-spacing: inherit;
-  line-height: 1.35em;
-  vertical-align: baseline;
+  font-family: var(--type-title);
+  font-size: 1.25em;
+  letter-spacing: var(--tracking-display);
+  line-height: 1.6em;
   background: var(--tint-lilac-bar);
   color-scheme: light;
-  field-sizing: content;
   transition: background-color var(--duration-base) var(--ease-standard);
 }
 
@@ -8460,9 +8456,16 @@ video {
 
 /* What an empty blank says, in the display face's italic — the one place on the
    page the italic is used, so it reads as a prompt and never as something
-   already written. */
+   already written.
+
+   White — owner, 2026-09-13. `--accent-contrast` is white on the light page,
+   and the bar pins `color-scheme: light`, so it stays white on the dark page
+   too. It measures about 2:1 on the empty bar, under AA even for large text;
+   `tests/contact.test.mjs` prints the number on every run rather than failing
+   on it, the way the footer's is recorded — his call, and not one to be
+   forgotten. */
 .letter__blank::placeholder {
-  color: var(--ink-muted);
+  color: var(--accent-contrast);
   font-style: italic;
   opacity: 1;
 }
@@ -8477,34 +8480,22 @@ video {
   box-shadow: inset 0 -0.14em 0 var(--accent-strong);
 }
 
-@supports not (field-sizing: content) {
-  .letter__blank {
-    width: 9ch;
-  }
-
-  .letter__blank[type="email"] {
-    width: 12ch;
-  }
-}
-
 /* The one choice in the letter. Wrapped, because a `<select>` takes no
    pseudo-elements of its own and the chevron has to be drawn: two sides of a
    square, turned. */
 .letter__choice {
   position: relative;
-  display: inline-block;
-  max-width: 100%;
+  display: block;
   color: var(--ink);
   color-scheme: light;
-  vertical-align: baseline;
 }
 
 .letter__choice::after {
   position: absolute;
   top: 50%;
-  right: 0.4em;
-  width: 0.26em;
-  height: 0.26em;
+  right: 0.9em;
+  width: 0.4em;
+  height: 0.4em;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
   content: "";
@@ -8512,24 +8503,44 @@ video {
   transform: translateY(-70%) rotate(45deg);
 }
 
-/* Always pale: something is always chosen, even if it is only "a project". */
 .letter__blank--choice {
-  width: auto;
-  padding-right: 1.25em;
+  padding-right: 2em;
   appearance: none;
   background: var(--tint-lilac);
   cursor: pointer;
 }
 
-/* The message: the one blank that is a block — as wide as the letter, three
-   lines tall to begin with, and growing with what is written. */
+/* Nothing chosen yet reads exactly as an empty blank does — solid bar, italic
+   prompt — so "a project" is not the one blank in the letter that looks filled
+   in before anyone has touched it. */
+.letter__blank--choice:has(option[value=""]:checked) {
+  color: var(--accent-contrast);
+  font-style: italic;
+  background: var(--tint-lilac-bar);
+}
+
+/* The chevron follows the words: white while nothing is chosen. */
+.letter__choice:has(option[value=""]:checked) {
+  color: var(--accent-contrast);
+}
+
+/* The open list is the browser's own, and on some systems it takes the
+   select's colour for its options — which would be white words on a white
+   menu. */
+.letter__blank--choice option {
+  color: var(--ink);
+  font-style: normal;
+}
+
+/* The message: the one blank that is a block — the letter's whole width, three
+   lines tall to begin with. Closer to its lead than the parts of the letter are
+   to one another: the two are one thing. */
 .letter__blank--block {
   display: block;
-  width: 100%;
   height: auto;
-  min-height: calc(3 * 1.45em + 0.8em);
-  margin-top: 0.35em;
-  padding: 0.4em 0.5em;
+  min-height: calc(3 * 1.45em + 0.9em);
+  margin-top: 0.5em;
+  padding: 0.45em;
   line-height: 1.45;
   resize: vertical;
 }
@@ -8539,17 +8550,17 @@ video {
   flex-wrap: wrap;
   gap: 0.75rem 1.5rem;
   align-items: baseline;
-  margin-top: clamp(1rem, 2.5vh, 1.5rem);
+  margin-top: clamp(1.75rem, 4vh, 2.5rem);
 }
 
-/* In the reading face: it is an instruction about the letter, not a line of
-   it. */
+/* Smaller than the letter: it is an instruction about the letter, not a line
+   of it. */
 .letter__status {
   flex: 1 1 14rem;
   margin: 0;
   color: var(--ink-muted);
   font-family: var(--type-body);
-  font-size: var(--text-copy);
+  font-size: var(--text-small);
   letter-spacing: normal;
   line-height: 1.45;
 }
@@ -8623,8 +8634,8 @@ video {
   line-height: 1.5;
 }
 
-/* Stacked where About's prose stacks: five of twelve columns is a comfortable
-   column at 1200 and a squeeze at 800. */
+/* One column once the window is narrow: the right half of 800px is too little
+   letter to write in. */
 @media (max-width: 64rem) {
   .contact__intro,
   .contact__panel {
@@ -8636,9 +8647,21 @@ video {
   }
 }
 
+/* On a phone every blank takes a line of its own, the whole width, under the
+   words that lead to it: a line is too short to hold two of them side by side,
+   and a blank squeezed beside its words would clip them again. */
 @media (max-width: 48rem) {
   .contact__title-line {
     white-space: normal;
+  }
+
+  .letter__clause {
+    gap: 0.4rem 0.5em;
+  }
+
+  .letter__blank--short,
+  .letter__blank--fill {
+    flex-basis: 100%;
   }
 }
 
