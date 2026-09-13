@@ -1749,5 +1749,10 @@ test("About is out of the placeholder module, and out of its test", () => {
      and it would assert the shared heading against a page that no longer has it. */
   assert.doesNotMatch(placeholderModule, /^\s{2}about: \{/m);
   assert.doesNotMatch(table, /path: "\/about"/);
-  assert.match(table, /const PLACEHOLDER_PAGES = 10;/);
+
+  /* About took the count to ten. Contact took it to nine on 2026-09-13, so what
+     is held here is that it never climbs back past ten — a page graduating
+     after About is not About coming back, and must not fail About's test. */
+  const count = Number(table.match(/const PLACEHOLDER_PAGES = (\d+);/)?.[1]);
+  assert.ok(count > 0 && count <= 10, `the placeholder table counts ${count}`);
 });

@@ -1,5 +1,5 @@
 /**
- * The ten pages that exist as an address before they exist as writing.
+ * The nine pages that exist as an address before they exist as writing.
  *
  * Every word in the header and the footer used to promise a page; four of them
  * pointed at nothing at all and five only scrolled the homepage, which from any
@@ -22,6 +22,9 @@
  * Ten on 2026-08-26: About was written and left, and `tests/about.test.mjs` took
  * over. Three have graduated now and all three went the same way — an entry
  * deleted from the module, a route written, a row removed from here.
+ *
+ * Nine on 2026-09-13: Contact was written and left, and `tests/contact.test.mjs`
+ * took over. Four have graduated, all four the same way.
  *
  * The copy is written out here rather than imported from
  * `content/placeholders.ts`, deliberately: a test that reads the same module
@@ -104,13 +107,6 @@ const pages = [
     ctaHref: "/#company",
   },
   {
-    path: "/contact",
-    label: "Contact",
-    support: "Email, phone and address are in the footer.",
-    cta: "Get in touch",
-    ctaHref: "mailto:info@mardal.co",
-  },
-  {
     path: "/privacy",
     label: "Privacy",
     support: "How personal data is handled here.",
@@ -139,7 +135,7 @@ const pages = [
  *  a test that imports the module the page reads asserts only that a file
  *  equals itself — and the cost of that is a table that goes quietly out of
  *  date, which it did the day this line was written. */
-const PLACEHOLDER_PAGES = 10;
+const PLACEHOLDER_PAGES = 9;
 
 test("every unwritten page is a page", async () => {
   assert.equal(

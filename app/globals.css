@@ -8294,6 +8294,354 @@ video {
   }
 }
 
+/* ── Contact ──
+
+   Rebuilt four times on 2026-09-13, the day it was first written, each time on
+   the owner's word: a ruled record with too many things on it; a plain form in a
+   lilac panel; the homepage's bar box with no form at all. What he asked for
+   last is a form that is minimal, yet extra.
+
+   The left column stayed through all of it. The right is a letter now: one
+   short note in the display face with blanks where the visitor's words go, and
+   the blanks are the site's redaction bars — a solid bar where a word is
+   missing, pale once something is written on it. No boxes, no labels standing
+   over fields, no tags.
+
+   Twelve columns: the question, a sentence and the three ways in on 1-5, and the
+   letter on 7-12. */
+.contact {
+  padding-block: clamp(2.5rem, 8vh, 6rem) clamp(4rem, 12vh, 9rem);
+  color: var(--ink);
+  background: var(--canvas);
+}
+
+.contact__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(3rem, 7vh, 4.5rem) clamp(1rem, 1.35vw, 1.4rem);
+  align-items: start;
+}
+
+.contact__intro {
+  grid-column: 1 / span 5;
+}
+
+.contact__title {
+  margin: 0;
+  font-family: var(--type-title);
+  font-size: var(--text-heading-xl);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-heading-xl);
+}
+
+/* The authored break, held. Column 6 stands empty beside the heading, so a line
+   running a few pixels past its five columns runs into air, never into the
+   letter. */
+.contact__title-line {
+  display: block;
+  white-space: nowrap;
+}
+
+.contact__lede {
+  max-width: 28ch;
+  margin: clamp(1.25rem, 3vh, 1.75rem) 0 0;
+  color: var(--ink-muted);
+  font-size: var(--text-copy);
+  line-height: 1.5;
+}
+
+/* Three short lines under one rule: a label and what it labels, and nothing
+   else. */
+.contact__details {
+  display: grid;
+  gap: 1.35rem;
+  margin: clamp(2.5rem, 6vh, 3.5rem) 0 0;
+  padding-top: clamp(1.5rem, 3.5vh, 2rem);
+  border-top: 1px solid var(--line-soft);
+}
+
+.contact__detail dt {
+  margin-bottom: 0.3rem;
+  color: var(--ink-muted);
+  font-size: var(--text-small);
+  line-height: 1.4;
+}
+
+.contact__detail dd {
+  margin: 0;
+  font-size: var(--text-copy);
+  line-height: 1.45;
+}
+
+/* Underlined, faintly, because on this page an address that can be pressed has
+   to look like it can. */
+.contact__detail a {
+  text-decoration: underline;
+  text-decoration-color: var(--line-soft);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    text-decoration-color var(--duration-fast) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .contact__detail a:hover {
+    color: var(--accent-strong);
+    text-decoration-color: currentColor;
+  }
+}
+
+.contact__panel {
+  grid-column: 7 / -1;
+}
+
+/* ── The letter ──
+
+   The display face at the header size, on a line tall enough for a bar to sit
+   in without touching the line above it. */
+.letter {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--type-title);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-display);
+  line-height: 1.8;
+}
+
+.letter__line {
+  display: block;
+  margin: 0;
+}
+
+/* The greeting stands on a line of its own, the way a letter opens. */
+.letter__line + .letter__line {
+  margin-top: 0.2em;
+}
+
+/* ── A blank ──
+
+   A redaction bar you can write on: solid while empty, because the word is
+   missing, and pale once something is written, so the letter shows at a glance
+   what is still to fill. Square, as the bars are everywhere else here.
+
+   It pins `color-scheme: light`. A tint does not turn over with the page, so
+   neither may the ink written on it, and every colour token here is
+   `light-dark()`.
+
+   `field-sizing: content` lets a blank grow with what is typed, the way a word
+   takes its own width. Where a browser cannot, the widths in the `@supports`
+   block below hold instead. */
+.letter__blank {
+  box-sizing: border-box;
+  min-width: 5ch;
+  max-width: 100%;
+  height: 1.35em;
+  margin: 0;
+  padding: 0 0.3em;
+  border: 0;
+  border-radius: 0;
+  color: var(--ink);
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: 1.35em;
+  vertical-align: baseline;
+  background: var(--tint-lilac-bar);
+  color-scheme: light;
+  field-sizing: content;
+  transition: background-color var(--duration-base) var(--ease-standard);
+}
+
+.letter__blank:not(:placeholder-shown) {
+  background: var(--tint-lilac);
+}
+
+/* What an empty blank says, in the display face's italic — the one place on the
+   page the italic is used, so it reads as a prompt and never as something
+   already written. */
+.letter__blank::placeholder {
+  color: var(--ink-muted);
+  font-style: italic;
+  opacity: 1;
+}
+
+.letter__blank:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* Marked only once a send has been tried: a bar the letter still needs. */
+.letter__blank[aria-invalid="true"] {
+  box-shadow: inset 0 -0.14em 0 var(--accent-strong);
+}
+
+@supports not (field-sizing: content) {
+  .letter__blank {
+    width: 9ch;
+  }
+
+  .letter__blank[type="email"] {
+    width: 12ch;
+  }
+}
+
+/* The one choice in the letter. Wrapped, because a `<select>` takes no
+   pseudo-elements of its own and the chevron has to be drawn: two sides of a
+   square, turned. */
+.letter__choice {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  color: var(--ink);
+  color-scheme: light;
+  vertical-align: baseline;
+}
+
+.letter__choice::after {
+  position: absolute;
+  top: 50%;
+  right: 0.4em;
+  width: 0.26em;
+  height: 0.26em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  content: "";
+  pointer-events: none;
+  transform: translateY(-70%) rotate(45deg);
+}
+
+/* Always pale: something is always chosen, even if it is only "a project". */
+.letter__blank--choice {
+  width: auto;
+  padding-right: 1.25em;
+  appearance: none;
+  background: var(--tint-lilac);
+  cursor: pointer;
+}
+
+/* The message: the one blank that is a block — as wide as the letter, three
+   lines tall to begin with, and growing with what is written. */
+.letter__blank--block {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: calc(3 * 1.45em + 0.8em);
+  margin-top: 0.35em;
+  padding: 0.4em 0.5em;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.letter__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  align-items: baseline;
+  margin-top: clamp(1rem, 2.5vh, 1.5rem);
+}
+
+/* In the reading face: it is an instruction about the letter, not a line of
+   it. */
+.letter__status {
+  flex: 1 1 14rem;
+  margin: 0;
+  color: var(--ink-muted);
+  font-family: var(--type-body);
+  font-size: var(--text-copy);
+  letter-spacing: normal;
+  line-height: 1.45;
+}
+
+.letter__status:empty {
+  display: none;
+}
+
+.letter__status a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* Send, on the letter's right edge and in the letter's own type. The label and
+   the arrow turn purple together, the way every arrow link here does. */
+.letter__send {
+  display: inline-flex;
+  gap: 0.45em;
+  align-items: center;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  color: var(--ink);
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: 1.2;
+  background: transparent;
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .letter__send:hover:not(:disabled) {
+    color: var(--accent);
+  }
+}
+
+.letter__send:disabled {
+  color: var(--ink-muted);
+  cursor: progress;
+}
+
+.letter__send:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+
+/* Sent: the letter gives its place to the answer. */
+.letter--sent {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+}
+
+.letter--sent:focus {
+  outline: none;
+}
+
+.letter--sent .letter__send {
+  margin-left: 0;
+}
+
+.letter__note {
+  max-width: 44ch;
+  margin: 0;
+  color: var(--ink-read);
+  font-family: var(--type-body);
+  font-size: var(--text-copy);
+  letter-spacing: normal;
+  line-height: 1.5;
+}
+
+/* Stacked where About's prose stacks: five of twelve columns is a comfortable
+   column at 1200 and a squeeze at 800. */
+@media (max-width: 64rem) {
+  .contact__intro,
+  .contact__panel {
+    grid-column: 1 / -1;
+  }
+
+  .contact__lede {
+    max-width: 40ch;
+  }
+}
+
+@media (max-width: 48rem) {
+  .contact__title-line {
+    white-space: normal;
+  }
+}
+
 @media (max-width: 48rem) {
   .role {
     grid-template-columns: minmax(0, 1fr);

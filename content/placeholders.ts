@@ -28,8 +28,9 @@
  * from twelve to eleven. UX/UI & Branding brought it back to twelve on
  * 2026-08-24 — a service named in the menu with no copy written for it yet —
  * and went the other way on 2026-08-25, when the owner asked for it written.
- * About was the third, on 2026-08-26, and takes the count to ten. All three
- * left the same way, by deleting an entry here and writing a route.
+ * About was the third, on 2026-08-26, and took the count to ten; Contact was
+ * the fourth, on 2026-09-13, and takes it to nine. All four left the same way,
+ * by deleting an entry here and writing a route.
  * `PlaceholderKey` is derived from these keys, so removing one makes the
  * compiler find every reference to it.
  */
@@ -79,7 +80,7 @@ const getInTouch = {
 } as const;
 
 /**
- * Keyed by route, and the keys are read by the test that walks all ten.
+ * Keyed by route, and the keys are read by the test that walks all nine.
  * `/products/arvena-ai` is written `products/arvena-ai` — the leading slash is
  * added where it is needed rather than stored ten times.
  */
@@ -136,15 +137,6 @@ export const placeholders = {
     support: "Who we are and how we work.",
     cta: "Why Mardal",
     ctaHref: "/#company",
-  },
-  contact: {
-    label: "Contact",
-    title: "Contact",
-    description: "How to reach Mardal.",
-    /* True on every page of the site: the footer carries the email, the phone
-       and the address, and it is under this page too. */
-    support: "Email, phone and address are in the footer.",
-    ...getInTouch,
   },
   privacy: {
     label: "Privacy",

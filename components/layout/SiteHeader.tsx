@@ -972,10 +972,14 @@ export function SiteHeader() {
               {/* Moved off the bar. It stood there in white on the black
                   header, and the header had to repaint it black every time the
                   menu opened underneath it. Here it only ever stands on white
-                  and can simply be the ink. */}
+                  and can simply be the ink.
+
+                  To /contact since that page was written, 2026-09-13 — and
+                  "Start a project" in the mobile menu with it. Both went to the
+                  footer's `#contact` while /contact only said "Working on it". */}
               <Button
                 className="mega-menu__cta"
-                href="#contact"
+                href="/contact"
                 variant="secondary"
                 onClick={() => setMegaMenuOpen(false)}
               >
@@ -1127,7 +1131,7 @@ export function SiteHeader() {
 
           <Button
             className="mobile-menu__cta"
-            href="#contact"
+            href="/contact"
             onClick={() => {
               setMobileMenuOpen(false);
               setMobileActiveMenu(null);
