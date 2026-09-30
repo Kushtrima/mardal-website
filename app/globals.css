@@ -703,11 +703,10 @@
   --font-smoothing: antialiased;
 }
 
-/* Whichever way the page is set, three things on it are always a light panel:
-   the mega menu, the four Why Mardal cards, and the five coloured boxes. Each
-   re-derives the ink, rules and accent that belong on a light ground, rather
-   than each child overriding its own colour — so a light panel anywhere on the
-   site only has to join this list.
+/* Whichever way the page is set, two things on it are always a light panel:
+   the mega menu and the five coloured boxes. Each re-derives the ink, rules and
+   accent that belong on a light ground, rather than each child overriding its
+   own colour — so a light panel anywhere on the site only has to join this list.
 
    These stay literal rather than becoming light-dark() pairs, and that is the
    point of them: they do not follow the page, they are always the light half.
@@ -717,9 +716,15 @@
    page's own black now, so it is not; the menu it opens is white again, so it
    is. Everything inside the menu — the names, the rule that marks one, the
    marks on the right, the legal line and its hairlines — takes its colour from
-   here rather than each declaring its own. */
+   here rather than each declaring its own.
+
+   The four Why Mardal cards came off it on 2026-09-30, for the same reason as
+   the header. Their ground has been `--surface-raised` since 2026-08-26, which
+   turns over with the page, so on the dark page this list was setting
+   near-black titles on a near-black card. Owner: the titles and the hover text
+   in white in dark mode. The values here are the root's light half, so the
+   light page does not move. */
 .mega-menu,
-.why-card,
 .difference-card {
   --ink: #08080a;
   --ink-read: #08080a;
@@ -2730,7 +2735,10 @@ video {
 .why-card__copy {
   max-width: 28ch;
   margin: auto 0 0;
-  color: var(--ink-muted);
+  /* **Grey on the light page, the page's white on the dark one.** Owner,
+     2026-09-30: the hover text in white in dark mode. `--ink-muted` alone turns
+     over to its own dark half, #a09aad, which is still a grey. */
+  color: light-dark(var(--ink-muted), var(--ink));
   font-size: var(--text-copy);
   letter-spacing: -0.015em;
   line-height: var(--leading-body);
