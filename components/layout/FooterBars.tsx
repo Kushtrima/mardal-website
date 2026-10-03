@@ -1,5 +1,9 @@
 /**
- * The bar field in the corner of the footer panel, traced from the reference.
+ * The bar field the footer stands on, traced from the reference.
+ *
+ * It was a field in the bottom-right corner, 58.4% of the panel wide. It is the
+ * panel's floor now — full width, edge to edge, under everything. The traced
+ * geometry is unchanged and is still the only source of the arrangement.
  *
  * There are three kinds of bar, not two. Nine hang from the top of the field
  * and stop at its halfway line without ever reaching the bottom; ten stand on
@@ -15,15 +19,16 @@
  * Fixed geometry rather than anything rolled at runtime, so the server and the
  * browser draw the same thing.
  */
-const VIEW_WIDTH = 636;
+const RUN_WIDTH = 636;
 const VIEW_HEIGHT = 198;
 const BAR_WIDTH = 10;
 const HALF = VIEW_HEIGHT / 2;
 
-type Bar = readonly [x: number, kind: "top" | "foot" | "full"];
+type Kind = "top" | "foot" | "full";
+type Bar = readonly [x: number, kind: Kind];
 
 /** In the reference's own order, left to right. */
-const BARS: readonly Bar[] = [
+const TRACED: readonly Bar[] = [
   [0, "full"],
   [39, "foot"],
   [76, "top"],
@@ -46,6 +51,26 @@ const BARS: readonly Bar[] = [
   [590, "top"],
   [608, "foot"],
   [626, "top"],
+];
+
+/**
+ * The run laid down twice, because the floor is twice as wide as the corner was.
+ *
+ * Stretching the traced 636 across the whole panel instead would have doubled
+ * every bar's width — 10 units of 636 read at 1300px is a 20px bar — and the
+ * bar's slenderness is the thing being looked at. Two runs keep it at 10 and
+ * keep the spacing the reference has.
+ *
+ * The second pass rotates the three kinds rather than copying them: what hung
+ * from the top now stands on the floor, what stood runs the full height, and
+ * what ran full height hangs. Same density, same rhythm, different silhouette —
+ * so the eye does not find the seam at halfway.
+ */
+const ROTATE: Record<Kind, Kind> = { top: "foot", foot: "full", full: "top" };
+const VIEW_WIDTH = RUN_WIDTH * 2;
+const BARS: readonly Bar[] = [
+  ...TRACED,
+  ...TRACED.map(([x, kind]): Bar => [x + RUN_WIDTH, ROTATE[kind]]),
 ];
 
 /** Where each kind starts and how far it runs. */

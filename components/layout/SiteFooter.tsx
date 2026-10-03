@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { PixelArrow } from "../ui/PixelArrow";
 import { Container } from "./Container";
-import { FooterBars } from "./FooterBars";
 import { SocialIcon } from "./SocialIcon";
 import { contact, contactEmail, footer, menu } from "../../content/home";
 
@@ -26,27 +25,36 @@ const groups = menu.filter((group) => group.key !== "case-studies");
  * way in. That section's words were written and approved and have been sitting
  * unused in the content file since; they close the page here.
  *
- * All of it sits on one panel traced from the reference: the accent colour,
- * the ring alone in the top corner, and the white bar field standing off the
- * bottom-right edge.
+ * ── Rebuilt 2026-08-27, and then cut back to what was wanted ──
  *
- * The reference's panel is half as tall as it is wide and almost entirely
- * empty. To keep that shape while carrying this much, the bars and the words
- * share the bottom of the panel rather than queueing: the field owns the right
- * 58.4%, and the year and the way back up are held to the left of it.
+ * Four arrangements in a day and the owner's last word settled it: no vertical
+ * lines, no name spelled out at the foot, and the ring back where it was. The
+ * purple panel all of this replaced is in `backup/2026-08-27-site-footer/`.
+ *
+ * So what is left is the plainest of the four, and deliberately: the mark, the
+ * closing line and the way back up across the top; one band of small print —
+ * three menus and the ways to reach us; the year and the three legal links. No
+ * ornament at all. `FooterBars` is no longer imported here and the traced field
+ * it draws is not on the page; the file stays, because the arrangement it was
+ * traced for could be asked for again and the tracing is the expensive part.
+ *
+ * What the four passes leave behind, and what is worth keeping: the panel names
+ * its two colours once (black, white ink, 20:1 against the 2.88:1 the lavender
+ * carried), the paragraph under the closing line is gone, and the contact block
+ * is three facts under one spoken heading rather than four labelled cells.
  */
 export function SiteFooter() {
   return (
     <footer className="site-footer" id={contact.id}>
       <Container>
         <div className="site-footer__panel">
-          <FooterBars />
-
-          <div className="site-footer__body-grid">
-            <div className="site-footer__words">
-              {/* The reference shows the ring alone. It is the leftmost square
-                  of the supplied wordmark — 163.92 of its 694.25 units — so
-                  the box crops to it rather than carrying a second asset. */}
+          {/* The one line that is an invitation rather than a list, and the way
+              back up on the far edge. */}
+          <div className="site-footer__lead">
+            <div className="site-footer__lead-words">
+              {/* The ring alone. It is the leftmost square of the supplied
+                  wordmark — 163.92 of its 694.25 units — so the box crops to it
+                  rather than carrying a second asset. */}
               <Link
                 className="site-footer__mark"
                 href="/"
@@ -68,34 +76,8 @@ export function SiteFooter() {
                   </span>
                 ))}
               </h2>
-
-              <p className="site-footer__body">{contact.body}</p>
             </div>
 
-          <nav className="site-footer__nav" aria-label="Footer">
-            {groups.map((group) => (
-              <div className="site-footer__group" key={group.key}>
-                <h3 className="eyebrow site-footer__group-title">
-                  {group.label}
-                </h3>
-
-                <ul className="site-footer__links">
-                  {group.items.map((link) => (
-                    <li key={link.href}>
-                      <a className="site-footer__link" href={link.href}>
-                        {link.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </nav>
-        </div>
-
-          <div className="site-footer__meta">
-            {/* Kept in this row rather than the one below it, so it sits above
-                the bars instead of among them. */}
             <a
               className="site-footer__top-link"
               href="#main-content"
@@ -110,59 +92,58 @@ export function SiteFooter() {
             </a>
           </div>
 
-          {/* Directly under the rule, and left of the bar field the same way
-              the row below it is. */}
-          <dl className="site-footer__details">
-            {footer.details.map((detail) => (
-              <div className="site-footer__detail" key={detail.label}>
+          {/* Everything functional, in one band of small type: three menus and
+              the ways to reach us, all on one row of columns. It is the utility
+              of the page and it is set as utility. */}
+          <div className="site-footer__columns">
+            <nav className="site-footer__nav" aria-label="Footer">
+              {groups.map((group) => (
+                <div className="site-footer__group" key={group.key}>
+                  <h3 className="eyebrow site-footer__group-title">
+                    {group.label}
+                  </h3>
+
+                  <ul className="site-footer__links">
+                    {group.items.map((link) => (
+                      <li key={link.href}>
+                        <a className="site-footer__link" href={link.href}>
+                          {link.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </nav>
+
+            <dl className="site-footer__details">
+              <div className="site-footer__detail">
                 <dt className="site-footer__detail-label">
-                  {/* The word on the wide panel, the abbreviation on a phone.
-                      One of the two is always hidden, and the hidden one is
-                      hidden from the eye only — a screen reader reads the
-                      full word either way and never both. */}
-                  <span className="site-footer__detail-full">
-                    {detail.label}
-                  </span>
-                  {/* One string rather than an expression next to a colon:
-                      React separates those with a comment node, and the
-                      colon ends up detached from the word in the markup. */}
-                  <span className="site-footer__detail-short" aria-hidden="true">
-                    {`${detail.short}:`}
-                  </span>
+                  <span className="site-footer__detail-full">Contact</span>
                 </dt>
-                <dd className="site-footer__detail-value">
-                  {detail.href ? (
-                    <a className="site-footer__link" href={detail.href}>
-                      {detail.value}
-                    </a>
-                  ) : (
-                    detail.value
-                  )}
+                {footer.details.map((detail) => (
+                  <dd className="site-footer__detail-value" key={detail.label}>
+                    {detail.href ? (
+                      <a className="site-footer__link" href={detail.href}>
+                        {detail.value}
+                      </a>
+                    ) : (
+                      detail.value
+                    )}
+                  </dd>
+                ))}
+                {/* Marks, not links: the accounts exist but their addresses
+                    have not been given, and a guessed profile URL is worse
+                    than a mark that waits for one. */}
+                <dd className="site-footer__detail-value site-footer__social">
+                  {footer.social.map((name) => (
+                    <SocialIcon key={name} name={name} />
+                  ))}
                 </dd>
               </div>
-            ))}
+            </dl>
+          </div>
 
-            <div className="site-footer__detail">
-              {/* Wrapped the same way the others are, so the same rule takes
-                  it off a phone. This row has no abbreviation standing in for
-                  it: the marks name the three services themselves. */}
-              <dt className="site-footer__detail-label">
-                <span className="site-footer__detail-full">
-                  {footer.socialLabel}
-                </span>
-              </dt>
-              {/* Marks, not links: the accounts exist but their addresses have
-                  not been given, and a guessed profile URL is worse than a
-                  mark that waits for one. */}
-              <dd className="site-footer__detail-value site-footer__social">
-                {footer.social.map((name) => (
-                  <SocialIcon key={name} name={name} />
-                ))}
-              </dd>
-            </div>
-          </dl>
-
-          {/* The foot of the panel, held to the left of the bar field. */}
           <div className="site-footer__legal">
             <span className="site-footer__copy">
               {`© ${new Date().getFullYear()} Mardal`}
@@ -178,6 +159,7 @@ export function SiteFooter() {
               </a>
             ))}
           </div>
+
         </div>
       </Container>
     </footer>

@@ -34,13 +34,14 @@ function rule(selector) {
   return bodies.join("\n");
 }
 
-/* Owner's call, 2026-08-25: the page arrives white. `light dark` is what it read
-   before, and the two words are the whole difference — with both, every
-   `light-dark()` token in the file resolves off the visitor's operating system,
-   so half of them met a black site. */
-test("the page is white before anyone chooses", () => {
-  assert.match(rule(":root"), /color-scheme:\s*light\s*;/);
-  assert.doesNotMatch(rule(":root"), /color-scheme:\s*light\s+dark/);
+/* Owner's call, 2026-09-30: the page arrives black. It was `light` from
+   2026-08-25, and `light dark` before that — and a second word is the one
+   thing that must not come back: with both, every `light-dark()` token in the
+   file resolves off the visitor's operating system, so half of them meet the
+   other page. `dark light` would do the same with the preference reversed. */
+test("the page is dark before anyone chooses", () => {
+  assert.match(rule(":root"), /color-scheme:\s*dark\s*;/);
+  assert.doesNotMatch(rule(":root"), /color-scheme:\s*(light|dark\s+light)/);
 });
 
 /* And the dark page is still there, still reachable, still one property away.
@@ -61,11 +62,13 @@ test("the toggle still turns the whole page over", () => {
    They used to be written dark-on-:root with the light pair duplicated into a
    `prefers-color-scheme` block AND the toggle's rule — three copies of two
    states, with a comment asking whoever edited one to remember the others.
-   Flipping the default let the base hold light and the toggle hold dark, once
-   each, and took the file's only colour-scheme query with it. */
+   Taking the OS out on 2026-08-25 let the base hold the default and the toggle
+   the other half, once each, and took the file's only colour-scheme query with
+   it. Since 2026-09-30 the default is dark: the base holds dark and
+   `data-theme="light"` holds light. */
 test("what is not a colour turns over too, and is written once", () => {
-  const light = rule(":root");
-  const dark = rule(':root[data-theme="dark"]');
+  const dark = rule(":root");
+  const light = rule(':root[data-theme="light"]');
 
   assert.match(light, /--logo-filter:\s*brightness\(0\)\s*;/);
   assert.match(light, /--panel-shadow:\s*var\(--shadow-soft\)/);
@@ -74,6 +77,13 @@ test("what is not a colour turns over too, and is written once", () => {
   assert.match(dark, /--logo-filter:\s*brightness\(0\) invert\(1\)/);
   assert.match(dark, /--panel-shadow:\s*none/);
   assert.match(dark, /--font-smoothing:\s*antialiased/);
+
+  /* Once: the dark rule restates the scheme and nothing else, so there is no
+     second copy of the dark four to fall out of step with the base. */
+  assert.doesNotMatch(
+    rule(':root[data-theme="dark"]'),
+    /--(logo-filter|panel-shadow|menu-edge-shadow|font-smoothing)\s*:/,
+  );
 
   /* No colour-scheme media query, in either direction. The palette never had
      one; these four were the only reason the file did. */
@@ -89,20 +99,39 @@ test("nothing but a remembered choice reaches the root element", () => {
   assert.doesNotMatch(LAYOUT, /prefers-color-scheme/);
 });
 
-/* The footer slab is the one thing on the site that does not turn over with the
-   page: a fixed lavender in both themes, with its ink named beside it. Owner
-   turned that ink white on 2026-08-25 and the slab stayed as it was.
+/* And the toggle asks the page, not the OS. With nothing stored it used to read
+   `prefers-color-scheme` to learn which way the page was, a question the OS
+   stopped answering on 2026-08-25 — so on any machine that disagreed with the
+   default, the first press set the theme the page already had and nothing
+   moved. It reads `color-scheme` off the root instead, the one word the
+   default lives in. */
+test("the toggle asks the page which way it is, not the OS", () => {
+  const TOGGLE = readFileSync(
+    new URL("../components/layout/ThemeToggle.tsx", import.meta.url),
+    "utf8",
+  );
+  assert.doesNotMatch(TOGGLE, /prefers-color-scheme/);
+  assert.match(TOGGLE, /getComputedStyle\(document\.documentElement\)\.colorScheme/);
+});
+
+/* The footer panel's colours do not turn over with the page: a fixed pair named
+   on the panel, black with white ink since 2026-08-27.
 
    **What is asserted is that the two things which must agree do agree.**
-   Everything on the panel — the words, the link columns, the social marks, the
-   bar field — reads `--accent-contrast` by inheritance and follows it for free.
-   The wordmark cannot: it is a raster, so it is crushed to a silhouette with a
+   Everything on the panel — the closing line, the link columns, the social
+   marks — reads `--accent-contrast` by inheritance and follows it for free. The
+   wordmark cannot: it is a raster, so it is crushed to a silhouette with a
    filter, and that filter is a second place the colour is written down.
 
    The failure this catches is quiet rather than loud. A mark left `brightness(0)`
    on a white-inked panel still draws — it is simply the one black thing on a
    panel where everything else is white, which reads as a logo that was forgotten
-   rather than as a bug. */
+   rather than as a bug.
+
+   The mark was briefly not a raster at all: one pass on 2026-08-27 set the name
+   as type at the size of the panel and made that the home link, which retired
+   the filter and this pairing with it. The owner asked for the icon back, so
+   both are load-bearing again. */
 test("the footer wordmark is the same colour as the rest of the footer", () => {
   const panel = rule(".site-footer__panel");
   const mark = rule(".site-footer__mark img");
@@ -129,10 +158,10 @@ test("the footer wordmark is the same colour as the rest of the footer", () => {
    stylesheet rather than written into a comment that can drift away from them,
    and it is printed on every run. */
 test("the footer's contrast is what it is, and it is said out loud", () => {
-  const panel = rule(".site-footer__panel");
+  const panel = rule(".site-footer__slab");
   const slab = panel.match(/--accent:\s*(#[0-9a-f]{6})/i)?.[1];
   const ink = panel.match(/--accent-contrast:\s*(#[0-9a-f]{6})/i)?.[1];
-  assert.ok(slab && ink, "the footer panel does not name both of its colours");
+  assert.ok(slab && ink, "the footer slab does not name both of its colours");
 
   const channel = (c) =>
     c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;

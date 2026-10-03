@@ -208,9 +208,9 @@ test("the client card's name leads without borrowing the display face", () => {
       assert.ok(value, `${token[1]} is not defined`);
     }
 
-    /* A clamp's floor, or a flat size. The label is the one thing on this card
-       set to a single value — it is below the site's smallest token and does
-       not scale — so a helper that only understood clamps could not read it. */
+    /* A clamp's floor, or a flat size, so a size written either way can be
+       compared. The card's label was the flat one, at 10px, until its labels
+       came off on 2026-09-30. */
     const clamped = value.match(/clamp\(\s*([\d.]+)(px|rem)/);
     const flat = value.match(/^([\d.]+)(px|rem)$/);
     const size = clamped ?? flat;
@@ -220,13 +220,12 @@ test("the client card's name leads without borrowing the display face", () => {
   /* The whole hierarchy, as an ordering. Three sizes went up and down this card
      across a day — the name shared the values' size, then the values were taken
      smaller when it was the LABEL that was meant — so what is held is the order
-     rather than any of the numbers. */
+     rather than any of the numbers. Two sizes since 2026-09-30, when the labels
+     came off: the name over the facts. */
   const name = floor(".clients-card__name");
-  const value = floor(".clients-card__fact dd");
-  const label = floor(".clients-card__fact dt");
+  const value = floor(".clients-card__fact");
 
   assert.ok(name > value, "the card name is no larger than the facts under it");
-  assert.ok(value > label, "the fact's label is no smaller than its value");
 });
 
 test("every arrow link is one size, and one step", () => {

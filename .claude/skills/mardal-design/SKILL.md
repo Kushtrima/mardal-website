@@ -80,7 +80,9 @@ Both headers are fluid and settle at those sizes from ~1280px up. There are no
 responsive font-size overrides anywhere; the clamps handle small screens. Do not
 add one.
 
-**Colour.** The page is white. The things on it carry the tint.
+**Colour.** The page is black by default (owner, 2026-09-30) and white once the
+toggle is pressed. Every colour token is a `light-dark(LIGHT, DARK)` pair, and
+the values below are the light halves. The things on the page carry the tint.
 
 - `--canvas` white — the page
 - `--surface`, `--menu-surface` `#efedf8` — cards, header, mega menu

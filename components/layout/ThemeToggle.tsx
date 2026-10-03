@@ -25,29 +25,32 @@ function emit() {
 
 function subscribe(onChange: () => void) {
   /* Two of these render — one in the mega menu, one in the mobile sheet — and
-     subscribing both to the same set is what keeps them agreeing. */
-  const query = window.matchMedia("(prefers-color-scheme: light)");
-
+     subscribing both to the same set is what keeps them agreeing. Nothing else
+     turns the page over: the operating system stopped deciding it on
+     2026-08-25, so there is no media query to listen to. */
   listeners.add(onChange);
-  query.addEventListener("change", onChange);
 
   return () => {
     listeners.delete(onChange);
-    query.removeEventListener("change", onChange);
   };
 }
 
 /* What the page is actually set to right now, which is not the same question as
    what the visitor has chosen. An explicit choice lives on the root as a
-   data-theme; with no choice made the page is following the system, and the
-   only way to know which way that fell is to ask. */
+   data-theme; with no choice made the page is whatever `color-scheme` on :root
+   in app/globals.css says, so that is read rather than assumed and the default
+   stays one word in one file.
+
+   It used to ask the operating system, which had stopped deciding anything. On
+   a machine that disagreed with the default, the first press set the theme the
+   page already had and nothing moved. */
 function getSnapshot(): Theme | null {
   const chosen = document.documentElement.dataset.theme;
   if (chosen === "light" || chosen === "dark") {
     return chosen;
   }
 
-  return window.matchMedia("(prefers-color-scheme: light)").matches
+  return getComputedStyle(document.documentElement).colorScheme === "light"
     ? "light"
     : "dark";
 }
@@ -71,9 +74,9 @@ function getServerSnapshot(): Theme | null {
  * The markup rendered on the server carries no theme in it. That is deliberate
  * — the server has no way to know which way the page will land, and a label or
  * a pressed state written into the SSR pass would be a mismatch on every load
- * where the visitor's system disagrees with the default. So the word is fixed,
- * the mark carries the state by being drawn in the page's own ink, and
- * `aria-pressed` is filled in once there is a document to ask.
+ * where the visitor's remembered choice disagrees with the default. So the word
+ * is fixed, the mark carries the state by being drawn in the page's own ink,
+ * and `aria-pressed` is filled in once there is a document to ask.
  */
 export function ThemeToggle({
   className,

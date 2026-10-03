@@ -35,19 +35,21 @@
   /* Both themes are live at once and this decides which half of every
      light-dark() below is read.
 
-     **One word, not two — owner's call, 2026-08-25: the page arrives white.**
-     It read `light dark`, which handed the choice to the visitor's operating
-     system, so half of them met a black site. The dark page is not gone and is
-     not secondary in the code — every token still carries both halves and the
-     toggle still turns the whole thing over — but nobody is shown it until they
-     ask. Written here rather than in a `prefers-color-scheme` block so there is
-     still exactly one property deciding the theme.
+     **Dark — owner's call, 2026-09-30: the page arrives black.** It was `light`
+     from 2026-08-25, and before that `light dark`, which handed the choice to
+     the visitor's operating system, so half of them met a black site and half a
+     white one. Still one word, not two: the OS decides nothing. The white page
+     is not gone and is not secondary in the code — every token still carries
+     both halves and the toggle still turns the whole thing over — but nobody is
+     shown it until they ask. Written here rather than in a
+     `prefers-color-scheme` block so there is still exactly one property
+     deciding the theme.
 
      It also hands the native UI to the browser: scrollbars, autofill, and the
      form controls on the role pages, none of which had been told which ground
-     they were standing on. `light` here is what makes those default to their
-     light forms too, which is the half of this that has no token. */
-  color-scheme: light;
+     they were standing on. `dark` here is what makes those default to their
+     dark forms too, which is the half of this that has no token. */
+  color-scheme: dark;
 
   --font-geist: "Geist";
 
@@ -215,6 +217,10 @@
   /* Card tints. Each is a flat panel colour and the deeper shade of itself the
      bars are drawn in — always the same hue, so a card reads as one colour. */
   --tint-lilac: #dacdf9;
+  /* What stands on a tint: the four tints are light in both themes, so their
+     ink is the light half's ink in both. Named once, for the redaction bar the
+     menu draws behind a word and the lilac panel inside it. */
+  --ink-on-tint: #08080a;
   --tint-lilac-bar: #c3aef3;
   /* **The owner's yellow, and a bar derived from it.** 2026-08-26, pointing at
      the Websites box: this background, and the pattern the same yellow slightly
@@ -651,11 +657,11 @@
    tests/breakpoints.test.mjs and tests/reduced-motion.test.mjs, which count and
    walk them; a theme query would be a third thing for them to step over, and
    since 2026-08-25 there is nothing for it to say — the page does not follow the
-   OS any more, it is light until someone presses the toggle.
+   OS any more. Since 2026-09-30 it is dark until someone presses the toggle.
 
-   Which makes this first rule a restatement of the base rather than an override,
+   Which makes the dark rule a restatement of the base rather than an override,
    and it stays for two reasons: it is what a reader looking for "what does
-   data-theme=light do" comes here to find, and it is what keeps the toggle's two
+   data-theme=dark do" comes here to find, and it is what keeps the toggle's two
    values symmetrical in the one place they are both written down. */
 :root[data-theme="light"] {
   color-scheme: light;
@@ -670,12 +676,13 @@
 
    **This file no longer has a colour-scheme media query, and should not gain
    one.** It had exactly one, for these four, and it existed only because the
-   base values here were the DARK ones — so the light values had to be written
-   twice, once for a visitor whose OS said light and once for a visitor who had
-   pressed the toggle, with a note to keep the two copies in step. Since the
-   default became light on 2026-08-25 the base carries the light values and the
-   toggle's dark rule carries the dark ones, each written once. The palette above
-   never had a query and still does not.
+   base values here were the DARK ones while the OS still chose — so the light
+   values had to be written twice, once for a visitor whose OS said light and
+   once for a visitor who had pressed the toggle, with a note to keep the two
+   copies in step. With the OS out of it, the base carries the default's values
+   and the toggle's other rule carries the other half, each written once: dark
+   on the base since 2026-09-30 (light from 2026-08-25), light on
+   `data-theme="light"`. The palette above never had a query and still does not.
 
    --logo-filter: the wordmark is a flat black SVG, so it is crushed to a
    silhouette rather than recoloured. On white the source art is already the
@@ -690,33 +697,31 @@
    look underfed. On a dark ground light type does bloom, and antialiased thins
    the stems to counteract it. */
 :root {
-  --logo-filter: brightness(0);
-  --panel-shadow: var(--shadow-soft);
-  --menu-edge-shadow: var(--shadow-menu-edge);
-  --font-smoothing: auto;
-}
-
-:root[data-theme="dark"] {
   --logo-filter: brightness(0) invert(1);
   --panel-shadow: none;
   --menu-edge-shadow: none;
   --font-smoothing: antialiased;
 }
 
-/* Whichever way the page is set, two things on it are always a light panel:
-   the mega menu and the five coloured boxes. Each re-derives the ink, rules and
-   accent that belong on a light ground, rather than each child overriding its
-   own colour — so a light panel anywhere on the site only has to join this list.
+:root[data-theme="light"] {
+  --logo-filter: brightness(0);
+  --panel-shadow: var(--shadow-soft);
+  --menu-edge-shadow: var(--shadow-menu-edge);
+  --font-smoothing: auto;
+}
+
+/* Whichever way the page is set, one thing on it is always a light panel: the
+   five coloured boxes. They re-derive the ink, rules and accent that belong on
+   a light ground, rather than each child overriding its own colour — so a light
+   panel anywhere on the site only has to join this list.
 
    These stay literal rather than becoming light-dark() pairs, and that is the
    point of them: they do not follow the page, they are always the light half.
    On the light page they agree with the root and the block is a no-op; on the
    dark page they are what keeps the panels readable. */
-/* The header was on this list while its bar was a light slab. The bar is on the
-   page's own black now, so it is not; the menu it opens is white again, so it
-   is. Everything inside the menu — the names, the rule that marks one, the
-   marks on the right, the legal line and its hairlines — takes its colour from
-   here rather than each declaring its own.
+/* The header was on this list while its bar was a light slab, and the menu
+   while it was a white sheet. Both take the page's own ground now — the menu
+   since its redesign on 2026-10-03 — so neither is.
 
    The four Why Mardal cards came off it on 2026-09-30, for the same reason as
    the header. Their ground has been `--surface-raised` since 2026-08-26, which
@@ -724,7 +729,6 @@
    near-black titles on a near-black card. Owner: the titles and the hover text
    in white in dark mode. The values here are the root's light half, so the
    light page does not move. */
-.mega-menu,
 .difference-card {
   --ink: #08080a;
   --ink-read: #08080a;
@@ -739,31 +743,39 @@
   color: var(--ink);
 }
 
-/* The footer panel is a filled accent slab, and everything on it — the words,
-   the link columns, the social marks and the bar field — is drawn in
-   --accent-contrast.
+/* The footer's black block, and everything on it — the mark, the closing line
+   and the bar field — is drawn in --accent-contrast.
 
-   It is the one large purple on the site and it does not move between themes,
-   so it takes itself off the themed --accent and names both halves here. Every
-   child reads them by inheritance, which is why turning the whole panel over on
-   2026-08-25 was one line: owner's call, the ink goes white and the slab stays
-   the lavender it is.
+   It used to be the whole panel. Since 2026-08-27 the lists stand off it, on the
+   page's own ground in the page's own ink, so what this pair governs is the
+   block alone.
 
-   ⚠ **The contrast is 2.88:1 and that does not meet WCAG AA.** It was 7.29:1
-   with black. White needs 4.5:1 for body text and 3:1 for large, and #a98ad6 is
-   too light to carry it — this fails both. Nothing here is broken and nothing
-   below compensates for it, because there is no fix on this side of the pair:
-   the ink is already the lightest colour there is. The slab is what would have
-   to move. #8362b8, the site's own --accent, gives 4.77:1; #7b64ab, the purple
-   the design reference actually reads, gives 4.94:1. Both are still plainly the
-   same lavender. This is recorded rather than acted on because the owner asked
-   for the background to stay as it is.
+   It does not move between themes, so it takes itself off the themed --accent
+   and names both halves here. Every child reads them by inheritance, which is
+   why turning the whole panel over is one line.
+
+   **Black since 2026-08-27, the owner's call, and the note that used to stand
+   here comes down with it.** That note recorded a standing failure: white on
+   the #a98ad6 lavender was 2.88:1, which misses WCAG AA at both thresholds —
+   4.5:1 for body and 3:1 for large — and there was no fix on the ink's side,
+   because white is already the lightest colour there is. The slab was what had
+   to move, and it has. White on #08080a is 20.01:1. `theme.test.mjs` computes
+   that number from these two values on every run and prints it, so it is not
+   taken on trust here.
+
+   **#08080a and not #000000, and the difference matters in one place.** On a
+   light page either reads as black. On a dark page the canvas IS #000000, and a
+   panel painted the same would stop being a panel — its corners and its margins
+   would vanish and the footer would read as the page simply running out. Two
+   points of lift is enough to keep the slab a slab and still be black to the
+   eye. It is the site's own light-mode ink, so it is not a new colour either.
 
    The one thing that does not follow --accent-contrast is the wordmark, which
    is a raster and is driven by a filter instead; see .site-footer__mark img,
-   which has to be turned over by hand every time this line changes. */
-.site-footer__panel {
-  --accent: #a98ad6;
+   which has to be turned over by hand every time this line changes — and does
+   not, this time, because the ink has not moved. */
+.site-footer__slab {
+  --accent: #08080a;
   --accent-contrast: #ffffff;
 }
 
@@ -1439,10 +1451,8 @@ video {
   position: relative;
   z-index: 2;
   display: grid;
-  /* Two: the wordmark and the names. There was a third for the button that used
-     to end the row, and leaving it in place once the button moved into the menu
-     would have held its gap open against the right edge with nothing in it. */
-  grid-template-columns: minmax(13rem, 1fr) auto;
+  /* Two: the wordmark and the burger, at every width since 2026-10-03. */
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: clamp(1.25rem, 2.6vw, 3.25rem);
   align-items: center;
   min-height: clamp(3.45rem, 4.5vw, 3.9rem);
@@ -1467,32 +1477,11 @@ video {
    would paint over the very words that open and close it — and the whole of
    its close affordance is that the word you clicked is still there to click
    again. */
-.site-nav > :not(.mega-menu) {
+.site-nav > * {
   position: relative;
   z-index: 1;
 }
 
-/* Turned over while the menu is open, because they are standing on its light
-   ground. Only these two: the ground starts at the links, so the wordmark to
-   their left is still on the page itself and must not follow them.
-
-   The call to action inverts rather than dims. It is a filled shape, and on a
-   light ground a light fill is not a quiet button, it is no button — so the
-   fill takes the ink and the label takes the ground.
-
-   Both values here are literal rather than light-dark() pairs, for the same
-   reason the panel block near the tokens is: the menu is a light surface in
-   either theme, so what stands on it is the light half in either theme. On the
-   light page these agree with the page and the rule costs nothing. */
-.site-header--mega-open .nav-list {
-  /* The accent goes with the ink. The word that opened the menu is marked in
-     --accent, and the dark page's is #a98ad6 — a light purple cut for black,
-     which on this ground leaves the one word you need to find the faintest in
-     the row. */
-  --accent: #8362b8;
-
-  color: #08080a;
-}
 
 .brand {
   display: inline-flex;
@@ -1513,295 +1502,73 @@ video {
   filter: var(--logo-filter);
 }
 
-.nav-list {
-  display: flex;
-  gap: clamp(1.4rem, 2.75vw, 3.4rem);
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
+/* ── The burger ──
 
-.nav-link {
-  display: block;
-  appearance: none;
-  padding-block: 0.75rem;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  font-size: var(--text-nav);
-  letter-spacing: -0.035em;
-  line-height: 1;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-/* Every one of the five opens a panel, and nothing said so: they were set as
-   plain words, so the only way to learn there was a menu behind them was to
-   click one. A chevron is the convention for that and costs a third of an em.
-
-   Drawn from two borders of a rotated box rather than shipped as a glyph or an
-   icon: it is two hairlines, it inherits the colour of the word it follows, and
-   it scales with the type because it is sized in em. The nudge up is optical —
-   a rotated square hangs from its own centre, which sits low against a cap
-   height, so the mark is lifted back onto the middle of the word. */
-.nav-trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.42em;
-}
-
-.nav-trigger::after {
-  width: 0.3em;
-  height: 0.3em;
-  border-right: 1px solid currentcolor;
-  border-bottom: 1px solid currentcolor;
-  content: "";
-  transform: translateY(-0.11em) rotate(45deg);
-}
-
-/* Open, it points back at the panel it opened. Turned 225 rather than -135 so
-   it takes the long way round and reads as a turn rather than a flip. */
-.nav-trigger[aria-expanded="true"] {
-  color: var(--accent);
-}
-
-.nav-trigger[aria-expanded="true"]::after {
-  transform: translateY(0.05em) rotate(225deg);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .nav-trigger::after {
-    transition: transform var(--duration-base) var(--ease-handover);
-  }
-}
-
+   Owner, 2026-10-03: "i want BIG MENU so Only BURGER menu". The bar is the
+   wordmark and this, at every width; the words that stood in the bar are in
+   the menu it opens. Two bars rather than three, and the lower one short: the
+   site's own mark is the redaction bar, and two of them cross into a close
+   mark without a third having to disappear. */
 .mobile-menu-toggle {
-  display: none;
-  min-width: 4.4rem;
-  min-height: 2.55rem;
+  display: inline-flex;
+  width: 3rem;
+  height: 3rem;
   align-items: center;
   justify-content: center;
-  padding-inline: 0.9rem;
-  border: 1px solid var(--line);
-  border-radius: var(--shape-control);
+  padding: 0;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-full);
   background: transparent;
   color: var(--ink);
   cursor: pointer;
-  font: inherit;
-  font-size: var(--text-body);
-  line-height: 1;
+  transition: border-color var(--duration-fast) var(--ease-standard);
 }
 
-/* A ground that fills the page from the navigation rightward, with the bar
-   sitting on top of it rather than above it.
-
-   Not a card: no border, no corner, no drop. It runs from the top of the window
-   to the bottom and from the first nav link to the right edge, so the only
-   thing that says where it begins is the page still showing to the left of it.
-
-   The left edge is the whole trick, and it comes from the grid rather than a
-   number. .site-nav lays the bar out as brand | links | call to action, and an
-   absolutely positioned child of a grid that is given a grid area takes THAT
-   area as its containing block — so `grid-column: 2 / -1` means "start where
-   the links start", whatever the brand happens to measure at this width. A
-   typed offset would have to be re-guessed at every breakpoint.
-
-   From there it is pulled up by the header's own top padding to reach the top
-   of the window, and out by the page gutter to reach its right edge. */
-.mega-menu {
-  /* How far the ground reaches past the links on the left. Named because two
-     declarations have to agree on it: the offset that pushes the edge out and
-     the padding that pulls the names back.
-     Because those two read the same value, this only ever moves the white. The
-     names sit at the nav's own left edge whatever it is set to: the sheet
-     starts this far left of them and the padding puts them straight back. Was
-     20px, now 40. */
-  --menu-ground: 2.5rem;
-
-  position: absolute;
-  grid-row: 1;
-  grid-column: 2 / -1;
-  /* The grid area is .site-nav's CONTENT box, so reaching the window's corner
-     means clearing the bar's own padding as well as the header's: 0.3rem off
-     the top and 0.4rem off the right, which is what left the ground 5px low and
-     6px shy of the edge when only the header's padding was subtracted. */
-  top: calc(-1 * (var(--header-pad) + 0.3rem));
-  right: calc(-1 * (var(--page-gutter) + 0.4rem));
-  /* Out past the links by --menu-ground, and padded back in by the same amount
-     so the names stay on the nav's own left edge. That leaves a band of ground
-     ahead of the list rather than cutting the page off flush against the first
-     letter — the only place the panel's edge is visible at all, since the page
-     behind it is the same black. */
-  left: calc(-1 * var(--menu-ground));
-  height: 100svh;
-  /* A column: the list at the head, the legal line pushed to the foot by the
-     space between them. */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  /* Clear of the bar drawn over it: the header's padding, the bar itself, and
-     then the space the reference leaves before the first name. The right and
-     bottom bring the legal line back to the page's own margins, since the
-     ground itself runs past them to the window's edge. */
-  padding: calc(var(--header-space) + clamp(1.75rem, 5vh, 3.5rem))
-    calc(var(--page-gutter) + 0.4rem) clamp(1.25rem, 3.5vh, 2.5rem)
-    var(--menu-ground);
-  overflow: hidden;
-  /* The left-edge shadow rides on this element rather than on the ground it
-     belongs to, and the reason is the clip above: a shadow cast by the ground
-     is a shadow cast by a child, and `overflow: hidden` cuts it off flush at
-     the seam it exists to draw. `overflow: clip` with a clip margin would let
-     it out, and does not survive the build — the compiler drops the margin and
-     writes the clip back to `hidden`.
-
-     Cast from the panel instead, where nothing clips it, and eased in over the
-     same six-tenths the ground takes to lighten so the shadow does not arrive
-     ahead of the surface casting it. Closing needs nothing: the panel's own
-     opacity goes to zero and takes the shadow with it. */
-  transition: box-shadow var(--duration-slow) var(--ease-standard);
-  border: 0;
-  border-radius: 0;
-  /* No ground of its own: .mega-menu__ground carries the white so it can be
-     drawn across without taking the names with it. */
-  background: transparent;
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-/* The white itself, under everything else in the panel and filling it.
-
-   Its own layer for one reason: it has to be able to arrive without the names
-   arriving with it. As the panel's own background, the only way to bring it in
-   was to fade the panel, and that faded its contents too. */
-.mega-menu__ground {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: var(--menu-surface);
-  pointer-events: none;
-}
-
-/* Only while it is open, so the shadow eases in with the white rather than
-   standing there under a panel that has not arrived. On the dark page the
-   token is `none` and this rule costs nothing — a white sheet on black needs
-   no help being told apart from the page. */
-.site-header--mega-open .mega-menu {
-  box-shadow: var(--menu-edge-shadow);
-}
-
-/* Above the ground. Everything in the panel except the ground itself, which is
-   the only child that has to stay under. */
-.mega-menu > :not(.mega-menu__ground) {
+.mobile-menu-toggle__bars {
   position: relative;
-  z-index: 1;
+  display: block;
+  width: 1.25rem;
+  height: 0.6rem;
 }
 
-
-
-/* One column, however many names there are. Two columns was a way of keeping a
-   short panel short; the panel is the page now, so there is room to let the
-   list run down it and the reading order stays a single line down the page. */
-.mega-menu__links {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  row-gap: clamp(0.9rem, 1.9vh, 1.6rem);
-  list-style: none;
-}
-
-/* The foot of the panel: the small print on the left, the way in on the right.
-   Each is on one of the two edges the names above them already run between, so
-   the row needs no measurements of its own — space-between puts them there.
-   The panel's padding does the rest: padding-left is --menu-ground, the same
-   band the names are pulled back by, so the small print lines up under them. */
-/* One row, always. This wrapped before, and wrapping was the wrong give: the
-   button dropped to a line of its own and space-between, with one item left on
-   that line, parked it hard against the LEFT margin, directly under the small
-   print it is supposed to sit opposite.
-   The row does not need to wrap to fit, because the small print already wraps
-   inside itself. So the giving happens one level down, where two short lines of
-   legal text cost nothing, instead of up here where it costs the whole
-   arrangement. */
-.mega-menu__foot {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: space-between;
-  /* A minimum, not a measure: space-between already holds these two apart at
-     opposite edges, so this only ever states how close they may come when the
-     panel is at its narrowest. Down from 2.4vw, which at a 1448 window was 35px
-     of guaranteed separation standing between the small print and one row —
-     bought back here rather than out of the four words, and it costs nothing
-     visible while the row is not full. */
-  gap: clamp(0.9rem, 1.7vw, 1.75rem);
-}
-
-/* In the page ink, since on this ground the black it wears in the footer would
-   not be there at all. */
-.mega-menu__legal {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  /* The space either side of each hairline, named because the gap and the
-     padding that follows it have to be the same number: the line is drawn on
-     the padded item's left edge, so the gap is the space before it and the
-     padding is the space after, and the line only looks centred while they
-     agree. They were written out twice at 1.4rem, which is how the row came to
-     be 44.8px wider than anyone chose — the two are not alternatives, they add.
-     Tightened from 1.4rem because the whole line was 360px against 347px of
-     room and orphaned "Cookies" onto a second row. */
-  --legal-gap: clamp(0.6rem, 1.2vw, 1rem);
-
-  /* A flex item will not shrink below its content unless told it may, and this
-     one has to be the thing that gives: without it the row cannot narrow, and
-     the row that cannot narrow is the one that used to wrap. */
-  min-width: 0;
-  gap: var(--legal-gap);
-  color: var(--ink);
-  /* The fine size, which is the size this same line already wears at the foot
-     of the footer panel — the token is defined for exactly these two places, so
-     this is one legal line matching the other rather than a size invented here.
-
-     It is the third and last thing taken to close this row, and the only one of
-     the three that touches the words. The way in beside it came down from 103px
-     to 69 and the space between them from 35 to 25, which together bought 44px
-     against a 15px shortfall at a 1448 window — and it still wrapped narrower
-     than that, because the panel keeps very nearly the same width as the window
-     narrows while the line does not shrink at all. Twelve takes the four words
-     from 225px to 193 and ends the argument: the row now closes with something
-     like 40px to spare at every width the panel is drawn at, rather than one or
-     two. */
-  font-size: var(--text-fine);
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-
-/* Hairlines between them, as in the footer, but drawn from the ink rather than
-   --panel-line: that token is white at 45%, cut for the purple slab. */
-.mega-menu__legal > * + * {
-  position: relative;
-  /* The other half of the pair. See --legal-gap: this is the space after the
-     line, the gap is the space before it, and they are the same number so the
-     line sits between the two words rather than beside one of them. */
-  padding-left: var(--legal-gap);
-}
-
-.mega-menu__legal > * + *::before {
+.mobile-menu-toggle__bars > span {
   position: absolute;
-  top: 50%;
   left: 0;
-  width: 1px;
-  height: 1em;
-  background: var(--line-soft);
-  content: "";
-  transform: translateY(-50%);
+  width: 100%;
+  height: 2px;
+  background: currentcolor;
+  transition:
+    transform var(--duration-base) var(--ease-standard),
+    width var(--duration-base) var(--ease-standard);
 }
 
-.mega-menu__legal-link {
-  transition: opacity var(--duration-fast) var(--ease-standard);
+.mobile-menu-toggle__bars > span:first-child {
+  top: 0;
+}
+
+.mobile-menu-toggle__bars > span:last-child {
+  bottom: 0;
+  width: 65%;
+}
+
+/* Open, the two bars meet on the middle line and cross. */
+.mobile-menu-toggle[aria-expanded="true"] .mobile-menu-toggle__bars > span:first-child {
+  transform: translateY(calc(0.3rem - 1px)) rotate(45deg);
+}
+
+.mobile-menu-toggle[aria-expanded="true"] .mobile-menu-toggle__bars > span:last-child {
+  width: 100%;
+  transform: translateY(calc(1px - 0.3rem)) rotate(-45deg);
+}
+
+@media (hover: hover) {
+  .mobile-menu-toggle:hover {
+    border-color: var(--line);
+  }
+
+  .mobile-menu-toggle:hover .mobile-menu-toggle__bars > span:last-child {
+    width: 100%;
+  }
 }
 
 /* The theme control. A button with nothing on it — no fill, no border, no size
@@ -1848,196 +1615,714 @@ video {
   stroke: none;
 }
 
-/* In the legal line the row is already four words long and closes with about
-   40px to spare, so the control is the mark alone; the button keeps its label
-   for anything reading the page rather than looking at it.
 
-   It sits in the row's own rhythm and takes no margin of its own. The hairline
-   is drawn on this element's left edge, so a margin here does not move the mark
-   away from the line — it moves the line away from the last word and drags the
-   mark right with it, which is the opposite of what it looks like it will do.
+/* ── The menu ──
 
-   What it does need is the padding back. `--legal-gap` is the space before the
-   hairline and this is the space after it, and the two are the same number so
-   the line sits between the two things rather than beside one of them — but
-   `.theme-toggle` zeroes a button's padding, and being a later rule of equal
-   weight it was winning. The mark was standing hard against the line with two
-   pixels of its own bearing and nothing else. */
-.mega-menu__theme {
-  padding-left: var(--legal-gap);
-}
+   The sheet the burger opens, at every width since 2026-10-03 — it was the
+   phone's only, inside the phone block further down, and the big menu on a
+   wide window is this with its halves side by side (`.mobile-menu--wide`,
+   below). The phone's own notes travel with it. */
 
-.mega-menu__theme .theme-toggle__label {
-  display: none;
-}
-
-@media (hover: hover) {
-  .mega-menu__legal-link:hover {
-    opacity: 0.68;
-  }
-}
-
-/* A rule that opens to the left of the name it marks.
-
-   THE LINK ITSELF MUST NOT MOVE. Moving it was what made the hover shudder:
-   the box carrying :hover slid out from under the pointer, the state dropped,
-   it slid back, and the pointer was over it again — on and off several times a
-   second for as long as you rested near an edge. The box is fixed here and the
-   name moves inside it.
-
-   The row runs the full width of the ground, which does two things: the mark
-   lands on the right margin, in the same column as the legal line below and the
-   call to action above, and the whole line is the target — so the name can
-   travel inside a box that never moves and there is no edge to oscillate
-   across.
-
-   The rule is pinned to that box's left edge, which is where the name rests, so
-   it draws into the space the name has just left. The travel and the rule read
-   the same two lengths — one measurement used twice; if they disagreed the rule
-   would overlap the word or leave a hole in front of it. */
-.mega-menu__link {
-  --menu-rule: clamp(1.6rem, 3vw, 2.8rem);
-  --menu-rule-gap: clamp(0.7rem, 1.2vw, 1.1rem);
-  --menu-travel: calc(var(--menu-rule) + var(--menu-rule-gap));
-
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
-  padding-block: clamp(0.15rem, 0.4vh, 0.35rem);
-  transition: opacity var(--duration-slow) var(--ease-standard);
-}
-
-/* On the right margin, one per name, and diagonal because it opens a page
-   rather than moving along the row. The rotation is pinned here rather than
-   left to the direction class: it is the whole of what the mark means. */
-.mega-menu__arrow {
-  --pixel-arrow-dot: 0.135rem;
-  --pixel-arrow-gap: 0.06rem;
-
-  flex: none;
-  color: var(--ink);
-  transform: rotate(-45deg);
-}
-
-.mega-menu__link::before {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: var(--menu-rule);
-  height: 1px;
-  background: currentcolor;
-  content: "";
-  /* Drawn from the left, following the name out rather than chasing it. */
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--duration-base) var(--ease-handover);
-}
-
-/* The grotesque, as it was before the sheet. These are navigation, read at a
-   glance and chosen from, not headings to be read along — and the tracking
-   goes back with the face, since -0.055em is cut for the display serif and
-   closes this one up. */
-/* A step over the bar's own links rather than a heading. These are still
-   navigation — the panel gives them room, not rank. */
-/* inline-block so it can be moved: this is the part that travels on hover,
-   while the link around it stays put. Both transitions live here — declaring
-   the transform one in a separate rule would have been overwritten by this
-   `transition`, and the name would have jumped rather than travelled. */
-.mega-menu__label {
-  display: inline-block;
-  font-family: var(--type-display);
-  font-size: clamp(1.25rem, 1.55vw, 1.5rem);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: var(--leading-heading);
-  transition:
-    color var(--duration-fast) var(--ease-standard),
-    transform var(--duration-base) var(--ease-handover);
-}
-
-/* Hovering one name dims the rest. With a rule and a shift already marking the
-   one under the pointer, this only has to take the others a step back — 0.42
-   was set when it was the only signal there was. */
-.mega-menu__links:hover .mega-menu__link {
-  opacity: 0.55;
-}
-
-.mega-menu__links .mega-menu__link:hover {
-  opacity: 1;
-}
-
-/* The name travels, not the link. */
-.mega-menu__links .mega-menu__link:hover .mega-menu__label {
-  transform: translateX(var(--menu-travel));
-}
-
-.mega-menu__links .mega-menu__link:hover::before {
-  transform: scaleX(1);
-}
-
+/* The sheet is the page, full-bleed — so it takes the page's own ground and
+   ink rather than the near-black and near-white it used to name here. Those
+   literals were written when the page underneath was white and the sheet was
+   the one dark thing on the site; on a light page they would have left the
+   whole phone navigation as a black slab over a white site, which is the
+   failure this whole pass exists to avoid. */
 .mobile-menu {
-  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  overflow: hidden;
+  background: var(--canvas);
+  color: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-0.75rem);
+  transition:
+    opacity 260ms var(--ease-standard),
+    transform 420ms var(--ease-standard),
+    visibility 420ms;
+  visibility: hidden;
 }
 
-/* Drawn rather than filled, and smaller than the names above it rather than
-   larger: on this much white an outline is enough to read as a control, and a
-   fill at rest would be the loudest thing in a panel whose whole job is the
-   list. Filling on hover is what it has left to say.
+.mobile-menu--open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  visibility: visible;
+}
 
-   The tokens are set on the button rather than taken from the panel. The
-   panel's --accent is the purple that marks the open menu up in the bar, and
-   this has nothing to do with that mark; --line is the panel's hairline at 72%,
-   which on white is a grey, and this outline is meant to be ink. Both are named
-   here at full black.
+.mobile-menu__content {
+  display: grid;
+  height: 100dvh;
+  min-height: 34rem;
+  grid-template-rows: minmax(0, 1fr) auto;
+  padding-top: clamp(6.75rem, 15vh, 8.75rem);
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+}
 
-   It wore a fill in the bar, white on the black, and the header had to swap it
-   to ink on every open — a .site-header--mega-open override that existed only
-   because the white came up underneath it. On the panel there is no other
-   ground for it to stand on, and that override is gone. */
-.mega-menu__cta {
-  --line: #08080a;
-  --accent: #08080a;
-  --accent-contrast: #ffffff;
-
-  /* Never the thing that GIVES — a button squeezed narrower than its own label
-     is not a smaller button, it is a broken one — but no longer the thing that
-     takes, either. It held a 6.4vw floor that came to 103px at a 1602 window
-     against a label needing 82, so a fifth of it was width it had asked for and
-     was not using, and the small print beside it wrapped to pay for that: the
-     line wants 321px and the foot was leaving it 306, which orphaned "Cookies"
-     onto a row of its own.
-
-     So the box comes in and the label does not. Both are held off the label's
-     own measure rather than set to it, because a floor a hair under the text is
-     the same as no floor at all and the padding is what would go. */
-  flex: none;
-  min-width: clamp(4rem, 4.6vw, 4.5rem);
-  min-height: clamp(1.85rem, 2.2vw, 2.05rem);
-  padding: 0.35rem 0.7rem;
-  border-radius: var(--shape-control);
-  font-size: var(--text-small);
-  font-weight: var(--weight-medium);
-  letter-spacing: -0.01em;
+.mobile-menu__viewport {
+  position: relative;
+  min-height: 0;
   overflow: hidden;
 }
 
-/* Colour, and only colour. .button:hover raises every button on the site by
-   2px, and it earns that on the page, where it is one moving thing among
-   others. Here it is the last thing in a panel that has come to rest and holds
-   perfectly still, so 2px of travel read as the button coming loose rather than
-   answering. Filling it says the same thing without moving it.
-
-   No glow either. --shadow-accent is a purple cast drawn to sit under a purple
-   button; under a black one on white it is a smudge. */
-.mega-menu__cta:hover {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--accent-contrast);
-  box-shadow: none;
-  transform: none;
+.mobile-menu__index,
+.mobile-menu__detail {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  will-change: opacity, transform;
 }
+
+.mobile-menu__index::-webkit-scrollbar,
+.mobile-menu__detail::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-menu__index-list,
+.mobile-menu__detail-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mobile-menu__index-list {
+  display: grid;
+  gap: clamp(0.2rem, 1vh, 0.65rem);
+}
+
+.mobile-menu__index-link {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.15rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-family: var(--type-display);
+  /* Owner, 2026-08-27: smaller. It was `clamp(2.35rem, 7.2vw, 4rem)`, and the
+     floor is what a phone actually gets — 7.2vw does not reach 2.35rem until
+     523px, so every phone read the same 37.6px regardless of its width. Four
+     names at that size fill the sheet and leave the way in and the theme row
+     reading as afterthoughts under them. */
+  font-size: var(--menu-word-size);
+  font-weight: var(--weight-body);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.08;
+  text-align: left;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* Down with the names. The mark is a 9x9 grid of squares — 9 dots and 8 gaps,
+   which at 2px and 1px is the 26px it was — and it has to come down with the
+   type or it reads as a mark that grew.
+
+   **Three class names, and every one of them is load-bearing.** The size does
+   not come from `.mobile-menu__index-arrow` at all: it comes from
+   `.pixel-arrow--small.pixel-arrow--square`, which is two classes to this
+   rule's one, so a single-class override here is simply ignored — the earlier
+   version of this rule set the gap to a value it already had and changed
+   nothing. Beating it on order alone would work and would be a trap for
+   whoever moves a block. Three classes beat it outright. */
+.mobile-menu .mobile-menu__index-link .mobile-menu__index-arrow {
+  --pixel-arrow-dot: 1.5px;
+  --pixel-arrow-gap: 1px;
+}
+
+.mobile-menu__index-arrow {
+  color: var(--ink);
+}
+
+/* ── The way in, under the names ──
+
+   **Owner, 2026-08-27, twice: simpler, then up on the right.** It was a
+   full-width purple block at the foot of the sheet, then an outlined pill on
+   the left. It is an arrow link now — the fifth of a set that was deliberately
+   brought to one size and one purple earlier the same day, so it should never
+   have been the one carrying a button.
+
+   Nothing here is its own idea. The box, the gap and the tap padding are
+   `.product__cta`'s to the number; `--text-cta` is the shared size; the hover
+   is added to the group the other four already share, so the five of them
+   still turn together. What is local is the row, and the row is only doing
+   one thing: putting it on the right edge the names run to. */
+.mobile-menu__cta-row {
+  display: flex;
+  justify-content: flex-end;
+  /* 30px of air under Company first, then 55 — the owner asked the rule
+     further down once he had seen it. The link travels with it: the two are
+     one object, a line with its way in underneath, and the gap that matters
+     between them is the `padding-top` below. */
+  margin-top: clamp(2.5rem, 6.5vh, 3.75rem);
+  /* Owner, 2026-08-27: a rule under the names, and the link below it — and
+     then, an hour later, the rules that used to run between the entries of an
+     opened section, which are gone. So this is the only hairline the sheet
+     draws now, and it is the better half of that trade: four rules stacked
+     between four entries divide a list into boxes, where one rule under the
+     whole list separates the names from what follows them.
+
+     The weight is theirs, kept deliberately — 0.5px at 28% of the ink rather
+     than `--line-soft`, which is the same grey the page uses for panel edges
+     and reads heavier under type this size.
+
+     `padding-top` and not a margin on the link: the link carries
+     `margin-block: -0.6875rem` to give its tap target back to the layout, so a
+     margin there would be eaten by it and the gap under the rule would come
+     out 11px shorter than whatever was typed. Padding on the row is measured
+     from the rule itself. */
+  padding-top: clamp(1.75rem, 4vh, 2.4rem);
+  border-top: 0.5px solid color-mix(in srgb, var(--ink) 28%, transparent);
+}
+
+.mobile-menu__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  /* The same pair every arrow link on the site carries: a 44px target given
+     back to the layout, so the row does not grow around it. */
+  margin-block: -0.6875rem;
+  padding-block: 0.6875rem;
+  color: var(--ink);
+  font-size: var(--text-cta);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.mobile-menu__index-link:hover,
+.mobile-menu__index-link:focus-visible,
+.mobile-menu__index-link.is-current {
+  color: var(--accent-soft);
+}
+
+.mobile-menu__index-link:hover .mobile-menu__index-arrow,
+.mobile-menu__index-link:focus-visible .mobile-menu__index-arrow {
+  color: var(--accent);
+}
+
+.mobile-menu__detail {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.mobile-menu__back {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  margin-top: clamp(1rem, 2.5vh, 1.5rem);
+  padding: 0.25rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  letter-spacing: -0.025em;
+}
+
+.mobile-menu__detail-list {
+  display: grid;
+  gap: 0;
+  padding-bottom: 0;
+}
+
+/* Services' two halves on the phone, under the panel's two headings. Inset
+   by the names' own 1.1rem, so each word stands over the names it sorts and
+   not over the square that marks the current page. */
+.mobile-menu__detail-heading {
+  margin-bottom: clamp(0.15rem, 0.6vh, 0.35rem);
+  padding-left: 1.1rem;
+}
+
+.mobile-menu__detail-group + .mobile-menu__detail-group {
+  margin-top: clamp(1.25rem, 3.5vh, 2rem);
+}
+
+/* Mixed from the ink rather than named as a near-white at 28%, so the rule
+   keeps exactly the weight it was drawn at while following the page over. */
+.mobile-menu__detail-link {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: clamp(0.55rem, 1.25vh, 0.75rem) 0 clamp(0.55rem, 1.25vh, 0.75rem)
+    1.1rem;
+  color: var(--ink);
+  font-family: var(--type-display);
+  font-size: clamp(1.6rem, 4.8vw, 2.5rem);
+  /* Owner, 2026-08-27: normal. It was `--weight-heading-xl`, which is 430 —
+     the only weight in the whole sheet that was not 400, and Geist is variable
+     so those thirty units are a visible step rather than a rounding. It read
+     as heavier type for a SHORTER list than the four names that lead to it,
+     which is the wrong way round: an opened section is one level down, not one
+     level up. */
+  font-weight: var(--weight-body);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.08;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+.mobile-menu__detail-link::before {
+  position: absolute;
+  top: calc(clamp(0.55rem, 1.25vh, 0.75rem) + 0.35em);
+  left: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--accent);
+  content: "";
+  opacity: 0;
+}
+
+.mobile-menu__detail-link.is-current::before {
+  opacity: 1;
+}
+
+.mobile-menu__detail-link:hover,
+.mobile-menu__detail-link:focus-visible,
+.mobile-menu__detail-link.is-current {
+  color: var(--accent-soft);
+}
+
+/* ── The foot of the sheet ──
+
+   One block where there were two loose children, so the sheet's grid sees a
+   single `auto` row and the scrolling list above it gives up whatever height
+   this needs — rather than the sheet growing past the screen.
+
+   Everything here stands on the container's own left edge, which is where the
+   four names stand. The button it replaces was full-width with 1.15rem of
+   inside padding, and the switch under it had to be pushed in by the same
+   amount to line up with the button's LABEL. A button that is only as wide as
+   its word needs no such arrangement: the edge is the edge for all three
+   rows. */
+.mobile-menu__foot {
+  display: grid;
+  gap: clamp(0.9rem, 2.4vh, 1.45rem);
+  margin-top: clamp(1rem, 3vh, 2rem);
+}
+
+/* The two controls share a line. They are the only marks down here, they are
+   both switches rather than reading, and split to the two edges they close the
+   sheet the way the mega menu's foot closes the panel. */
+.mobile-menu__marks {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.mobile-menu__social {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  margin: 0;
+  padding: 0;
+  color: var(--ink);
+  font-size: var(--text-copy);
+  list-style: none;
+}
+
+.mobile-menu__theme {
+  color: var(--ink);
+  font-size: var(--text-copy);
+}
+
+/* Quieter than the controls above it, because it is the only thing at this
+   foot that is read rather than pressed — and the number is the one line of it
+   that can be acted on, so it is the one line that answers to a hover. */
+.mobile-menu__contact {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  color: color-mix(in srgb, var(--ink) 60%, transparent);
+  font-size: var(--text-copy);
+  line-height: 1.35;
+}
+
+/* `dd` carries a 40px inline start margin from the user agent, which would
+   step the address in past every other line on the sheet. */
+.mobile-menu__contact-value {
+  margin: 0;
+}
+
+.mobile-menu__contact-link {
+  color: inherit;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.mobile-menu__contact-link:hover,
+.mobile-menu__contact-link:focus-visible {
+  color: var(--ink);
+}
+
+/* The bar while the sheet is open. It stands on the sheet, and the sheet is
+   the page's own ground now, so all three of these follow the page rather
+   than naming the near-black they used to. The logo needs no rule of its own
+   any more either: it is already on --logo-filter, and the ground it is
+   standing on is the same ground it was standing on before the sheet opened. */
+.site-header--mobile-menu-open {
+  background: var(--canvas);
+}
+
+.site-header--mobile-menu-open .site-nav {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.site-header--mobile-menu-open .mobile-menu-toggle {
+  border-color: color-mix(in srgb, var(--ink) 62%, transparent);
+  color: var(--ink);
+}
+
+/* **The bar stands ON the sheet, not under it.** Owner, 2026-08-27: the menu
+   opens and there is no Close.
+
+   There has always been a Close — the button turns into one on every open (a
+   label then, the burger's crossed bars since 2026-10-03). It was underneath
+   the sheet.
+
+   Both are children of the header and both computed to `z-index: 1`: the
+   sheet from its own rule, the bar from `.site-header > *`. A tie is broken by
+   document order, and the sheet is written after the bar, so the sheet painted
+   last — over a button sitting in the 65px band above its first link, where
+   nothing else was drawn and nothing looked wrong.
+
+   `.site-nav`'s own `z-index: 2` could not reach it. Its parent is the
+   `.container`, which is `position: relative` with a z-index of its own and so
+   a stacking context: inside that box 2 means "above the mega menu", and
+   outside it means nothing at all. Raising the BOX is what that 2 was trying
+   to say.
+
+   Only while the sheet is open, because that is the only time there is
+   anything for the bar to stand on. */
+.site-header--mobile-menu-open > .container {
+  z-index: 2;
+}
+
+/* The size of the four words, named so the count beside them can be placed by
+   it: the phone's size here, the hero's on a wide window (below). */
+.mobile-menu {
+  --menu-word-size: clamp(1.8rem, 6vw, 3.1rem);
+}
+
+/* The word and its count, as one group, so the phone's arrow can still stand at
+   the far end of the row. */
+.mobile-menu__name {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: calc(var(--menu-word-size) * 0.06);
+}
+
+/* The mask each word rises out of. Padded past the line box and pulled back by
+   the same amount, so the descenders of "Company" and the tops of the capitals
+   are inside it rather than cut by it. */
+.mobile-menu__word {
+  display: inline-block;
+  margin-block: -0.08em -0.14em;
+  padding-block: 0.08em 0.14em;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.mobile-menu__word-inner {
+  display: inline-block;
+}
+
+/* How many pages are behind the word, set small against its cap height in the
+   paragraph size. Muted, and the word's own colour when the word is in hand. */
+/* Its top on the word's cap line: a fifth of the word's size down from the top
+   of the line, measured by the word rather than by its own small type. */
+.mobile-menu__count {
+  margin-top: calc(var(--menu-word-size) * 0.2);
+  color: var(--ink-muted);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0;
+  line-height: 1;
+  vertical-align: baseline;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.mobile-menu__index-link[aria-expanded="true"] .mobile-menu__count,
+.mobile-menu__index-link:focus-visible .mobile-menu__count {
+  color: inherit;
+}
+
+@media (hover: hover) {
+  .mobile-menu__index-link:hover .mobile-menu__count {
+    color: inherit;
+  }
+}
+
+/* ── The big menu, on a wide window ──
+
+   The sheet above, grown into the whole screen. It is the phone's menu with
+   its two halves set side by side instead of taking turns: the four words down
+   the left at the hero's size, the list of the one you are on to the right of
+   them. `.mobile-menu--wide` is set by the header from the same query the
+   stylesheet's phone block uses, so the two cannot disagree about where the
+   line is — and a complement of that two-clause query cannot be written. */
+.mobile-menu--wide {
+  /* The hero's size, held to the height of the window as well as its width,
+     so four of them and the way in always fit between the bar and the foot. */
+  --menu-word-size: min(var(--text-hero), 11svh);
+
+  /* Drawn down from the bar like a blind, rather than nudged into place: at
+     this size a small slide reads as a jolt. */
+  clip-path: inset(0 0 100% 0);
+  transform: none;
+  transition:
+    clip-path var(--duration-slow) var(--ease-standard),
+    opacity 260ms var(--ease-standard),
+    visibility var(--duration-slow);
+}
+
+.mobile-menu--wide.mobile-menu--open {
+  clip-path: inset(0);
+}
+
+.mobile-menu--wide .mobile-menu__content {
+  min-height: 0;
+  padding-top: calc(var(--header-space) + clamp(1.5rem, 6vh, 4rem));
+  padding-bottom: clamp(1.5rem, 4vh, 2.5rem);
+}
+
+/* Twelve columns, like the page under it: the words take seven, the list the
+   last five. */
+.mobile-menu--wide .mobile-menu__viewport {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 2rem);
+  align-items: start;
+  overflow: visible;
+}
+
+.mobile-menu--wide .mobile-menu__index,
+.mobile-menu--wide .mobile-menu__detail {
+  position: static;
+  overflow: visible;
+}
+
+.mobile-menu--wide .mobile-menu__index {
+  grid-column: 1 / span 7;
+}
+
+/* Both on screen at once here, so the list is never hidden; it only changes. */
+.mobile-menu--wide .mobile-menu__detail {
+  grid-column: 8 / -1;
+  padding-top: clamp(0.5rem, 2vh, 1.25rem);
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* At the hero's size (`--menu-word-size`, above). */
+.mobile-menu--wide .mobile-menu__index-link {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  width: auto;
+  justify-content: flex-start;
+  gap: 0.2em;
+  margin-inline: -0.08em;
+  padding: 0 0.08em;
+  line-height: 1.04;
+}
+
+/* The redaction bar, at the size of the word: struck through in lilac from the
+   left under the pointer, held on the word whose list is open, wiped off to
+   the right when the pointer goes. */
+.mobile-menu--wide .mobile-menu__index-link::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0.1em 0 0.06em;
+  background: var(--tint-lilac);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.mobile-menu--wide .mobile-menu__index-link[aria-expanded="true"],
+.mobile-menu--wide .mobile-menu__index-link:focus-visible {
+  color: var(--ink-on-tint);
+}
+
+.mobile-menu--wide .mobile-menu__index-link[aria-expanded="true"]::before,
+.mobile-menu--wide .mobile-menu__index-link:focus-visible::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* The corner arrow, at the word's scale, and only on the word in hand. */
+.mobile-menu--wide .mobile-menu__index-link .mobile-menu__index-arrow {
+  --pixel-arrow-dot: 0.26rem;
+  --pixel-arrow-gap: 0.08rem;
+
+  color: currentcolor;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.mobile-menu--wide .mobile-menu__index-link[aria-expanded="true"] .mobile-menu__index-arrow,
+.mobile-menu--wide .mobile-menu__index-link:focus-visible .mobile-menu__index-arrow {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .mobile-menu--wide .mobile-menu__index-link:hover {
+    color: var(--ink-on-tint);
+  }
+
+  .mobile-menu--wide .mobile-menu__index-link:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .mobile-menu--wide .mobile-menu__index-link:hover .mobile-menu__index-arrow {
+    opacity: 1;
+  }
+}
+
+/* The way in under the words, as a lilac pill: the one filled shape on the
+   screen, so the action is never one more word in the list. */
+.mobile-menu--wide .mobile-menu__cta-row {
+  justify-content: flex-start;
+  margin-top: clamp(1.5rem, 4.5vh, 3rem);
+  padding-top: 0;
+  border-top: 0;
+}
+
+.mobile-menu--wide .mobile-menu__cta {
+  margin-block: 0;
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-full);
+  background: var(--tint-lilac);
+  color: var(--ink-on-tint);
+  font-size: var(--text-body);
+  font-weight: var(--weight-strong);
+}
+
+/* Services' two halves side by side, at the header size: the second step down
+   from the words, and still a list you read across rather than a column of
+   small print. */
+.mobile-menu--wide .mobile-menu__detail-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 2rem);
+}
+
+.mobile-menu--wide .mobile-menu__detail-group + .mobile-menu__detail-group {
+  margin-top: 0;
+}
+
+.mobile-menu--wide .mobile-menu__detail-heading {
+  margin-bottom: clamp(0.5rem, 1.2vh, 0.9rem);
+  padding-left: 0;
+}
+
+.mobile-menu--wide .mobile-menu__detail-link {
+  padding: clamp(0.3rem, 0.8vh, 0.5rem) 0;
+  font-size: var(--text-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: var(--leading-heading);
+}
+
+/* The square that marks the page you are on, level with the name's x-height.
+   It stands on the column's edge and the name steps aside for it (below). */
+.mobile-menu--wide .mobile-menu__detail-link::before {
+  top: calc(clamp(0.3rem, 0.8vh, 0.5rem) + 0.4em);
+}
+
+/* Nothing to go back to: the words never left. */
+.mobile-menu--wide .mobile-menu__back {
+  display: none;
+}
+
+/* The foot as one line under a hairline: where to find us on the left, the
+   marks and the switch on the right. */
+.mobile-menu--wide .mobile-menu__foot {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  padding-top: clamp(1rem, 2.5vh, 1.5rem);
+  border-top: 1px solid var(--line-soft);
+}
+
+.mobile-menu--wide .mobile-menu__marks {
+  grid-column: 2;
+  grid-row: 1;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.mobile-menu--wide .mobile-menu__contact {
+  display: flex;
+  flex-wrap: wrap;
+  grid-column: 1;
+  grid-row: 1;
+  gap: 0.3rem clamp(1.5rem, 3vw, 3rem);
+}
+
+/* Reading across the words: the one under the pointer keeps its strength and
+   the rest step back, so the screen is about one word at a time. Asked with
+   `:has()`, so the list dims only while a word is actually under the pointer —
+   not while it is crossing the gaps between them. */
+.mobile-menu--wide .mobile-menu__index-link {
+  transition:
+    color var(--duration-base) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .mobile-menu--wide
+    .mobile-menu__index-list:has(.mobile-menu__index-link:hover)
+    .mobile-menu__index-link:not(:hover) {
+    opacity: 0.28;
+  }
+}
+
+/* A name in the list answers the pointer by stepping aside for the square the
+   current page wears: the square comes up where the name stood, so the same
+   mark says "here" and "you are about to go here". */
+.mobile-menu--wide .mobile-menu__detail-link > span {
+  display: inline-block;
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.mobile-menu--wide .mobile-menu__detail-link::before {
+  left: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.mobile-menu--wide .mobile-menu__detail-link.is-current > span,
+.mobile-menu--wide .mobile-menu__detail-link:focus-visible > span {
+  transform: translateX(1.1rem);
+}
+
+.mobile-menu--wide .mobile-menu__detail-link:focus-visible::before {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .mobile-menu--wide .mobile-menu__detail-link:hover > span {
+    transform: translateX(1.1rem);
+  }
+
+  .mobile-menu--wide .mobile-menu__detail-link:hover::before {
+    opacity: 1;
+  }
+}
+
 
 .hero-content {
   position: relative;
@@ -3890,7 +4175,8 @@ video {
   .service-hero__cta:hover,
   .product__cta:hover,
   .industries-explore:hover,
-  .blog-more__all:hover {
+  .blog-more__all:hover,
+  .mobile-menu__cta:hover {
     color: var(--accent);
   }
 }
@@ -4091,6 +4377,276 @@ video {
   stroke-width: 2.5;
 }
 
+/* ----------------------------- Selected work ------------------------------ */
+
+/* ── Five pieces, scattered, under covers that come off ──
+
+   Owner, 2026-08-27, under Built across industries: five of the works from the
+   Clients page, not a generic design, and almost no text — a company name
+   somewhere.
+
+   **The pictures are the section.** The first build read "minimal text" as "no
+   pictures" and set the five names alone at the header size under bars; his
+   answer was the correct one — "only names, no images, nothing." A section about
+   work has to show the work, and the name is the label on it rather than the
+   content of it.
+
+   **Scattered, and that is the arrangement rather than a decoration of it.**
+   Five plates on ONE grid row of twelve columns, each in its own run of columns,
+   each dropped by its own amount, each at its own ratio — so no two share a top,
+   a foot, a width or a shape. It is the language the owner asked for on the
+   About page in his own words, "smaller, and not aligned, something creative",
+   applied to the only other place on this site that sets a group of pictures.
+   The two things it is deliberately not: a card grid, which is on this site's
+   rejected list, and five equal boxes in a row, which is the logo strip every
+   competitor has.
+
+   **The covers are the redaction bars.** They are the one motif this site owns:
+   each plate arrives under a solid tint and the covers come off one at a time as
+   the block is watched, so the section resolves from five colours into five
+   pictures. Nothing travels and nothing scales — the only thing that happens is
+   that the covers leave.
+
+   **The finished state is the state in this file.** Every cover below is
+   collapsed against its own right edge; `WorkReveal` puts them on and takes them
+   off again. So a reader whose JavaScript never arrives, or who has asked for no
+   motion, meets the five pictures. An effect that hides content in CSS is an
+   effect that can fail with the content still hidden. */
+.work-section {
+  background: var(--canvas);
+  padding-block: var(--section-space-lg);
+}
+
+/* **The rule over the label is the About page's, used over the same content.**
+   Owner asked for it there on 2026-08-26 — a black horizontal line on top of his
+   client list — and this is five of that list. `--ink` rather than a literal
+   black, so it turns over with the page; on the inner rather than the section,
+   so it runs gutter to gutter with the block under it rather than edge to edge
+   with the window. The homepage has no full-bleed rule anywhere. */
+.work-layout {
+  padding-top: clamp(1.25rem, 3vh, 2rem);
+  border-top: 1px solid var(--ink);
+}
+
+/* Reading size in the normal face, set exactly as `.about-clients__title` is and
+   for the reason recorded there: the display face at a heading size would put
+   this label in competition with the work it heads.
+
+   `letter-spacing: normal` is written out rather than left off. This site fits
+   the display face with `--tracking-display`, which is cut for type at 40px and
+   up; inherited down here it would just be tight. */
+.work-title {
+  margin: 0;
+  color: var(--ink-muted);
+  font-family: var(--type-body);
+  font-size: var(--text-copy);
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.2;
+}
+
+/* `container-type` so the drops below can be a fraction of the BLOCK. Without
+   it `cqw` reads whatever the nearest container is, or the viewport — and a
+   percentage would be worse: the containing block of a GRID ITEM is its own grid
+   area, so `14%` would mean 14% of one plate. That mistake cost the About
+   scatter a 252px overlap, and the note over `about-rooms__inner` records it.
+
+   Written WITHOUT the leading dot on purpose. `tests/about.test.mjs` finds that
+   section's stacking rule by taking the first `@media (max-width: 64rem)` after
+   the first mention of that section's own class in this file — so a comment up
+   here naming that selector points the search at THIS block's media query
+   instead, and the About test then fails on a stylesheet where nothing about
+   About has changed. It did. */
+.work-scatter {
+  display: grid;
+  container-type: inline-size;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  margin: clamp(2rem, 5vh, 3.5rem) 0 0;
+  padding: 0;
+  align-items: start;
+  gap: clamp(1rem, 1.35vw, 1.4rem);
+  list-style: none;
+}
+
+/* **All five on one row: the vertical placement is the margin, not the grid.**
+   Left to auto-placement, two items sharing a column would be pushed onto rows
+   of their own and the scatter would become a list.
+
+   **No two share a column either**, which is worth more than it looks: side by
+   side there is no vertical clearance to get wrong, so they cannot collide
+   whatever their drops or the section's entrance do to them. The About page's
+   scatter was rebuilt into adjacent runs for the same reason. */
+.work-piece {
+  grid-row: 1;
+  margin: 0;
+}
+
+/* The five runs, the five drops and the five shapes. Twelve columns spent 3-2-3-
+   2-2, and the drops are 0, 14, 4, 22 and 9 of the block's width — at a 1490
+   container that is tops at 0, 209, 60, 328 and 134 and feet at 459, 432, 318,
+   625 and 357. Ten numbers, no two the same, which is the whole of what "not
+   aligned" asks for.
+
+   The ratios alternate upright, square, wide so that the row is not five of one
+   shape at five sizes. The tints are the five the cards use and no more — two
+   extra colours were added to this site once and removed the same day. */
+.work-piece:nth-child(1) {
+  grid-column: 1 / span 3;
+  margin-top: 0;
+  --work-ratio: 3 / 4;
+  --work-tint: var(--tint-lilac);
+}
+
+.work-piece:nth-child(2) {
+  grid-column: 4 / span 2;
+  margin-top: 14cqw;
+  --work-ratio: 1 / 1;
+  --work-tint: var(--tint-butter);
+}
+
+.work-piece:nth-child(3) {
+  grid-column: 6 / span 3;
+  margin-top: 4cqw;
+  --work-ratio: 4 / 3;
+  --work-tint: var(--tint-mint);
+}
+
+.work-piece:nth-child(4) {
+  grid-column: 9 / span 2;
+  margin-top: 22cqw;
+  --work-ratio: 3 / 4;
+  --work-tint: var(--tint-sky);
+}
+
+.work-piece:nth-child(5) {
+  grid-column: 11 / span 2;
+  margin-top: 9cqw;
+  --work-ratio: 1 / 1;
+  --work-tint: var(--tint-clay);
+}
+
+/* **A block, and the piece's whole hit area.** Both the picture and the name
+   are inside it, so the accessible name of the link is the company and the
+   pointer target is the piece rather than the plate alone. `color: inherit` and
+   no underline because this is a picture with a caption, not a text link — what
+   answers the pointer is the plate, below. */
+.work-piece__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The name turns with the picture, exactly as the Clients card's does, and to
+   the same purple. `--accent-strong` rather than `--accent`: this is the card
+   language, not the arrow-link language that was unified on 2026-08-27 across
+   the four CTAs — those carry a mark that has to agree with them and this does
+   not. 6.32:1 on the light canvas. */
+@media (hover: hover) {
+  .work-piece__link:hover .work-piece__name {
+    color: var(--accent-strong);
+  }
+}
+
+/* **The tint is the plate's ground as well as its cover.** It is what stands in
+   the box while a remote frame is in flight and what is left there if it never
+   arrives — a plate whose picture fails should be a coloured panel, not a broken
+   one. The Clients card does the same, for the same reason.
+
+   `overflow: clip` rather than `hidden`: nothing here scrolls, and `hidden`
+   would make this a scroll container the page could be sent to. */
+.work-piece__plate {
+  position: relative;
+  overflow: clip;
+  aspect-ratio: var(--work-ratio);
+  background: var(--work-tint);
+}
+
+/* The frames are 16:9 and no plate is, so every one of them is cropped rather
+   than squashed. The intrinsic size on the `img` is what reserves the box before
+   the picture lands, which is why the scatter does not move as they arrive. */
+.work-piece__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The cover, collapsed against its own right edge — this is what a reader
+   without `WorkReveal` sees, which is nothing. */
+/* **Above the hover treatment as well as above the picture**, which is what the
+   `z-index` is for and it is not decoration. The plus and its wash are the
+   plate's two pseudo-elements: `::before` paints under every child of the plate
+   and `::after` over every one of them, so without this a pointer arriving while
+   a cover was still on would find the cross drawn on top of a flat tint and the
+   wash hidden underneath it — half a treatment, on a plate showing nothing. One
+   step up puts the cover over both. */
+.work-piece__cover {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: var(--work-tint);
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+}
+
+/* The name, and three facts under it — owner, 2026-09-30, from his own
+   portfolio's featured work: the company in the page's ink, then industry,
+   service and place in the quieter grey, one to a line. All four at paragraph
+   size in the normal face: this site has three sizes, and anything that is not
+   a heading is this one.
+
+   One leading for all four, 1.4 as his portfolio has it (the name was 1.2 while
+   it stood alone), so the block reads as four lines on one pitch rather than a
+   name with a list hung under it. */
+.work-piece__name {
+  margin: 0.85rem 0 0;
+  color: var(--ink);
+  font-size: var(--text-body);
+  line-height: 1.4;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+/* `--ink-grey`, the neutral grey, not the lavender `--ink-muted`: his is a plain
+   grey. #9a9a9a on the black page and #595959 on the white, 7.46:1 and 7.00:1.
+   They stay grey when the name turns purple on hover — the name is what the
+   pointer answers with. */
+.work-piece__industry,
+.work-piece__service,
+.work-piece__location {
+  margin: 0;
+  color: var(--ink-grey);
+  font-size: var(--text-body);
+  line-height: 1.4;
+}
+
+/* **Two up on a tablet, one up on a phone, and the scatter survives both.**
+
+   Written with `:nth-child(n)` rather than on `.work-piece` alone, and that is
+   not a flourish: the five rules above are `(0,2,0)` and a plain `.work-piece`
+   here would be `(0,1,0)`, so it would lose to them however far down the file it
+   sat. `:nth-child(n)` matches everything at the same weight, and later wins.
+
+   The drops go to a single alternating one. The block is a fifth of the width it
+   was and a 22cqw drop down there is half a screen of nothing. */
+@media (max-width: 64rem) {
+  .work-piece:nth-child(n) {
+    grid-row: auto;
+    grid-column: span 6;
+    margin-top: 0;
+  }
+
+  .work-piece:nth-child(even) {
+    margin-top: 10cqw;
+  }
+}
+
+@media (max-width: 30rem) {
+  .work-piece:nth-child(n) {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+}
+
 /* -------------------------------- Products -------------------------------- */
 
 /* ------------------------------- Case study ------------------------------- */
@@ -4287,82 +4843,48 @@ video {
 
 /* --------------------------------- Footer --------------------------------- */
 
-.site-footer {
-  position: relative;
-  /* Half the gap, the same as every section pays, so the space above the
-     footer matches the space between any two of them. */
-  padding-top: var(--section-space);
-  padding-bottom: clamp(1.25rem, 2.5vw, 2rem);
-  background: var(--canvas);
-}
-
-/* Traced from the reference: the accent colour, a corner barely softened —
-   6px on its 1084-wide panel — and everything set inside it.
-
-   The reference reads #7b64ab off the screenshot, which is what --accent
-   becomes when a Display P3 capture is read as sRGB. It is the same purple,
-   so the token stands rather than a second one being added beside it. */
-/* The panel asks about itself, not about the window. It caps at 1280 and is
-   still 1280 at a 2560 viewport, so a viewport query judges it wrong at both
-   ends — which is what put the legal line through the bars and cut the contact
-   block off the bottom. `container-type: inline-size` lets the rules below
-   read the panel's own width. */
+/* ── The panel, and the sign-off it ends on ──
+ *
+ * Fourth arrangement, 2026-08-27, and the first that is not a directory with the
+ * furniture moved around. See the note on the component for what the three
+ * before it had in common and why none of them worked.
+ *
+ * The shape: one invitation, one quiet band of everything functional, the legal
+ * line, and then the name at the size of the panel, cut off by its bottom edge.
+ */
 .site-footer__panel {
+  --footer-pad: clamp(2rem, 4vw, 3.25rem);
+
   container-type: inline-size;
   container-name: footer-panel;
-  position: relative;
+  display: grid;
+  gap: clamp(2.5rem, 6cqi, 4.5rem);
   overflow: hidden;
-  padding: clamp(2rem, 4.5cqi, 3.25rem);
-  /* The last row is held to the left of the bars, so the panel does not have
-     to reserve a full band for the field — but the link columns above have to
-     clear it by enough that the bars read as the field they are in the
-     reference rather than as one more row of lines under the text. A
-     percentage, so it scales with the field, which is sized off the panel's
-     width too. The 62px this used to carry on top went with the mark: the way
-     back up has that row to itself now and clears the field without it. */
-  padding-bottom: clamp(3rem, 22.5%, 16rem);
+  /* Padded on all four sides again. It was open at the foot for one pass, when
+     the name was set at the size of the panel and ran off the bottom edge —
+     with that gone the legal line was left standing on the edge itself. */
+  padding: var(--footer-pad);
   border-radius: var(--shape-panel);
   background: var(--accent);
   color: var(--accent-contrast);
 }
 
-/* The right 58.4% of the panel, cut off by its edge, at the field's own
-   636 x 198.
 
-   The height comes from that aspect and not from a share of the panel's
-   height. It was tried the other way — 34.6%, the share the reference's field
-   takes of its panel — and because this panel is 1.75 wide to tall against the
-   reference's 1.90, that stretched every bar 9% and took them from 1:19.8, the
-   reference's own slenderness, to 1:21.6. The footprint was three points
-   closer and the bars were visibly wrong, which is the wrong trade: the bars
-   are the thing being looked at. */
-.site-footer__bars {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 58.4%;
-  height: auto;
-  aspect-ratio: 636 / 198;
-  fill: var(--accent-contrast);
-  pointer-events: none;
+.site-footer__slab,
+.site-footer__panel {
+  --accent: #08080a;
+  --accent-contrast: #ffffff;
 }
 
-.site-footer__panel > *:not(.site-footer__bars) {
-  position: relative;
-  z-index: 1;
-}
 
 /* The ring alone: the leftmost square of the wordmark, 163.92 of its 694.25
    units, cropped to rather than shipped as a second asset. */
-/* Opens the words column, above the closing line. */
 .site-footer__mark {
   display: block;
   overflow: hidden;
   flex: 0 0 auto;
-  margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
-  /* Sized against the viewport, not the column: the 5% it used to take was of
-     the panel when it sat there, and is of this much narrower column now. */
   width: clamp(2.75rem, 4.6vw, 4.25rem);
+  margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
   aspect-ratio: 163.92 / 163.54;
 }
 
@@ -4388,40 +4910,93 @@ video {
   filter: brightness(0) invert(1);
 }
 
-/* The words on the left, the links on the right — the two places the
-   reference leaves room. The left side takes the larger share so the closing
-   line holds its two lines rather than breaking to three. */
-.site-footer__body-grid {
-  display: grid;
-  /* The menu starts where the bar field starts. The field takes the right
-     58.4% of the panel, so the words take the 41.6% to its left, less the gap
-     between the two columns. */
-  /* 41.6% here is of this row, which is the panel less its padding, while the
-     field's 41.6% is of the panel itself — hence the padding term. Without it
-     the menu starts 9px right of the first bar. */
-  grid-template-columns:
-    calc(
-      41.6% - 0.168 * clamp(2rem, 4.5%, 3.25rem) - clamp(2rem, 4vw, 3.5rem)
-    )
-    minmax(0, 1fr);
-  gap: clamp(2rem, 4vw, 3.5rem);
-  /* No head of its own: the closing line and the link columns start at the
-     top of the panel, on the panel's own padding. */
-  padding-bottom: clamp(2rem, 4vw, 3rem);
+/* The mark over the closing line, with the way back up opposite the pair. */
+.site-footer__lead-words {
+  display: block;
 }
 
-.site-footer__words {
+.site-footer__lead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+
+/* Everything functional in one band: three menus and the ways to reach us, all
+   on one row. `auto` tracks rather than equal ones — the lists are the width of
+   their own longest line and the row is packed left, so it reads as one block
+   of small print instead of four columns holding a page apart. */
+.site-footer__columns {
+  display: flex;
+  flex-wrap: wrap;
+  /* The menus left, the address right. Packed left they left the whole right
+     half of the panel empty, which reads as a column that failed to load rather
+     than as space. */
+  justify-content: space-between;
+  gap: clamp(2rem, 5cqi, 3rem) clamp(2.5rem, 6cqi, 5rem);
+}
+
+
+.site-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(2rem, 5cqi, 3rem) clamp(2.5rem, 6cqi, 5rem);
+}
+
+
+/* The three facts and the marks, stacked under one heading rather than each
+   carrying its own — they are one address between them. */
+.site-footer__details,
+.site-footer__detail {
   display: grid;
   align-content: start;
-  justify-items: start;
-  gap: 1rem;
-  max-width: 32rem;
+  gap: 0.35rem;
+  margin: 0;
 }
 
-/* The h1's size, set exactly as the h1 is — which is why it has a row of its
-   own: at 71px this line runs to about 700px and cannot sit beside five
-   columns of links. Back on the display token, so the fifth type size the
-   footer had introduced is gone again. */
+
+
+
+
+
+/* The legal line, last of the words. */
+.site-footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1.5rem;
+  font-size: var(--text-small);
+}
+
+
+/* ── Narrow ──
+ *
+ * The band of columns wraps on its own — it is a flex row of `auto` lists and
+ * needs nothing said. What does need saying is the sign-off: below this the
+ * name would set at 20.5% of a 500px panel, which is 102px, and `Mardal` at
+ * 102px is 300px wide against a panel that is 500. It stops filling the width
+ * and starts floating in the middle of it, so the crop comes off and it becomes
+ * a line of type like any other. */
+@container footer-panel (max-width: 34rem) {
+  }
+
+
+/* --------------------------------- Footer --------------------------------- */
+
+.site-footer {
+  position: relative;
+  /* Half the gap, the same as every section pays, so the space above the
+     footer matches the space between any two of them. */
+  padding-top: var(--section-space);
+  padding-bottom: clamp(1.25rem, 2.5vw, 2rem);
+  background: var(--canvas);
+}
+
+
+
+/* The h1's size, set exactly as the h1 is: this is the closing line of the page
+   and it closes it at the size the page opened. */
 .site-footer__title {
   max-width: none;
   margin: 0;
@@ -4432,92 +5007,31 @@ video {
   line-height: var(--leading-heading-xl);
 }
 
-/* Set as two lines, so the break falls in the same place at every width. */
+
+
+/* Set as two lines, so the break falls in the same place at every width. Not
+   optional: without it the spans run together and the block reads
+   `Let's buildsmarter`, which is what happened for one pass here — the rules
+   were deleted with the layout rules that surrounded them. */
 .site-footer__title-line {
   display: block;
 }
 
-/* Running text, so it takes the size every other paragraph does. It used to
-   step down to --text-small to sit level with the link columns beside it, but
-   the copy has since come down to 16 and the columns are still 18 — matching
-   the links now would leave this the smallest paragraph on the site, reading
-   two steps below the page it closes. */
-.site-footer__body {
-  max-width: 34ch;
-  margin: 0;
-  font-size: var(--text-copy);
-  line-height: var(--leading-body);
-}
 
-/* The one thing to do down here, set 40px clear of the line above it. */
-.site-footer__email {
-  display: inline-flex;
-  gap: 0.45em;
-  align-items: center;
-  /* The 40px it was moved down by, plus the head the grid above it gave up —
-     the same measure, so the address holds its place at every width while the
-     lines above it moved up. */
-  margin-top: calc(clamp(1rem, 2vw, 1.75rem) + 40px + clamp(2rem, 4vw, 3rem));
-  font-size: var(--text-heading);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1;
-  transition:
-    background-color var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard),
-    opacity var(--duration-fast) var(--ease-standard);
-}
-
-/* Packed to the right edge, on one pitch.
-
-   Two things were wrong here and they are separate. `space-between` put 229px
-   between each pair of columns at 1440 — three menus strung out with more air
-   between them than inside them, reading as three separate things rather than
-   as one menu. That is what `justify-content: end` fixes, and the spare width
-   now falls to the left of the set, in the band the panel is already empty in.
-
-   The second is why the headings looked crooked even once the set was packed.
-   Columns sized to `max-content` are as wide as their own longest LINK, and
-   those run 49 to 137px, so the gap the eye actually reads — between one
-   heading and the next — measured 110px then 43px while the boxes between
-   them were a uniform 43. The spacing has to be set by the words at the top of
-   each column, not by whatever happens to be the longest link underneath.
-
-   One column width for all three does it: the headings then arrive on a fixed
-   pitch, and since SERVICES, PRODUCTS and COMPANY are 70, 77 and 70px wide the
-   gaps between the words come out within 7px of each other. 9rem is the
-   longest link — it was "Web Platforms & Apps" at 137 when this was measured,
-   and the longest today is shorter — plus a little; `max-content` as the
-   ceiling means a longer label added later widens its own column rather than
-   wrapping, at the cost of the even pitch, which is the right way round. That
-   ceiling is why the services list could be rewritten on 2026-08-24 without
-   this number being re-measured. */
-/* The last column is sized to its own content, not to the shared width. An
-   equal track there is 144px holding a 70px word, so the set stopped 74px short
-   of the panel's edge and the menu looked pushed in from the right. Only the
-   columns with something after them need the shared width — the pitch between
-   headings is set by the track a heading sits in and the gap after it, so the
-   last one can shrink to its words without disturbing it. Three tracks named
-   because the menu has three groups; a fourth would fall to
-   `grid-auto-columns` and keep the shared width. */
-.site-footer__nav {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(9rem, max-content);
-  grid-template-columns: repeat(2, minmax(9rem, max-content)) max-content;
-  justify-content: end;
-  gap: clamp(2rem, 3.2cqi, 2.75rem);
-  align-content: start;
-}
 
 /* A step under the links, which are themselves a step under the paragraph:
    labels, then what they label. */
 .site-footer__group-title {
   margin: 0 0 1rem;
-  color: var(--accent-contrast);
+  /* Muted ink, not `--accent-contrast`. These moved off the black block on
+     2026-08-27 and white on white draws nothing at all — the loudest kind of
+     silent failure, since the links under them would still be there. */
+  color: var(--ink-muted);
   font-size: var(--text-small);
 }
+
+
+
 
 .site-footer__links {
   display: grid;
@@ -4526,12 +5040,18 @@ video {
   list-style: none;
 }
 
+
+
+
 .site-footer__link {
   position: relative;
   font-size: var(--text-body);
   letter-spacing: -0.02em;
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
+
+
+
 
 /* The rule that wipes in under a footer link.
 
@@ -4556,6 +5076,9 @@ video {
   transform-origin: right;
 }
 
+
+
+
 /* Slower, and eased at both ends rather than one.
 
    --ease-standard is cubic-bezier(0.22, 1, 0.36, 1): it leaves at full speed
@@ -4569,83 +5092,48 @@ video {
   }
 }
 
-/* Under the rule: the mark at one end, the way back up at the other. This row
-   runs the full width and sits above the bar field, which is why the way back
-   up lives here rather than in the row below. */
-.site-footer__meta {
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem clamp(1.5rem, 3vw, 2.5rem);
-  align-items: center;
-  justify-content: space-between;
-  padding-top: clamp(1.25rem, 2vw, 1.75rem);
-  font-size: var(--text-body);
-}
 
-/* The rule keeps the length it had when the row itself was that width — it
-   runs to the bar field and stops, rather than crossing the panel. Drawn
-   rather than bordered because the row above it is now full width. */
-.site-footer__meta::before {
-  content: "";
+
+/* **The names are not drawn here, only spoken.** An email address, a phone
+   number and a street are each the only thing they could be, and EMAIL / PHONE
+   / ADDRESS over them was three headings for a row that reads itself. The `dt`
+   stays in the markup and stays in the accessibility tree — a screen reader has
+   none of the shape a sighted reader is using — and it comes back on a phone,
+   where the values stack and the shape is gone. */
+.site-footer__detail-full {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: calc(41.6% - clamp(2rem, 4.5%, 3.25rem));
-  border-top: 1px solid var(--panel-line);
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
-/* How to reach Mardal, in the same label-over-value form the products use.
 
-   It starts on the line the bars start on. The field is 58.4% of the panel
-   wide at 636:198, so its height is 18.18% of the panel's width — and a
-   percentage margin resolves against width, which is what lets this be said in
-   CSS at all. bottom:0 with that margin puts the block's foot on the field's
-   top edge; translating it down by its own height puts its head there
-   instead.
 
-   Out of the flow, so it costs the panel no height.
-
-   Selected through the panel so it outranks the rule that gives every other
-   child `position: relative`. */
-.site-footer__panel > .site-footer__details {
-  position: absolute;
-  right: calc(58.4% + clamp(1rem, 2vw, 2rem));
-  bottom: 0;
-  left: clamp(2rem, 4.5%, 3.25rem);
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(1.25rem, 2.5cqi, 1.75rem) clamp(1.5rem, 3cqi, 2.5rem);
-  margin: 0 0 18.18%;
-  transform: translateY(100%);
-}
-
-.site-footer__detail {
-  display: grid;
-  /* Held to the top of its cell.
-   *
-   * Left to itself a grid stretches its auto rows to fill a box taller than
-   * they are, and these boxes are as tall as the tallest thing in their row.
-   * Beside Follow, which carries two names, Address was stretched and the
-   * space went into the label — one word 30px tall, with its value sitting a
-   * line and a half below it while Phone's sat right under the label. */
-  align-content: start;
-  gap: 0.2rem;
-}
 
 .site-footer__detail-label {
-  color: var(--accent-contrast);
+  color: var(--ink-muted);
   font-size: var(--text-small);
   letter-spacing: var(--tracking-wide);
   line-height: 1.3;
   text-transform: uppercase;
 }
 
+
+
+
 .site-footer__detail-value {
   margin: 0;
   font-size: var(--text-body);
   line-height: 1.35;
 }
+
+
+
 
 /* Three marks in a row. No rule between them any more — a drawn mark is its
    own unit and does not need dividing from the next one the way two words
@@ -4656,6 +5144,9 @@ video {
   align-items: center;
   gap: clamp(0.75rem, 1.5vw, 1.15rem);
 }
+
+
+
 
 /* Sized off the text beside them rather than set in pixels, so the row keeps
    its proportion to the details it sits among at every width — and sized to
@@ -4672,49 +5163,19 @@ video {
   stroke-width: 1.6;
 }
 
+
+
+
 .social-icon__dot {
   fill: currentColor;
   stroke: none;
 }
 
-/* Each row is named twice and shows one of them: the word on the wide panel,
-   the abbreviation on a phone, where a 90px column of EMAIL / PHONE / ADDRESS
-   is more room than the address can spare. */
-.site-footer__detail-short {
-  display: none;
-}
 
-/* Pinned to the foot of the panel, and stopping where the bar field starts —
-   the field takes the right 58.4%, so this takes what is left of the bottom
-   edge. */
-/* Selected through the panel so it outranks the rule that gives every other
-   child `position: relative` to sit above the bars — that rule is two classes
-   deep and would otherwise win. */
-.site-footer__panel > .site-footer__legal {
-  position: absolute;
-  right: 58.4%;
-  bottom: clamp(1.5rem, 3%, 2.5rem);
-  left: clamp(2rem, 4.5%, 3.25rem);
-  display: flex;
-  /* It used to be told never to wrap, on the grounds that the small size kept
-     it to one line. At the paragraph size it no longer does: the four items
-     measure 497px against the 497px this box is given at a 1400 window, and
-     every window narrower than that takes the box away faster than the fluid
-     type gives it back — 487 into 447 at 1280. Nowrap there does not keep the
-     line, it just runs the small print out over the bar field.
-     So it is allowed to fold instead, and it folds UPWARD: the box is pinned by
-     its bottom edge with no top, and there are 52px of clear panel between the
-     details block and this row for a second line to rise into. `white-space`
-     stays, so the folding happens between the items and never inside "© 2026
-     Mardal". */
-  flex-wrap: wrap;
-  gap: clamp(0.65rem, 1.3vw, 1.25rem);
-  align-items: baseline;
-  /* The links in this row carry the menu's link class and its size, so the
-     year is set to match rather than sitting a size under them. */
-  font-size: var(--text-body);
-  white-space: nowrap;
-}
+
+
+
+
 
 /* A rule between one item and the next. Drawn rather than typed as a pipe:
    the same mark on screen, and nothing for a screen reader to read out
@@ -4729,6 +5190,9 @@ video {
   padding-left: clamp(0.65rem, 1.3cqi, 1.25rem);
 }
 
+
+
+
 .site-footer__legal > * + *::before {
   content: "";
   position: absolute;
@@ -4739,6 +5203,9 @@ video {
   background: var(--panel-line);
   transform: translateY(-50%);
 }
+
+
+
 
 /* Narrow enough that the line no longer fits between the panel's edge and the
    first bar, so it is allowed to break rather than run under them. */
@@ -4770,11 +5237,8 @@ video {
   margin-block: -0.6875rem;
 }
 
-/* Under the run, on the list's own left edge — it sits inside the block that
-   carries the list's indent, so it needs nothing but the space above it. */
-.industries-intro > .industries-explore {
-  margin-top: clamp(2.5rem, 6vh, 5rem);
-}
+
+
 
 /* The air between one link and the next, and the only place it is set — the
    rule that lays these lists out states no gap of its own.
@@ -4793,256 +5257,16 @@ video {
   gap: 0.75rem;
 }
 
+
+
+
 .site-footer__legal,
 .site-footer__social {
   align-items: center;
 }
 
-@container footer-panel (max-width: 58rem) {
-  .site-footer__body-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: clamp(2rem, 6cqi, 3rem);
-  }
 
-  /* All the menus across, the way they are on the wide page.
-   *
-   * This used to ask for as many 8.5rem columns as would fit, which is a
-   * count that can be lost to a rounding error — and was: a phone gives the
-   * menus 294px and two 8.5rem columns want 296, so they all dropped into a
-   * single column and the footer became twenty stacked links, 706px to scroll
-   * past. Counted rather than fitted now.
-   *
-   * The count is 3. It said 4 from when the menu had four groups, so the row
-   * has been laying three columns into four and leaving the last quarter
-   * empty ever since Case Studies came out of the footer. */
-  .site-footer__nav {
-    grid-auto-flow: row;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    justify-content: start;
-    gap: clamp(1.5rem, 4cqi, 2.25rem);
-  }
 
-  /* The row stops reserving height for a button that is no longer drawn in it.
-   *
-   * The way back up stands beside the last menu now, a good 90px above this
-   * row, but it is still IN the row — that is deliberate, so that moving it
-   * cannot disturb anything else — and an in-flow box holds its space whatever
-   * it is drawn over. So the row was keeping 2.25rem of nothing under the rule,
-   * and the contact block sat that much further down than it reads.
-   *
-   * Exactly the disc's own height, so the two are the same number said twice
-   * and neither can drift. Measured at a 340px panel: the rule-to-EMAIL gap
-   * goes 91 → 55, against 48 from the last menu link down to the rule, so the
-   * rule now sits about evenly between what it separates.
-   *
-   * **Not on the wide panel.** Up there this row's height is what holds the bar
-   * field off the panel's foot — shorten it and the field rises with it. */
-  .site-footer__meta {
-    margin-bottom: -2.25rem;
-  }
-
-  .site-footer__panel > .site-footer__details {
-    position: static;
-    width: 100%;
-    margin: clamp(1.75rem, 4cqi, 2.5rem) 0 0;
-    transform: none;
-  }
-
-  .site-footer__panel > .site-footer__legal {
-    position: static;
-    width: 100%;
-    margin-top: clamp(1.25rem, 3cqi, 1.75rem);
-    flex-wrap: wrap;
-    white-space: normal;
-  }
-
-  /* A shallow band across the foot rather than a corner of it, so it reads as
-     a rule under the content instead of a fence beside it. */
-  .site-footer__panel > .site-footer__bars {
-    right: 0;
-    left: 0;
-    width: 100%;
-    height: clamp(2.5rem, 9cqi, 4.5rem);
-    aspect-ratio: auto;
-  }
-
-  /* The rule above the way back up runs the width it is given.
-   *
-   * It is drawn to the 41.6% the bar field used to leave it, which on a phone
-   * is 90px — a stub against the left edge rather than a rule under a row.
-   * The field is a band across the foot down here and leaves the whole
-   * width. */
-  .site-footer__meta::before {
-    width: 100%;
-  }
-
-  /* No dividers once the line is allowed to break.
-   *
-   * They are drawn on the left of every item but the first, which is right
-   * for one line and wrong for two: the item that starts the second line
-   * keeps its divider and it hangs off the left margin with nothing before
-   * it. Both of these rows wrap at this width — the legal line onto two, the
-   * two social names onto two — so the space between items carries the
-   * separation instead. */
-  .site-footer__legal > * + *,
-  .site-footer__social > * + * {
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .site-footer__legal > * + *::before {
-    content: none;
-  }
-
-  /* On the same two columns as the contact block above it.
-   *
-   * Wrapped as a row of four, each item started wherever the one before it
-   * ended: the second column landed at 168 on the first line and 174 on the
-   * second, and the contact block above was on 48 and 207. Three different
-   * left edges inside one block, none of them meant — the foot of the panel
-   * read as something that had come apart rather than as a layout.
-   *
-   * A grid on the contact block's own columns, so all of it lines up: the
-   * year over Terms of Service, Privacy Policy over Cookies, and both of them
-   * under Phone and Follow. Set on the same selector the flex gap is set on,
-   * which is two classes deep — a container query adds no weight of its own
-   * to win with. */
-  .site-footer__panel > .site-footer__legal {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    justify-items: start;
-    /* The column gap is the contact block's own, to the pixel. A gap of its
-       own put the second column on 206 against that block's 207, which is
-       worse than not lining up at all — near enough to look like a mistake. */
-    gap: 1.25rem 1.5rem;
-  }
-}
-
-/* Two menus to a row.
- *
- * Four across stops being four menus and starts being four narrow gutters:
- * below this the columns are under 118px, which is where the longest link
- * there was — System Integration, at 116 — started breaking in half. That
- * service was deleted on 2026-08-24 and nothing in the footer is that wide any
- * more, so 118 is now a ceiling with room under it rather than a fit. Two to a
- * row gives each of them 135 on a 390 screen and 100 on a 320, and halves the
- * footer: 706px of stacked links became 391. */
-@container footer-panel (max-width: 34rem) {
-  /* Two menus to a row, the second of them against the right edge.
-   *
-   * Two equal halves put it a third of the way across, which is neither one
-   * side nor the other. The second track is sized to its own widest line
-   * instead and the first takes everything left over, so Solutions and
-   * Company close on the edge the panel closes on — and share a left edge
-   * with each other, which they would not if each were pushed right on its
-   * own: Company is the shorter word and would have sat further over than
-   * Solutions. */
-  .site-footer__nav {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  /* The details, unlabelled.
-   *
-   * EMAIL, PHONE, ADDRESS and FOLLOW in tracked caps beside their values is a
-   * form, not a footer. It cost three things at once. The labels took a
-   * column 90px wide out of the 224 a 320 screen has, which is why the
-   * address had nowhere to go and broke. They carried the same weight as the
-   * information beside them, because white on this purple is 4.77:1 and there
-   * is no room to set them back — anything dimmer fails AA. And four labelled
-   * rows and two legal ones made six evenly spaced lines with nothing to
-   * separate them, so there was nothing for the eye to land on.
-   *
-   * An email reads as an email and a phone number reads as a phone number.
-   * Taking the labels out gives the address the whole width, lets the values
-   * come up to reading size, and leaves three groups — how to reach us, where
-   * to follow us, the small print — with real space between them instead of
-   * six rows of the same thing. */
-  .site-footer__panel > .site-footer__details {
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 0.25rem 0.6rem;
-  }
-
-  /* One column for the abbreviations, sized to the longest of them, and the
-     values all starting after it. Subgrid is what makes that one column
-     rather than three: each row opts into the list's own tracks instead of
-     measuring its own label, so EMAIL: TEL: and STR: do not each set their
-     own margin. */
-  .site-footer__detail {
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
-    align-items: baseline;
-    column-gap: 0.6rem;
-    row-gap: 0;
-  }
-
-  /* The abbreviation shows and the word goes — to the eye. A screen reader
-     still hears "Address" before the street, and hears it once: the visible
-     one is marked hidden from it. */
-  .site-footer__detail-short {
-    display: inline;
-  }
-
-  .site-footer__detail-full {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    border: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
-  /* At the size and weight of the line it names rather than the small tracked
-     caps of the wide panel: these sit in the row, not over it. The caps and
-     the colon are the whole of the distinction. */
-  .site-footer__detail-label {
-    font-size: var(--text-body);
-    letter-spacing: normal;
-    line-height: 1.5;
-  }
-
-  .site-footer__detail-value {
-    font-size: var(--text-body);
-    line-height: 1.5;
-  }
-
-  /* The marks are their own group, so they get the space that says so rather
-     than sitting a row's distance under the address. No word in front of
-     them: they carry their own names, and the row reads as marks rather than
-     as a labelled field. */
-  .site-footer__detail:has(.site-footer__social) {
-    /* Out of the two columns the rows above it keep: this row has no
-       abbreviation, so subgridded it would hold an empty label column and
-       start the marks under the values. Across the whole width instead, so
-       they begin on the margin the bold words begin on. */
-    display: block;
-    margin-top: 1.4rem;
-  }
-
-  /* The small print, all of it on one line: set away from the block above it
-     and a size down from it, the last thing on the panel and the least of it.
-   *
-   * The four of them come to 219px and a 390 screen gives the row 294, so
-   * they fit with room over. A 320 screen gives 224 and they cannot, so the
-   * year drops to a second line there — a wrap it finds itself rather than
-   * one held open for it at every width. */
-  .site-footer__panel > .site-footer__legal {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.7rem 1.25rem;
-    margin-top: 2rem;
-    font-size: var(--text-small);
-  }
-
-  /* Last, after the three links. It is the only one of the four that is not a
-     link, and in the markup it comes first because that is the order the wide
-     footer sets. */
-  .site-footer__copy {
-    order: 1;
-  }
-}
 
 /* The only thing in its row now that the mark has moved up, so it is pushed
    to the right rather than left to space-between, which has nothing to space
@@ -5072,6 +5296,9 @@ video {
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
+
+
+
 .site-footer__top-link::after {
   position: absolute;
   inset: -0.125rem;
@@ -5079,35 +5306,26 @@ video {
   content: "";
 }
 
-/* Everything on the panel is one colour, so a hover cannot recolour: there is
-   no second colour up here that would still read. The column and legal links
-   draw a rule instead. The address keeps the dip — it is set at heading size
-   with an icon beside it, and a rule under it would read as a border on the
-   pair rather than as an underline. The way back up fills, being a target
-   rather than a word. */
-@media (hover: hover) {
-  .site-footer__email:hover {
-    opacity: 0.72;
-  }
 
-  /* The one place the origin flips: entering, it grows from the left. */
+
+@media (hover: hover) {
   .site-footer__link:hover::after {
     transform: scaleX(1);
     transform-origin: left;
   }
 
-  /* Fills with the panel's own ink and hands the mark back the accent, so the
-     disc inverts against the panel rather than being told a colour. It was
-     written as #fff either side, which is what made it a white disc after the
-     content went black. */
+  /* The way back up fills rather than changes colour: there is no second colour
+     up here that would still read. */
   .site-footer__top-link:hover {
     border-color: var(--accent-contrast);
     background: var(--accent-contrast);
     color: var(--accent);
     opacity: 1;
   }
-
 }
+
+
+
 
 /* The way back up is on every width and every pointer, phones included —
  * owner's call, 2026-08-12, reversing what was here.
@@ -5135,285 +5353,12 @@ video {
     inset: -0.25rem;
   }
 }
-
-/* On a stacked panel it stands ABOVE the rule, beside the last menu, in the
- * column of nothing the menus leave to the right of Company. Owner placed it
- * there. Under the rule it was sitting in the gap between the menus and the
- * contact block, which is the one part of that panel meant to be empty.
- *
- * **Only the drawn position moves.** It stays relative and it stays in the row,
- * so the row's height, the rule it draws and every gap under it are exactly
- * what they were — the spacing on this panel is not this button's business.
- * Absolute was tried and reverted for that reason: taking the disc out of flow
- * emptied the row and pulled the contact block up 36px with it.
- *
- * The number is the sum of what it has to clear, not a nudge: the row's own
- * padding-top (1.25rem), plus the disc's own 2.25rem, plus 2.4375rem of air
- * above the rule. Measured at 32px of clearance on a 340px panel, which is the
- * second of two settings — 44 was a touch high against Careers.
- *
- * **After the base rule, and that is load-bearing.** Both are one class and a
- * container query brings no weight of its own, so the only thing deciding
- * between them is which comes last. Written above it — where the rest of the
- * narrow-panel rules live — this one silently lost, which is exactly the trap
- * the note on the old `display: none` block was left here to warn about. */
-@container footer-panel (max-width: 58rem) {
-  .site-footer__top-link {
-    bottom: 5.9375rem;
-  }
-}
-
-
-/* The menu button belongs to phones and tablets, and to any window too narrow
-   to hold the bar — not to a width alone.
-
-   `hover: none` asks the device what kind of pointer it has rather than how
-   wide it is, which is the only way to tell an iPad in landscape at 1194px
-   from a laptop at 1194px. The width clause still catches a narrow window on a
-   machine with a mouse. Between them: every phone, every tablet in either
-   orientation, and no desktop that has room for the bar. */
 @media (max-width: 64rem), (hover: none) {
   .site-nav {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.65rem;
     /* Left off, so the wordmark keeps the page column. See the base rule. */
     padding: 0.65rem 0.65rem 0.65rem 0;
-  }
-
-  .nav-list {
-    display: none;
-  }
-
-  .mobile-menu-toggle {
-    display: inline-flex;
-  }
-
-  .mega-menu {
-    display: none;
-  }
-
-  /* The sheet is the page, full-bleed — so it takes the page's own ground and
-     ink rather than the near-black and near-white it used to name here. Those
-     literals were written when the page underneath was white and the sheet was
-     the one dark thing on the site; on a light page they would have left the
-     whole phone navigation as a black slab over a white site, which is the
-     failure this whole pass exists to avoid. */
-  .mobile-menu {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    display: block;
-    overflow: hidden;
-    background: var(--canvas);
-    color: var(--ink);
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-0.75rem);
-    transition:
-      opacity 260ms var(--ease-standard),
-      transform 420ms var(--ease-standard),
-      visibility 420ms;
-    visibility: hidden;
-  }
-
-  .mobile-menu--open {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-    visibility: visible;
-  }
-
-  .mobile-menu__content {
-    display: grid;
-    height: 100dvh;
-    min-height: 34rem;
-    grid-template-rows: minmax(0, 1fr) auto;
-    padding-top: clamp(6.75rem, 15vh, 8.75rem);
-    padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
-  }
-
-  .mobile-menu__viewport {
-    position: relative;
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .mobile-menu__index,
-  .mobile-menu__detail {
-    position: absolute;
-    inset: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: none;
-    will-change: opacity, transform;
-  }
-
-  .mobile-menu__index::-webkit-scrollbar,
-  .mobile-menu__detail::-webkit-scrollbar {
-    display: none;
-  }
-
-  .mobile-menu__index-list,
-  .mobile-menu__detail-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .mobile-menu__index-list {
-    display: grid;
-    gap: clamp(0.2rem, 1vh, 0.65rem);
-  }
-
-  .mobile-menu__index-link {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.15rem 0;
-    border: 0;
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-    font: inherit;
-    font-family: var(--type-display);
-    font-size: clamp(2.35rem, 7.2vw, 4rem);
-    font-weight: var(--weight-body);
-    letter-spacing: var(--tracking-tight);
-    line-height: 1.08;
-    text-align: left;
-    transition: color var(--duration-base) var(--ease-standard);
-  }
-
-  .mobile-menu__index-arrow {
-    --pixel-arrow-gap: 2px;
-
-    color: var(--ink);
-  }
-
-  .mobile-menu__index-link:hover,
-  .mobile-menu__index-link:focus-visible,
-  .mobile-menu__index-link.is-current {
-    color: var(--accent-soft);
-  }
-
-  .mobile-menu__index-link:hover .mobile-menu__index-arrow,
-  .mobile-menu__index-link:focus-visible .mobile-menu__index-arrow {
-    color: var(--accent);
-  }
-
-  .mobile-menu__detail {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
-  }
-
-  .mobile-menu__back {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.55rem;
-    margin-top: clamp(1rem, 2.5vh, 1.5rem);
-    padding: 0.25rem 0;
-    border: 0;
-    background: transparent;
-    color: var(--accent-soft);
-    cursor: pointer;
-    font: inherit;
-    font-size: clamp(1rem, 2vw, 1.2rem);
-    letter-spacing: -0.025em;
-  }
-
-  .mobile-menu__detail-list {
-    display: grid;
-    gap: 0;
-    padding-bottom: 0;
-  }
-
-  /* Mixed from the ink rather than named as a near-white at 28%, so the rule
-     keeps exactly the weight it was drawn at while following the page over. */
-  .mobile-menu__detail-list li + li {
-    border-top: 0.5px solid color-mix(in srgb, var(--ink) 28%, transparent);
-  }
-
-  .mobile-menu__detail-link {
-    position: relative;
-    display: block;
-    width: 100%;
-    padding: clamp(0.55rem, 1.25vh, 0.75rem) 0 clamp(0.55rem, 1.25vh, 0.75rem)
-      1.1rem;
-    color: var(--ink);
-    font-family: var(--type-display);
-    font-size: clamp(1.6rem, 4.8vw, 2.5rem);
-    font-weight: var(--weight-heading-xl);
-    letter-spacing: var(--tracking-tight);
-    line-height: 1.08;
-    transition: color var(--duration-base) var(--ease-standard);
-  }
-
-  .mobile-menu__detail-link::before {
-    position: absolute;
-    top: calc(clamp(0.55rem, 1.25vh, 0.75rem) + 0.35em);
-    left: 0;
-    width: 0.5rem;
-    height: 0.5rem;
-    background: var(--accent);
-    content: "";
-    opacity: 0;
-  }
-
-  .mobile-menu__detail-link.is-current::before {
-    opacity: 1;
-  }
-
-  .mobile-menu__detail-link:hover,
-  .mobile-menu__detail-link:focus-visible,
-  .mobile-menu__detail-link.is-current {
-    color: var(--accent-soft);
-  }
-
-  .mobile-menu__cta {
-    display: flex;
-    width: 100%;
-    min-height: 3.5rem;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: clamp(1rem, 3vh, 2rem);
-    padding-inline: 1.15rem;
-    border-radius: var(--shape-control);
-    font-size: clamp(1rem, 2.4vw, 1.2rem);
-  }
-
-  /* Under the way in, at the foot of the sheet. It keeps its word here — there
-     is a whole row for it and nothing else competing, and on a phone a bare
-     mark at the bottom of a menu is a guess rather than a control. Aligned to
-     the same inside edge as the button above it so the two read as one stack. */
-  .mobile-menu__theme {
-    margin-top: clamp(0.75rem, 2vh, 1.15rem);
-    padding-inline: 1.15rem;
-    color: var(--ink);
-    font-size: var(--text-copy);
-  }
-
-  /* The bar while the sheet is open. It stands on the sheet, and the sheet is
-     the page's own ground now, so all three of these follow the page rather
-     than naming the near-black they used to. The logo needs no rule of its own
-     any more either: it is already on --logo-filter, and the ground it is
-     standing on is the same ground it was standing on before the sheet opened. */
-  .site-header--mobile-menu-open {
-    background: var(--canvas);
-  }
-
-  .site-header--mobile-menu-open .site-nav {
-    background: var(--canvas);
-    color: var(--ink);
-  }
-
-  .site-header--mobile-menu-open .mobile-menu-toggle {
-    border-color: color-mix(in srgb, var(--ink) 62%, transparent);
-    color: var(--ink);
   }
 
   .hero-title {
@@ -5650,15 +5595,14 @@ video {
   .brand-logo {
     /* 118px to 144px. Measured against the track it stands in: at a 320px
        window the brand column comes out near 180px after the gutter, the bar's
-       own padding, the gap and the Menu button. */
+       own padding, the gap and the burger. */
     width: 9rem;
   }
 
+  /* The burger a step smaller, like the bar it stands in. */
   .mobile-menu-toggle {
-    min-width: 3.9rem;
-    min-height: 2.2rem;
-    padding-inline: 0.65rem;
-    font-size: 0.9375rem;
+    width: 2.75rem;
+    height: 2.75rem;
   }
 
   .hero-content {
@@ -6365,8 +6309,19 @@ video {
 .service-page {
   --service-surface: var(--canvas);
   --service-ink: var(--ink);
-  --service-mobile-header-height: 3.9rem;
   --service-mobile-hero-tail: 30px;
+  /* **How far below the top of the screen the pinned journey stands, and the
+     one number two files have to agree on.** ScrollTrigger's start is
+     `top-=<lead> top`, so for the whole of the pinned run the section sits
+     exactly this far down the screen — which means a section a full screen tall
+     loses exactly this much off its bottom, permanently, because a pinned
+     section is the one thing a reader cannot scroll within.
+
+     `ServiceOfferingsScroll` reads this value rather than naming 60 a second
+     time, and `breakpoints.test.mjs` holds the two together — the same
+     arrangement, and the same reason, as the mobile-menu query it already
+     guards. */
+  --journey-pin-lead: 60px;
 
   color: var(--service-ink);
   background: var(--service-surface);
@@ -9233,19 +9188,21 @@ video {
    in flow, so the plate keeps its 242x136 whatever the sector is called and a
    two-word one like Public Sector cannot push the photograph taller than its
    neighbours. */
-/* **The name, and the two facts under it.**
+/* **The name, and the three facts under it.**
 
-   One treatment was tried and rejected in between: the name and both values set
-   identically, body face at one size, no labels — three plain lines. The owner
-   asked for the name to lead and for the facts to say what they are, so there
-   are three sizes here now: the name, the label, the value.
+   No labels — owner, 2026-09-30, from his own portfolio: the client's industry,
+   the service and the place, one to a line. That reverses half of 2026-08-25,
+   when a build with no labels (three plain lines, all one size) was rejected and
+   a label went back over each fact. The other half still stands: the name
+   leads, bigger than everything under it — two sizes now, the name and the
+   facts.
 
    The name stays in the BODY face. It is bigger than everything under it and
    that is enough to lead; putting it in `--type-title` would make eight cards
    compete with the heading standing beside them in the rail, which is set in
    that face at up to 76px. */
 .clients-card__name,
-.clients-card__fact dd {
+.clients-card__fact {
   margin: 0;
   color: var(--ink);
   font-family: var(--type-body);
@@ -9312,48 +9269,20 @@ video {
   color: var(--accent-strong);
 }
 
-/* The facts, and the labels over them. Both came back on 2026-08-25 after a
-   build with neither — see the note on the name above.
+/* The facts: straight under the name with no gap of their own, one block with
+   it, as in his portfolio.
 
-   Label OVER value, not beside it. Side by side, two rows of two columns need a
-   shared label column to line their values up, and the wider of Location and
-   Industry would set it for both — which on a card this narrow is a third of
-   the width spent on the smallest type on it. */
-.clients-card__facts {
-  margin: clamp(0.85rem, 1.8vh, 1.15rem) 0 0;
-}
+   The size they have had since 2026-08-25 — they went down to `--text-copy` for
+   one build and came straight back, because what the owner wanted smaller then
+   was the label, not the thing it labels.
 
-.clients-card__fact + .clients-card__fact {
-  margin-top: clamp(0.55rem, 1.2vh, 0.8rem);
-}
-
-/* The site's own small-label treatment: fine, uppercase, tracked open. Ink
-   rather than grey — the owner asked for the text on this page to be black, and
-   a label that is the only grey thing on the card reads as disabled rather than
-   as secondary. It is held back by size and case instead.
-
-   **10px, below `--text-fine` — owner's call, 2026-08-25.** The token is 12px
-   and is the site's floor everywhere else, so this is the one label that goes
-   under it. It carries that: uppercase, tracked open at 0.12em and set in the
-   strong weight, which is three things holding a small word legible where a
-   10px sentence in the body face would not be. A value written out rather than
-   a new token, because a second "fine" size is a thing the rest of the site
-   would start reaching for. */
-.clients-card__fact dt {
-  margin-bottom: 0.15em;
-  color: var(--ink);
-  font-family: var(--type-body);
-  font-size: 10px;
-  font-weight: var(--weight-strong);
-  letter-spacing: var(--tracking-wide);
-  line-height: 1.5;
-  text-transform: uppercase;
-}
-
-/* The values keep the size they have had. They went down to `--text-copy` for
-   one build and came straight back: what the owner wanted smaller was the
-   LABEL, not the thing it labels. */
-.clients-card__fact dd {
+   **Grey, which is newer than "black".** On 2026-08-25 the owner asked for the
+   text on this page to be black; the reference he sent on 2026-09-30 sets these
+   three in grey under a bright name, and that is the later word. The plain
+   `--ink-grey`, as his is, not the lavender `--ink-muted`: #9a9a9a on the black
+   page and #595959 on the white, 7.46:1 and 7.00:1. */
+.clients-card__fact {
+  color: var(--ink-grey);
   font-size: clamp(18px, calc(15.43px + 0.286vw), 20px);
 }
 
@@ -11055,6 +10984,33 @@ video {
    height and the window fills it — the pin is one screen either way, so what the
    window can be is whatever the rail and the title leave. */
 @media (max-width: 64rem) {
+  /* **One screen means one screen — owner, 2026-08-27: only the number shows,
+     not Skip and the link beside it.**
+
+     The base pairs `height: 100svh` with `min-height: 42rem`, and 42rem is 672px:
+     on any window shorter than that the floor wins and the section is TALLER
+     than the screen it is pinned to. A pinned section cannot be scrolled within,
+     so every pixel past the fold is simply never seen — and the foot is the last
+     row, so the foot is what goes. Measured on Branding: 44px of it under the
+     edge at 375x600, 76px at 360x568, and the card's number left sitting on the
+     bottom edge as the only thing down there, which is exactly what the owner
+     saw.
+
+     A floor is the right instinct on a desktop, where the section is one item in
+     a long page and a squashed card helps nobody. Here it buys card room with
+     the only currency the reader cannot spend. The row below is `minmax(0, 1fr)`
+     and gives the height back on its own; the short-screen block further down is
+     what makes the card fit in it. */
+  .service-journey {
+    /* One screen means the screen, not the screen plus the lead. `100svh` here
+       is 60px taller than what a pinned section can actually show, and the foot
+       is the last row, so the foot is what went under the edge: measured 32px
+       under at 375x600 and 33px at 360x568, with the card's number left sitting
+       on the bottom edge as the only thing down there. */
+    height: calc(100svh - var(--journey-pin-lead));
+    min-height: 0;
+  }
+
   .service-journey__layout {
     grid-template-columns: minmax(0, 1fr);
     /* Three rows: the rail, the card, and the foot. The foot is a row here
@@ -11068,6 +11024,16 @@ video {
     grid-column: 1;
     flex-direction: row;
     gap: 1.25rem;
+    /* Owner, 2026-08-27: the chapter's name sits too close under the rail.
+       Air under the rail rather than a wider `row-gap`, because the gap is one
+       value for both seams and the other seam is the foot — widening it would
+       push Skip and the link toward an edge they have only just come back from.
+       A margin on the rail lands in row one, which is `auto`, so it moves the
+       one seam it is about.
+
+       10px first, then 25 — the owner asked for more of it once he had seen the
+       ten. */
+    margin-bottom: 1.5625rem;
     /* For a page whose chapters outgrow the row even broken over two lines.
        Inert while they fit, since a label that wraps never overflows, and no
        scrollbar is drawn across the names when it does engage. */
@@ -11126,10 +11092,38 @@ video {
   .service-journey__window {
     height: auto;
     margin-top: clamp(1.25rem, 2.5vh, 2rem);
+    /* **One card at a time — owner, 2026-08-27: the next card's text shows at
+       the edge.**
+
+       Two cards share the stage on a desktop and the composition is built on
+       seeing both, so the base window does not clip. Here one card IS the stage:
+       `cardGap` is derived as `stage - cardWidth * 2`, which for a full-width
+       card is negative and floors at 0, so the next card butts directly against
+       this one's right edge. That edge is the column's, not the screen's — the
+       page margin is 16px wide — so exactly one margin's worth of the next card
+       was legible in the gutter, mid-sentence.
+
+       `overflow-x`, not `overflow`, and `clip` rather than `hidden`. The card's
+       copy can outrun its box on a short screen; hiding that behind a clip would
+       be a silent truncation, and `hidden` on one axis forces the other to
+       `auto`, which is a scrollbar inside a pinned run. `clip` is the one value
+       that pairs with `visible` and leaves it alone. */
+    overflow-x: clip;
   }
 
   .service-card {
     width: 100%;
+  }
+
+  /* Owner, 2026-08-27: the number lifts off the foot of the card by 15px. It is
+     the `auto` row of the card's two, so the margin comes out of the `1fr` row
+     above it — which is the copy's room.
+
+     15px first, then 30 when he had seen it. The copy still clears its number by
+     55px at 412x732, the tightest size that fits at all; the screens that do not
+     fit are excluded from this below, along with the rail's air. */
+  .service-card__number {
+    margin-bottom: 1.875rem;
   }
 
   /* **The foot is a row, not an overlay — owner, 2026-08-27: Skip and Let's
@@ -11202,6 +11196,64 @@ video {
 
   .service-card__body {
     gap: clamp(0.85rem, 2vh, 1.25rem);
+  }
+}
+
+/* ── And a tighter tier under it, for the screens the run no longer fits ──
+
+   The block above was measured against a section with a 42rem floor under it.
+   That floor is gone below 64rem — it was the reason the foot was pinned
+   underneath the bottom edge — so a 568px screen now gives the card a 331px
+   window where it used to give 495, and the tallest cards run past their number
+   again: 100px past on Branding at 360x568.
+
+   This buys back everything spacing has left to give and nothing else. Type is
+   not touched, for the reason the block above already gives, with the single
+   exception of the stage's title — 40px of heading over a 331px card is a
+   proportion, not a size, and it is the one piece of type here that is set
+   against the card rather than read as copy.
+
+   **It does not close the gap on the shortest screens, and that is on the
+   record rather than papered over.** Measured on Branding, the page with the
+   tallest cards, before and after this block: 375x600 went 68px over to 19,
+   360x568 100 to 50, 320x568 162 to 113. Everything from 390x667 up clears with
+   room — 35px at 667, 128px at 844.
+
+   A 568px screen cannot hold a card of this length AND the foot at the same
+   time; the arithmetic does not care which is preferred. The old code chose the
+   card and lost Skip under the bottom edge at EVERY height, including the tall
+   ones. This chooses the foot, and pays for it only where the screen is genuinely
+   too short. Closing the rest is a content decision — shorter cards — or a
+   fallback to the stacked document the reduced-motion reader already gets below
+   some height, and neither is a thing a stylesheet should decide on its own. */
+@media (max-width: 48rem) and (max-height: 40rem) {
+  .service-journey__layout {
+    padding-block: clamp(1rem, 2.5vh, 1.5rem);
+    row-gap: 0.5rem;
+  }
+
+  /* The air under the rail, and the lift under the number, are the two things
+     above that this tier does not keep. Its whole job is to find pixels for a
+     card that does not fit, and spending them back on spacing is the opposite of
+     that. Every screen tall enough for the card keeps both. */
+  .service-journey__nav {
+    margin-bottom: 0;
+  }
+
+  .service-card__number {
+    margin-bottom: 0;
+  }
+
+  .service-journey__current-title {
+    font-size: clamp(22px, 6vw, 26px);
+  }
+
+  .service-journey__window {
+    margin-top: 0.5rem;
+  }
+
+  .service-card__body {
+    gap: clamp(0.6rem, 1.6vh, 0.9rem);
   }
 }
 
@@ -11326,20 +11378,40 @@ video {
   }
 }
 
-/* Shared mobile service foundation. JavaScript progressively enhances the
-   offerings into the approved pinned stack when motion is available. */
-/* The phone half of that same flow, and so behind the same condition. The one
-   rule here that was never about the flow — the nav scrolling sideways instead
-   of wrapping — is lifted into the narrow-width journey block below, which
-   needs it for the same reason. */
-@media (max-width: 48rem) and (prefers-reduced-motion: reduce) {
+/* ── The service hero on a phone ──
+
+   **This is the whole mobile hero, and none of it is about motion.** It spent
+   one commit inside `(max-width: 48rem) and (prefers-reduced-motion: reduce)`,
+   swept there with the journey rules it shared a block with back when that block
+   was "the shared mobile foundation" and the flow fallback was the only thing in
+   it that cared what the reader had asked for. The journey's fallback is
+   genuinely a motion question. A hero's arrangement never was.
+
+   The cost, on every service page and every phone, was that a reader who had NOT
+   declined motion — which is very nearly every reader — got the tablet hero at
+   390px: the heading held to seven of twelve columns so it wrapped to four lines,
+   the pattern floated at 39vw beside it, and the support sentence sat at 28px in
+   grid row 3 instead of on the foot, where the page ran out before it did.
+
+   So the two conditions live side by side now. Everything below is width. */
+@media (max-width: 48rem) {
   .service-hero {
     padding-bottom: var(--service-mobile-hero-tail);
   }
 
   .service-hero__inner {
     display: grid;
-    height: calc(100dvh - var(--service-mobile-header-height));
+    /* **The same arithmetic the desktop rule does, against the same token.**
+       This said `100dvh - 3.9rem`, and 3.9rem is the CEILING of `--header-bar`
+       alone: at 390px the bar is actually 3.45rem, and `--header-pad-top` — the
+       other half of `--header-space`, 4.5vh — was not in the sum at all. The box
+       therefore started 93px down the page and ran 100dvh - 62px tall, so it
+       ended 31px past the fold and took its foot with it: the support sentence's
+       last line and `Let's build` both sat under the bottom edge of the screen.
+       `--header-space` is what `HeaderSpace` reserves, so this is one screen
+       exactly, and `--service-mobile-hero-tail` below is the only thing that
+       shows past it — which is what a 30px tail is for. */
+    height: calc(100dvh - var(--header-space));
     min-height: 0;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: auto minmax(12rem, 1fr) auto;
@@ -11358,13 +11430,28 @@ video {
     font-size: clamp(40px, 10.6vw, 56px);
   }
 
+  /* **Under the title, at a distance measured from the title.** Owner,
+     2026-08-27: bring it up, closer to the heading.
+
+     It was `top: 61%` with a centring transform — a fraction of the hero, which
+     knows nothing about the heading above it. On Branding's two lines that left
+     191px of empty page between the two; on a page whose heading wraps to three
+     it would have left less, for no reason either page could name.
+
+     Row 2 is already the band between the heading and the foot, and an
+     absolutely positioned box given a definite row takes THAT row's top edge as
+     its origin rather than the container's padding edge. So the grid has done
+     the measuring, and the only number left in the rule is the air itself —
+     roughly a line and a half of the heading, at every phone size. */
   .service-hero__pattern {
     position: absolute;
-    top: 61%;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    top: clamp(2rem, 6vh, 3.25rem);
     right: 0;
     width: min(88vw, 22rem);
     margin: 0;
-    transform: translateY(calc(-50% - 8px));
+    transform: none;
   }
 
   .service-hero__support {
@@ -11373,7 +11460,12 @@ video {
     left: 0;
     max-width: 11ch;
     margin: 0;
-    font-size: clamp(24px, 6vw, 28px);
+    /* Owner, 2026-08-27: a little smaller than the 24px floor it had. It is the
+       hero's second voice and not a second heading, and at three lines in an
+       11ch measure it was reading as one. Still four points clear of the CTA on
+       the other end of the same row, which is what keeps the foot a pair rather
+       than two of the same thing. */
+    font-size: clamp(22px, 5.6vw, 26px);
   }
 
   .service-hero__cta {
@@ -11385,6 +11477,31 @@ video {
     white-space: nowrap;
   }
 
+  /* The block that closes the page comes with the one that opens it, for the
+     same reason: `--text-heading-xl` bottoms out at 40px, which is a heading
+     that has stopped being one, and 20ch of it is a paragraph. Neither number
+     has ever had anything to do with motion either. */
+  .service-cta {
+    padding-block: clamp(5rem, 20vw, 7rem);
+    background: var(--service-surface);
+  }
+
+  .service-cta__title {
+    max-width: 10ch;
+    font-size: clamp(48px, 13vw, 72px);
+  }
+
+  .service-cta__link {
+    margin-top: 2rem;
+  }
+}
+
+/* The phone half of the journey's document flow, and so behind the same
+   condition the flow itself is: what a reader who declined motion gets in place
+   of the run. The one rule here that was never about the flow — the nav
+   scrolling sideways instead of wrapping — is lifted into the narrow-width
+   journey block above, which needs it at every motion setting. */
+@media (max-width: 48rem) and (prefers-reduced-motion: reduce) {
   .service-offerings {
     padding: 0;
     overflow: clip;
@@ -11417,20 +11534,6 @@ video {
   .service-journey__next {
     margin-top: 0;
   }
-
-  .service-cta {
-    padding-block: clamp(5rem, 20vw, 7rem);
-    background: var(--service-surface);
-  }
-
-  .service-cta__title {
-    max-width: 10ch;
-    font-size: clamp(48px, 13vw, 72px);
-  }
-
-  .service-cta__link {
-    margin-top: 2rem;
-  }
 }
 
 /* Smartphone service journey: keep the chapter navigation anchored while
@@ -11446,7 +11549,10 @@ video {
 
   .service-hero__support {
     max-width: 10ch;
-    font-size: 24px;
+    /* Below the rule above rather than above it: this block exists to give a
+       320px screen more air, and it had been handing it a LARGER sentence than
+       a 390px one got ever since that rule gained a floor. */
+    font-size: 21px;
   }
 
   .service-hero__cta {

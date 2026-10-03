@@ -120,15 +120,32 @@ export const placeholders = {
   services: {
     label: "Services",
     title: "Services",
-    description: "The five services Mardal offers, in one place.",
-    support: "The five ways we work, gathered in one place.",
-    /* All five service pages are written now — the most finished part of this
-       site — so the way out of the index that has not been written is into
-       them. It was four for a day: System Integration was deleted on
-       2026-08-24 and Branding took its place in the list as an address before
-       it was writing. It was written on 2026-08-25 and left this module. */
+    description: "The seven services Mardal offers, in one place.",
+    support: "The seven ways we work, gathered in one place.",
+    /* Five of the seven service pages are written — the most finished part of
+       this site — so the way out of the index that has not been written is
+       into them. Seven since 2026-10-03, when the menu split into Development
+       and Creative and UX/UI Design and Print Design joined it, both below. */
     cta: "See a service page",
     ctaHref: "/services/ai-automation",
+  },
+  /* The two services added with the Development / Creative split, 2026-10-03.
+     Both are Creative, so the way out is the Creative page that is written. */
+  "services/ux-ui-design": {
+    label: "UX/UI Design",
+    title: "UX/UI Design",
+    description: "UX/UI design by Mardal.",
+    support: "Interfaces for websites, software and apps.",
+    cta: "See Branding & Logo",
+    ctaHref: "/services/branding",
+  },
+  "services/print-design": {
+    label: "Print Design",
+    title: "Print Design",
+    description: "Print design by Mardal.",
+    support: "Design made for print.",
+    cta: "See Branding & Logo",
+    ctaHref: "/services/branding",
   },
   company: {
     label: "Company",

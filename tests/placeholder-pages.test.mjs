@@ -95,9 +95,26 @@ const pages = [
   {
     path: "/services",
     label: "Services",
-    support: "The five ways we work, gathered in one place.",
+    support: "The seven ways we work, gathered in one place.",
     cta: "See a service page",
     ctaHref: "/services/ai-automation",
+  },
+  /* The two services that came with the Development / Creative split,
+     2026-10-03. Both Creative, so both send you to the Creative page that is
+     written. */
+  {
+    path: "/services/ux-ui-design",
+    label: "UX/UI Design",
+    support: "Interfaces for websites, software and apps.",
+    cta: "See Branding & Logo",
+    ctaHref: "/services/branding",
+  },
+  {
+    path: "/services/print-design",
+    label: "Print Design",
+    support: "Design made for print.",
+    cta: "See Branding & Logo",
+    ctaHref: "/services/branding",
   },
   {
     path: "/company",
@@ -135,7 +152,7 @@ const pages = [
  *  a test that imports the module the page reads asserts only that a file
  *  equals itself — and the cost of that is a table that goes quietly out of
  *  date, which it did the day this line was written. */
-const PLACEHOLDER_PAGES = 9;
+const PLACEHOLDER_PAGES = 11;
 
 test("every unwritten page is a page", async () => {
   assert.equal(

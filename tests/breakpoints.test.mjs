@@ -36,7 +36,16 @@ const SMOOTH = read("components/motion/SmoothScroll.tsx");
 const code = (source) =>
   source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 
-/** The condition of the top-level `@media` block that puts the menu on screen. */
+/**
+ * The condition of the top-level `@media` block that holds the phone's bar.
+ *
+ * It was the block that put the menu on screen — fixed sheet, visible toggle —
+ * until 2026-10-03, when the burger and its sheet became the menu at every
+ * width. The line is still the same line: on one side of it the sheet's two
+ * halves take turns and the bar is set tight, on the other the halves stand
+ * side by side (`.mobile-menu--wide`, which the header sets from this same
+ * constant).
+ */
 function menuQuery() {
   let depth = 0;
   let condition = null;
@@ -56,10 +65,7 @@ function menuQuery() {
 
     if (depth === 0 && condition) {
       const text = body.join("\n");
-      if (
-        /\.mobile-menu\s*\{[^}]*position:\s*fixed/.test(text) &&
-        /\.mobile-menu-toggle\s*\{[^}]*display:\s*inline-flex/.test(text)
-      ) {
+      if (/\.site-nav\s*\{[^}]*padding:/.test(text)) {
         return condition;
       }
       condition = null;
@@ -73,7 +79,7 @@ test("the shared constant is the stylesheet's query, character for character", (
   const css = menuQuery();
   assert.ok(
     css,
-    "no @media block both shows the toggle and makes .mobile-menu fixed — the stylesheet's own definition has moved",
+    "no @media block sets the phone's bar — the stylesheet's own definition has moved",
   );
   assert.equal(
     MOBILE_MENU,
@@ -186,4 +192,61 @@ test("the clients grid is two columns and no width changes it", () => {
 
     if (depth === 0) condition = null;
   }
+});
+
+/**
+ * The second fact written in two languages: how far down the screen the pinned
+ * journey stands.
+ *
+ * `ServiceOfferingsScroll` pins the section with `start: "top-=<lead> top"`, so
+ * for the whole of the run the section sits exactly `lead` below the top of the
+ * screen. A section that is a full screen tall therefore ends `lead` past the
+ * bottom of it — and a pinned section is the one thing a reader cannot scroll
+ * within, so whatever is down there is not late, it is gone. It was the foot:
+ * Skip and the link beside it, 32px under the edge at 375x600.
+ *
+ * So the stylesheet spends the lead out of the section's height, which means
+ * both files need the number. CSS can export a custom property and JavaScript
+ * can read one, so there is exactly one copy — and these two checks are what
+ * keep it that way.
+ */
+const SERVICE_RUN = read("components/services/ServiceOfferingsScroll.tsx");
+
+test("the pin lead is declared once, in the stylesheet", () => {
+  const declarations = [
+    ...code(CSS).matchAll(/--journey-pin-lead:\s*([^;]+);/g),
+  ];
+
+  assert.equal(
+    declarations.length,
+    1,
+    "the pin lead is declared in more than one place",
+  );
+  assert.match(declarations[0][1].trim(), /^\d+(\.\d+)?px$/);
+
+  /* And the height it is spent out of names it rather than a number of its
+     own. `100svh` alone here is the bug this pair was written for. */
+  assert.match(
+    code(CSS),
+    /height:\s*calc\(100svh - var\(--journey-pin-lead\)\)/,
+    "the journey's height no longer spends the pin lead",
+  );
+});
+
+test("the run reads the pin lead rather than repeating it", () => {
+  const source = code(SERVICE_RUN);
+
+  assert.match(
+    source,
+    /getPropertyValue\(\s*["']--journey-pin-lead["']\s*\)/,
+    "the run does not read the lead from the stylesheet",
+  );
+
+  /* The literal the fallback keeps is allowed, and only there. A `top-=60`
+     anywhere in the start string is the drift itself. */
+  assert.doesNotMatch(
+    source,
+    /start:\s*["'`]top-=\d/,
+    "the pin start names a number instead of the declared lead",
+  );
 });

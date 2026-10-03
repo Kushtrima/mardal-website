@@ -413,45 +413,34 @@ export function ClientsIndex() {
                         plate
                       )}
 
-                      {/* Three plain lines: the name, where it is, and what
-                          the client does. All set the same — body face, one
-                          size, no labels above them.
+                      {/* The name, then three plain lines under it: the
+                          client's industry, the service, and where — owner,
+                          2026-09-30, the way his own portfolio sets its work.
 
-                          **The industry is back and it is no longer the rail's
-                          taxonomy.** It came off when the sectors did, because
-                          the rail carried the same seven words and the card was
-                          repeating the filter that had put it there. The rail
-                          filters by DISCIPLINE now, so the two say different
-                          things and the card can carry both: what kind of work
-                          this was, in the rail, and whose industry it was for,
-                          here.
+                          **No labels.** They were over the facts from
+                          2026-08-25 ("a label over each fact, and none over the
+                          name") and he has taken them off: the values say what
+                          they are. So the facts are bare `<p>`s rather than a
+                          description list — the markup follows the labels, and
+                          there are none to pair a value with.
+
+                          **The industry is not the rail's taxonomy.** The rail
+                          filters by DISCIPLINE, so the two say different things
+                          and the card can carry both: whose industry it was
+                          for, and — on the service line, every discipline the
+                          entry lists — the words the rail files it under.
 
                           The heading tag stays. It is what puts each card in
                           the page's outline; styling it flat is a look, not a
                           demotion. */}
                       <h3 className="clients-card__name">{entry.name}</h3>
-
-                      {/* A label over each fact, and none over the name — the
-                          owner's distinction, 2026-08-25. The name is the
-                          card's heading; a word above a heading is a caption on
-                          it, and the two facts under it are the things that
-                          need saying what they are.
-
-                          A description list again, because that is what a run
-                          of label-and-value pairs is. It was one for a day, then
-                          three bare `<p>`s when the labels came off, and the
-                          markup follows the labels rather than the other way
-                          round. */}
-                      <dl className="clients-card__facts">
-                        <div className="clients-card__fact">
-                          <dt>{caseStudies.fields.location}</dt>
-                          <dd>{entry.location}</dd>
-                        </div>
-                        <div className="clients-card__fact">
-                          <dt>{caseStudies.fields.industry}</dt>
-                          <dd>{sectorTitle(entry.sector)}</dd>
-                        </div>
-                      </dl>
+                      <p className="clients-card__fact">
+                        {sectorTitle(entry.sector)}
+                      </p>
+                      <p className="clients-card__fact">
+                        {entry.disciplines.join(", ")}
+                      </p>
+                      <p className="clients-card__fact">{entry.location}</p>
                     </article>
                   </li>
                 );

@@ -172,11 +172,13 @@ test("under it, a letter, and the blanks are where you write", async () => {
   );
   assert.deepEqual(options, [
     "a project",
-    "branding",
     "a website",
     "software",
     "a CRM",
     "AI and automation",
+    "a brand or a logo",
+    "UX/UI design",
+    "print design",
     "something else",
   ]);
 
@@ -428,7 +430,9 @@ test("the header's way in goes to this page now", async () => {
      page only said "Working on it". */
   const html = markup((await render("/")).html);
 
-  for (const name of ["mega-menu__cta", "mobile-menu__cta"]) {
+  /* Since the burger menu of 2026-10-03 the one way in is the menu's "Start a
+     project"; "Hire us" left with the words in the bar. */
+  for (const name of ["mobile-menu__cta"]) {
     const tag = html.match(
       new RegExp(`<a[^>]*class="(?:[^"]*\\s)?${name}(?:\\s[^"]*)?"[^>]*>`),
     )?.[0];

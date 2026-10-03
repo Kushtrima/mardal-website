@@ -1,324 +1,129 @@
 "use client";
 
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type KeyboardEvent as ReactKeyboardEvent,
-} from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MOBILE_MENU } from "../../lib/breakpoints";
-import {
-  HEADER_AT_REST,
-  menuSurvivesScroll,
-  nextHeaderState,
-} from "../../lib/header-reveal";
-import { navTriggerIntent } from "../../lib/nav-keys";
-import { Button } from "../ui/Button";
+import { HEADER_AT_REST, nextHeaderState } from "../../lib/header-reveal";
 import { PixelArrow } from "../ui/PixelArrow";
 import { Container } from "./Container";
+import { SocialIcon } from "./SocialIcon";
 import { ThemeToggle } from "./ThemeToggle";
 import { footer, menu } from "../../content/home";
 
-type NavigationKey = (typeof menu)[number]["key"];
+/**
+ * The bar and the menu.
+ *
+ * **One menu, behind one burger, at every width — owner, 2026-10-03:** "i dont
+ * like it i want BIG MENU so Only BURGER menu". The bar is the wordmark and the
+ * burger and nothing else. The menu is the sheet the phone already had, grown
+ * into the whole screen on a wide window: the four words set big down the left,
+ * the list of whichever one you are on to the right of them. Its class names
+ * still say `mobile-menu`, after where it began.
+ *
+ * What it replaced — the words in the bar and a white sheet down the right — is
+ * in backup/2026-10-03-site-header/, with how to put it back.
+ */
 
 /**
- * How far past the white sheet the pointer may stray before the menu is counted
- * as left.
+ * The two lines the sheet carries at its foot, in the order the owner asked for
+ * them: the street, then the number.
  *
- * Only one edge is ever really tested against this. The sheet reaches the top,
- * right and bottom of the window, so the single edge there is anything to cross
- * is the left one, onto the page beside it — and the slop forgives a pointer
- * clipping that edge on its way down the names.
+ * Picked out of `footer.details` by label rather than retyped. The phone and the
+ * address are written once, in content/home.ts, and the day one of them changes
+ * the sheet must not be the place still saying the old one.
  */
-const KEEP_OPEN_PADDING = 24;
+const SHEET_CONTACT = ["Address", "Phone"].flatMap((label) =>
+  footer.details.filter((detail) => detail.label === label),
+);
+
+type NavigationKey = (typeof menu)[number]["key"];
+
+type MenuLink = { readonly label: string; readonly href: string };
+type MenuGroup = {
+  readonly label: string;
+  readonly items: readonly MenuLink[];
+};
+
+/**
+ * The halves an entry's list is split into, or null for a list that is one.
+ * Services is the only entry with groups — Development and Creative, owner,
+ * 2026-10-03 — and the menu sets a heading over each half.
+ */
+function groupsOf(entry: (typeof menu)[number]): readonly MenuGroup[] | null {
+  return "groups" in entry ? entry.groups : null;
+}
+
+/** The list a wide menu opens on, so its right-hand side is never empty. */
+const FIRST_LIST: NavigationKey = "services";
 
 export function SiteHeader() {
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const navigationRef = useRef<HTMLElement>(null);
-  const megaMenuRef = useRef<HTMLDivElement>(null);
-  const megaMenuGroundRef = useRef<HTMLDivElement>(null);
-  const mobileIndexRef = useRef<HTMLDivElement>(null);
-  const mobileDetailRef = useRef<HTMLDivElement>(null);
-  const closeTimerRef = useRef<number | undefined>(undefined);
-  /* Whether the panel was already open the last time the effect below ran. */
-  const megaMenuWasOpenRef = useRef(false);
-  const [activeMenu, setActiveMenu] = useState<NavigationKey>("services");
-  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
-  /**
-   * A request to put focus inside the panel, held until the panel is actually
-   * there to receive it.
-   *
-   * It cannot be done in the key handler. Opening the panel is a state change, so
-   * at the moment the key is pressed the panel may still be the closed one — and
-   * a closed panel is `inert`, which means `focus()` on anything inside it does
-   * nothing at all and fails silently. Held as state instead, the effect below
-   * runs after the commit that removed `inert`, which is the first moment the
-   * links exist and can take focus.
-   */
-  const [panelEntry, setPanelEntry] = useState<"first" | "last" | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileActiveMenu, setMobileActiveMenu] =
-    useState<NavigationKey | null>(null);
-  const [mobileDisplayMenu, setMobileDisplayMenu] =
-    useState<NavigationKey>("services");
-  const activeItem =
-    menu.find((item) => item.key === activeMenu) ?? menu[0];
-  const mobileItem =
-    menu.find((item) => item.key === mobileDisplayMenu) ?? menu[0];
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const indexRef = useRef<HTMLDivElement>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const footRef = useRef<HTMLDivElement>(null);
+  /* Whether the menu was already open the last time the motion ran, so a
+     change of list is not played as an arrival. */
+  const wasOpenRef = useRef(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  /* The list being read: on a phone, null is the four words and a key is that
+     word's list sliding over them; on a wide window both are on screen, and
+     this is which list stands to the right of the words. */
+  const [activeMenu, setActiveMenu] = useState<NavigationKey | null>(null);
+  /* The list rendered in the detail. It lags `activeMenu` on a phone, so the
+     list does not empty while it is sliding away. */
+  const [displayMenu, setDisplayMenu] = useState<NavigationKey>(FIRST_LIST);
+  /* Which arrangement the stylesheet is drawing. False on the server and on
+     the first paint, which is also the phone's — see the effect that sets it. */
+  const [wide, setWide] = useState(false);
 
-  function clearCloseTimer() {
-    if (closeTimerRef.current === undefined) return;
-    window.clearTimeout(closeTimerRef.current);
-    closeTimerRef.current = undefined;
+  const displayItem =
+    menu.find((item) => item.key === displayMenu) ?? menu[0];
+  const displayGroups = groupsOf(displayItem);
+
+  function closeMenu() {
+    setMenuOpen(false);
+    setActiveMenu(null);
   }
 
-  function openMegaMenu(menu: NavigationKey) {
-    clearCloseTimer();
-    setActiveMenu(menu);
-    setMegaMenuOpen(true);
+  function showList(key: NavigationKey) {
+    setDisplayMenu(key);
+    setActiveMenu(key);
   }
 
-  /* At once, not on the timer. The timer is for a pointer that has wandered off
-     the panel and may yet come back; this is for one that has arrived somewhere
-     with no panel behind it, and waiting 60ms there would leave the last menu's
-     list standing under a word that does not own it.
+  function detailLink(link: MenuLink) {
+    const isCurrent = link.href.startsWith("/") && pathname === link.href;
 
-     It matters because the triggers sit inside the panel's own box — that is
-     what keeps the menu open while you run along the bar — so nothing else in
-     here would close it. Reaching a plain link has to say so itself. */
-  function closeMegaMenu() {
-    clearCloseTimer();
-    setMegaMenuOpen(false);
-  }
-
-  /* 170ms before, which was insurance against a gap between the bar and the
-     panel that no longer exists: the ground reaches the top of the window and
-     the bar is drawn on it, so there is nothing to cross and nothing to
-     forgive. What is left is only enough to ignore a pointer clipping a corner
-     on its way past. */
-  function scheduleMegaMenuClose(delay = 60) {
-    /* Once, and then left alone. This used to clear the pending timer and start
-       a new one on every call, which is fine for a single event and wrong for
-       the one thing that actually calls it: a pointer moving off the menu fires
-       pointermove the whole way, and every one of those restarted the
-       countdown. The menu would not close while the mouse was moving — only
-       once it stopped, somewhere else entirely, which is indistinguishable from
-       it not closing at all.
-
-       It is also why this kept passing here. A scripted hover jumps to a
-       coordinate and stops, so the timer always got to run; a hand never
-       stops. */
-    if (closeTimerRef.current !== undefined) return;
-
-    closeTimerRef.current = window.setTimeout(() => {
-      closeTimerRef.current = undefined;
-      setMegaMenuOpen(false);
-    }, delay);
-  }
-
-  useLayoutEffect(() => {
-    const menu = megaMenuRef.current;
-    if (!menu) return;
-
-    /* Three sets, because the foot belongs to two of the three moves and not to
-       the third. It arrives with the names and it leaves with them, but running
-       along the bar does not change it — the same small print and the same way
-       in are already there — so replaying it on every switch was the panel
-       announcing something that had not happened.
-
-       It gets a handle of its own all the same, because "not replayed" turned
-       out to mean "never put back". The foot is the LAST element in `entries`,
-       so the arrival un-covers it last of all — with the seven sectors under
-       Clients its edge does not even start travelling until 0.6s in and does
-       not land until 1.15s. Move along the bar inside that second, which is
-       exactly what running along a menu is, and the switch below kills the
-       arrival mid-wipe and then restores only the names. The foot stayed at
-       `inset(0 100% 0 0)` — clipped to nothing — and no later switch ever
-       touched it again, so the legal line and the way in were simply gone for
-       the rest of the visit. */
-    const entries = menu.querySelectorAll(
-      "[data-mega-entry], [data-mega-foot]",
+    return (
+      <li key={link.label} data-mobile-detail-entry>
+        <a
+          className={`mobile-menu__detail-link${isCurrent ? " is-current" : ""}`}
+          href={link.href}
+          aria-current={isCurrent ? "page" : undefined}
+          onClick={closeMenu}
+        >
+          <span>{link.label}</span>
+        </a>
+      </li>
     );
-    const names = menu.querySelectorAll("[data-mega-entry]");
-    const foot = menu.querySelectorAll("[data-mega-foot]");
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    /* Whether this run is an arrival or a change of list. The effect answers to
-       both the open flag and the active menu, and cannot tell them apart from
-       its inputs alone. */
-    const wasOpen = megaMenuWasOpenRef.current;
-    megaMenuWasOpenRef.current = megaMenuOpen;
+  }
 
-    const ground = megaMenuGroundRef.current;
-
-    gsap.killTweensOf([menu, ground, entries]);
-
-    if (reducedMotion) {
-      gsap.set(menu, {
-        autoAlpha: megaMenuOpen ? 1 : 0,
-        pointerEvents: megaMenuOpen ? "auto" : "none",
-      });
-      gsap.set(ground, { autoAlpha: 1 });
-      gsap.set(entries, { autoAlpha: 1, clipPath: "none" });
-      return;
-    }
-
-    /* The panel does not move. The ground lightens where it stands and the
-       names are uncovered on it, one after the next.
-
-       The ground is a fade, and slow — no edge travels across it. It was a wipe
-       for one version, on the argument that it would match the names and the
-       footer rules; asked directly, a wipe is not what smooth means here. An
-       edge crossing this much of the screen is an event, and the ground is
-       meant to be the thing the menu is written on, not something that
-       announces itself.
-
-       What it must not do is take the names with it, and that is what its own
-       layer buys. The panel's opacity used to carry both, so every name faded
-       AND wiped — two motions on the same word, neither finishing what it
-       started. Now the ground fades and only the names are clipped.
-
-       Clipped rather than faded or slid: a fade makes a word arrive everywhere
-       at once and says nothing about direction, and a slide moves the word off
-       the line it belongs on. An inset from the right leaves each name exactly
-       where it will end up and only chooses when it can be seen.
-
-       All of that is the ARRIVAL, and it belongs to arriving. Moving from one
-       menu to the next along the bar is not an arrival: the ground is already
-       there and the reader is already reading. Switching changes the list and
-       nothing else. */
-    if (megaMenuOpen) {
-      gsap.set(menu, {
-        autoAlpha: 1,
-        pointerEvents: "auto",
-        visibility: "visible",
-      });
-
-      if (wasOpen) {
-        gsap.set(ground, { autoAlpha: 1 });
-        /* The foot is not replayed here — it is put back. A switch may have
-           interrupted an arrival that had not finished uncovering it, and this
-           branch is the only thing that runs afterwards, so if it does not
-           state the foot's resting position nothing ever will. Set rather than
-           tweened, for the same reason the list is not re-staggered: the small
-           print and the way in did not change, so they have nowhere to arrive
-           from. Caught mid-wipe it lands early, which is a great deal better
-           than the alternative it replaces. */
-        gsap.set(foot, { autoAlpha: 1, clipPath: "none", y: 0 });
-        /* Up on the spot. This is a change of subject, not an entrance, so it
-           stays where it is — but at 180ms it read as a flicker rather than a
-           change, so it is nearly twice that now: long enough to see one list
-           become another, short enough that running along the bar is not a
-           queue. */
-        gsap.fromTo(
-          names,
-          { autoAlpha: 0, clipPath: "none", y: 14 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.45,
-            ease: "power2.out",
-            /* Enough of a run that the list arrives as a list rather than all
-               at once, and short enough that the last name is in place inside
-               half a second. */
-            stagger: 0.045,
-          },
-        );
-        return;
-      }
-
-      /* The ground lightens in place, slowly, and without an edge. */
-      gsap.fromTo(
-        ground,
-        { autoAlpha: 0 },
-        {
-          autoAlpha: 1,
-          duration: 0.6,
-          /* Gentle at both ends. A power2 out arrives at speed and stops, which
-             on a plain lightening reads as the white snapping the last of the
-             way. */
-          ease: "power1.inOut",
-        },
-      );
-
-      gsap.fromTo(
-        entries,
-        /* `y` is stated even though the arrival does not use it, because the
-           switch does: a switch killed part-way leaves its names somewhere
-           between 14 and 0, and an arrival that only speaks about the clip
-           would inherit that offset and keep it. Every branch has to say where
-           everything it can reach is standing, or the one that stays quiet is
-           the one that strands something. */
-        { autoAlpha: 1, clipPath: "inset(0 100% 0 0)", y: 0 },
-        {
-          clipPath: "inset(0 0% 0 0)",
-          /* Long enough to be read as a wipe rather than a flash, and eased at
-             both ends so no word snaps into place. */
-          duration: 0.55,
-          ease: "power2.inOut",
-          /* Held back until the ground is halfway up, so the names are read on
-             white rather than over the page showing through it. */
-          delay: 0.22,
-          /* Seven items is the longest menu, so the last one starts at 0.33s
-             after that. The first names are readable early, which is what
-             matters: you are choosing from the top of the list while the foot
-             of it is still arriving. */
-          stagger: 0.055,
-        },
-      );
-      return;
-    }
-
-    /* The arrival, run backwards.
-       This was a flat 180ms fade of the whole panel, on the argument that an
-       exit is in the way of whatever was wanted instead. That is true of its
-       length and not of its shape: leaving on a fade meant the menu left in a
-       way it never arrived, and the one motion the panel has was only ever seen
-       half of.
-       So the same two layers, the same order reversed. The names are covered
-       from the bottom up, each by the edge that uncovered it travelling back
-       the way it came, and the ground darkens last — the white is the thing
-       the names are written on, so it cannot go before them. */
-    gsap.set(menu, { pointerEvents: "none" });
-
-    gsap.to(entries, {
-      clipPath: "inset(0 100% 0 0)",
-      duration: 0.4,
-      ease: "power2.inOut",
-      /* From the end: the last name to arrive is the first to go, which is what
-         makes this read as the arrival reversed rather than a second, different
-         wipe that happens to run the other way. */
-      stagger: { each: 0.04, from: "end" },
-    });
-
-    gsap.to(ground, {
-      autoAlpha: 0,
-      duration: 0.45,
-      ease: "power1.inOut",
-      /* Held back the way the names were held back coming in, so the last name
-         is covered as the white is going rather than after it has gone.
-         The whole exit lands at 0.63s against the arrival's 1.10s. A true
-         reversal at full length would leave the white standing in front of the
-         page for over a second after the pointer had already left it, and the
-         old fade was right about that much. */
-      delay: 0.18,
-      onComplete: () => {
-        gsap.set(menu, { autoAlpha: 0 });
-      },
-    });
-  }, [activeMenu, megaMenuOpen]);
-
+  /**
+   * The two arrangements, and the motion inside each.
+   *
+   * On a phone the words and a list take turns: choosing a word slides the
+   * words out and its list in, and Back reverses it. On a wide window both
+   * stand at once, so choosing a word only brings its list up on the right.
+   * The sheet itself fades in by CSS; this moves what is on it.
+   */
   useLayoutEffect(() => {
-    if (!mobileMenuOpen) return;
-
-    const index = mobileIndexRef.current;
-    const detail = mobileDetailRef.current;
+    const index = indexRef.current;
+    const detail = detailRef.current;
     if (!index || !detail) return;
 
     const indexEntries = index.querySelectorAll<HTMLElement>(
@@ -327,22 +132,116 @@ export function SiteHeader() {
     const detailEntries = detail.querySelectorAll<HTMLElement>(
       "[data-mobile-detail-entry]",
     );
-    const targets = [index, detail, ...indexEntries, ...detailEntries];
+    /* The words themselves, each inside a mask the height of its line, and
+       what follows them: the counts, the way in, the foot. */
+    const words = index.querySelectorAll<HTMLElement>("[data-menu-word]");
+    const counts = index.querySelectorAll<HTMLElement>(".mobile-menu__count");
+    const wayIn = index.querySelectorAll<HTMLElement>(".mobile-menu__cta-row");
+    const foot = footRef.current;
+    const targets = [
+      index,
+      detail,
+      ...indexEntries,
+      ...detailEntries,
+      ...words,
+      ...counts,
+      ...(foot ? [foot] : []),
+    ];
+    const wasOpen = wasOpenRef.current;
+    wasOpenRef.current = menuOpen;
+
+    gsap.killTweensOf(targets);
+    if (!menuOpen) return;
+
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    gsap.killTweensOf(targets);
+    if (wide) {
+      /* Nothing slides here, so whatever a phone left on the two columns —
+         an offset, a fade — is cleared before anything else is said. */
+      gsap.set([index, detail], { clearProps: "all" });
+
+      if (reducedMotion) {
+        gsap.set([...indexEntries, ...detailEntries, ...counts], {
+          autoAlpha: 1,
+          y: 0,
+        });
+        gsap.set(words, { yPercent: 0 });
+        if (foot) gsap.set(foot, { autoAlpha: 1, y: 0 });
+        return;
+      }
+
+      if (!wasOpen) {
+        /* The arrival, in reading order. The words rise out of their own line,
+           one close behind the next, while the blind is still coming down; the
+           counts, the way in and the foot follow once the words can be read.
+           Each word is masked, so it is uncovered where it stands rather than
+           floating in from somewhere else. */
+        gsap.set(indexEntries, { autoAlpha: 1, y: 0 });
+        gsap.fromTo(
+          words,
+          { yPercent: 110 },
+          {
+            yPercent: 0,
+            duration: 1,
+            ease: "expo.out",
+            stagger: 0.07,
+            delay: 0.12,
+          },
+        );
+        gsap.fromTo(
+          counts,
+          { autoAlpha: 0, y: 6 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.5,
+            ease: "power2.out",
+            stagger: 0.06,
+            delay: 0.55,
+          },
+        );
+        gsap.fromTo(
+          wayIn,
+          { autoAlpha: 0, y: 18 },
+          { autoAlpha: 1, y: 0, duration: 0.7, ease: "expo.out", delay: 0.5 },
+        );
+        if (foot) {
+          gsap.fromTo(
+            foot,
+            { autoAlpha: 0, y: 12 },
+            { autoAlpha: 1, y: 0, duration: 0.7, ease: "expo.out", delay: 0.6 },
+          );
+        }
+      }
+
+      /* The list comes up into the column on every change, quick enough that
+         reading across the words is not a queue. */
+      gsap.fromTo(
+        detailEntries,
+        { autoAlpha: 0, y: 22 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "expo.out",
+          stagger: 0.03,
+          delay: wasOpen ? 0 : 0.3,
+        },
+      );
+      return;
+    }
 
     if (reducedMotion) {
       gsap.set(index, {
-        autoAlpha: mobileActiveMenu ? 0 : 1,
-        pointerEvents: mobileActiveMenu ? "none" : "auto",
+        autoAlpha: activeMenu ? 0 : 1,
+        pointerEvents: activeMenu ? "none" : "auto",
         xPercent: 0,
       });
       gsap.set(detail, {
-        autoAlpha: mobileActiveMenu ? 1 : 0,
-        pointerEvents: mobileActiveMenu ? "auto" : "none",
+        autoAlpha: activeMenu ? 1 : 0,
+        pointerEvents: activeMenu ? "auto" : "none",
         xPercent: 0,
       });
       return;
@@ -350,7 +249,7 @@ export function SiteHeader() {
 
     const timeline = gsap.timeline({ defaults: { ease: "power3.inOut" } });
 
-    if (mobileActiveMenu) {
+    if (activeMenu) {
       gsap.set(detail, { pointerEvents: "auto", visibility: "visible" });
       timeline.to(
         index,
@@ -400,209 +299,82 @@ export function SiteHeader() {
         },
         0.12,
       );
+      /* The same rise out of the line the wide menu has, at a phone's pace. */
+      timeline.fromTo(
+        words,
+        { yPercent: 110 },
+        { yPercent: 0, duration: 0.8, ease: "expo.out", stagger: 0.05 },
+        0.12,
+      );
+      if (foot) gsap.set(foot, { clearProps: "opacity,visibility,transform" });
     }
 
     return () => {
       timeline.kill();
       gsap.killTweensOf(targets);
     };
-  }, [mobileActiveMenu, mobileDisplayMenu, mobileMenuOpen]);
+  }, [activeMenu, displayMenu, menuOpen, wide]);
 
   /**
-   * Hands focus to the panel once the panel exists.
+   * Which arrangement, asked of the stylesheet's own query rather than a second
+   * one — see lib/breakpoints.ts for why a complement cannot be written exactly.
    *
-   * Waits on `megaMenuOpen` as well as the request, because those two arrive in
-   * the same commit and the panel is `inert` until they do. `activeMenu` is a
-   * dependency for the case where the key opens a different entry than the one
-   * showing: the links are rebuilt for the new entry, and focus has to land in
-   * the list a reader asked for rather than the one that was up.
-   *
-   * `.mega-menu__link` is the entry list only — the panel's foot also holds the
-   * legal links and the way in, and `first` has to mean the first name in the
-   * menu rather than the first focusable thing in the box.
+   * Answered on every change, not once: a window widened past the line while
+   * the menu is open has to stop being a phone's menu there and then. Crossing
+   * it puts the menu on its starting list for the side it lands on — the four
+   * words on a phone, the first list beside them on a wide window — rather than
+   * leaving it half in the other arrangement.
    */
   useEffect(() => {
-    if (!panelEntry || !megaMenuOpen) return;
-
-    const links = megaMenuRef.current?.querySelectorAll<HTMLElement>(
-      ".mega-menu__link",
-    );
-
-    /* Cleared either way. A request that cannot be met has to be dropped rather
-       than left standing, or the next unrelated render would spend it. */
-    setPanelEntry(null);
-    if (!links?.length) return;
-
-    (panelEntry === "first" ? links[0] : links[links.length - 1]).focus();
-  }, [panelEntry, megaMenuOpen, activeMenu]);
-
-  useEffect(() => {
-    function handlePointerDown(event: globalThis.PointerEvent) {
-      if (
-        megaMenuOpen &&
-        !headerRef.current?.contains(event.target as Node)
-      ) {
-        setMegaMenuOpen(false);
-      }
-    }
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key !== "Escape") return;
-
-      setMegaMenuOpen(false);
-      setMobileMenuOpen(false);
-      setMobileActiveMenu(null);
-      headerRef.current
-        ?.querySelector<HTMLElement>('[data-nav-trigger][aria-expanded="true"]')
-        ?.focus();
-    }
-
-    /**
-     * Closes the menu once the pointer is off it, decided by where the pointer
-     * IS rather than by an event saying it left.
-     *
-     * There is a React onPointerLeave on the header already, and on paper it
-     * covers this: the panel is a descendant, so moving onto it is not leaving.
-     * In practice the menu was staying open. Rather than guess at why, this
-     * asks the only question that matters — is the pointer over the panel — and
-     * answers it on every move. A miscounted enter or leave cannot strand it
-     * open, because nothing is being counted.
-     */
-    function handlePointerMove(event: globalThis.PointerEvent) {
-      if (event.pointerType !== "mouse") return;
-
-      const panel = megaMenuRef.current;
-      if (!panel) return;
-
-      /* The white sheet, and nothing else. It is what anyone using this sees as
-         the menu, so it is what being on the menu has to mean.
-         This tested three boxes before — the bar, the names, the legal line —
-         and was wrong in both directions at once. The sheet runs the full
-         height of the window while the names sit in the top few centimetres of
-         it, so the five hundred pixels of empty white between the names and the
-         legal line counted as outside: the menu closed under a pointer that was
-         plainly still on it. And the bar runs on past the logo, well clear of
-         the white, so it counted a pointer over the wordmark as still on the
-         menu.
-         One box covers both, and the trigger row needs no box of its own: the
-         panel starts at the grid line the nav content starts at, less the band
-         down its left, so the triggers are inside it at every width. */
-      const box = panel.getBoundingClientRect();
-
-      if (
-        event.clientX >= box.left - KEEP_OPEN_PADDING &&
-        event.clientX <= box.right + KEEP_OPEN_PADDING &&
-        event.clientY >= box.top - KEEP_OPEN_PADDING &&
-        event.clientY <= box.bottom + KEEP_OPEN_PADDING
-      ) {
-        clearCloseTimer();
-        return;
-      }
-
-      scheduleMegaMenuClose();
-    }
-
-    /* The pointer can also leave without ever being seen outside: off the top
-       of the page into the browser's own chrome, or out of the window
-       altogether. No pointermove is delivered for that, so the last thing seen
-       is a position still on the menu and it would stay open behind whatever
-       was switched to. */
-    function handleDocumentLeave() {
-      scheduleMegaMenuClose();
-    }
-
-    document.addEventListener("pointerdown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-    if (megaMenuOpen) {
-      document.addEventListener("pointermove", handlePointerMove);
-      document.documentElement.addEventListener(
-        "pointerleave",
-        handleDocumentLeave,
-      );
-      window.addEventListener("blur", handleDocumentLeave);
-    }
-
-    return () => {
-      document.removeEventListener("pointerdown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("pointermove", handlePointerMove);
-      document.documentElement.removeEventListener(
-        "pointerleave",
-        handleDocumentLeave,
-      );
-      window.removeEventListener("blur", handleDocumentLeave);
-      clearCloseTimer();
-    };
-  }, [megaMenuOpen]);
-
-  useEffect(() => {
-    if (!mobileMenuOpen) return;
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [mobileMenuOpen]);
-
-  /**
-   * Drops the mobile menu's state the moment the mobile menu stops existing.
-   *
-   * **It asks the stylesheet's own question rather than a second one.** This used
-   * to watch `(min-width: 70.0625rem)` — 1121px, a number that appears nowhere in
-   * globals.css — while the stylesheet hands the navigation back to the bar at
-   * `(max-width: 64rem), (hover: none)`. Two ways that bit:
-   *
-   *   — Open the menu at 1000px on a mouse and widen to 1080. The stylesheet has
-   *     already taken the panel and its Close button off the screen; this guard
-   *     was still waiting for 1121, so `mobileMenuOpen` stayed true and the effect
-   *     above kept `document.body.style.overflow = "hidden"`. The page could not
-   *     be scrolled and nothing visible could release it — Escape only, which
-   *     nobody knows to press.
-   *   — Rotate an 11-inch iPad from portrait to landscape. That crosses 1121px, so
-   *     the old guard fired and force-closed the menu a reader had just opened —
-   *     on a device where the stylesheet keeps the mobile menu at every width,
-   *     because of `hover: none`, and it is the only navigation there is.
-   *
-   * Watching the menu's own query has neither problem and needs no complement to
-   * be computed — see lib/breakpoints.ts for why a complement cannot be written
-   * exactly.
-   */
-  useEffect(() => {
-    const mobileMenu = window.matchMedia(MOBILE_MENU);
+    const phone = window.matchMedia(MOBILE_MENU);
 
     function sync() {
-      if (mobileMenu.matches) return;
-
-      /* The menu is gone from the page, so its state goes with it — including
-         the scroll lock, which is released by the effect above the moment this
-         turns false. */
-      setMobileMenuOpen(false);
-      setMobileActiveMenu(null);
+      const isWide = !phone.matches;
+      setWide(isWide);
+      setDisplayMenu(FIRST_LIST);
+      setActiveMenu(isWide ? FIRST_LIST : null);
     }
 
-    /* Once on mount as well as on change: a reader who lands wide with a stale
-       open state from a restored session should not be locked by it. */
     sync();
-    mobileMenu.addEventListener("change", sync);
+    phone.addEventListener("change", sync);
 
     return () => {
-      mobileMenu.removeEventListener("change", sync);
+      phone.removeEventListener("change", sync);
     };
   }, []);
 
   /**
-   * The bar's own opening.
-   *
-   * This used to belong to the Hero, which rendered the header and animated it
-   * as the first beat of the homepage timeline. The header is rendered once in
-   * the root layout now and the Hero cannot reach it, so the movement comes
-   * with it — same numbers, so the homepage opens exactly as it did.
-   *
-   * `gsap.from` and not `to`: the bar is in the server-rendered HTML at its
-   * resting values, so a reader whose JavaScript never arrives gets a bar
-   * rather than an invisible one. Reduced motion skips it outright.
+   * While it is open the page underneath holds still: the body is locked, and
+   * the smoother — which takes the wheel itself, so a locked body alone does not
+   * stop it — is paused. Escape closes it and hands focus back to the burger.
+   */
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const smoother = ScrollSmoother.get();
+    smoother?.paused(true);
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      setMenuOpen(false);
+      setActiveMenu(null);
+      toggleRef.current?.focus();
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      smoother?.paused(false);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [menuOpen]);
+
+  /**
+   * The bar's own opening, from the Hero's first beat when it lived there.
+   * `gsap.from`, so a reader whose JavaScript never arrives still has a bar.
    */
   useLayoutEffect(() => {
     if (!navigationRef.current) return;
@@ -623,25 +395,11 @@ export function SiteHeader() {
   /**
    * Hide going down, come back going up.
    *
-   * ── Why `window.scrollY` and not the smoother ──
-   * ScrollSmoother eases the CONTENT towards the real scroll position; it does
-   * not take the scroll position over. The document still scrolls natively and
-   * `scrollY` is still the truth, which is the same thing the Hero reads for
-   * its own blur. What the smoother does change is the shape of the signal —
-   * see HEADER_DIRECTION_DEADZONE.
-   *
-   * ── Why the state is an attribute and the movement is CSS ──
-   * Three things move together here: the bar slides off, its ground fades in,
-   * and its top padding closes up. Written as a tween that is three properties
-   * to keep in step from JavaScript; written as `data-header` it is one
-   * attribute and the stylesheet holds the choreography — including switching
-   * all of it off under `prefers-reduced-motion`, which a tween would have to
-   * be taught separately.
-   *
-   * ── An open menu pins it ──
-   * The panel is a child of the bar. Sliding the bar away while its own menu is
-   * open would take the menu with it, so an open menu holds the bar wherever it
-   * is and nothing moves until it closes.
+   * `window.scrollY` rather than the smoother: the smoother eases the content
+   * towards the real scroll position and the document still scrolls natively.
+   * The state is an attribute and the movement is CSS, so the stylesheet holds
+   * all three moving parts — the slide, the ground, the padding — and switches
+   * them off under reduced motion in one place.
    */
   useEffect(() => {
     const header = headerRef.current;
@@ -657,8 +415,6 @@ export function SiteHeader() {
       reading = next;
     };
 
-    /* Coalesced to one read a frame. The smoother fires scroll continuously
-       while it eases, and the work here touches layout. */
     const onScroll = () => {
       if (frame) return;
       frame = window.requestAnimationFrame(read);
@@ -681,74 +437,27 @@ export function SiteHeader() {
     };
   }, []);
 
-  /**
-   * The page moving dismisses the panel.
-   *
-   * Owner, watching it float over content he had scrolled past: could the page
-   * be stopped from scrolling while the pointer is on the menu? The answer is
-   * the other way round — see `menuSurvivesScroll` for why a hover-opened panel
-   * with no visible close control must not take the scroll away.
-   *
-   * Only mounted while the menu is open, so the site carries no listener for
-   * this the rest of the time. The position it compares against is read once,
-   * when the effect runs: what matters is how far the page has moved SINCE the
-   * menu opened, not between two frames — a slow scroll would never trip a
-   * frame-to-frame test and would leave the panel behind anyway.
-   */
-  useEffect(() => {
-    if (!megaMenuOpen) return;
-
-    const openedAt = window.scrollY;
-
-    const onScroll = () => {
-      if (!menuSurvivesScroll(openedAt, window.scrollY)) closeMegaMenu();
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-    /* `closeMegaMenu` is redeclared every render, and listing it here would
-       tear this listener down and rebuild it on each one. What the effect
-       depends on is whether the menu is open, which is what it watches. */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [megaMenuOpen]);
-
-  /* Held open by its own panel. Separate from the effect above so the listener
-     is not torn down and rebuilt every time a menu opens. */
+  /* An open menu brings a hidden bar back: the burger that closes it is on
+     the bar. */
   useEffect(() => {
     const header = headerRef.current;
-    if (!header) return;
-    if (!megaMenuOpen && !mobileMenuOpen) return;
+    if (!header || !menuOpen) return;
     if (header.dataset.header === "hidden") header.dataset.header = "shown";
-    /* The reveal effect keeps its own reading and only writes on a change, so
-       without this it still believes the bar is hidden and the next frame of
-       scrolling puts it back. */
     header.dispatchEvent(new CustomEvent("mardal:header-shown"));
-  }, [megaMenuOpen, mobileMenuOpen]);
+  }, [menuOpen]);
+
+  /* On a phone the words step aside while a list is open; on a wide window
+     they never do. */
+  const indexAway = !wide && activeMenu !== null;
 
   return (
     <header
-      /* The open menu is a white ground, and the bar is drawn ON it from the
-         links rightward — so while it is open those words are white on white.
-         This is the hook that turns them over. The wordmark is not included:
-         it sits in the first column, to the left of where the ground begins,
-         and stays on the page's black. */
-      className={`site-header${
-        mobileMenuOpen ? " site-header--mobile-menu-open" : ""
-      }${megaMenuOpen ? " site-header--mega-open" : ""}`}
+      className={`site-header${menuOpen ? " site-header--mobile-menu-open" : ""}`}
       ref={headerRef}
       /* The resting state, rendered rather than set on mount: the stylesheet
          keys the bar's ground and padding off this attribute, so a bar that
          arrives without one paints the scrolled treatment for a frame. */
       data-header="top"
-      onPointerEnter={clearCloseTimer}
-      onPointerLeave={(event) => {
-        if (event.pointerType === "mouse") scheduleMegaMenuClose();
-      }}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) {
-          scheduleMegaMenuClose(80);
-        }
-      }}
     >
       <Container>
         <nav
@@ -756,8 +465,12 @@ export function SiteHeader() {
           aria-label="Main navigation"
           ref={navigationRef}
         >
-          <Link className="brand" href="/" aria-label="Mardal home">
-            {/* Supplied vector wordmark is already optimized and self-contained. */}
+          <Link
+            className="brand"
+            href="/"
+            aria-label="Mardal home"
+            onClick={closeMenu}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="brand-logo"
@@ -768,265 +481,57 @@ export function SiteHeader() {
             />
           </Link>
 
-          <ul className="nav-list">
-            {menu.map((item) => {
-              /* Two questions, asked separately.
-
-                 A word with children has a panel, so hovering it opens them and
-                 it carries the chevron that says so. A word is a LINK only if it
-                 both has a route and has not been marked `panelOnly` — the
-                 owner's call of 2026-08-24 that Services, Products and Company
-                 open their lists and go nowhere on a press.
-
-                 `panelOnly` is read here rather than inferred, because the fact
-                 the header needs is no longer visible in the href. All four
-                 entries point at real routes now; three of them are simply not
-                 meant to be pressed. Clients is the one that is both. */
-              const isPage = item.href.startsWith("/") && !item.panelOnly;
-              const hasPanel = item.items.length > 0;
-
-              /* Arriving at a word does the same thing whichever element it is:
-                 open its list, or close whatever list is open if it has none.
-                 The closing half matters because the words sit inside the
-                 panel's own box — that is what keeps it open while you run
-                 along the bar — so a word with nothing behind it is the only
-                 thing that can say so. */
-              const reach = () =>
-                hasPanel ? openMegaMenu(item.key) : closeMegaMenu();
-
-              /* The keyboard's way into the panel, and the reason it needs one:
-                 the panel is shared and rendered after this whole list, so Tab
-                 from a trigger lands on the NEXT trigger, which opens its own
-                 panel on focus. A reader tabbing along the bar watched the list
-                 they wanted disappear before they could reach it, and only the
-                 last entry's panel — the one with nothing after it to tab to —
-                 was ever reachable. Five service-page links could not be got at
-                 from the header by keyboard at all.
-
-                 Which keys mean this lives in lib/nav-keys.ts with its own test,
-                 not here: it is the decision, and it includes one case with no
-                 symptom yet (an entry with no children must not swallow the key).
-
-                 The panel this focuses is already the right one — arriving at the
-                 word opened it — so this is a focus move and not an open. */
-              const onTriggerKeyDown = (
-                event: ReactKeyboardEvent<HTMLElement>,
-              ) => {
-                const intent = navTriggerIntent(event.key, hasPanel);
-                if (intent === "pass") return;
-
-                /* Only now. Taken earlier this would stop the page scrolling on
-                   every ArrowDown pressed anywhere on the bar. */
-                event.preventDefault();
-                openMegaMenu(item.key);
-                setPanelEntry(intent === "enter-first" ? "first" : "last");
-              };
-
-              return (
-                <li key={item.key}>
-                  {isPage ? (
-                    <Link
-                      className={`nav-link${hasPanel ? " nav-trigger" : ""}`}
-                      href={item.href}
-                      /* No onClick: the click belongs to the link. The panel is
-                         opened by arriving at the word and closed by leaving
-                         it, which is the whole of its behaviour here — a word
-                         that both goes somewhere and toggles something on the
-                         same press would be neither. */
-                      aria-expanded={
-                        hasPanel
-                          ? megaMenuOpen && activeMenu === item.key
-                          : undefined
-                      }
-                      aria-controls={hasPanel ? "desktop-mega-menu" : undefined}
-                      aria-current={
-                        pathname === item.href ? "page" : undefined
-                      }
-                      data-nav-trigger={hasPanel || undefined}
-                      id={hasPanel ? `nav-trigger-${item.key}` : undefined}
-                      onFocus={reach}
-                      onKeyDown={onTriggerKeyDown}
-                      onPointerEnter={(event) => {
-                        if (event.pointerType === "mouse") reach();
-                      }}
-                    >
-                      {item.label}
-                    </Link>
-                  ) : (
-                    <button
-                      className="nav-link nav-trigger"
-                      type="button"
-                      aria-expanded={megaMenuOpen && activeMenu === item.key}
-                      aria-controls="desktop-mega-menu"
-                      data-nav-trigger
-                      id={`nav-trigger-${item.key}`}
-                      onClick={() => {
-                        if (megaMenuOpen && activeMenu === item.key) {
-                          setMegaMenuOpen(false);
-                          return;
-                        }
-
-                        openMegaMenu(item.key);
-                      }}
-                      onFocus={reach}
-                      onKeyDown={onTriggerKeyDown}
-                      onPointerEnter={(event) => {
-                        if (event.pointerType === "mouse") reach();
-                      }}
-                    >
-                      {item.label}
-                    </button>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-
+          {/* The burger: two bars, which cross into a close mark when the menu
+              is open. The words are for anything reading the page rather than
+              looking at it. */}
           <button
             className="mobile-menu-toggle"
             type="button"
-            aria-expanded={mobileMenuOpen}
+            ref={toggleRef}
+            aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
             onClick={() => {
-              setMegaMenuOpen(false);
-              setMobileActiveMenu(null);
-              setMobileMenuOpen((open) => !open);
+              if (menuOpen) {
+                closeMenu();
+                return;
+              }
+              setMenuOpen(true);
+              setDisplayMenu(FIRST_LIST);
+              setActiveMenu(wide ? FIRST_LIST : null);
             }}
           >
-            {mobileMenuOpen ? "Close" : "Menu"}
+            <span className="mobile-menu-toggle__bars" aria-hidden="true">
+              <span />
+              <span />
+            </span>
+            <span className="visually-hidden">
+              {menuOpen ? "Close menu" : "Menu"}
+            </span>
           </button>
-
-          {/* Named by the word that opened it. One panel serves all four
-              entries, so without this a reader who has just moved focus into it
-              is told only "navigation" and has to infer which list they are
-              standing in from the links themselves. */}
-          <div
-            className="mega-menu"
-            id="desktop-mega-menu"
-            ref={megaMenuRef}
-            aria-hidden={!megaMenuOpen}
-            aria-labelledby={`nav-trigger-${activeMenu}`}
-            inert={megaMenuOpen ? undefined : true}
-          >
-            {/* The white, as its own layer. It used to be the panel's own
-                background, which meant the only way to bring it in was to fade
-                the panel — and that faded the names with it, on top of the wipe
-                they were already doing. Given a layer of its own it can be
-                drawn across on its own. */}
-            <div className="mega-menu__ground" ref={megaMenuGroundRef} />
-
-            <ul className="mega-menu__links">
-              {activeItem.items.map((item) => (
-                <li key={item.label} data-mega-entry>
-                  <a
-                    className="mega-menu__link"
-                    href={item.href}
-                    onClick={() => setMegaMenuOpen(false)}
-                  >
-                    <span className="mega-menu__label">{item.label}</span>
-                    <PixelArrow
-                      className="mega-menu__arrow"
-                      direction="up-right"
-                      size="compact"
-                    />
-                  </a>
-                </li>
-              ))}
-            </ul>
-
-            {/* The foot of the panel, on the two edges the names above it run
-                between: the small print on the left, the way in on the right.
-                One element as far as the animation is concerned. */}
-            <div className="mega-menu__foot" data-mega-foot>
-              {/* The same line the footer carries. It is the one place these
-                  can be reached without first travelling the whole page. */}
-              <div className="mega-menu__legal">
-                <span className="mega-menu__copy">
-                  {`© ${new Date().getFullYear()} Mardal`}
-                </span>
-
-                {footer.legal.map((link) => (
-                  <a
-                    className="mega-menu__legal-link"
-                    href={link.href}
-                    key={link.href}
-                    onClick={() => setMegaMenuOpen(false)}
-                  >
-                    {link.label}
-                  </a>
-                ))}
-
-                {/* Last in the legal line, which is the one row on the site
-                    that already draws its own separators: every sibling after
-                    the first takes a hairline before it, so this arrives with
-                    the divider it needs and nothing to add. It closes the menu
-                    like the links beside it — the page has just changed colour
-                    underneath, and holding the panel open over it hides the
-                    thing you pressed the button to see. */}
-                <ThemeToggle
-                  className="mega-menu__theme"
-                  onToggle={() => setMegaMenuOpen(false)}
-                />
-              </div>
-
-              {/* Moved off the bar. It stood there in white on the black
-                  header, and the header had to repaint it black every time the
-                  menu opened underneath it. Here it only ever stands on white
-                  and can simply be the ink.
-
-                  To /contact since that page was written, 2026-09-13 — and
-                  "Start a project" in the mobile menu with it. Both went to the
-                  footer's `#contact` while /contact only said "Working on it". */}
-              <Button
-                className="mega-menu__cta"
-                href="/contact"
-                variant="secondary"
-                onClick={() => setMegaMenuOpen(false)}
-              >
-                Hire us
-              </Button>
-            </div>
-          </div>
         </nav>
       </Container>
 
       <div
-        className={`mobile-menu${mobileMenuOpen ? " mobile-menu--open" : ""}`}
+        className={`mobile-menu${wide ? " mobile-menu--wide" : ""}${
+          menuOpen ? " mobile-menu--open" : ""
+        }`}
         id="mobile-navigation"
-        aria-hidden={!mobileMenuOpen}
-        inert={mobileMenuOpen ? undefined : true}
+        aria-hidden={!menuOpen}
+        inert={menuOpen ? undefined : true}
       >
         <Container className="mobile-menu__content">
           <div className="mobile-menu__viewport">
             <div
               className="mobile-menu__index"
-              ref={mobileIndexRef}
-              aria-hidden={mobileActiveMenu !== null}
-              inert={mobileActiveMenu ? true : undefined}
+              ref={indexRef}
+              aria-hidden={indexAway}
+              inert={indexAway ? true : undefined}
             >
               <ul className="mobile-menu__index-list">
                 {menu.map((item) => {
-                  /* The same question the bar asks, and it has to be the same
-                     question: a word the owner has said is not a destination is
-                     not one on a phone either. So `panelOnly` decides here too,
-                     and a tap on Services, Products or Company opens the screen
-                     behind the word instead of going to a page.
-
-                     **That is also how the five service pages became reachable
-                     on a phone again.** While those three were links, a tap went
-                     to the placeholder and the detail list under them could not
-                     be opened at all — the sub-pages were in the markup and
-                     behind no gesture. Clients stays a link: its seven sectors
-                     are a hover affordance, read on the homepage on this screen.
-                     The index keeps its own mark either way, so the list still
-                     reads as one list — the arrow means the page for a link and
-                     the screen behind the word for the rest.
-
-                     A word with no link of its own is current when the page you
-                     are on is one of the pages behind it. That used to be
-                     spelled out for Services alone, which was correct while it
-                     was the only such word; now there are three, and Products
-                     and Company would silently have lost their mark. */
+                  /* Services, Products and Company open their lists and go
+                     nowhere — owner's call, 2026-08-24: disclosures, not
+                     destinations. Clients is the one word that is a page. */
                   const isLink = item.href.startsWith("/") && !item.panelOnly;
                   const isCurrent = isLink
                     ? pathname === item.href
@@ -1044,6 +549,24 @@ export function SiteHeader() {
                       variant="corner"
                     />
                   );
+                  /* The word in a mask the height of its line, so it can rise
+                     out of it; beside it, how many pages are behind it. The
+                     count is a fact the list under it states again, so it is
+                     for the eye only. Clients is one page and has none. */
+                  const name = (
+                    <span className="mobile-menu__name">
+                      <span className="mobile-menu__word">
+                        <span className="mobile-menu__word-inner" data-menu-word>
+                          {item.label}
+                        </span>
+                      </span>
+                      {item.items.length > 0 ? (
+                        <sup className="mobile-menu__count" aria-hidden="true">
+                          {item.items.length}
+                        </sup>
+                      ) : null}
+                    </span>
+                  );
 
                   return (
                     <li key={item.key} data-mobile-menu-entry>
@@ -1052,12 +575,9 @@ export function SiteHeader() {
                           className={className}
                           href={item.href}
                           aria-current={isCurrent ? "page" : undefined}
-                          onClick={() => {
-                            setMobileMenuOpen(false);
-                            setMobileActiveMenu(null);
-                          }}
+                          onClick={closeMenu}
                         >
-                          <span>{item.label}</span>
+                          {name}
                           {mark}
                         </Link>
                       ) : (
@@ -1065,12 +585,21 @@ export function SiteHeader() {
                           className={className}
                           type="button"
                           aria-controls="mobile-menu-detail"
-                          onClick={() => {
-                            setMobileDisplayMenu(item.key);
-                            setMobileActiveMenu(item.key);
+                          aria-expanded={activeMenu === item.key}
+                          onClick={() => showList(item.key)}
+                          /* On a wide window the list beside the words
+                             follows the pointer and the keyboard, so reading
+                             across them needs no click. */
+                          onPointerEnter={(event) => {
+                            if (wide && event.pointerType === "mouse") {
+                              showList(item.key);
+                            }
+                          }}
+                          onFocus={() => {
+                            if (wide) showList(item.key);
                           }}
                         >
-                          <span>{item.label}</span>
+                          {name}
                           {mark}
                         </button>
                       )}
@@ -1078,45 +607,78 @@ export function SiteHeader() {
                   );
                 })}
               </ul>
+
+              {/* The way in, under the words: to the contact page, which is a
+                  form since 2026-09-13. */}
+              <div className="mobile-menu__cta-row" data-mobile-menu-entry>
+                <a
+                  className="mobile-menu__cta"
+                  href="/contact"
+                  onClick={closeMenu}
+                >
+                  Start a project
+                  <PixelArrow
+                    className="mobile-menu__cta-arrow"
+                    direction="up-right"
+                    size="small"
+                  />
+                </a>
+              </div>
             </div>
 
             <div
               className="mobile-menu__detail"
               id="mobile-menu-detail"
-              ref={mobileDetailRef}
-              aria-hidden={mobileActiveMenu === null}
-              inert={mobileActiveMenu ? undefined : true}
+              ref={detailRef}
+              aria-hidden={activeMenu === null}
+              inert={activeMenu ? undefined : true}
             >
-              <ul className="mobile-menu__detail-list">
-                {mobileItem.items.map((link) => {
-                  const isCurrent =
-                    link.href.startsWith("/") && pathname === link.href;
+              {/* Services in its two halves, each under its heading; the other
+                  lists as one. One wrapper, so the column still sees one list
+                  followed by the way back. */}
+              {displayGroups ? (
+                <div className="mobile-menu__detail-groups">
+                  {displayGroups.map((group) => {
+                    const headingId = `mobile-menu-group-${group.label.toLowerCase()}`;
 
-                  return (
-                    <li key={link.label} data-mobile-detail-entry>
-                      <a
-                        className={`mobile-menu__detail-link${
-                          isCurrent ? " is-current" : ""
-                        }`}
-                        href={link.href}
-                        aria-current={isCurrent ? "page" : undefined}
-                        onClick={() => {
-                          setMobileMenuOpen(false);
-                          setMobileActiveMenu(null);
-                        }}
-                      >
-                        <span>{link.label}</span>
-                      </a>
-                    </li>
-                  );
-                })}
-              </ul>
+                    return (
+                      <div className="mobile-menu__detail-group" key={group.label}>
+                        <p
+                          className="eyebrow mobile-menu__detail-heading"
+                          id={headingId}
+                          data-mobile-detail-entry
+                        >
+                          {group.label}
+                        </p>
+                        <ul
+                          className="mobile-menu__detail-list"
+                          aria-labelledby={headingId}
+                        >
+                          {group.items.map(detailLink)}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <ul className="mobile-menu__detail-list">
+                  {displayItem.items.map(detailLink)}
+                </ul>
+              )}
 
+              {/* A phone's way back to the four words. A wide window shows
+                  both at once, so it has nothing to go back to and the
+                  stylesheet takes this away there.
+
+                  Owner, 2026-08-27: the word is Back — it printed the
+                  section's own name, which reads as a link deeper in rather
+                  than the way out. The label keeps the section for a screen
+                  reader, which meets this button with no list in view. */}
               <button
                 className="mobile-menu__back"
                 type="button"
-                aria-label={`Back to the main menu from ${mobileItem.label}`}
-                onClick={() => setMobileActiveMenu(null)}
+                aria-label={`Back to the main menu from ${displayItem.label}`}
+                onClick={() => setActiveMenu(null)}
                 data-mobile-detail-entry
               >
                 <PixelArrow
@@ -1124,39 +686,50 @@ export function SiteHeader() {
                   direction="left"
                   size="small"
                 />
-                <span>{mobileItem.label}</span>
+                <span>Back</span>
               </button>
             </div>
           </div>
 
-          <Button
-            className="mobile-menu__cta"
-            href="/contact"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setMobileActiveMenu(null);
-            }}
-          >
-            <span>Start a project</span>
-            <PixelArrow
-              className="mobile-menu__cta-arrow"
-              direction="up-right"
-              size="small"
-            />
-          </Button>
+          {/* The foot: the marks and the switch on one line, the address and
+              the number under them. The switch does not close the menu: the
+              menu is the whole screen, so turning it over is the feedback. */}
+          <div className="mobile-menu__foot" ref={footRef}>
+            <div className="mobile-menu__marks">
+              {/* Marks, not links: the accounts exist but their addresses have
+                  not been supplied, and a guessed profile URL is worse than a
+                  mark that waits. */}
+              <ul className="mobile-menu__social">
+                {footer.social.map((name) => (
+                  <li key={name}>
+                    <SocialIcon name={name} />
+                  </li>
+                ))}
+              </ul>
 
-          {/* The mega menu is not rendered at this width, so the sheet carries
-              its own. Third child of a two-row grid: it takes an implicit auto
-              row and the scrolling index above it gives up the height, rather
-              than the sheet growing past the viewport. Outside both GSAP
-              timelines, like the call to action above it. */}
-          <ThemeToggle
-            className="mobile-menu__theme"
-            onToggle={() => {
-              setMobileMenuOpen(false);
-              setMobileActiveMenu(null);
-            }}
-          />
+              <ThemeToggle className="mobile-menu__theme" />
+            </div>
+
+            <dl className="mobile-menu__contact">
+              {SHEET_CONTACT.map((detail) => (
+                <div className="mobile-menu__contact-row" key={detail.label}>
+                  <dt className="visually-hidden">{detail.label}</dt>
+                  <dd className="mobile-menu__contact-value">
+                    {detail.href ? (
+                      <a
+                        className="mobile-menu__contact-link"
+                        href={detail.href}
+                      >
+                        {detail.value}
+                      </a>
+                    ) : (
+                      detail.value
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </Container>
       </div>
     </header>

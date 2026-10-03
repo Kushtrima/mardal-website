@@ -148,7 +148,17 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /Mental health/);
   assert.match(html, /Automotive/);
   assert.match(html, /Events/);
-  assert.doesNotMatch(html, /cases-record|Selected/);
+  /* `cases-record` was the case-study section's class, and it stays gone: six
+     designs of it were tried on 2026-07-28 and none of them was wanted, so the
+     component, the content, the styles and the stock photography all went.
+
+     **`Selected` came off this guard on 2026-08-27**, on the owner's word: five
+     of the works on the homepage, under Built across industries. What is back is
+     not that section — no cards, no photographs, no stock, no grid — it is five
+     names under five redaction bars, headed with the two words the Clients
+     page's own rail already uses. The class is what this guards; the word was
+     standing next to it. */
+  assert.doesNotMatch(html, /cases-record/);
   // No drawn mark of any kind, and no panel: each product leads with a
   // photograph instead.
   assert.doesNotMatch(html, /product-mark|product-card|product__panel/);
@@ -195,84 +205,108 @@ test("server-renders the Mardal homepage", async () => {
      A green suite after a deliberate change is the symptom worth naming here.
      That is what a missing assertion looks like from the outside. */
 
-  /* The panel is its list and nothing else: no eyebrow, no sentence under it,
-     no 01-07 counters. Each restated what the word you pressed already said. */
-  assert.doesNotMatch(html, /mega-menu__(meta|eyebrow|description|number|view-all)/);
-  assert.match(html, /class="mega-menu__links"/);
+  /* **The bar is the wordmark and the burger, and nothing else** — owner,
+     2026-10-03: "i want BIG MENU so Only BURGER menu". The words that stood in
+     the bar, and the dropdown under them, are gone at every width; the old
+     header is in backup/2026-10-03-site-header/. */
+  const bar = html.match(/<nav class="site-nav"[\s\S]*?<\/nav>/)?.[0];
+  assert.ok(bar, "the bar is not rendered");
+  assert.match(bar, /class="brand"/);
+  assert.match(
+    bar,
+    /<button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-navigation"/,
+  );
+  assert.match(bar, /class="visually-hidden">Menu</);
+  assert.doesNotMatch(bar, />(Services|Products|Clients|Company|Hire us)</);
+  assert.doesNotMatch(html, /mega-menu|nav-trigger|site-nav__actions/);
 
-  /* **The five services, in the owner's order.** AI & Automation went last on
-     2026-08-25; it had been third, in the middle of the run. Read out of the
-     panel and compared as a LIST, because the names on their own passed while
-     the order was anything at all — which is exactly what happened while this
-     assertion was missing. */
-  const servicesPanel = html.match(/<ul class="mega-menu__links">[\s\S]*?<\/ul>/)?.[0];
-  assert.ok(servicesPanel, "the services panel is not rendered");
+  /* The menu is closed on arrival and out of the tab order while it is. */
+  const sheet = html.match(/<div class="mobile-menu"[^>]*>/)?.[0];
+  assert.ok(sheet, "the menu is not rendered");
+  assert.match(sheet, /id="mobile-navigation"/);
+  assert.match(sheet, /aria-hidden="true"/);
+  assert.match(sheet, /inert=""/);
+
+  /* **The four words, in order.** Services, Products and Company open their
+     lists and go nowhere — owner's call, 2026-08-24: disclosures, not
+     destinations — and Clients is the one word that is a page. */
+  const index = html.match(/<ul class="mobile-menu__index-list">[\s\S]*?<\/ul>/)?.[0];
+  assert.ok(index, "the menu has no words");
   assert.deepEqual(
-    [...servicesPanel.matchAll(/class="mega-menu__label">([^<]*)</g)].map((m) => m[1]),
+    [...index.matchAll(/data-menu-word="true">([^<]*)</g)].map((m) => m[1]),
+    ["Services", "Products", "Clients", "Company"],
+  );
+
+  /* Beside each word with a list, how many pages are behind it — a fact the
+     list states again, so it is hidden from screen readers. Clients is one
+     page and has none. */
+  assert.deepEqual(
+    [...index.matchAll(/class="mobile-menu__count" aria-hidden="true">(\d+)</g)].map((m) => m[1]),
+    ["7", "3", "4"],
+  );
+  for (const label of ["Services", "Products", "Company"]) {
+    assert.match(
+      index,
+      new RegExp(`<button ([^>]*)>(?:(?!</button>)[\\s\\S])*data-menu-word="true">${label}<`),
+      `${label} is not a button in the menu`,
+    );
+  }
+  const clients = index.match(/<a [^>]*>(?:(?!<\/a>)[\s\S])*data-menu-word="true">Clients</)?.[0];
+  assert.ok(clients, "Clients is not a link in the menu");
+  assert.match(clients, /href="\/case-studies"/);
+
+  /* **The seven services, in two halves, in the owner's order.** Split into
+     Development and Creative on 2026-10-03, Development first; it was one list
+     of five. The list the menu opens on is Services, so it is the one the page
+     is served with. Compared as a STRUCTURE — which half each name is under,
+     and in what order — because the names on their own passed while the order
+     was anything at all. */
+  const services = html.match(
+    /<div class="mobile-menu__detail-groups">[\s\S]*?class="mobile-menu__back"/,
+  )?.[0];
+  assert.ok(services, "the services list is not rendered in its two halves");
+  assert.deepEqual(
+    services
+      .split('<div class="mobile-menu__detail-group">')
+      .slice(1)
+      .map((half) => ({
+        heading: half.match(/mobile-menu__detail-heading"[^>]*>([^<]*)</)?.[1],
+        names: [...half.matchAll(/class="mobile-menu__detail-link[^"]*"[^>]*><span>([^<]*)</g)].map(
+          (m) => m[1],
+        ),
+      })),
     [
-      /* Renamed on 2026-08-25 — the labels only; the routes behind them
-         did not move. */
-      "Branding",
-      "Websites",
-      "Software",
-      "CRM Solution",
-      "AI &amp; Automation",
+      {
+        heading: "Development",
+        names: ["Websites", "Software", "CRM Solution", "AI &amp; Automation"],
+      },
+      {
+        /* Branding & Logo is the menu's word only; the page behind it is
+           still Branding, at the same address. */
+        heading: "Creative",
+        names: ["Branding &amp; Logo", "UX/UI Design", "Print Design"],
+      },
     ],
   );
 
-  /* **Services, Products and Company open their lists and go nowhere.** Owner's
-     call: they are disclosures, not destinations. Each still has a real route
-     behind it, so nothing in the markup shows this but the element — a link and
-     a button look identical in a screenshot, and the difference is a chevron
-     and a panel that either open or do not. */
-  for (const label of ["Services", "Products", "Company"]) {
-    const trigger = html.match(new RegExp(`<button ([^>]*)>${label}</button>`))?.[1];
-    assert.ok(trigger, `${label} is not a button in the desktop bar`);
-    assert.match(trigger, /class="nav-link nav-trigger"/);
-    assert.match(trigger, /aria-controls="desktop-mega-menu"/);
-    assert.match(trigger, new RegExp(`id="nav-trigger-${label.toLowerCase()}"`));
-    assert.doesNotMatch(
-      html,
-      new RegExp(`<a [^>]*>${label}</a>`),
-      `${label} is a link again`,
-    );
-  }
-
-  /* **Clients is the one word that goes somewhere, and has no panel.** It was
-     both for a while; the seven sectors its panel held were deleted with the
-     taxonomy, so `items` is empty and the header needed no change to notice —
-     `hasPanel` is `items.length > 0`. */
-  const clientsInBar = html.match(/<a [^>]*>Clients<\/a>/)?.[0];
-  assert.ok(clientsInBar, "Clients is not rendered as a link");
-  assert.match(clientsInBar, /href="\/case-studies"/);
-  assert.match(clientsInBar, /class="nav-link"/);
-  assert.doesNotMatch(clientsInBar, /nav-trigger|aria-controls|aria-expanded/);
-  assert.doesNotMatch(html, /<button[^>]*>Clients<\/button>/);
-  assert.doesNotMatch(servicesPanel, />Finance<|>Healthcare<|>Public Sector</);
-
-  /* One panel serves all three triggers, so a reader who has just moved focus
-     into it is otherwise told only "navigation". Closed on arrival and out of
-     the tab order while it is — `inert` is what stops a reader tabbing into a
-     panel that is not on screen. */
-  const panel = html.match(/<div class="mega-menu"[^>]*>/)?.[0];
-  assert.ok(panel, "the shared panel is not rendered");
-  assert.match(panel, /aria-labelledby="nav-trigger-services"/);
-  assert.match(panel, /inert=""/);
-
-  /* The mobile index asks the same question the bar does: a word the owner said
-     is not a destination is not one on a phone either. It is also what makes
-     the five service pages reachable there — while those three were links, a
-     tap went to the placeholder and the list under them opened for nobody. */
-  for (const label of ["Services", "Products", "Company"]) {
+  /* Each half is a list named by its heading, so a screen reader entering it
+     hears "Creative" rather than a bare list of three. */
+  for (const half of ["development", "creative"]) {
     assert.match(
-      html,
-      new RegExp(`<button ([^>]*)><span>${label}</span>`),
-      `${label} is not a button in the mobile index`,
+      services,
+      new RegExp(`<ul class="mobile-menu__detail-list" aria-labelledby="mobile-menu-group-${half}">`),
+      `the ${half} list is not named by its heading`,
     );
   }
-  assert.match(html, /<a ([^>]*)><span>Clients<\/span>/);
 
-  assert.match(html, /Hire us/);
+  /* Names only — no line of description under any of them. The dropdown of
+     the same day shipped with one and the owner took them out: "why
+     explanation under each menu that is very bad". */
+  assert.doesNotMatch(html, /__summary/);
+
+  /* "Hire us" left with the bar; the way in is "Start a project", in the
+     menu under the four words. */
+  assert.doesNotMatch(html, /Hire us/);
   assert.match(html, /Start a project/);
 
   // Footer — it closes the page rather than ending it.
@@ -297,8 +331,13 @@ test("server-renders the Mardal homepage", async () => {
     (html.match(/class="site-footer__title-line"/g) ?? []).length,
     2,
   );
-  assert.match(html, /Tell us what you want to improve, automate, or create/);
-  assert.match(html, /practical digital solution/);
+  // The paragraph under it came off on 2026-08-27, owner's call: `Let's build
+  // smarter` says it, and a sentence explaining a two-word sentence is a
+  // sentence too many. `contact.body` is still written in the content file, so
+  // this is the only thing standing between it and quietly coming back.
+  assert.doesNotMatch(html, /Tell us what you want to improve/);
+  assert.doesNotMatch(html, /practical digital solution/);
+  assert.doesNotMatch(html, /site-footer__body/);
   assert.doesNotMatch(
     html,
     /moves you forward|what better could look like|build the right/,
@@ -323,59 +362,96 @@ test("server-renders the Mardal homepage", async () => {
   // existed.
   assert.equal((html.match(/class="site-footer__group"/g) ?? []).length, 3);
   assert.doesNotMatch(html, /site-footer__group-title">Clients/);
-  // The ring alone, cropped from the wordmark rather than a second asset.
+  // The ring alone, cropped from the wordmark rather than a second asset. It
+  // came off for one pass on 2026-08-27, when the footer's mark was the name
+  // set at the size of the panel; the owner asked for the icon back and the
+  // spelled-out name gone, so the raster — and the filter that colours it — is
+  // load-bearing again. See theme.test.mjs.
   assert.match(html, /class="site-footer__mark"/);
-  // The bar field, traced: 22 bars, every one 10 wide, on three spans — nine
-  // hanging from the top and stopping halfway, ten standing on the bottom
-  // half, three running the full height.
-  const footerBars = html.match(/<svg class="site-footer__bars"[\s\S]*?<\/svg>/);
-  assert.ok(footerBars, "footer bar field missing");
-  assert.equal((footerBars[0].match(/<rect /g) ?? []).length, 22);
-  assert.equal((footerBars[0].match(/width="10"/g) ?? []).length, 22);
-  assert.equal((footerBars[0].match(/y="0" width="10" height="99"/g) ?? []).length, 9);
-  assert.equal((footerBars[0].match(/y="99" width="10" height="99"/g) ?? []).length, 10);
-  assert.equal((footerBars[0].match(/y="0" width="10" height="198"/g) ?? []).length, 3);
-  // 12 in the three menu groups — five Services, three Products, four Company —
+  assert.doesNotMatch(html, /site-footer__sign/);
+  // **No bar field on the page.** The traced arrangement is still in
+  // `FooterBars.tsx` — the tracing is the expensive part and the layout it was
+  // drawn for could be asked for again — but nothing imports it, and the owner
+  // asked for the vertical lines gone. This is what would catch it coming back
+  // unnoticed.
+  assert.doesNotMatch(html, /site-footer__bars/);
+  // 14 in the three menu groups — seven Services, three Products, four Company —
   // the email and the phone in the details block, and the three legal links in
   // the foot. The address is not a link and the social marks are not links yet.
-  // Was 18 until Team came out of Company on 2026-08-12, 19 while Case Studies
-  // had a column down here, and 25 before `1fbc8cf` took Solutions out.
-  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 17);
+  // 17 until UX/UI Design and Print Design joined Services on 2026-10-03, 18
+  // until Team came out of Company on 2026-08-12, 19 while Case Studies had a
+  // column down here, and 25 before `1fbc8cf` took Solutions out.
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 19);
   // **Team is gone from every menu, not just this one.** The header panels and
   // this footer all read the same array, so an entry that survived in one of
   // them would mean something had been copied that should have been shared.
   assert.doesNotMatch(html, />Team</);
   assert.doesNotMatch(html, /href="#team"/);
-  assert.doesNotMatch(html, /site-footer__column/);
-  // The mark sits under the rule now, with the way back up opposite it, and
-  // the year and the legal links below them.
+  // The retired class was `site-footer__column`, singular. Matched as a whole
+  // class name and not as a substring: the band of small print added on
+  // 2026-08-27 is `site-footer__columns`, and a loose match called that the
+  // dead one coming back.
+  assert.doesNotMatch(html, /class="site-footer__column"/);
+  // ── The shape of the panel ──
+  //
+  // Four arrangements in one day, then cut back to the plainest of them: the
+  // mark, the closing line and the way back up across the top; one band of
+  // small print; the year and the legal links. No ornament. The names the
+  // earlier passes used are asserted gone so none of them can half-return —
+  // `__meta` when the bars sat in a corner, `__head`/`__grid` when the panel
+  // was one filled field, `__slab`/`__index` when it was split in two, and
+  // `__sign` when the name was set at the size of the panel.
+  assert.doesNotMatch(
+    html,
+    /site-footer__meta|site-footer__head|site-footer__grid|site-footer__words|site-footer__slab|site-footer__index/,
+  );
+  const bandOrder = ["__lead", "__columns", "__legal"].map((band) =>
+    html.indexOf(`site-footer${band}`),
+  );
+  assert.ok(
+    bandOrder.every((at, i) => at > 0 && (i === 0 || at > bandOrder[i - 1])),
+    `footer bands out of order: ${bandOrder.join(", ")}`,
+  );
+  // The mark stands over the closing line, with the way back up opposite them.
   assert.match(
     html,
-    /class="site-footer__meta">[\s\S]*?site-footer__mark[\s\S]*?site-footer__top-link/,
+    /class="site-footer__lead">[\s\S]*?site-footer__mark[\s\S]*?site-footer__title[\s\S]*?site-footer__top-link/,
   );
-  assert.match(html, /class="site-footer__legal">[\s\S]*?© \d{4} Mardal/);
-  // How to reach Mardal — all of it real now, and the phone dialable.
-  assert.equal((html.match(/class="site-footer__detail"/g) ?? []).length, 4);
-  assert.match(html, /site-footer__detail-full">Email</);
-  assert.match(html, /site-footer__detail-full">Phone</);
-  assert.match(html, /site-footer__detail-full">Address</);
-  assert.match(html, /site-footer__detail-full">Follow</);
+  // How to reach Mardal — all of it real, and the phone dialable.
+  //
+  // One `dl` entry now rather than four. The three facts and the marks are one
+  // address between them, so they share a heading instead of each carrying
+  // EMAIL / PHONE / ADDRESS / FOLLOW over it — four headings for a row that
+  // reads itself. The heading is spoken and not drawn; see the base rule on
+  // `__detail-full`.
+  assert.equal((html.match(/class="site-footer__detail"/g) ?? []).length, 1);
+  assert.match(html, /site-footer__detail-full">Contact</);
   assert.match(html, /href="tel:\+38349210999"[^>]*>\+383 49 210 999</);
   // Street first, then postcode and city — the order it is written in,
   // and the one that breaks into two lines a phone can hold.
   assert.match(html, /Rr\.\u00a0\u201cIsa\u00a0Boletini\u201d, 6000\u00a0Gjilan/);
-  // Each row named twice: the word for the wide panel and for anything
-  // listening, the abbreviation for a phone.
-  assert.equal((html.match(/class="site-footer__detail-short"/g) ?? []).length, 3);
-  for (const short of ["EMAIL", "TEL", "STR"]) {
-    assert.match(html, new RegExp(`detail-short" aria-hidden="true">${short}:`));
-  }
+  // **The abbreviations are retired, and that is the point of asserting it.**
+  // Each row used to be named twice — EMAIL / PHONE / ADDRESS on the wide panel
+  // and EMAIL: TEL: STR: on a phone, where a 90px column of full words cost
+  // more than it said. There are no rows any more: the three facts sit under
+  // one spoken heading, so there is nothing left to abbreviate, and the pair of
+  // spans that had to be kept in step with each other is gone with them.
+  assert.doesNotMatch(html, /site-footer__detail-short/);
   assert.doesNotMatch(html, /contact-icon/);
   assert.doesNotMatch(html, /\[Phone number\]|\[Street\]|\[City\]/);
   // Three marks, drawn at the icon weight the rest of the site uses, and not
   // links: the accounts exist but their addresses have not been given, and a
   // guessed profile URL is worse than a mark that waits for one.
-  assert.equal((html.match(/class="social-icon"/g) ?? []).length, 3);
+  //
+  // Counted inside the footer rather than across the document. The mobile
+  // menu's sheet grew a foot of its own on 2026-08-27 and carries the same
+  // three, so a page-wide count reads six and says nothing about where either
+  // set is. Both numbers are asserted, because "six somewhere" is what this
+  // check used to mean by accident and neither half should be free to move.
+  const footerHtml = html.slice(html.indexOf("<footer"));
+  assert.ok(footerHtml.length > 0, "the homepage renders no footer");
+  assert.equal((footerHtml.match(/class="social-icon"/g) ?? []).length, 3);
+  assert.equal((html.match(/class="social-icon"/g) ?? []).length, 6);
   for (const name of ["Instagram", "Facebook", "LinkedIn"]) {
     assert.match(html, new RegExp(`aria-label="${name}"`), `missing ${name}`);
     assert.doesNotMatch(html, new RegExp(`<a[^>]*>${name}<`));
@@ -394,7 +470,11 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /data-reveal-item/);
   // Every section on the page is one, including Why Mardal.
   assert.match(html, /class="why-section"[^>]*data-route-section/);
-  assert.equal((html.match(/<section class="[^"]*"[^>]*data-route-section/g) ?? []).length, 5);
+  /* Six since 2026-08-27: Selected work went in under Built across industries.
+     Counted rather than listed, so a section added without one is caught — the
+     entrance is applied by `SectionEnter` to `main > section[data-route-section]`
+     and a section without the attribute simply never arrives. */
+  assert.equal((html.match(/<section class="[^"]*"[^>]*data-route-section/g) ?? []).length, 6);
 
   // Artificial Intelligence + Human Creativity, under the hero.
   assert.match(html, /class="fusion-section"[^>]*data-route-section/);
@@ -868,15 +948,17 @@ test("the menu points at the service pages that exist", async () => {
   assert.match(html, /href="\/services\/crm-solution"/);
   assert.match(html, /href="\/services\/websites"/);
   assert.match(html, /href="\/services\/branding"/);
+  assert.match(html, /href="\/services\/ux-ui-design"/);
+  assert.match(html, /href="\/services\/print-design"/);
 
   /* Not a list of strings — every href the panel carries is fetched. The old
      version of this test asserted three literals and would have gone on passing
      with the route renamed underneath it, which is exactly what happened to
      `/services/web-platforms-apps`. */
   const hrefs = [
-    ...html.matchAll(/class="mega-menu__link" href="(\/services\/[^"]+)"/g),
+    ...html.matchAll(/class="mobile-menu__detail-link[^"]*" href="(\/services\/[^"]+)"/g),
   ].map((m) => m[1]);
-  assert.equal(hrefs.length, 5);
+  assert.equal(hrefs.length, 7);
   for (const href of hrefs) {
     assert.equal(
       (await render(href)).status,
@@ -983,8 +1065,9 @@ test("server-renders the Clients hero", async () => {
      here now that the menu comes straight to it. */
   assert.doesNotMatch(html, /arvena-ai-case-study/);
 
-  /* The header on this page points at the page it is on, and says so. */
-  const clientsLink = html.match(/<a [^>]*>Clients<\/a>/)?.[0];
+  /* The menu on this page points at the page it is on, and says so. In the
+     menu since the burger of 2026-10-03, where the word is set in a span. */
+  const clientsLink = html.match(/<a [^>]*>(?:(?!<\/a>)[\s\S])*data-menu-word="true">Clients</)?.[0];
   assert.ok(clientsLink, "Clients is not rendered as a link");
   assert.match(clientsLink, /aria-current="page"/);
 
@@ -1118,21 +1201,13 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
   }
 
 
-  /* **A label over each fact, and none over the name.** That is the whole of the
-     owner's distinction, 2026-08-25: the name is the card's heading and a word
-     above a heading is a caption on it. Both halves asserted — a label arriving
-     over the name would be the obvious way to "finish" this card, and nothing
-     else here would notice. */
-  assert.deepEqual(
-    [...cardMarkup.matchAll(/<dt>([^<]*)<\/dt>/g)].map((m) => m[1]),
-    Array.from({ length: 8 }, () => ["Location", "Industry"]).flat(),
-  );
-  assert.doesNotMatch(
-    cardMarkup,
-    /<dt>[^<]*<\/dt>\s*<[^>]*clients-card__name/,
-    "a label has appeared over the card's name",
-  );
-  assert.doesNotMatch(cardMarkup, /<dt>Client<\/dt>|<dt>Name<\/dt>/);
+  /* **No labels on the card — owner, 2026-09-30.** From 2026-08-25 there was a
+     label over each fact and none over the name; he has taken the two off, and
+     the values stand under the name alone, the way his own portfolio sets its
+     work. Asserted as an absence because a label is the obvious way to "finish"
+     a card like this, and nothing else here would notice one arriving. */
+  assert.doesNotMatch(cardMarkup, /<(dl|dt|dd)[\s>]/);
+  assert.doesNotMatch(cardMarkup, />(Location|Industry|Service|Client|Name)</);
 
   /* Every card carries a picture in a box of the same shape. Four tints cycled
      by position, so no plate sits under its own colour. */
@@ -1173,15 +1248,15 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
      worse than eight brackets. */
   assert.doesNotMatch(all, /\[Project|\[Client name\]|\[Location\]/);
 
-  /* **Two lines under each name: where, then what the client does.** The
-     industry came back on 2026-08-25 after a day off the card — it left when it
-     WAS the rail's taxonomy and the card was repeating the filter that had put
-     it there, and it returned once the rail began filtering by discipline
-     instead, because the two now say different things.
+  /* **Three lines under each name: the client's industry, the service, and
+     where** — owner, 2026-09-30, in that order, from his own portfolio. The
+     industry is the line the rail does not repeat: the rail files by
+     discipline, and the service line is those same disciplines, every one the
+     entry lists.
 
-     Read as PAIRS rather than as one flat list. Flat, a location landing in an
-     industry's place — or one card losing a line and shifting every pair after
-     it — would still be sixteen strings drawn from the right two sets. */
+     Read per CARD rather than as one flat list. Flat, a place landing in an
+     industry's slot — or one card losing a line and shifting every line after
+     it — would still be twenty-four strings drawn from the right three sets. */
   const COUNTRIES = ["Switzerland", "Germany", "Austria", "Kosovo"];
   const SECTORS = [
     "Finance",
@@ -1192,13 +1267,31 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
     "Logistics",
     "Public Sector",
   ];
-  const pairs = [
+  /* The rail's seven, as the server writes them — the ampersand escaped. */
+  const DISCIPLINES = [
+    "UX/UI Design",
+    "Branding",
+    "Websites",
+    "Applications",
+    "Software",
+    "CRM",
+    "AI &amp; Automation",
+  ];
+  const facts = [
     ...cardMarkup.matchAll(
-      /<dt>Location<\/dt><dd>([^<]*)<[\s\S]*?<dt>Industry<\/dt><dd>([^<]*)</g,
+      /class="clients-card__name">[^<]*<\/h3><p class="clients-card__fact">([^<]*)<\/p><p class="clients-card__fact">([^<]*)<\/p><p class="clients-card__fact">([^<]*)<\/p>/g,
     ),
   ];
-  assert.equal(pairs.length, 8);
-  for (const [, place, sector] of pairs) {
+  assert.equal(facts.length, 8);
+  for (const [, sector, service, place] of facts) {
+    /* The industry is the one line on a card that is not invented: it is
+       derived from the entry's own sector, out of the list declared once in
+       content/home.ts that the homepage reads too. */
+    assert.ok(SECTORS.includes(sector), `"${sector}" is not one of the seven`);
+    assert.ok(
+      service.split(", ").every((one) => DISCIPLINES.includes(one)),
+      `"${service}" is not a list of the rail's disciplines`,
+    );
     /* Unspecific on purpose — a country, not a city or an address — asserted as
        a closed set, because "unspecific" is the kind of instruction a later
        edit satisfies once and then forgets. */
@@ -1206,16 +1299,12 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
       COUNTRIES.includes(place),
       `"${place}" is more specific than a country`,
     );
-    /* The industry is the one line on a card that is not invented: it is
-       derived from the entry's own sector, out of the list declared once in
-       content/home.ts that the homepage reads too. */
-    assert.ok(SECTORS.includes(sector), `"${sector}" is not one of the seven`);
   }
 
   /* Read out of the cards, not off the page: Next embeds the whole tree a
      second time as its RSC payload, so counting an attribute document-wide
      counts everything twice. */
-  assert.equal((cardMarkup.match(/class="clients-card__fact"/g) ?? []).length, 16);
+  assert.equal((cardMarkup.match(/class="clients-card__fact"/g) ?? []).length, 24);
 
   /* **One card is a link, and only one.** The pilot story is the only entry
      with a page behind it; the other seven go nowhere on purpose, because a
@@ -2296,4 +2385,140 @@ test("the roll call adds a rule and never takes one away", () => {
   assert.match(grid, /gap:\s*var\(--column-gap\)/);
   const roll = bare.indexOf(".industries-roll {");
   assert.match(bare.slice(roll, bare.indexOf("}", roll)), /grid-column:\s*2 \/ -1/);
+});
+
+test("selected work is five pictures, scattered, under covers", async () => {
+  const html = await (await render("/")).text();
+  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  const at = main.indexOf('class="work-section"');
+  assert.ok(at > 0, "the selected work section is not on the page");
+  const section = main.slice(at, main.indexOf("</section>", at));
+
+  /* ⚠ **THE FIVE NAMES ON THE HOMEPAGE ARE INVENTED AND MUST NOT SHIP.**
+
+     The same assertion the Clients page carries over the same eight, and it is
+     here for the one thing that page does not have: this is the front door.
+     Clients is a page a reader chooses to open; the homepage is the one they
+     land on. None of these is a company Mardal has worked for. The real archive
+     is in PRODUCT.md, behind a naming decision nobody has made.
+
+     Delete this in the same commit that puts real names in — and note it will
+     not go quietly: `content/home.ts` slices these off `clientEntries`, so the
+     Clients page's assertion and this one fail together, which is the point. */
+  assert.deepEqual(
+    [...section.matchAll(/<p class="work-piece__name">([^<]*)</g)].map((m) => m[1]),
+    ["Nordvik", "Alturi", "Solvei", "Marren", "Brekk"],
+  );
+  /* **Under each name, three facts — owner, 2026-09-30, from his own portfolio's
+     featured work:** industry, service and place, one to a line, in that order.
+     Read off the same entries as the names, so they are as invented as the
+     names and go when they go. Every discipline an entry lists is on its
+     service line, because the Clients rail files it under each of them. */
+  assert.deepEqual(
+    [...section.matchAll(/<li class="work-piece">([\s\S]*?)<\/li>/g)].map((piece) =>
+      [
+        ...piece[1].matchAll(
+          /<p class="work-piece__(name|industry|service|location)">([^<]*)<\/p>/g,
+        ),
+      ].map((m) => `${m[1]}: ${m[2]}`),
+    ),
+    [
+      ["name: Nordvik", "industry: Finance", "service: UX/UI Design, Branding, Websites", "location: Switzerland"],
+      ["name: Alturi", "industry: Finance", "service: Software, CRM", "location: Germany"],
+      ["name: Solvei", "industry: Healthcare", "service: UX/UI Design, Websites", "location: Switzerland"],
+      ["name: Marren", "industry: Healthcare", "service: Applications, Software", "location: Austria"],
+      ["name: Brekk", "industry: Manufacturing", "service: Software, AI &amp; Automation", "location: Germany"],
+    ],
+  );
+
+  /* ⚠ **AND THE FIVE PICTURES ARE STOCK, ON A THIRD PARTY'S SERVER.** The same
+     guard the Clients index carries over its eight, for the same reason and now
+     on the page that matters most: stock photography is on this site's rejected
+     list, every one of these frames is of something with nothing to do with the
+     work, and it is a live request to picsum.photos on every plate. Delete it in
+     the commit that puts real screenshots in.
+
+     Counted as five DISTINCT seeds, not five matches: this route is
+     server-rendered, so the RSC payload after the markup repeats every `src`. */
+  const seeds = new Set(
+    [...section.matchAll(/https:\/\/picsum\.photos\/seed\/([a-z0-9-]+)/g)].map(
+      (m) => m[1],
+    ),
+  );
+  assert.equal(seeds.size, 5);
+
+  /* Decorative, so every one of them is silent to a screen reader — describing a
+     placeholder to somebody is worse than saying nothing. And every one carries
+     its intrinsic size, so the scatter does not move as the frames land. */
+  assert.equal((section.match(/class="work-piece__art"/g) ?? []).length, 5);
+  assert.doesNotMatch(section, /class="work-piece__art"[^>]*alt="[^"]+"/);
+  assert.equal(
+    (section.match(/class="work-piece__art"[^>]*width="640" height="360"/g) ?? []).length,
+    5,
+  );
+
+  /* **The finished state is what is server-rendered.** Every cover is an empty
+     span the stylesheet leaves collapsed, and `WorkReveal` is what puts them on
+     before taking them off. So this asserts the thing a reader without
+     JavaScript gets: five pictures, and five covers that show nothing. A reveal
+     that hid the pictures in the markup would pass every other assertion in this
+     file and ship a blank section to anyone whose script never arrived. */
+  assert.equal(
+    (section.match(/class="work-piece__cover" aria-hidden="true" data-work-cover/g) ?? [])
+      .length,
+    5,
+  );
+
+  /* Little text, which is what was asked for: one label, and four short lines
+     under each picture. The
+     label heads the section rather than captioning it, so it is the `h2` the
+     section is named by — and it is the Clients rail's own two words, so a
+     reader who follows this through meets the phrase it promised. */
+  assert.match(section, /<h2 class="work-title" id="work-title">Selected work<\/h2>/);
+  assert.match(section, /aria-labelledby="work-title"/);
+
+  /* **Every piece opens something, and the plus is why that is not optional.**
+
+     Owner, 2026-08-27: the same hover as the Clients card — the picture darkens
+     and a cross is drawn on it. That treatment is written in the stylesheet for
+     `[data-opens]`/`[data-opens-mark]` and the note over it is explicit that it
+     belongs only to a card that goes somewhere: a plus under the pointer on a
+     card answering with an empty page is the promise this site refuses. So this
+     asserts the pair — five links, and the two hooks on every one of them.
+
+     Five anchors and no more: the section has no CTA of its own, because the
+     pieces ARE the way through and `Explore All` sits immediately above them. */
+  const links = [...section.matchAll(/<a ([^>]*)>/g)].map((m) => m[1]);
+  assert.equal(links.length, 5);
+  for (const attrs of links) {
+    assert.match(attrs, /class="work-piece__link"/);
+    /* `data-opens` is written bare in JSX and React renders it `="true"`, which
+       is the same string the Clients card produces from `"true"`. Matched with
+       the `=` so it cannot be satisfied by `data-opens-mark` instead. */
+    assert.match(attrs, /\sdata-opens="true"/, `a piece opens nothing: ${attrs}`);
+  }
+  assert.equal((section.match(/class="work-piece__plate" data-opens-mark/g) ?? []).length, 5);
+
+  /* **The one with a story goes to the story; the other four go to the index.**
+     Not to a page nobody has written — that is the one thing the Clients index
+     refuses for its own seven, and the refusal is the same here. Asserted as a
+     shape rather than as five strings so a second story landing does not fail
+     this, only a piece pointed at nothing would. */
+  const hrefs = links.map((attrs) => attrs.match(/href="([^"]*)"/)[1]);
+  assert.equal(hrefs.filter((href) => href === "/case-studies").length, 4);
+  assert.deepEqual(
+    hrefs.filter((href) => href !== "/case-studies"),
+    ["/case-studies/healthcare-office-website"],
+  );
+
+  /* The link is named by the company, because the name is INSIDE it. The Clients
+     card wraps the plate alone and has to carry an `aria-label` for that reason;
+     an anchor here whose only content was an image with an empty alt would
+     announce itself as "link" with nothing to say. */
+  assert.doesNotMatch(section, /<a [^>]*class="work-piece__link"[^>]*aria-label/);
+  assert.equal((section.match(/<p class="work-piece__name">/g) ?? []).length, 5);
+
+  /* No bracket reached the page — the one failure mode a placeholder list has
+     that is worse than the placeholders. */
+  assert.doesNotMatch(section, /\[Client|\[Project|\[Location\]/);
 });

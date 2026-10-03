@@ -26,11 +26,15 @@ import { menu } from "./home";
  * than quietly missing from the letter.
  */
 const PHRASES: Record<string, string> = {
-  Branding: "branding",
   Websites: "a website",
   Software: "software",
   "CRM Solution": "a CRM",
   "AI & Automation": "AI and automation",
+  /* Was "branding" while the menu said Branding. Since 2026-10-03 it says
+     Branding & Logo, and someone who came for a logo should find it here. */
+  "Branding & Logo": "a brand or a logo",
+  "UX/UI Design": "UX/UI design",
+  "Print Design": "print design",
 };
 
 const services = menu.find((group) => group.key === "services");

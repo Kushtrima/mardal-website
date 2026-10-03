@@ -7,6 +7,16 @@
  */
 
 /**
+ * The Clients page's entries, read here for the five names the homepage shows.
+ *
+ * Imported rather than copied for the reason `content/about.ts` imports the
+ * same array: the day the real names land they land in one file, and no page
+ * keeps a private list that quietly stops agreeing with it. `case-studies.ts`
+ * imports nothing itself, so this cannot close a circle.
+ */
+import { clientEntries } from "./case-studies";
+
+/**
  * The seven sectors, written once.
  *
  * They are read in two places now — the Solutions section down the homepage and
@@ -124,11 +134,57 @@ export const audiences = industries.flatMap((industry) =>
 );
 
 /**
+ * The services, in the two halves the owner split them into on 2026-10-03:
+ * Development, then Creative.
+ *
+ * Development leads because building and connecting systems is the position
+ * (PRODUCT.md); Creative is the work that stands beside it. The order inside
+ * each half is the owner's as well.
+ */
+const serviceGroups = [
+  {
+    label: "Development",
+    items: [
+      /* Renamed on 2026-08-25, and the routes followed an hour later on the
+         owner's word — so a label and its address say the same thing again.
+         `next.config.ts` redirects all four of the old ones; nothing that was
+         ever linked stops resolving. */
+      { label: "Websites", href: "/services/websites" },
+      { label: "Software", href: "/services/software" },
+      { label: "CRM Solution", href: "/services/crm-solution" },
+      { label: "AI & Automation", href: "/services/ai-automation" },
+    ],
+  },
+  {
+    label: "Creative",
+    items: [
+      /* Branding & Logo in the menu only. The page behind it still calls itself
+         Branding and keeps its address: a logo is part of a brand, and the
+         page already covers it. */
+      { label: "Branding & Logo", href: "/services/branding" },
+      /* Addresses with a placeholder behind them until the copy arrives — see
+         content/placeholders.ts. */
+      { label: "UX/UI Design", href: "/services/ux-ui-design" },
+      { label: "Print Design", href: "/services/print-design" },
+    ],
+  },
+] as const;
+
+/* One service, whichever half it is in. Named so the two halves can be run
+   together below: left to infer from a union of two tuples, `flatMap` gives up
+   and calls every item `unknown`. */
+type ServiceLink = (typeof serviceGroups)[number]["items"][number];
+
+/**
  * The site's menu, and the only copy of it.
  *
  * The header renders it as the mega menu and the footer renders it as its link
  * columns, so the two cannot say different things — which they did while this
  * lived inside the header component.
+ *
+ * Names only. The redesign of 2026-10-03 put a line of description under each
+ * name, and the owner took them straight out: "why explanation under each menu
+ * that is very bad". Do not put them back.
  */
 export const menu = [
   {
@@ -151,35 +207,22 @@ export const menu = [
        nothing so the field is a decision on every entry instead of an
        exception someone has to notice is absent. */
     panelOnly: true,
-    items: [
-      /* The order is the owner's, 2026-08-24, and so is the shape of the list:
-         System Integration deleted outright, UX/UI & Branding added at the top,
-         and Web Platforms & Apps renamed to Website & Apps with its route moved
-         to match.
+    /* The one entry split into groups, and the panel shows them as such: a
+       heading over each half. Only the header reads `groups`.
 
-         Four of the five are written and have a page of their own. UX/UI &
-         Branding is an address with a placeholder behind it until the copy
-         arrives — see content/placeholders.ts, the same arrangement Company's
-         entries have. /services is a placeholder too, and since the word above
-         these no longer links to it, nothing in the header or the footer reaches
-         it any more.
+       `items` is the two halves run together, so everything that reads this
+       list without caring about the split — the footer's column, the phone
+       sheet's "is this section current" check, the contact letter's topics —
+       sees the same seven in the same order.
 
-         This list is also the difference boxes' list and the footer's. Those
-         read the same order from `difference` below, which is kept in step with
-         this one by hand — a site that names its five services in two orders on
-         one page is the thing to avoid. */
-      /* Renamed on 2026-08-25, and the routes followed an hour later on the
-         owner's word — so a label and its address say the same thing again.
-         `next.config.ts` redirects all four of the old ones; nothing that was
-         ever linked stops resolving. */
-      { label: "Branding", href: "/services/branding" },
-      { label: "Websites", href: "/services/websites" },
-      { label: "Software", href: "/services/software" },
-      { label: "CRM Solution", href: "/services/crm-solution" },
-      /* Last, and moved there on the owner's word 2026-08-25 — it sat third,
-         in the middle of the run. */
-      { label: "AI & Automation", href: "/services/ai-automation" },
-    ],
+       /services is a placeholder, and since the word above these does not link
+       to it, nothing in the header or the footer reaches it.
+
+       The homepage's difference boxes (`difference` below) still name the five
+       services from before the split, in the old order. Each box's drawing is
+       keyed to its label, so they were left as they are. */
+    groups: serviceGroups,
+    items: serviceGroups.flatMap<ServiceLink>((group) => group.items),
   },
   /* Solutions is deliberately not here. The seven industries have no pages of
      their own, so every entry it carried was an anchor back to a run further
@@ -481,6 +524,88 @@ export const solutions = {
      drifted once already and there is an assertion holding them apart. */
   cta: "Explore All",
   ctaHref: "/case-studies",
+} as const;
+
+/**
+ * Five names, under the section that says who Mardal builds for.
+ *
+ * Owner, 2026-08-27: put some of the work on the homepage too, five of it, not
+ * a generic design, and keep the text to almost nothing — a company name
+ * somewhere and little else. So this block holds one label and no sentences.
+ * What the section says is the names.
+ *
+ * ⚠ **NOT MARDAL CLIENTS. MUST NOT SHIP.** These are the placeholders from the
+ * Clients page, and every word of the warning on `clientEntries` applies here —
+ * with the page added to it. Clients is a page a reader chooses to open; the
+ * homepage is the one they land on, so this is the most visible version of that
+ * claim the site can make. It is pinned in `tests/rendered-html.test.mjs`
+ * alongside the assertion holding the Clients page, so publishing means deleting
+ * an assertion on purpose rather than forgetting a comment.
+ *
+ * **Taken from `clientEntries` rather than written out**, so there is no second
+ * list to remember. `slice` and not a hand-picked five: the order on the Clients
+ * index is the order here, and the homepage does not get to choose a favourite
+ * five out of eight.
+ */
+export const work = {
+  id: "work",
+  /* The label, and the only word in the section that is not a name. The Clients
+     page's rail already calls this "Selected work" — the same two words, so a
+     reader who follows the section through meets the phrase it promised.
+
+     It is the section's heading as well as its label. Set small and in the
+     normal face, which is how the About page sets the heading over its own
+     client list: the display face at a heading size would put this in
+     competition with the work it heads. */
+  title: "Selected work",
+  /* A picture, and under it four short lines: the company, its industry, the
+     service and where — owner, 2026-09-30, the way his own portfolio sets its
+     featured work. It was the name alone before (2026-08-27: almost no text, a
+     company name somewhere, the pictures to carry the section). The pictures
+     still carry it; the three new lines are facts, not copy.
+
+     The industry is the Industries run's own title for the sector, looked up
+     the way the Clients card does, so a sector renamed there is renamed here.
+     The service is every discipline the entry lists, in its order. These are
+     the entries the Clients rail filters by discipline, and a piece naming one
+     of its three would disagree with the page it links to.
+
+     `image` is `clientEntries`' own, so the homepage and the Clients index show
+     the same frame for the same piece of work rather than two different ones,
+     and the day real screenshots land they land in one place. ⚠ They are stock
+     frames off picsum.photos today and the warning on `clientEntries` applies
+     here word for word: stock photography is on this site's rejected list, it is
+     a live request to a third party on every plate, and not one of these
+     pictures has anything to do with the work. */
+  items: clientEntries.slice(0, 5).map((entry) => ({
+    slug: entry.slug,
+    name: entry.name,
+    industry:
+      industries.find((industry) => industry.id === entry.sector)?.title ??
+      entry.sector,
+    service: entry.disciplines.join(", "),
+    location: entry.location,
+    image: entry.image,
+    /* **Every piece opens something, and that is what buys it the plus.**
+
+       The hover treatment this section borrows — the picture darkening under a
+       drawn cross — is written in the stylesheet for cards that GO somewhere,
+       and the note over it is explicit: a plus appearing under the pointer on a
+       card that answers with an empty page is the promise this site refuses to
+       make. So the plus and the destination arrive together or neither does.
+
+       One of the five has a story written behind it and goes to it. The other
+       four go to the index, which is not a consolation: it is the page that
+       lists this piece, with its sector, its location and the disciplines it
+       was. What is NOT here is a link per piece to a page nobody has written —
+       that is the one thing the Clients index refuses for its own seven, and
+       the refusal is the same.
+
+       This differs from the Clients index deliberately. There, a card linking
+       to the index would be a link to the page it is already on. Here it is the
+       way through, and it is why this section needs no CTA of its own. */
+    href: "story" in entry ? `/case-studies/${entry.slug}` : "/case-studies",
+  })),
 } as const;
 
 export const products = {

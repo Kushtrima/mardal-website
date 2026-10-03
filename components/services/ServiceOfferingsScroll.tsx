@@ -26,6 +26,23 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 const MOTION_QUERY = "(prefers-reduced-motion: no-preference)";
 
 /**
+ * How far below the top of the screen the pinned section stands.
+ *
+ * Authored as `--journey-pin-lead` in globals.css, because the stylesheet is
+ * the other place that needs it: the section is a screen tall MINUS this, or
+ * its last rows are pinned underneath the bottom edge where nothing can scroll
+ * them back. Read rather than repeated — a literal here and a literal there is
+ * the shape of every drift `breakpoints.test.mjs` exists to catch.
+ */
+function pinLead(element: HTMLElement) {
+  const declared = Number.parseFloat(
+    getComputedStyle(element).getPropertyValue("--journey-pin-lead"),
+  );
+
+  return Number.isFinite(declared) ? declared : 60;
+}
+
+/**
  * And its exact complement, which is what makes the pair safe.
  *
  * Two queries that must cover every reader between them, with no gap and no
@@ -367,7 +384,7 @@ export function ServiceOfferingsScroll() {
         ease: "none",
         scrollTrigger: {
           trigger: section,
-          start: "top-=60 top",
+          start: () => `top-=${pinLead(viewport)} top`,
           end: () => `+=${Math.max(distance() + window.innerWidth * 0.45, 1)}`,
           pin: viewport,
           scrub: true,
