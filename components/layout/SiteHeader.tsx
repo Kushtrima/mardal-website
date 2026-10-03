@@ -10,8 +10,7 @@ import { HEADER_AT_REST, nextHeaderState } from "../../lib/header-reveal";
 import { PixelArrow } from "../ui/PixelArrow";
 import { Container } from "./Container";
 import { SocialIcon } from "./SocialIcon";
-import { ThemeToggle } from "./ThemeToggle";
-import { footer, menu } from "../../content/home";
+import { brandPlace, footer, menu, menuButton } from "../../content/home";
 
 /**
  * The bar and the menu.
@@ -373,7 +372,7 @@ export function SiteHeader() {
   }, [menuOpen]);
 
   /**
-   * The bar's own opening, from the Hero's first beat when it lived there.
+   * The bar's own opening, from the old homepage hero's first beat.
    * `gsap.from`, so a reader whose JavaScript never arrives still has a bar.
    */
   useLayoutEffect(() => {
@@ -410,6 +409,14 @@ export function SiteHeader() {
 
     const read = () => {
       frame = 0;
+      /* Held by the homepage's opening while it is pinned (HouseHeroMotion):
+         that scroll moves the opening, not the page, so the bar stays where
+         it was at the top — on the photograph, with no ground of its own. */
+      if (document.documentElement.hasAttribute("data-header-hold")) {
+        reading = { state: "top", lastY: window.scrollY, travel: 0 };
+        if (header.dataset.header !== "top") header.dataset.header = "top";
+        return;
+      }
       const next = nextHeaderState(reading, window.scrollY);
       if (next.state !== reading.state) header.dataset.header = next.state;
       reading = next;
@@ -437,7 +444,47 @@ export function SiteHeader() {
     };
   }, []);
 
-  /* An open menu brings a hidden bar back: the burger that closes it is on
+  /**
+   * The bar is drawn in white while a dark ground stands behind it.
+   *
+   * It has no ground of its own (owner, 2026-10-03: "remove the bacground when
+   * scroll"), so once the page is scrolled MENU stands straight on whatever
+   * passes under it — and black on the footer's black, or on the homepage's
+   * photograph, is nothing. Anything dark marks itself `data-bar-dark`; this
+   * reads where they are painted, every frame, so it follows the smoother's
+   * easing and a pinned section's growth rather than the raw scroll position.
+   */
+  useEffect(() => {
+    const nav = navigationRef.current;
+    if (!nav) return;
+    const root = document.documentElement;
+
+    const watch = () => {
+      const bar = nav.getBoundingClientRect();
+      const line = bar.top + bar.height / 2;
+      let dark = false;
+      for (const ground of document.querySelectorAll<HTMLElement>(
+        "[data-bar-dark]",
+      )) {
+        const box = ground.getBoundingClientRect();
+        if (box.height > 0 && box.top <= line && box.bottom >= line) {
+          dark = true;
+          break;
+        }
+      }
+      if (dark !== root.hasAttribute("data-header-on-dark")) {
+        root.toggleAttribute("data-header-on-dark", dark);
+      }
+    };
+
+    gsap.ticker.add(watch);
+    return () => {
+      gsap.ticker.remove(watch);
+      root.removeAttribute("data-header-on-dark");
+    };
+  }, []);
+
+  /* An open menu brings a hidden bar back: the button that closes it is on
      the bar. */
   useEffect(() => {
     const header = headerRef.current;
@@ -465,25 +512,29 @@ export function SiteHeader() {
           aria-label="Main navigation"
           ref={navigationRef}
         >
-          <Link
-            className="brand"
-            href="/"
-            aria-label="Mardal home"
-            onClick={closeMenu}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="brand-logo"
-              src="/SVG/logo.svg"
-              alt="Mardal"
-              width="694"
-              height="164"
-            />
-          </Link>
+          {/* The wordmark and, beside it, where Mardal is — the owner's comp
+              of 2026-10-03, which keeps the wordmark exactly as it was. */}
+          <div className="site-nav__lead">
+            <Link
+              className="brand"
+              href="/"
+              aria-label="Mardal home"
+              onClick={closeMenu}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="brand-logo"
+                src="/SVG/logo.svg"
+                alt="Mardal"
+                width="694"
+                height="164"
+              />
+            </Link>
+            <span className="site-nav__place">{brandPlace}</span>
+          </div>
 
-          {/* The burger: two bars, which cross into a close mark when the menu
-              is open. The words are for anything reading the page rather than
-              looking at it. */}
+          {/* MENU and a drawn plus — owner, 2026-10-03, in place of the two
+              lines: a minus under the pointer and while the menu is open. */}
           <button
             className="mobile-menu-toggle"
             type="button"
@@ -500,13 +551,8 @@ export function SiteHeader() {
               setActiveMenu(wide ? FIRST_LIST : null);
             }}
           >
-            <span className="mobile-menu-toggle__bars" aria-hidden="true">
-              <span />
-              <span />
-            </span>
-            <span className="visually-hidden">
-              {menuOpen ? "Close menu" : "Menu"}
-            </span>
+            <span className="mobile-menu-toggle__label">{menuButton}</span>
+            <span className="mobile-menu-toggle__plus" aria-hidden="true" />
           </button>
         </nav>
       </Container>
@@ -691,9 +737,9 @@ export function SiteHeader() {
             </div>
           </div>
 
-          {/* The foot: the marks and the switch on one line, the address and
-              the number under them. The switch does not close the menu: the
-              menu is the whole screen, so turning it over is the feedback. */}
+          {/* The foot: the marks on one line, the address and the number
+              under them. The light/dark switch that stood beside the marks went
+              with the dark page, 2026-10-03. */}
           <div className="mobile-menu__foot" ref={footRef}>
             <div className="mobile-menu__marks">
               {/* Marks, not links: the accounts exist but their addresses have
@@ -707,7 +753,6 @@ export function SiteHeader() {
                 ))}
               </ul>
 
-              <ThemeToggle className="mobile-menu__theme" />
             </div>
 
             <dl className="mobile-menu__contact">

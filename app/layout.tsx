@@ -6,7 +6,7 @@ import { SmoothScroll } from "../components/motion/SmoothScroll";
 
 export const metadata: Metadata = {
   title: {
-    default: "Mardal — Innovation lives here",
+    default: "Mardal — House of Creativity & Technology",
     template: "%s — Mardal",
   },
   description: "We build the technology behind your growth.",
@@ -24,41 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    /* suppressHydrationWarning because the script below writes an attribute on
-       this element before React reaches it, which is otherwise reported as a
-       mismatch. It covers this element's own attributes, not the tree under. */
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Applies a remembered choice before the first paint.
-
-            A remembered choice only — with nothing stored this writes nothing
-            and the stylesheet's own `color-scheme: dark` gives the visitor the
-            black page, which since 2026-09-30 is what the site defaults to for
-            everyone. It was white from 2026-08-25, and before that whatever the
-            visitor's OS said.
-
-            So the case this is for is a visitor who pressed the toggle and chose
-            light. It has to be inline and it has to be in the head, because
-            anything deferred runs after the first frame — and that is a black
-            flash on the way to a white page, for the one reader who has
-            explicitly asked not to be shown black. The flash this avoids has
-            changed direction twice; the reason for the tag has not. */}
-        {/* A plain script rather than next/script. `beforeInteractive` was the
-            obvious choice and does not work here: with inline content it never
-            reaches the server-rendered HTML at all, which is the one thing this
-            has to do. React logs a development warning about script tags inside
-            components — it is about client re-renders, which this does not need
-            and never gets. The tag is in the head of the served document, which
-            is what was checked. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              'try{var t=localStorage.getItem("mardal-theme");' +
-              'if(t==="light"||t==="dark")' +
-              "document.documentElement.dataset.theme=t}catch(e){}",
-          }}
-        />
-      </head>
+    <html lang="en">
       <body>
         {/* **Outside the wrapper, and that is the whole reason it is here.**
             ScrollSmoother translates `#smooth-content` on every frame, and a

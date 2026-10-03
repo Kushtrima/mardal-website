@@ -78,7 +78,7 @@ const OUT = 0.1;
  */
 const CLOSE = 0.5;
 
-/** Resolves a custom property to a real colour, `light-dark()` included. */
+/** Resolves a custom property to a real colour. */
 function resolve(token: string): string {
   const probe = document.createElement("span");
   probe.style.cssText = `position:absolute;visibility:hidden;background:${token}`;

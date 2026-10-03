@@ -321,9 +321,6 @@ test("the letter is set as the page's paragraph, and only the blanks in the disp
   assert.match(blank, /background:\s*var\(--tint-lilac-bar\)/);
   assert.match(rule(".letter__blank:not(:placeholder-shown)"), /background:\s*var\(--tint-lilac\)/);
   assert.match(rule(".letter__blank::placeholder"), /font-style:\s*italic/);
-  /* A tint does not turn over with the theme, so neither may what is written
-     on it. */
-  assert.match(blank, /color-scheme:\s*light/);
 });
 
 test("the question on the left, the letter under it on the right, one column when narrow", () => {
@@ -358,10 +355,8 @@ test("the prompts in the blanks are white, and their contrast is said out loud",
   );
   assert.match(CSS, /\.letter__choice:has\(option\[value=""\]:checked\)\s*\{[^}]*color:\s*var\(--accent-contrast\)/);
 
-  /* White only because the light half of the token is white and the bars pin
-     the light scheme. */
-  assert.match(CSS, /--accent-contrast:\s*light-dark\(#ffffff,/);
-  assert.match(rule(".letter__blank"), /color-scheme:\s*light/);
+  /* White because the token is white — one page since 2026-10-03. */
+  assert.match(CSS, /--accent-contrast:\s*#ffffff;/);
 
   /* And the open list stays readable: some systems colour its options with the
      select's own colour, which would be white on a white menu. */

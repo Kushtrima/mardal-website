@@ -851,7 +851,7 @@ test("the page washes from the open picture to the end of the note", async () =>
      63, saturation 100 to 26, lightness 77 to 8 — a page background at L 77 on
      the dark page would be a lamp. Verified by flipping the theme: #faff89 on
      the light page, #191a0f on the dark one, 17.6:1 against its ink. */
-  assert.match(CSS, /--wash-about:\s*light-dark\(#faff89, #191a0f\)/);
+  assert.match(CSS, /--wash-about:\s*#faff89;/);
 
   /* **And what the yellow turns INTO.** Owner: the colour should transition from
      that yellow to this. So the page had three grounds — white above the
@@ -864,7 +864,7 @@ test("the page washes from the open picture to the end of the note", async () =>
      yellow's — hue held at 330, S 100 to 26, L 92 to 8 — and measured in the
      browser: #ffd7eb on the light page, #1a0f14 on the dark one, 16.6:1 against
      its ink. */
-  assert.match(CSS, /--wash-about-end:\s*light-dark\(#ffd7eb, #1a0f14\)/);
+  assert.match(CSS, /--wash-about-end:\s*#ffd7eb;/);
 
   /* **No CSS toggle, and no transition on the body.** Both are from the version
      this replaced, and either left behind would fight the tween — a 700ms
@@ -987,7 +987,7 @@ test("the page turns once more under the closing line", () => {
   /* Owner, 2026-08-26, with a swatch: transition to this colour on the new
      text. So the page has FOUR grounds — white, `#faff89` through the middle,
      `#ffd7eb` from the end of the notes, and this under the last sentence. */
-  assert.match(CSS, /--wash-about-close:\s*light-dark\(#ffa769, #1a130f\)/);
+  assert.match(CSS, /--wash-about-close:\s*#ffa769;/);
 
   /* His colour exactly as given, and the closing line is set in `--ink`: 10.5:1.
      The muted grey is 3.5, AA for large text and under it for small — and

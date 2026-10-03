@@ -47,7 +47,7 @@ export function SiteFooter() {
   return (
     <footer className="site-footer" id={contact.id}>
       <Container>
-        <div className="site-footer__panel">
+        <div className="site-footer__panel" data-bar-dark>
           {/* The one line that is an invitation rather than a list, and the way
               back up on the far edge. */}
           <div className="site-footer__lead">

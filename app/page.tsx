@@ -1,7 +1,7 @@
 import { CardBarsHover } from "../components/home/CardBarsHover";
 import { DifferenceSection } from "../components/home/DifferenceSection";
 import { FusionSection } from "../components/home/FusionSection";
-import { Hero } from "../components/home/Hero";
+import { HouseHero } from "../components/home/HouseHero";
 import { IndustriesSection } from "../components/home/IndustriesSection";
 import { ProductsSection } from "../components/home/ProductsSection";
 import { WhyMardal } from "../components/home/WhyMardal";
@@ -16,7 +16,9 @@ export default function Home() {
       <SectionEnter />
 
       <main id="main-content">
-        <Hero />
+        {/* The owner's concept of 2026-10-03; the opening before it,
+            "Innovation lives here.", was deleted the same day. */}
+        <HouseHero />
         <FusionSection />
         <WhyMardal />
         <IndustriesSection />

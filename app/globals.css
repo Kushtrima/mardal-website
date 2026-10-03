@@ -32,41 +32,21 @@
 /* -------------------------------------------------------------------------- */
 
 :root {
-  /* Both themes are live at once and this decides which half of every
-     light-dark() below is read.
-
-     **Dark — owner's call, 2026-09-30: the page arrives black.** It was `light`
-     from 2026-08-25, and before that `light dark`, which handed the choice to
-     the visitor's operating system, so half of them met a black site and half a
-     white one. Still one word, not two: the OS decides nothing. The white page
-     is not gone and is not secondary in the code — every token still carries
-     both halves and the toggle still turns the whole thing over — but nobody is
-     shown it until they ask. Written here rather than in a
-     `prefers-color-scheme` block so there is still exactly one property
-     deciding the theme.
-
-     It also hands the native UI to the browser: scrollbars, autofill, and the
-     form controls on the role pages, none of which had been told which ground
-     they were standing on. `dark` here is what makes those default to their
-     dark forms too, which is the half of this that has no token. */
-  color-scheme: dark;
+  /* Light, and only light — owner, 2026-10-03: "delete dark mode we dont need
+     it delete it all". The dark page, its switch and every colour's dark half
+     are gone; this hands the browser's own UI (scrollbars, autofill, form
+     controls) their light forms. */
+  color-scheme: light;
 
   --font-geist: "Geist";
 
   /* Brand and semantic colors */
-  /* Two themes, one line each: light-dark(LIGHT, DARK).
-
-     The site ships dark and that is still the brand. But the page was white
-     until the ground was turned over, and most of the light halves below are
-     the values it wore then — they never left the file, they moved down into
-     the block that keeps the mega menu and the cards light on a black page.
-     Restoring them is what light mode is.
-
-     Writing both values on one line is the whole defence against a half-flipped
-     page: a token that has not been given its second value is visible from
-     here, rather than from the browser three pages in. A new colour token that
-     follows the page takes this form or it is a bug. */
-  --canvas: light-dark(#ffffff, #000000);
+  /* One page, one value per colour. Every token here carried a light and a
+     dark half until 2026-10-03, when the owner deleted the dark page; the light
+     halves are what stayed. */
+  /* The page's ground, owner 2026-10-03: "make backgournd of website in this
+     color: #e1e1df so globally". */
+  --canvas: #e1e1df;
 
   /* **The wash the About photographs sit on.** Owner, 2026-08-26, with a swatch:
      this colour when entering that section.
@@ -74,15 +54,8 @@
      `#faff89` is his, used exactly as given. It is safe under the text that can
      appear over it while it is on — 17.7:1 against `--ink`, 16.4 against body
      copy, 7.0 against the muted grey. White would be 1.06 and fails, which is
-     why nothing white sits on the canvas; the footer carries its own slab.
-
-     **The dark half is derived, not given.** Hue held at 63, saturation dropped
-     from 100 to 26 and lightness to 8, which is where this site's dark canvas
-     sits — a page background at L 77 in dark mode would be a lamp. It reads as
-     a tint of the same yellow rather than as a different colour, and holds
-     17.6:1 against the dark page's ink. If he wants a different one it is this
-     one value. */
-  --wash-about: light-dark(#faff89, #191a0f);
+     why nothing white sits on the canvas; the footer carries its own slab. */
+  --wash-about: #faff89;
 
   /* **What the yellow turns into rather than what it fades back to.** Owner,
      2026-08-26: the colour should transition from that yellow to this.
@@ -92,13 +65,8 @@
      moment — and it is safe under everything that sits on it: 15.4:1 against
      `--ink` and 5.7 against the muted grey. White is 1.30 and fails, which is
      the same limit the yellow has and the same reason it does not matter — the
-     footer carries its own slab.
-
-     The dark half is derived the way the yellow's was: hue held at 330,
-     saturation 100 to 26, lightness 92 to 8. It reads as a tint of the same pink
-     rather than a different colour, and holds 16.6:1 against the dark page's
-     ink. One value if he wants a different one. */
-  --wash-about-end: light-dark(#ffd7eb, #1a0f14);
+     footer carries its own slab. */
+  --wash-about-end: #ffd7eb;
 
   /* **A fourth ground, under the line the page ends on.** Owner, 2026-08-26,
      with a swatch: transition to this colour on the new text.
@@ -108,56 +76,36 @@
      text and under it for small — and nothing muted sits here: the only thing
      on this ground is that one sentence, and the footer below it is a purple
      slab of its own. The same limit the yellow and the pink have, for the same
-     reason.
-
-     The dark half is derived exactly as theirs were — hue held at 25,
-     saturation 100 to 26, lightness 71 to 8 — so it reads as a tint of the same
-     orange rather than a different colour, and holds 16.3:1 against the dark
-     page's ink. One value if he wants a different one. */
-  --wash-about-close: light-dark(#ffa769, #1a130f);
+     reason. */
+  --wash-about-close: #ffa769;
 
 
-  /* The ground a panel sits on: the mega menu, the Why Mardal cards, the boxes.
-     On black it is white, because a lit panel is how those read against the
-     page. On white it steps down to the lavender it wore when the page was
-     white — white on white is not a panel.
-
-     This was the drawings' fill as well, and could not stay both: as a ground
-     it has to move with the theme, as a fill inside the art it must stay white
-     or every masked shape inverts. The art reads --art-surface now. */
-  --surface: light-dark(#efedf8, #ffffff);
-  /* The mega menu's own ground, split back off --surface because the menu is
-     the one panel that is white in both themes. On black that was never in
-     question. On white it has to be white too: a lavender sheet over a white
-     page reads as a colour rather than as a panel standing in front of the
-     page, and the separation is the shadow down its left edge instead. */
+  /* The ground a panel sits on: the Why Mardal cards, the boxes — the lavender
+     it has worn on the light page all along. The drawings' fill is
+     --art-surface, kept apart so a masked shape never takes this colour. */
+  --surface: #efedf8;
+  /* White, for a panel that has to read as standing in front of the page. */
   --menu-surface: #ffffff;
   /* A panel raised off the page rather than a second colour on it. The blog
      cards are the whole reason it exists: a card has to be a surface you could
      put your finger on, and that is a few percent of the opposite of the ground
-     rather than a border. It was written light-over-canvas with a note that it
-     would hold if the canvas ever moved — it would not have: five per cent
-     white over white is nothing. So the lift turns over with the page. */
-  --surface-raised: light-dark(rgb(8 8 10 / 5%), rgb(255 255 255 / 5%));
-  /* The same lift, harder, for the two card hovers. It was read once and never
-     defined anywhere, so its inline fallback had been doing the work in both
-     themes — named here so it turns over with everything else. */
-  --surface-raised-strong: light-dark(rgb(8 8 10 / 8%), rgb(255 255 255 / 8%));
-  --ink: light-dark(#08080a, #f2f1f5);
+     rather than a border: five per cent of the ink over the canvas. */
+  --surface-raised: rgb(8 8 10 / 5%);
+  /* The same lift, harder, for the two card hovers. */
+  --surface-raised-strong: rgb(8 8 10 / 8%);
+  --ink: #08080a;
   /* Long-form reading ink, one step below --ink. Full --ink on a pure black
      ground haloes: the bloom around each stroke is bearable for a headline and
      tiring across nine hundred words, which is why every publication that is
      read rather than scanned dims its body text (Vercel #ededed, Linear
      #d0d6e0). Set here rather than as an opacity so the value is a colour that
      can be checked, and so it does not fade whatever it sits on. 15.4:1 on
-     --canvas. Body copy only; headings stay on --ink, and the tonal step
-     between them is the article's first level of hierarchy.
+     --canvas. Body copy only; headings stay on --ink.
 
-     Halation is a light-on-dark problem and only that, so the light half does
-     not dim: dark ink on white does not bloom, and stepping it back off the
-     heading would cost the hierarchy without buying the eye anything. */
-  --ink-read: light-dark(#08080a, #dcd9e4);
-  --ink-muted: light-dark(#5e5a69, #a09aad);
+     On this light page it is the ink itself: dark type on a light ground does
+     not bloom, so there is nothing to dim. */
+  --ink-read: #08080a;
+  --ink-muted: #5e5a69;
 
   /* **A quieter grey than `--ink-muted`, and the industries run is the only
      thing set in it.** Owner, 2026-08-27: more grey.
@@ -178,7 +126,7 @@
 
      Derived rather than picked: the muted grey's own hue and saturation, 256 at
      8%, lightened until the ratio landed. */
-  --ink-quiet: light-dark(#cccbd2, #323139);
+  --ink-quiet: #cccbd2;
   /* The same job as --ink-muted with the lavender taken out. --ink-muted is
      the page's tint carried down into a quiet ink, and it works on a word or
      two — on a label, a date and three lines of standfirst together it stops
@@ -189,38 +137,37 @@
      white. #595959 is 7.00:1 on white, which is the same weight the other way
      up. It carries sixteen rules: labels, stamps, fact terms, form labels and
      hints, article meta, and the numbers down the story index. */
-  --ink-grey: light-dark(#595959, #9a9a9a);
-  --line: light-dark(rgb(8 8 10 / 72%), rgb(242 241 245 / 72%));
-  --line-soft: light-dark(rgb(8 8 10 / 16%), rgb(242 241 245 / 16%));
+  --ink-grey: #595959;
+  --line: rgb(8 8 10 / 72%);
+  --line-soft: rgb(8 8 10 / 16%);
   /* The accent as a mark and as small type. #a98ad6 is a light purple cut for
      black and measures 2.88:1 on white; #8362b8 is the cut the panels have been
      using all along, 4.77:1 on white. The large purple — the footer slab — is
      deliberately NOT this token any more; it re-derives itself locally so the
      one big brand colour on the site does not move between themes. */
-  --accent: light-dark(#8362b8, #a98ad6);
+  --accent: #8362b8;
   --accent-soft: #6f5b93;
   /* Lighter accent for small marks and art on black; the darker cut of the same
      purple on white, where a light one would disappear. */
-  --accent-strong: light-dark(#6f4fa7, #c0a6e6);
-  /* The ink that stands on an --accent fill, and it inverts with it: black on
-     the light purple, white on the dark one. */
-  --accent-contrast: light-dark(#ffffff, #000000);
-  --focus: light-dark(#6f4fa7, #b294e6);
-  /* The canvas at partial strength, for the veil and the fade over the hero
-     bars — both follow the page, so both turn over with the canvas.
-     --art-surface is the fill a card drawing sits at before it takes a tint;
-     it follows the cards, not the page, so it stays white in both themes. */
-  --canvas-veil: light-dark(rgb(255 255 255 / 4%), rgb(0 0 0 / 4%));
-  --canvas-fade: light-dark(rgb(255 255 255 / 48%), rgb(0 0 0 / 48%));
+  --accent-strong: #6f4fa7;
+  /* The ink that stands on an --accent fill: white on the purple. */
+  --accent-contrast: #ffffff;
+  --focus: #6f4fa7;
+  /* The canvas at partial strength, for a veil or a fade over artwork.
+     --art-surface is the fill a card drawing sits at before it takes a tint. */
+  --canvas-veil: color-mix(in srgb, var(--canvas) 4%, transparent);
+  --canvas-fade: color-mix(in srgb, var(--canvas) 48%, transparent);
   --art-surface: #ffffff;
 
   /* Card tints. Each is a flat panel colour and the deeper shade of itself the
      bars are drawn in — always the same hue, so a card reads as one colour. */
   --tint-lilac: #dacdf9;
-  /* What stands on a tint: the four tints are light in both themes, so their
-     ink is the light half's ink in both. Named once, for the redaction bar the
-     menu draws behind a word and the lilac panel inside it. */
+  /* What stands on a tint. Named once, for the redaction bar the menu draws
+     behind a word. */
   --ink-on-tint: #08080a;
+  /* What stands on the photograph in the homepage's opening — the heading,
+     the sentence, and the bar while it is over it. */
+  --ink-on-photo: #ffffff;
   --tint-lilac-bar: #c3aef3;
   /* **The owner's yellow, and a bar derived from it.** 2026-08-26, pointing at
      the Websites box: this background, and the pattern the same yellow slightly
@@ -296,8 +243,7 @@
   --tint-clay-bar: #ff9b54;
 
   /* **The plus on the Why Mardal boxes.** Owner, 2026-08-26, with the value.
-     Flat rather than `light-dark()`, which is how every tint above is declared:
-     these are brand colours and they are the same on both pages.
+     These are brand colours, set flat.
 
      It is the same `#fd7979` as `--tint-clay-bar` and is deliberately not an
      alias of it. That one is AI & Automation's — the pattern on its hero and the
@@ -421,6 +367,10 @@
      110px — the alignment is what gives way there, not the layout. At
      1400 x 820 the paragraph still clears the ink line by 55px. */
   --text-hero: clamp(70px, 9.28vw, 120px);
+  /* The homepage opening's heading, from the owner's comp of 2026-10-03: 91px
+     in a 1328px frame, so 6.85vw. On a phone it holds at 2.5rem and its first
+     line wraps; on the widest screens it stops at 8.75rem. */
+  --text-house: clamp(2.5rem, 6.85vw, 8.75rem);
   /* A fourth size, for the places a line has to sit under the small size
      without becoming unreadable: the STATUS / FIELD / YEAR labels over the
      product facts, the fact terms on the client and story records, and the
@@ -647,101 +597,22 @@
   --delay-cross: 800ms;
 }
 
-/* What the toggle writes, and the only thing it writes. Every colour token
-   above reads its half from `color-scheme`, so moving this one property on the
-   root turns the whole page over — there is no second palette to keep in step
-   and nothing to remember to update twice.
+/* Four values that are not colours.
 
-   Attribute selectors rather than a `prefers-color-scheme` block on purpose.
-   The media queries in this file are parsed structurally by
-   tests/breakpoints.test.mjs and tests/reduced-motion.test.mjs, which count and
-   walk them; a theme query would be a third thing for them to step over, and
-   since 2026-08-25 there is nothing for it to say — the page does not follow the
-   OS any more. Since 2026-09-30 it is dark until someone presses the toggle.
+   --logo-filter: the wordmark is a flat black SVG, crushed to a solid
+   silhouette so it prints as one colour.
 
-   Which makes the dark rule a restatement of the base rather than an override,
-   and it stays for two reasons: it is what a reader looking for "what does
-   data-theme=dark do" comes here to find, and it is what keeps the toggle's two
-   values symmetrical in the one place they are both written down. */
-:root[data-theme="light"] {
-  color-scheme: light;
-}
+   --panel-shadow: a card on this ground needs a real shadow to lift.
 
-:root[data-theme="dark"] {
-  color-scheme: dark;
-}
-
-/* Four values that turn over with the page and are not colours, so light-dark()
-   cannot carry them and they need saying the long way.
-
-   **This file no longer has a colour-scheme media query, and should not gain
-   one.** It had exactly one, for these four, and it existed only because the
-   base values here were the DARK ones while the OS still chose — so the light
-   values had to be written twice, once for a visitor whose OS said light and
-   once for a visitor who had pressed the toggle, with a note to keep the two
-   copies in step. With the OS out of it, the base carries the default's values
-   and the toggle's other rule carries the other half, each written once: dark
-   on the base since 2026-09-30 (light from 2026-08-25), light on
-   `data-theme="light"`. The palette above never had a query and still does not.
-
-   --logo-filter: the wordmark is a flat black SVG, so it is crushed to a
-   silhouette rather than recoloured. On white the source art is already the
-   right colour and only needs flattening. On black it wants brightness(0) to
-   make it solid, then invert(1) to turn that white.
-
-   --panel-shadow: on white a card's lift is nearly nothing, so the panels need
-   an actual shadow. On black a card is lifted with a few percent of white,
-   which is a real edge on its own.
-
-   --font-smoothing: dark type on white does not bloom, and thinning it makes it
-   look underfed. On a dark ground light type does bloom, and antialiased thins
-   the stems to counteract it. */
+   --font-smoothing: dark type on a light ground does not bloom, and thinning it
+   makes it look underfed. */
 :root {
-  --logo-filter: brightness(0) invert(1);
-  --panel-shadow: none;
-  --menu-edge-shadow: none;
-  --font-smoothing: antialiased;
-}
-
-:root[data-theme="light"] {
   --logo-filter: brightness(0);
   --panel-shadow: var(--shadow-soft);
   --menu-edge-shadow: var(--shadow-menu-edge);
   --font-smoothing: auto;
 }
 
-/* Whichever way the page is set, one thing on it is always a light panel: the
-   five coloured boxes. They re-derive the ink, rules and accent that belong on
-   a light ground, rather than each child overriding its own colour — so a light
-   panel anywhere on the site only has to join this list.
-
-   These stay literal rather than becoming light-dark() pairs, and that is the
-   point of them: they do not follow the page, they are always the light half.
-   On the light page they agree with the root and the block is a no-op; on the
-   dark page they are what keeps the panels readable. */
-/* The header was on this list while its bar was a light slab, and the menu
-   while it was a white sheet. Both take the page's own ground now — the menu
-   since its redesign on 2026-10-03 — so neither is.
-
-   The four Why Mardal cards came off it on 2026-09-30, for the same reason as
-   the header. Their ground has been `--surface-raised` since 2026-08-26, which
-   turns over with the page, so on the dark page this list was setting
-   near-black titles on a near-black card. Owner: the titles and the hover text
-   in white in dark mode. The values here are the root's light half, so the
-   light page does not move. */
-.difference-card {
-  --ink: #08080a;
-  --ink-read: #08080a;
-  --ink-muted: #5e5a69;
-  --ink-grey: #595959;
-  --line: rgb(8 8 10 / 72%);
-  --line-soft: rgb(8 8 10 / 16%);
-  --accent: #8362b8;
-  --accent-strong: #6f4fa7;
-  --accent-contrast: #ffffff;
-
-  color: var(--ink);
-}
 
 /* The footer's black block, and everything on it — the mark, the closing line
    and the bar field — is drawn in --accent-contrast.
@@ -1330,46 +1201,127 @@ video {
   }
 }
 
-/* ---------------------------------- Hero ---------------------------------- */
+/* ------------------------------- House hero ------------------------------- */
 
-.hero {
-  /* Where the film's topmost bar lands, measured down from the top of the
-     hero.
-
-     The frame is 1920 x 1400 and nothing in the loop ever rises above y=635 —
-     walked frame by frame through all 22.8 seconds of it, not read off the
-     settled pose — and the field covers the hero from its top edge, so the
-     line sits at 635 x max(width / 1920, height / 1400). The hero's height is
-     its own min-height, so both terms are written out rather than measured:
-     635/1920 is 33.073% of the width, 635/1400 is 45.357% of the height.
-
-     This is what the copy beside the title is held above. Left to itself the
-     copy is placed from the top of the page in vh, and the line is placed by
-     whichever of the two ratios wins, so the two drift apart: between about
-     770 and 1330 wide the width has not yet taken over the scale, the line
-     stops coming down, and the copy walks into the bars. It did, by 39px at
-     1024 — a bar through the middle of the line.
-
-     The field stands on the foot of the hero at the band's own proportion, so
-     the line is the top of it: 376/1920 is 19.583% of the width, measured up
-     from the bottom. On a hero too short to give it that the field would reach
-     the top, hence the floor. */
-  --hero-ink: max(
-    0px,
-    calc(max(47rem, 100svh) - 19.583vw)
-  );
-
+/* The homepage's opening, the owner's concept of 2026-10-03 (HouseHero). One
+   screen tall and pinned while it changes: first the heading and a band of the
+   photograph, then the photograph across the whole screen with the heading at
+   its foot. This is the first state; HouseHeroMotion moves it to the second,
+   reading every distance from here. */
+.house-hero {
   position: relative;
-  isolation: isolate;
-  min-height: max(47rem, 100svh);
+  height: 100svh;
+  min-height: 34rem;
   overflow: hidden;
+  padding-bottom: var(--page-gutter);
   background: var(--canvas);
 }
 
+/* Static on purpose: the band and the heading measure their offsets from the
+   section itself, which is what the frame has to reach. */
+.house-hero__inner {
+  position: static;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  /* The comp sets the heading's capitals a quarter of the way down the
+     screen: the bar, then about a seventh of the height. */
+  padding-top: calc(var(--header-space) + clamp(1.5rem, 14vh, 9rem));
+}
+
+/* His capitals, his weight — the paragraph face at its regular weight, set
+   large, in the page's ink at first and white once the photograph is behind
+   it. `--house-mix` is the only thing the script turns. */
+.house-hero__title {
+  --house-mix: 0;
+
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  color: color-mix(
+    in srgb,
+    var(--ink),
+    var(--ink-on-photo) calc(var(--house-mix) * 100%)
+  );
+  font-family: var(--type-display);
+  font-size: var(--text-house);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-heading);
+  will-change: transform;
+}
+
+.house-hero__title-line {
+  display: block;
+}
+
+/* The band: whatever height is left under the heading, to the gutter above the
+   foot of the screen. The frame stands in it and grows out of it. */
+.house-hero__slot {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 8rem;
+  margin-top: clamp(1.5rem, 7vh, 5rem);
+}
+
+.house-hero__frame {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  overflow: hidden;
+  background: var(--surface-raised);
+}
+
+/* Cover, so the band shows the middle of the photograph — the red square and
+   the two figures between it — and the whole screen shows all of it. */
+.house-hero__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 45%;
+}
+
+/* The sentence. Hidden in the first state; the script brings it in above the
+   heading's last place. Where nothing moves it is shown on the foot of the
+   band instead, white on the photograph. */
+.house-hero__support {
+  position: absolute;
+  z-index: 2;
+  right: var(--page-gutter);
+  bottom: calc(var(--page-gutter) + 1.5rem);
+  /* Its own height whatever it is pinned by: the script places it by its top
+     and measures it, and a box held by a top AND a bottom would stretch to
+     fill between them and measure as the gap rather than as the sentence. */
+  height: max-content;
+  margin: 0;
+  color: var(--ink-on-photo);
+  font-size: var(--text-copy);
+  line-height: var(--leading-body);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.house-hero__support-line {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .house-hero__support {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* The bar. Owner, 2026-10-03: "remove the bacground when scroll in and when
+   scrollin to be visible only MENU +". It has no ground at any point and never
+   slides away: at the top of the page it is the wordmark, its place and MENU;
+   once the page has moved it is MENU alone, standing where it was.
+
+   It lets the page through everywhere it draws nothing — it spans the whole
+   width, and a fixed strip that swallowed every click along the top of the
+   window would be a dead band across every section that passes under it. */
 .site-header {
-  /* Read by the bar's own padding and by the mega menu's offsets, which are
-     measured up from the nav to the top of the window. Both follow it, so the
-     panel still reaches the corner when the padding closes up on scroll. */
   --header-pad: var(--header-pad-top);
 
   position: fixed;
@@ -1378,25 +1330,12 @@ video {
   right: 0;
   left: 0;
   padding-top: var(--header-pad);
-  transition:
-    transform var(--duration-slow) var(--ease-standard),
-    padding-top var(--duration-slow) var(--ease-standard);
+  pointer-events: none;
 }
 
-/* The ground, as a layer of its own rather than a background on the bar.
-   The bar is a grid whose children are turned over while the menu is open, and
-   painting it directly would put a second ground behind the menu's own white.
-   Held at 0 opacity at the top of the page, so there is nothing behind the
-   wordmark on a hero that was drawn without one. */
-.site-header::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  background: var(--canvas);
-  opacity: 0;
-  transition: opacity var(--duration-slow) var(--ease-standard);
-  pointer-events: none;
+.site-nav__lead,
+.mobile-menu-toggle {
+  pointer-events: auto;
 }
 
 .site-header > * {
@@ -1404,45 +1343,35 @@ video {
   z-index: 1;
 }
 
-/* Scrolled and asked for. The ground arrives, the opening space closes up, and
-   the bar stays where it is. */
-.site-header[data-header="shown"] {
-  --header-pad: var(--header-pad-scrolled);
+/* Scrolled: the wordmark and its place step up and away, and MENU stays. They
+   come back at the top of the page, and while the menu is open, which stands
+   on the whole screen with the bar drawn over it. */
+.site-nav__lead {
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard),
+    visibility var(--duration-base);
 }
 
-.site-header[data-header="shown"]::before {
-  opacity: 1;
+.site-header:not([data-header="top"]):not(.site-header--mobile-menu-open)
+  .site-nav__lead {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-0.6rem);
+  visibility: hidden;
 }
 
-/* Scrolled and going down. Off the top by its own whole height — the padding
-   included, or the last of it would sit as a line along the top edge. */
-.site-header[data-header="hidden"] {
-  --header-pad: var(--header-pad-scrolled);
-  transform: translateY(-100%);
-}
-
-/* An open menu is a child of the bar, so the bar must not be mid-flight while
-   the menu is on screen — and the menu paints its own ground over all of this
-   anyway. */
-.site-header--mega-open,
-.site-header--mobile-menu-open {
-  transform: none;
-}
-
-/* The room the bar used to take up, in the page, exactly where it was.
-   `.hero` is `min-height: max(47rem, 100svh)` and the film inside it is placed
-   by ratios of that height, so the hero must not change size; the service
-   heroes size themselves to the viewport minus this same value. Both hold as
-   long as the space is identical to what the bar occupied. */
+/* The room the bar used to take up, in the page, exactly where it was. The
+   service heroes size themselves to the viewport minus this same value, which
+   holds as long as the space is identical to what the bar occupied. */
 .header-space {
   height: var(--header-space);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* The bar still hides and returns — that is navigation, not decoration — but
-     it does it between frames rather than sliding. */
-  .site-header,
-  .site-header::before {
+  /* The wordmark still leaves and returns — that is navigation, not
+     decoration — but between frames rather than moving. */
+  .site-nav__lead {
     transition: none;
   }
 }
@@ -1451,7 +1380,7 @@ video {
   position: relative;
   z-index: 2;
   display: grid;
-  /* Two: the wordmark and the burger, at every width since 2026-10-03. */
+  /* Two: the wordmark and MENU, at every width since 2026-10-03. */
   grid-template-columns: minmax(0, 1fr) auto;
   gap: clamp(1.25rem, 2.6vw, 3.25rem);
   align-items: center;
@@ -1502,119 +1431,108 @@ video {
   filter: var(--logo-filter);
 }
 
-/* ── The burger ──
+/* The wordmark and, beside it, where Mardal is: top-aligned with the mark, in
+   the paragraph size, as the owner's comp of 2026-10-03 sets it. */
+.site-nav__lead {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: clamp(1.25rem, 3.7vw, 3rem);
+}
 
-   Owner, 2026-10-03: "i want BIG MENU so Only BURGER menu". The bar is the
-   wordmark and this, at every width; the words that stood in the bar are in
-   the menu it opens. Two bars rather than three, and the lower one short: the
-   site's own mark is the redaction bar, and two of them cross into a close
-   mark without a third having to disappear. */
+.site-nav__place {
+  color: var(--ink);
+  font-size: var(--text-body);
+  line-height: 1;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* Over a dark ground the bar is drawn in white — the homepage's photograph, the
+   footer's black panel, anything marked `data-bar-dark` (SiteHeader sets the
+   flag while one stands behind the bar). Not while the menu is open: the bar
+   then stands on the menu's own ground. */
+:root[data-header-on-dark] .site-header:not(.site-header--mobile-menu-open) {
+  --ink: var(--ink-on-photo);
+}
+
+:root[data-header-on-dark]
+  .site-header:not(.site-header--mobile-menu-open)
+  .brand-logo {
+  filter: brightness(0) invert(1);
+}
+
+.brand-logo {
+  transition: filter var(--duration-base) var(--ease-standard);
+}
+
+/* ── The menu button ──
+
+   Owner, 2026-10-03: "i want BIG MENU so Only BURGER menu", and then "instead
+   of two horisontal for burger menu lets try MENU +". The bar is the wordmark
+   and this, at every width: the word, in the paragraph size like "Kosova" on
+   the other side of the bar, and a plus drawn beside it — a mark rather than a
+   character, so its upright can fold away: "when hover to be - and when open
+   -". */
 .mobile-menu-toggle {
   display: inline-flex;
-  width: 3rem;
   height: 3rem;
   align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius-full);
+  gap: 0.55em;
+  padding: 0 0 0 0.75rem;
+  border: 0;
   background: transparent;
   color: var(--ink);
   cursor: pointer;
-  transition: border-color var(--duration-fast) var(--ease-standard);
+  font: inherit;
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  transition: color var(--duration-base) var(--ease-standard);
 }
 
-.mobile-menu-toggle__bars {
+/* The plus: two hairlines the weight of the bar's other marks, crossed in a
+   box the height of the word's capitals. */
+.mobile-menu-toggle__plus {
   position: relative;
   display: block;
-  width: 1.25rem;
-  height: 0.6rem;
+  flex: none;
+  width: 0.78em;
+  height: 0.78em;
 }
 
-.mobile-menu-toggle__bars > span {
+.mobile-menu-toggle__plus::before,
+.mobile-menu-toggle__plus::after {
   position: absolute;
+  top: 50%;
   left: 0;
   width: 100%;
-  height: 2px;
+  height: 1.5px;
+  margin-top: -0.75px;
   background: currentcolor;
-  transition:
-    transform var(--duration-base) var(--ease-standard),
-    width var(--duration-base) var(--ease-standard);
+  content: "";
 }
 
-.mobile-menu-toggle__bars > span:first-child {
-  top: 0;
+.mobile-menu-toggle__plus::after {
+  transform: rotate(90deg);
 }
 
-.mobile-menu-toggle__bars > span:last-child {
-  bottom: 0;
-  width: 65%;
+/* The upright stroke, which is the difference between the two marks: drawn
+   for a plus, folded flat into the crossbar for a minus — under the pointer,
+   and while the menu is open. */
+.mobile-menu-toggle__plus::after {
+  transition: transform var(--duration-base) var(--ease-standard);
 }
 
-/* Open, the two bars meet on the middle line and cross. */
-.mobile-menu-toggle[aria-expanded="true"] .mobile-menu-toggle__bars > span:first-child {
-  transform: translateY(calc(0.3rem - 1px)) rotate(45deg);
-}
-
-.mobile-menu-toggle[aria-expanded="true"] .mobile-menu-toggle__bars > span:last-child {
-  width: 100%;
-  transform: translateY(calc(1px - 0.3rem)) rotate(-45deg);
+.mobile-menu-toggle[aria-expanded="true"] .mobile-menu-toggle__plus::after {
+  transform: rotate(90deg) scaleX(0);
 }
 
 @media (hover: hover) {
-  .mobile-menu-toggle:hover {
-    border-color: var(--line);
-  }
-
-  .mobile-menu-toggle:hover .mobile-menu-toggle__bars > span:last-child {
-    width: 100%;
+  .mobile-menu-toggle:hover .mobile-menu-toggle__plus::after {
+    transform: rotate(90deg) scaleX(0);
   }
 }
-
-/* The theme control. A button with nothing on it — no fill, no border, no size
-   of its own — because both places it sits are rows of words and it has to read
-   as one more of them rather than as a control dropped into a menu.
-
-   It carries no colour: the mark is drawn in currentColor, so it is ink on
-   whichever page it is standing on and turns over with everything else. That is
-   also the state indicator — the mark is dark on the light page and light on
-   the dark one, and the page itself is the rest of the feedback. */
-.theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  transition: opacity var(--duration-fast) var(--ease-standard);
-}
-
-/* The same 1.6 stroke as the social marks, so the ring belongs to the one icon
-   set the site has rather than starting a second.
-
-   A step larger than their 1.4em, and only because this glyph is denser than
-   they are: it sits in the legal line, which is set at the fine size, and eight
-   dots and a ring inside 1.4em of that put the dots under 2px — dust rather
-   than a drawing. At 1.5em they land just over 2px and the mark reads. */
-.theme-toggle__mark {
-  width: 1.5em;
-  height: 1.5em;
-  flex: 0 0 auto;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-}
-
-/* The rays are ink, not outline — at this size a stroked dot is a smudge with a
-   hole in it. Only the ring is drawn. */
-.theme-toggle__rays circle {
-  fill: currentColor;
-  stroke: none;
-}
-
 
 /* ── The menu ──
 
@@ -1931,11 +1849,6 @@ video {
   color: var(--ink);
   font-size: var(--text-copy);
   list-style: none;
-}
-
-.mobile-menu__theme {
-  color: var(--ink);
-  font-size: var(--text-copy);
 }
 
 /* Quieter than the controls above it, because it is the only thing at this
@@ -2323,194 +2236,14 @@ video {
   }
 }
 
-
-.hero-content {
-  position: relative;
-  z-index: 3;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  padding-top: clamp(5.5rem, 12vh, 10rem);
-}
-
-.hero-title {
-  grid-column: 1 / span 7;
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-hero);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading-xl);
-}
-
-.hero-title-mask {
-  display: block;
-  padding-right: 0.08em;
-  overflow: hidden;
-}
-
-.hero-title-mask > span {
-  display: block;
-}
-
-.hero-copy {
-  /* The three lines of it, and the air it keeps between itself and the first
-     bar. The em is the copy's own size, so the height follows the type. */
-  --hero-copy-lines: calc(3 * var(--leading-body) * 1em);
-  --hero-copy-clear: 2rem;
-  /* Everything above the copy inside the hero, at its tallest: the header's
-     own padding, the bar it sits on, and the padding at the top of the
-     content grid. Written out rather than measured, and rounded up — an
-     upper bound only ever holds the copy a little higher than it had to be,
-     where a lower one would let it touch. */
-  --hero-copy-above: calc(
-    var(--header-pad-top) + 4.1rem + clamp(5.5rem, 12vh, 10rem)
-  );
-  /* The same, plus the title the paragraph now starts under: two lines of it,
-     at the leading they are set in. Only the guard below reads this — the
-     alignment itself is done by the grid and needs no number at all. */
-  --hero-copy-top: calc(
-    var(--hero-copy-above) + 2 * var(--leading-heading-xl) * var(--text-hero)
-  );
-
-  position: relative;
-  /* The paragraph is set to the bar's own band: the same right edge the last
-     name ends on, and — because the lines are broken to fill it — a left edge
-     that lands on the first one.
-
-     It used to be a fixed column with a 40px nudge past the container, which
-     put it neither under the names nor inside the page: the block began some
-     190px right of "Services" and its right edge stood 32px PAST the container,
-     the only thing on the page to break that line. (The nudge was capped
-     against the gutter because a flat 40px walked it off the right edge below
-     about a 1000px window.)
-
-     Two declarations replace all of that, and neither needs a number:
-     `justify-self: end` puts the block's right edge on the container's, and the
-     margin then pulls it in by the bar's own right padding — 0.4rem, from
-     .site-nav — so the two edges agree exactly at every width. The width is the
-     longest line rather than a column, so the band is set by the text, and the
-     line was broken to measure the same 500-odd pixels the four names occupy.
-     They drift by a pixel or two as the window moves, since the names run on
-     --text-nav and the copy on --text-copy, but the block cannot overflow
-     anything: it grows leftward, into the empty middle of the hero. */
-  justify-self: end;
-  width: fit-content;
-  /* Line 8, not 7. The title is `1 / span 7`, so it ends ON line 8 — ask for 7
-     and this overlaps it, which auto-placement resolves by dropping the whole
-     paragraph into a second row, 200px down the page and straight through the
-     bars. The column only has to be wide enough to hold the block; where the
-     block actually sits is `justify-self` and the margin below. */
-  grid-column: 8 / -1;
-  /* Its own row, so the paragraph begins on the title's bottom edge. Row 1
-     holds nothing but the title and is therefore exactly as tall as its two
-     lines, which makes row 2 start where they stop — at every width, and at
-     whatever --text-hero is set to next, with no offset to keep in step by
-     hand. It replaces a clamp(7rem, 19vh, 15.5rem) that landed the paragraph
-     somewhere near the middle of the title and moved with the window height
-     rather than with the type. */
-  grid-row: 2;
-  align-self: start;
-  margin: 0 0.4rem 0 0;
-  /* Nothing, until the bars would be under it.
-     Sitting on the title's foot is what this wants; the term only comes out
-     negative on a window short and wide enough for the ink line to have climbed
-     into the paragraph, and there the alignment has to give way — a line of
-     copy standing on the film is worse than one standing a little high. It is a
-     min against zero rather than the old min against a wish, because the wish
-     is now the grid's and cannot be written as a length. */
-  margin-top: min(
-    0px,
-    calc(
-      var(--hero-ink) - var(--hero-copy-top) - var(--hero-copy-lines) -
-        var(--hero-copy-clear)
-    )
-  );
-  /* The paragraph size, not the heading one. The tracking goes with it:
-     -0.045em is drawn to hold 30px display type together and closes body-size
-     text up. The leading stays tight because these three lines are broken by
-     hand rather than wrapped. */
-  font-size: var(--text-copy);
-  font-weight: var(--weight-heading);
-  line-height: var(--leading-body);
-}
-
-/* One line each, which is what makes the block's width the longest line's
-   width. Below 64rem they go back to being ordinary inline text and the
-   paragraph wraps to whatever column it has — see the rule that does it. */
-.hero-copy__line {
-  display: block;
-}
-
-/* The film is framed 1920 x 1400 and its bars start just over half way down
-   and run off the bottom edge.
-
-   --hero-field-height is the one number that sets how tall the field stands.
-   The box is pinned to the foot of the hero and the frame is mapped onto it
-   without preserving its aspect (see HeroField.tsx), so lowering this number
-   shortens every bar and every gap between them by the same fraction — the
-   field becomes a shorter version of itself rather than a cropped one. */
-.hero-lines {
-  position: absolute;
-  inset: auto 0 0;
-  /* The band is 1920 x 376 (BAND_TOP..BAND_FOOT in lib/hero-motion.ts). Giving
-     its box the same proportion means the film fills it exactly at every
-     width, so it stands on the foot of the hero on a phone and on a 27" alike
-     and is never cropped. */
-  aspect-ratio: 1920 / 376;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.hero-field {
-  display: block;
-  width: 100%;
-  height: 100%;
-  max-width: none;
-}
-
-.hero-lines-blur {
-  --hero-lines-blur-start: 34;
-
-  position: absolute;
-  inset: calc(var(--hero-lines-blur-start) * 1%) 0 0;
-  z-index: 2;
-  backdrop-filter: blur(0.75rem);
-  -webkit-backdrop-filter: blur(0.75rem);
-  background: var(--canvas-veil);
-  mask-image: linear-gradient(to bottom, transparent, #000 52%, #000);
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    #000 52%,
-    #000
-  );
-  opacity: 0;
-  pointer-events: none;
-  will-change: opacity;
-}
-
-.hero-lines-fade {
-  position: absolute;
-  inset: 40% 0 0;
-  z-index: 3;
-  background: linear-gradient(
-    to bottom,
-    transparent 0,
-    var(--canvas-fade) 34%,
-    var(--canvas) 86%,
-    var(--canvas) 100%
-  );
-  opacity: 0;
-  pointer-events: none;
-  will-change: opacity;
-}
-
 /* ----------------------------- Why Mardal ----------------------------- */
 
-/* The hero pays nothing: its bar field runs to the section's own edge, so the
-   section beneath it carries the whole gap rather than half, and the join
-   under the hero measures the same as every other join. */
-.hero + section {
+/* The opening pays nothing: its photograph runs to the section's own edge, so
+   the section beneath it carries the whole gap rather than half, and the join
+   under the opening measures the same as every other join. While the opening is
+   pinned, ScrollTrigger wraps it in a spacer, which is then the sibling. */
+.house-hero + section,
+.pin-spacer:has(> .house-hero) + section {
   padding-top: var(--section-gap);
 }
 
@@ -3023,7 +2756,7 @@ video {
   /* **Grey on the light page, the page's white on the dark one.** Owner,
      2026-09-30: the hover text in white in dark mode. `--ink-muted` alone turns
      over to its own dark half, #a09aad, which is still a grey. */
-  color: light-dark(var(--ink-muted), var(--ink));
+  color: var(--ink-muted);
   font-size: var(--text-copy);
   letter-spacing: -0.015em;
   line-height: var(--leading-body);
@@ -5361,44 +5094,6 @@ video {
     padding: 0.65rem 0.65rem 0.65rem 0;
   }
 
-  .hero-title {
-    grid-column: 1 / span 8;
-  }
-
-  /* Back to a column, because there is no bar left to line up with: the names
-     are in the mobile sheet from here down and the header carries the Menu
-     button instead. Four columns is narrower than any one of the hand-broken
-     lines, so the breaks are dropped and the paragraph wraps to the column —
-     which takes five lines at the top of this range, hence the reservation.
-     Over-reserving only ever holds the copy higher than it had to be; under it
-     is what lets a line cross the bars. */
-  .hero-copy {
-    --hero-copy-lines: calc(5 * var(--leading-body) * 1em);
-
-    width: auto;
-    justify-self: stretch;
-    grid-column: 9 / -1;
-    /* Back beside the title rather than under it. The second row is what puts
-       the paragraph on the title's bottom edge, and that reading only works
-       while the two stand side by side with room to spare; here the copy is
-       four columns wide and dropping it a row would leave a narrow stack far
-       down the right of the screen. So it returns to row 1 — and with it, to
-       the offset it used to be placed by. */
-    grid-row: auto;
-    margin-right: 0;
-    margin-top: min(
-      calc(clamp(7rem, 19vh, 15.5rem) - 15px),
-      calc(
-        var(--hero-ink) - var(--hero-copy-above) - var(--hero-copy-lines) -
-          var(--hero-copy-clear)
-      )
-    );
-  }
-
-  .hero-copy__line {
-    display: inline;
-  }
-
   /* No three-column structure down here, so the Fusion block goes back to being
      a centred measure of its own — the container is already narrower than it
      from about 780 down, and this never binds. */
@@ -5553,20 +5248,6 @@ video {
     --text-display: clamp(4rem, 18vw, 7rem);
   }
 
-  .hero {
-    /* Same line, measured against the field this width gives it: 170% of the
-       page wide, nine tenths of the hero tall, and started a tenth of the way
-       down. */
-    /* The field is 170% of the page wide here, so it stands 1.7 x 19.583%
-       of the page tall. */
-    --hero-ink: max(
-      0px,
-      calc(max(45rem, 100svh) - 33.291vw)
-    );
-
-    min-height: max(45rem, 100svh);
-  }
-
   .site-header {
     padding-top: 0.75rem;
   }
@@ -5599,42 +5280,9 @@ video {
     width: 9rem;
   }
 
-  /* The burger a step smaller, like the bar it stands in. */
+  /* The burger a step shorter, like the bar it stands in. */
   .mobile-menu-toggle {
-    width: 2.75rem;
     height: 2.75rem;
-  }
-
-  .hero-content {
-    display: block;
-    padding-top: clamp(4.5rem, 11vh, 6.5rem);
-  }
-
-  /* No measure is set here. A 7ch cap used to narrow the title at this width,
-     but 7ch is 3.16em in this face and "Innovation" is 3.467em, so the word
-     overran the mask — which hides its overflow for the reveal — and lost its
-     last letter on a phone. It also left "lives here." 0.7px inside the cap,
-     close enough that rounding wrapped it onto a third line. The two lines are
-     broken by hand in the markup; at the floor size they each fit a 320px
-     screen with room to spare, so nothing has to constrain them. */
-
-  .hero-copy {
-    /* Here the copy follows the title down the page instead of sitting beside
-       it, so everything above it is the header, the padding, and two lines of
-       the title. */
-    --hero-copy-above: calc(
-      1rem + 3.45rem + clamp(4.5rem, 11vh, 6.5rem) + 2 * 0.94 *
-        var(--text-hero)
-    );
-
-    margin-top: min(
-      calc(2.75rem - 15px),
-      calc(
-        var(--hero-ink) - var(--hero-copy-above) - var(--hero-copy-lines) -
-          var(--hero-copy-clear)
-      )
-    );
-    margin-left: 30%;
   }
 
   /* One row here too, as on desktop. The row is 7.86em wide whatever the size —
@@ -5657,23 +5305,6 @@ video {
      fault; the other three edges stay square. */
   .fusion-copy {
     text-align-last: auto;
-  }
-
-  /* Wider than the screen so the bars still read at this size, and started a
-     tenth of the way down.
-
-     The drop is what makes room for the copy. Stacked rather than set beside
-     the title, the words need 331px of the hero before the bars begin, and on
-     a 320 x 568 screen a field that filled the hero put the first bar at 327 —
-     the copy sat on the bars by a pixel or three on every phone measured.
-     Nothing moves and nothing shrinks; the field just starts lower, which on a
-     screen this size reads as a little more air above it. */
-  .hero-lines {
-    right: auto;
-    top: auto;
-    bottom: 0;
-    left: -35%;
-    width: 170%;
   }
 
   .why-section {
@@ -8388,11 +8019,7 @@ video {
    Inside it, and only inside it, the display face — a quarter larger than the
    words around it. CS Alistair's lowercase is small for its size, so at the same
    size the visitor's words would read as a size smaller than the letter's; at
-   1.25em the two lowercases stand at about one height.
-
-   It pins `color-scheme: light`. A tint does not turn over with the page, so
-   neither may the ink written on it, and every colour token here is
-   `light-dark()`. */
+   1.25em the two lowercases stand at about one height. */
 .letter__blank {
   box-sizing: border-box;
   width: 100%;
@@ -8409,7 +8036,6 @@ video {
   letter-spacing: var(--tracking-display);
   line-height: 1.6em;
   background: var(--tint-lilac-bar);
-  color-scheme: light;
   transition: background-color var(--duration-base) var(--ease-standard);
 }
 
@@ -8421,9 +8047,7 @@ video {
    page the italic is used, so it reads as a prompt and never as something
    already written.
 
-   White — owner, 2026-09-13. `--accent-contrast` is white on the light page,
-   and the bar pins `color-scheme: light`, so it stays white on the dark page
-   too. It measures about 2:1 on the empty bar, under AA even for large text;
+   White — owner, 2026-09-13 (`--accent-contrast`). It measures about 2:1 on the empty bar, under AA even for large text;
    `tests/contact.test.mjs` prints the number on every run rather than failing
    on it, the way the footer's is recorded — his call, and not one to be
    forgotten. */
@@ -8450,7 +8074,6 @@ video {
   position: relative;
   display: block;
   color: var(--ink);
-  color-scheme: light;
 }
 
 .letter__choice::after {

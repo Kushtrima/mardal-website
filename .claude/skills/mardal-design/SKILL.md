@@ -80,11 +80,12 @@ Both headers are fluid and settle at those sizes from ~1280px up. There are no
 responsive font-size overrides anywhere; the clamps handle small screens. Do not
 add one.
 
-**Colour.** The page is black by default (owner, 2026-09-30) and white once the
-toggle is pressed. Every colour token is a `light-dark(LIGHT, DARK)` pair, and
-the values below are the light halves. The things on the page carry the tint.
+**Colour.** One page, light, and nothing else — owner, 2026-10-03: "delete dark
+mode we dont need it delete it all". No `light-dark()`, no `data-theme`, no
+switch, no `prefers-color-scheme`; `tests/theme.test.mjs` fails if any comes back.
+The things on the page carry the tint.
 
-- `--canvas` white — the page
+- `--canvas` `#e1e1df` — the page (owner, 2026-10-03)
 - `--surface`, `--menu-surface` `#efedf8` — cards, header, mega menu
 - `--ink` `#08080a`, `--ink-muted` `#5e5a69`
 - `--accent` `#8362b8`

@@ -48,11 +48,32 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>Mardal — Innovation lives here<\/title>/i);
+  /* The old tagline left with the hero it was the heading of (2026-10-03). */
+  assert.match(html, /<title>Mardal — House of Creativity &amp; Technology<\/title>/i);
 
-  // Hero
-  assert.match(html, /Innovation/);
-  assert.match(html, /lives here/);
+  /* Hero — the owner's concept of 2026-10-03: his heading and sentence, line
+     for line, over his photograph. Served in its first state (heading over a
+     band of the photograph); the scroll does the rest. The opening it
+     replaced, "Innovation lives here.", was deleted the same day. */
+  const hero = html.match(/<section class="house-hero"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(hero, "the homepage's opening is not rendered");
+  assert.deepEqual(
+    [...hero.matchAll(/class="house-hero__title-line">([^<]*)</g)].map((m) => m[1]),
+    ["HOUSE OF CREATIVITY", "&amp; TECHNOLOGY"],
+  );
+  assert.deepEqual(
+    [...hero.matchAll(/class="house-hero__support-line">([^<]*)</g)].map((m) => m[1]),
+    [
+      "Good design and Development creates real value.",
+      "We create for people, businesses and society.",
+    ],
+  );
+  assert.match(hero, /<h1 class="house-hero__title" id="house-hero-title"/);
+  assert.match(hero, /<img class="house-hero__image" src="\/house-hero-1540\.webp" alt="[^"]+" width="1540" height="1021"/);
+  assert.doesNotMatch(html, /data-hero-line/);
+
+  /* The bar names where Mardal is, beside the wordmark. */
+  assert.match(html, /<span class="site-nav__place">Kosova<\/span>/);
   /* ── What Makes Us Different: five boxes, five colours ──
      This block was destroyed on 2026-08-25 along with the header assertions, in
      the commit that replaced the Clients taxonomy, and its absence is why
@@ -216,7 +237,29 @@ test("server-renders the Mardal homepage", async () => {
     bar,
     /<button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-navigation"/,
   );
-  assert.match(bar, /class="visually-hidden">Menu</);
+  /* MENU and a drawn plus (owner, 2026-10-03), where the two lines were — the
+     same word open and shut; the mark folds to a minus. */
+  assert.match(bar, /class="mobile-menu-toggle__label">MENU</);
+  assert.match(bar, /class="mobile-menu-toggle__plus" aria-hidden="true"/);
+  assert.doesNotMatch(bar, /mobile-menu-toggle__bars|CLOSE/);
+
+  /* **No ground, and MENU alone once the page has moved** — owner, 2026-10-03:
+     "remove the bacground when scroll in and when scrollin to be visible only
+     MENU +". So the bar has no ground layer and never slides off; what leaves is
+     the wordmark and its place. Read from the stylesheet, since the states are
+     attributes the server never writes. */
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.doesNotMatch(CSS, /\.site-header::before|\.site-header\[data-header="hidden"\]/);
+  assert.match(
+    CSS,
+    /\.site-header:not\(\[data-header="top"\]\):not\(\.site-header--mobile-menu-open\)\s*\.site-nav__lead\s*\{[^}]*opacity:\s*0/,
+  );
+  assert.match(CSS, /\.mobile-menu-toggle\[aria-expanded="true"\] \.mobile-menu-toggle__plus::after\s*\{[^}]*scaleX\(0\)/);
+
+  /* With no ground of its own, the bar turns white over anything dark, which
+     marks itself: the opening's photograph and the footer's black panel. */
+  assert.match(html, /class="house-hero__frame" data-house-frame="true" data-bar-dark="true"/);
+  assert.match(html, /class="site-footer__panel" data-bar-dark="true"/);
   assert.doesNotMatch(bar, />(Services|Products|Clients|Company|Hire us)</);
   assert.doesNotMatch(html, /mega-menu|nav-trigger|site-nav__actions/);
 
@@ -2218,7 +2261,7 @@ test("the roll call adds a rule and never takes one away", () => {
      section was unreadable and singled out as such. This is uniform, it is a
      resting state, every phrase goes to full ink the moment its sector is
      pointed at from either end, and the names beside it are black throughout. */
-  assert.match(bare, /--ink-quiet:\s*light-dark\(#cccbd2, #323139\)/);
+  assert.match(bare, /--ink-quiet:\s*#cccbd2;/);
 
   /* **The gap before the way out is on the container, not on the link.** It was
      `margin-top` on `.industries-explore` and it did nothing twice: a shared

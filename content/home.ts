@@ -321,6 +321,38 @@ export const menu = [
 
 export const contactEmail = "info@mardal.co";
 
+/** The word beside the wordmark in the bar, from the owner's comp of
+ *  2026-10-03. Mardal is a registered Kosovo company (PRODUCT.md). */
+export const brandPlace = "Kosova";
+
+/** The menu button's word — owner, 2026-10-03: "instead of two horisontal for
+ *  burger menu lets try MENU +". The same word open and shut; the mark beside
+ *  it says which (a plus, a minus while it is open or under the pointer). */
+export const menuButton = "MENU";
+
+/**
+ * The homepage's opening, the owner's concept of 2026-10-03: the heading and a
+ * band of the photograph first, then — as the page is scrolled — the photograph
+ * opens to the whole screen, the heading goes to its foot in white and the
+ * sentence arrives above it. Every word is his comp's, line for line, in his
+ * capitals.
+ *
+ * The red square is in the photograph itself, not drawn by the page.
+ */
+export const houseHero = {
+  titleLines: ["HOUSE OF CREATIVITY", "& TECHNOLOGY"],
+  supportLines: [
+    "Good design and Development creates real value.",
+    "We create for people, businesses and society.",
+  ],
+  image: {
+    src: "/house-hero-1540.webp",
+    width: 1540,
+    height: 1021,
+    alt: "A woman and a man in traditional dress walking past, blurred by their movement, with a red square between them.",
+  },
+} as const;
+
 /**
  * The line under the hero: the two halves of how the work is made.
  *

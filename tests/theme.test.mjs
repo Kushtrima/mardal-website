@@ -1,29 +1,33 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 
 /**
- * Which page a visitor arrives on.
+ * The site has one page, and it is light.
  *
- * **This has no trace in rendered HTML at all.** Nothing is written on `<html>`
- * for a first-time visitor — that is the point of the arrangement, since a page
- * that needs a script to decide its own colour flashes the other one first. The
- * whole decision is one CSS property, and one property is exactly the kind of
- * thing an unrelated edit moves without anyone seeing it: the site would still
- * build, still pass every other test, and still look right to whoever changed
- * it, as long as their own machine happened to be set the way the old default
- * assumed.
+ * Owner, 2026-10-03: "delete dark mode we dont need it delete it all". Until
+ * then every colour token carried a light and a dark half, a switch in the menu
+ * turned the page over and a script in the head remembered the choice. All of
+ * it is gone, and this file is what keeps it gone: the dark page is the kind of
+ * thing that comes back one `light-dark()` at a time, from an old snippet or a
+ * habit, and each piece of it would still build and still pass.
+ *
+ * The ground is the owner's grey, the same day: "make backgournd of website in
+ * this color: #e1e1df so globally".
  */
 
-const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
-const LAYOUT = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
+const ROOT = new URL("../", import.meta.url);
+const read = (path) => readFileSync(new URL(path, ROOT), "utf8");
+const CSS = read("app/globals.css");
+const LAYOUT = read("app/layout.tsx");
 
-/** Every rule with this exact selector, joined.
- *
- *  All of them, not the first: `:root` is written twice on purpose — the
- *  palette at the top of the file and the four non-colour values near the
- *  bottom — and they cascade into one element. Reading only the first found the
- *  palette and reported the other four missing. */
+/* Code only: the stylesheet's notes still tell the history of the dark page,
+   and a note about it is not the thing itself. */
+const code = (source) =>
+  source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+const CSS_CODE = code(CSS);
+
+/** Every rule with this exact selector, joined. */
 function rule(selector) {
   const bodies = [];
   const needle = `\n${selector} {`;
@@ -34,84 +38,46 @@ function rule(selector) {
   return bodies.join("\n");
 }
 
-/* Owner's call, 2026-09-30: the page arrives black. It was `light` from
-   2026-08-25, and `light dark` before that — and a second word is the one
-   thing that must not come back: with both, every `light-dark()` token in the
-   file resolves off the visitor's operating system, so half of them meet the
-   other page. `dark light` would do the same with the preference reversed. */
-test("the page is dark before anyone chooses", () => {
-  assert.match(rule(":root"), /color-scheme:\s*dark\s*;/);
-  assert.doesNotMatch(rule(":root"), /color-scheme:\s*(light|dark\s+light)/);
+/** Every source file under a folder, as [path, code]. */
+function sources(dir) {
+  const out = [];
+  for (const name of readdirSync(new URL(dir, ROOT))) {
+    const path = `${dir}/${name}`;
+    if (statSync(new URL(path, ROOT)).isDirectory()) out.push(...sources(path));
+    else if (/\.(tsx?|mjs|css)$/.test(name)) out.push([path, code(read(path))]);
+  }
+  return out;
+}
+
+test("the page is light, and only light", () => {
+  assert.match(rule(":root"), /color-scheme:\s*light\s*;/);
+  assert.doesNotMatch(CSS_CODE, /color-scheme:\s*dark/);
+  assert.doesNotMatch(CSS_CODE, /light-dark\(/, "a colour has a dark half again");
+  assert.doesNotMatch(CSS_CODE, /data-theme/, "a rule answers to a theme again");
+  assert.doesNotMatch(CSS_CODE, /prefers-color-scheme/, "the page follows the OS again");
+  assert.doesNotMatch(CSS_CODE, /theme-toggle/, "the switch has styles again");
 });
 
-/* And the dark page is still there, still reachable, still one property away.
-   Flipping the default must not become deleting the theme. */
-test("the toggle still turns the whole page over", () => {
-  assert.match(rule(':root[data-theme="dark"]'), /color-scheme:\s*dark\s*;/);
-  assert.match(rule(':root[data-theme="light"]'), /color-scheme:\s*light\s*;/);
+test("the ground is the owner's grey", () => {
+  assert.match(rule(":root"), /--canvas:\s*#e1e1df\s*;/);
+});
 
-  /* The palette is built on light-dark(), so both halves of every colour are
-     still authored. If this ever falls to zero the toggle has nothing to turn. */
+test("the four values that are not colours are the light page's", () => {
+  const root = rule(":root");
+  assert.match(root, /--logo-filter:\s*brightness\(0\)\s*;/);
+  assert.match(root, /--panel-shadow:\s*var\(--shadow-soft\)/);
+  assert.match(root, /--font-smoothing:\s*auto/);
+});
+
+test("nothing chooses a theme any more", () => {
   assert.ok(
-    (CSS.match(/light-dark\(/g) ?? []).length > 20,
-    "the palette has stopped carrying both themes",
+    !existsSync(new URL("components/layout/ThemeToggle.tsx", ROOT)),
+    "the switch is back",
   );
-});
-
-/* The four values that are not colours, so `light-dark()` cannot carry them.
-   They used to be written dark-on-:root with the light pair duplicated into a
-   `prefers-color-scheme` block AND the toggle's rule — three copies of two
-   states, with a comment asking whoever edited one to remember the others.
-   Taking the OS out on 2026-08-25 let the base hold the default and the toggle
-   the other half, once each, and took the file's only colour-scheme query with
-   it. Since 2026-09-30 the default is dark: the base holds dark and
-   `data-theme="light"` holds light. */
-test("what is not a colour turns over too, and is written once", () => {
-  const dark = rule(":root");
-  const light = rule(':root[data-theme="light"]');
-
-  assert.match(light, /--logo-filter:\s*brightness\(0\)\s*;/);
-  assert.match(light, /--panel-shadow:\s*var\(--shadow-soft\)/);
-  assert.match(light, /--font-smoothing:\s*auto/);
-
-  assert.match(dark, /--logo-filter:\s*brightness\(0\) invert\(1\)/);
-  assert.match(dark, /--panel-shadow:\s*none/);
-  assert.match(dark, /--font-smoothing:\s*antialiased/);
-
-  /* Once: the dark rule restates the scheme and nothing else, so there is no
-     second copy of the dark four to fall out of step with the base. */
-  assert.doesNotMatch(
-    rule(':root[data-theme="dark"]'),
-    /--(logo-filter|panel-shadow|menu-edge-shadow|font-smoothing)\s*:/,
-  );
-
-  /* No colour-scheme media query, in either direction. The palette never had
-     one; these four were the only reason the file did. */
-  assert.doesNotMatch(CSS, /@media[^{]*prefers-color-scheme/);
-});
-
-/* The script in the head writes a REMEMBERED choice and nothing else. If it ever
-   starts reading `matchMedia("(prefers-color-scheme: …)")` the operating system
-   is back in charge of the default and the line above is decorative. */
-test("nothing but a remembered choice reaches the root element", () => {
-  assert.match(LAYOUT, /localStorage\.getItem\("mardal-theme"\)/);
-  assert.match(LAYOUT, /t==="light"\|\|t==="dark"/);
-  assert.doesNotMatch(LAYOUT, /prefers-color-scheme/);
-});
-
-/* And the toggle asks the page, not the OS. With nothing stored it used to read
-   `prefers-color-scheme` to learn which way the page was, a question the OS
-   stopped answering on 2026-08-25 — so on any machine that disagreed with the
-   default, the first press set the theme the page already had and nothing
-   moved. It reads `color-scheme` off the root instead, the one word the
-   default lives in. */
-test("the toggle asks the page which way it is, not the OS", () => {
-  const TOGGLE = readFileSync(
-    new URL("../components/layout/ThemeToggle.tsx", import.meta.url),
-    "utf8",
-  );
-  assert.doesNotMatch(TOGGLE, /prefers-color-scheme/);
-  assert.match(TOGGLE, /getComputedStyle\(document\.documentElement\)\.colorScheme/);
+  assert.doesNotMatch(code(LAYOUT), /mardal-theme|dataset\.theme|localStorage/);
+  for (const [path, body] of [...sources("app"), ...sources("components"), ...sources("lib")]) {
+    assert.doesNotMatch(body, /ThemeToggle|mardal-theme|dataset\.theme/, `${path} chooses a theme`);
+  }
 });
 
 /* The footer panel's colours do not turn over with the page: a fixed pair named
