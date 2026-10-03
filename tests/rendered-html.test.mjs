@@ -255,6 +255,16 @@ test("server-renders the Mardal homepage", async () => {
     /\.site-header:not\(\[data-header="top"\]\):not\(\.site-header--mobile-menu-open\)\s*\.site-nav__lead\s*\{[^}]*opacity:\s*0/,
   );
   assert.match(CSS, /\.mobile-menu-toggle\[aria-expanded="true"\] \.mobile-menu-toggle__plus::after\s*\{[^}]*scaleX\(0\)/);
+  /* A minus only while the menu is open; under the pointer the plus turns
+     slowly instead, at its own size — he wanted neither the minus nor a bigger
+     plus on hover. */
+  assert.match(CSS, /\.mobile-menu-toggle\[aria-expanded="false"\]:hover \.mobile-menu-toggle__plus\s*\{\s*transform:\s*rotate\(180deg\);\s*\}/);
+  assert.doesNotMatch(CSS, /\.mobile-menu-toggle:hover \.mobile-menu-toggle__plus::after/);
+  /* And under the pointer the whole button is the site's red — #fb000e, the
+     owner's, which took the lilac's place everywhere on 2026-10-03. */
+  assert.match(CSS, /--tint-red:\s*#fb000e;/);
+  assert.doesNotMatch(CSS, /--tint-lilac/);
+  assert.match(CSS, /\.mobile-menu-toggle:hover\s*\{\s*color:\s*var\(--tint-red\);\s*\}/);
 
   /* With no ground of its own, the bar turns white over anything dark, which
      marks itself: the opening's photograph and the footer's black panel. */
@@ -486,15 +496,14 @@ test("server-renders the Mardal homepage", async () => {
   // links: the accounts exist but their addresses have not been given, and a
   // guessed profile URL is worse than a mark that waits for one.
   //
-  // Counted inside the footer rather than across the document. The mobile
-  // menu's sheet grew a foot of its own on 2026-08-27 and carries the same
-  // three, so a page-wide count reads six and says nothing about where either
-  // set is. Both numbers are asserted, because "six somewhere" is what this
-  // check used to mean by accident and neither half should be free to move.
+  // Counted inside the footer and across the document. The menu's foot carried
+  // the same three from 2026-08-27 until the owner asked for a minimal one on
+  // 2026-10-03, so the page-wide count is three again: the footer's and no
+  // others.
   const footerHtml = html.slice(html.indexOf("<footer"));
   assert.ok(footerHtml.length > 0, "the homepage renders no footer");
   assert.equal((footerHtml.match(/class="social-icon"/g) ?? []).length, 3);
-  assert.equal((html.match(/class="social-icon"/g) ?? []).length, 6);
+  assert.equal((html.match(/class="social-icon"/g) ?? []).length, 3);
   for (const name of ["Instagram", "Facebook", "LinkedIn"]) {
     assert.match(html, new RegExp(`aria-label="${name}"`), `missing ${name}`);
     assert.doesNotMatch(html, new RegExp(`<a[^>]*>${name}<`));
@@ -2396,7 +2405,7 @@ test("the roll call adds a rule and never takes one away", () => {
     manufacturing: "var(--tint-butter-bar)",
     automotive: "var(--tint-sky-bar)",
     retail: "var(--tint-clay-bar)",
-    logistics: "var(--tint-lilac-bar)",
+    logistics: "var(--tint-red-bar)",
     "public-sector": "var(--sector-public)",
   };
   for (const [sector, colour] of Object.entries(sectors)) {

@@ -86,10 +86,10 @@ switch, no `prefers-color-scheme`; `tests/theme.test.mjs` fails if any comes bac
 The things on the page carry the tint.
 
 - `--canvas` `#e1e1df` — the page (owner, 2026-10-03)
-- `--surface`, `--menu-surface` `#efedf8` — cards, header, mega menu
+- `--surface` `#efefed` — cards; `--menu-surface` white
 - `--ink` `#08080a`, `--ink-muted` `#5e5a69`
-- `--accent` `#8362b8`
-- Four card tints, each with a deeper bar shade: `--tint-lilac`, `--tint-butter`,
+- `--accent` = `--tint-red` `#fb000e` (owner 2026-10-03: the red replaced every purple and pink); small type and focus use `--tint-red-bar` `#c9000b`
+- Four card tints, each with a deeper bar shade: `--tint-red`, `--tint-butter`,
   `--tint-mint`, `--tint-sky`, and `--tint-*-bar`
 
 **Only those four tints.** Two extra colours were added once and removed the

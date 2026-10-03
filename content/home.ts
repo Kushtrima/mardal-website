@@ -337,7 +337,8 @@ export const menuButton = "MENU";
  * sentence arrives above it. Every word is his comp's, line for line, in his
  * capitals.
  *
- * The red square is in the photograph itself, not drawn by the page.
+ * The red square is in the photograph itself, not drawn by the page. (Tried
+ * in bright orange on 2026-10-03 and put back to his red the same day.)
  */
 export const houseHero = {
   titleLines: ["HOUSE OF CREATIVITY", "& TECHNOLOGY"],

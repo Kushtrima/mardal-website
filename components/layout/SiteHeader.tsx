@@ -9,7 +9,6 @@ import { MOBILE_MENU } from "../../lib/breakpoints";
 import { HEADER_AT_REST, nextHeaderState } from "../../lib/header-reveal";
 import { PixelArrow } from "../ui/PixelArrow";
 import { Container } from "./Container";
-import { SocialIcon } from "./SocialIcon";
 import { brandPlace, footer, menu, menuButton } from "../../content/home";
 
 /**
@@ -586,31 +585,23 @@ export function SiteHeader() {
                   const className = `mobile-menu__index-link${
                     isCurrent ? " is-current" : ""
                   }`;
-                  const mark = (
-                    <PixelArrow
-                      className="mobile-menu__index-arrow"
-                      direction="up-right"
-                      shape="square"
-                      size="small"
-                      variant="corner"
-                    />
-                  );
-                  /* The word in a mask the height of its line, so it can rise
-                     out of it; beside it, how many pages are behind it. The
-                     count is a fact the list under it states again, so it is
-                     for the eye only. Clients is one page and has none. */
+                  /* How many pages are behind the word, in front of it — owner,
+                     2026-10-03: "numbers put in front", and the arrows that
+                     stood after the words taken out. The count is a fact the
+                     list states again, so it is for the eye only. Clients is
+                     one page and has none, but keeps the slot, so all four
+                     words start on one line. Then the word, in a mask the
+                     height of its line, so it can rise out of it. */
                   const name = (
                     <span className="mobile-menu__name">
+                      <sup className="mobile-menu__count" aria-hidden="true">
+                        {item.items.length > 0 ? item.items.length : null}
+                      </sup>
                       <span className="mobile-menu__word">
                         <span className="mobile-menu__word-inner" data-menu-word>
                           {item.label}
                         </span>
                       </span>
-                      {item.items.length > 0 ? (
-                        <sup className="mobile-menu__count" aria-hidden="true">
-                          {item.items.length}
-                        </sup>
-                      ) : null}
                     </span>
                   );
 
@@ -624,7 +615,6 @@ export function SiteHeader() {
                           onClick={closeMenu}
                         >
                           {name}
-                          {mark}
                         </Link>
                       ) : (
                         <button
@@ -646,7 +636,6 @@ export function SiteHeader() {
                           }}
                         >
                           {name}
-                          {mark}
                         </button>
                       )}
                     </li>
@@ -737,24 +726,11 @@ export function SiteHeader() {
             </div>
           </div>
 
-          {/* The foot: the marks on one line, the address and the number
-              under them. The light/dark switch that stood beside the marks went
-              with the dark page, 2026-10-03. */}
+          {/* The foot, as little as it can be — owner, 2026-10-03: "the section
+              at bottom with numbers social medai etc make a better minimal
+              aproach". One quiet line: where Mardal is and its number. The
+              social marks left it; the footer still carries them. */}
           <div className="mobile-menu__foot" ref={footRef}>
-            <div className="mobile-menu__marks">
-              {/* Marks, not links: the accounts exist but their addresses have
-                  not been supplied, and a guessed profile URL is worse than a
-                  mark that waits. */}
-              <ul className="mobile-menu__social">
-                {footer.social.map((name) => (
-                  <li key={name}>
-                    <SocialIcon name={name} />
-                  </li>
-                ))}
-              </ul>
-
-            </div>
-
             <dl className="mobile-menu__contact">
               {SHEET_CONTACT.map((detail) => (
                 <div className="mobile-menu__contact-row" key={detail.label}>

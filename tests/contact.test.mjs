@@ -302,7 +302,7 @@ test("the letter is set as the page's paragraph, and only the blanks in the disp
   assert.doesNotMatch(rule(".letter__blank"), /field-sizing/);
   assert.doesNotMatch(CSS, /\.letter__rows|\.letter__prompt/);
   /* And the topic, before anything is chosen, looks as empty as the others. */
-  assert.match(CSS, /\.letter__blank--choice:has\(option\[value=""\]:checked\)\s*\{[^}]*--tint-lilac-bar/);
+  assert.match(CSS, /\.letter__blank--choice:has\(option\[value=""\]:checked\)\s*\{[^}]*--tint-red-bar/);
 
   const blank = rule(".letter__blank");
   assert.match(blank, /font-family:\s*var\(--type-title\)/);
@@ -318,8 +318,8 @@ test("the letter is set as the page's paragraph, and only the blanks in the disp
   );
 
   /* Solid while empty, pale once written, italic while it is only a prompt. */
-  assert.match(blank, /background:\s*var\(--tint-lilac-bar\)/);
-  assert.match(rule(".letter__blank:not(:placeholder-shown)"), /background:\s*var\(--tint-lilac\)/);
+  assert.match(blank, /background:\s*var\(--tint-red-bar\)/);
+  assert.match(rule(".letter__blank:not(:placeholder-shown)"), /background:\s*var\(--tint-red\)/);
   assert.match(rule(".letter__blank::placeholder"), /font-style:\s*italic/);
 });
 
@@ -366,7 +366,7 @@ test("the prompts in the blanks are white, and their contrast is said out loud",
      the empty bar is about 2:1, under AA even for large text; the owner asked
      for it, and what is not acceptable is it being forgotten. So the number is
      computed from the two values in the stylesheet and printed on every run. */
-  const bar = CSS.match(/--tint-lilac-bar:\s*(#[0-9a-f]{6})/i)?.[1];
+  const bar = CSS.match(/--tint-red-bar:\s*(#[0-9a-f]{6})/i)?.[1];
   assert.ok(bar, "the empty bar's colour is not a hex this can read");
   const channel = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
   const luminance = (hex) => {

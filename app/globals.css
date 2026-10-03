@@ -83,7 +83,9 @@
   /* The ground a panel sits on: the Why Mardal cards, the boxes — the lavender
      it has worn on the light page all along. The drawings' fill is
      --art-surface, kept apart so a masked shape never takes this colour. */
-  --surface: #efedf8;
+  /* A step lighter than the page, in its own warm grey — it was a lavender
+     (#efedf8) until the red replaced every purple on 2026-10-03. */
+  --surface: #efefed;
   /* White, for a panel that has to read as standing in front of the page. */
   --menu-surface: #ffffff;
   /* A panel raised off the page rather than a second colour on it. The blog
@@ -140,19 +142,18 @@
   --ink-grey: #595959;
   --line: rgb(8 8 10 / 72%);
   --line-soft: rgb(8 8 10 / 16%);
-  /* The accent as a mark and as small type. #a98ad6 is a light purple cut for
-     black and measures 2.88:1 on white; #8362b8 is the cut the panels have been
-     using all along, 4.77:1 on white. The large purple — the footer slab — is
-     deliberately NOT this token any more; it re-derives itself locally so the
-     one big brand colour on the site does not move between themes. */
-  --accent: #8362b8;
-  --accent-soft: #6f5b93;
-  /* Lighter accent for small marks and art on black; the darker cut of the same
-     purple on white, where a light one would disappear. */
-  --accent-strong: #6f4fa7;
-  /* The ink that stands on an --accent fill: white on the purple. */
+  /* **The accent is the red** — owner, 2026-10-03: "the red is not globally we
+     need to put globall instead of the pink". It was a purple (#8362b8, with a
+     #6f4fa7 cut for small type and focus); every hover, mark, link and button
+     that wore it wears the red now. The bright red is the accent itself; the
+     deeper one carries small type and the focus ring, where it reads 4.6:1 on
+     the page against the bright red's 3.1. The footer's slab names its own. */
+  --accent: var(--tint-red);
+  --accent-soft: var(--tint-red-bar);
+  --accent-strong: var(--tint-red-bar);
+  /* The ink that stands on an --accent fill: white on the red. */
   --accent-contrast: #ffffff;
-  --focus: #6f4fa7;
+  --focus: var(--tint-red-bar);
   /* The canvas at partial strength, for a veil or a fade over artwork.
      --art-surface is the fill a card drawing sits at before it takes a tint. */
   --canvas-veil: color-mix(in srgb, var(--canvas) 4%, transparent);
@@ -161,14 +162,20 @@
 
   /* Card tints. Each is a flat panel colour and the deeper shade of itself the
      bars are drawn in — always the same hue, so a card reads as one colour. */
-  --tint-lilac: #dacdf9;
+  /* **The red.** Owner, 2026-10-03, pointing at the menu's highlight: "instead
+     of this pinkish color i want to make global this red: #fb000e". It took the
+     lilac's place everywhere the lilac stood — the redaction bar behind the
+     menu's words and the menu's pill, the letter's blanks, the first box, piece
+     and card, Branding's hero, logistics — and it is the colour MENU turns under
+     the pointer. Its bar shade is the same red a fifth darker. */
+  --tint-red: #fb000e;
   /* What stands on a tint. Named once, for the redaction bar the menu draws
      behind a word. */
   --ink-on-tint: #08080a;
   /* What stands on the photograph in the homepage's opening — the heading,
      the sentence, and the bar while it is over it. */
   --ink-on-photo: #ffffff;
-  --tint-lilac-bar: #c3aef3;
+  --tint-red-bar: #c9000b;
   /* **The owner's yellow, and a bar derived from it.** 2026-08-26, pointing at
      the Websites box: this background, and the pattern the same yellow slightly
      darker.
@@ -570,7 +577,7 @@
   --radius-full: 999px;
   --radius-circle: 50%;
   --shadow-soft: 0 1rem 3rem rgb(21 21 21 / 8%);
-  --shadow-accent: 0 0.75rem 2rem rgb(83 55 124 / 22%);
+  --shadow-accent: 0 0.75rem 2rem rgb(201 0 11 / 22%);
   /* The mega menu's left edge, and only its left edge. The panel is white on a
      white page, so the seam where it begins is the one thing telling you there
      are two surfaces — a shadow all the way round would draw a box, which the
@@ -1471,8 +1478,8 @@ video {
    of two horisontal for burger menu lets try MENU +". The bar is the wordmark
    and this, at every width: the word, in the paragraph size like "Kosova" on
    the other side of the bar, and a plus drawn beside it — a mark rather than a
-   character, so its upright can fold away: "when hover to be - and when open
-   -". */
+   character, so it can turn on hover and fold its upright away to a minus
+   while the menu is open. */
 .mobile-menu-toggle {
   display: inline-flex;
   height: 3rem;
@@ -1499,6 +1506,9 @@ video {
   flex: none;
   width: 0.78em;
   height: 0.78em;
+  /* Twice the handover — slow enough to read as drifting rather than as a
+     reaction, eased at both ends so it starts and settles without a jolt. */
+  transition: transform calc(var(--duration-handover) * 2) var(--ease-handover);
 }
 
 .mobile-menu-toggle__plus::before,
@@ -1517,9 +1527,7 @@ video {
   transform: rotate(90deg);
 }
 
-/* The upright stroke, which is the difference between the two marks: drawn
-   for a plus, folded flat into the crossbar for a minus — under the pointer,
-   and while the menu is open. */
+/* Open, the upright stroke folds flat into the crossbar: a minus. */
 .mobile-menu-toggle__plus::after {
   transition: transform var(--duration-base) var(--ease-standard);
 }
@@ -1528,9 +1536,23 @@ video {
   transform: rotate(90deg) scaleX(0);
 }
 
+/* Under the pointer MENU and its mark turn the site's red — owner, 2026-10-03:
+   "when hover the Menu + to be in red". The plus is drawn in currentColor, so
+   one colour carries both. */
 @media (hover: hover) {
-  .mobile-menu-toggle:hover .mobile-menu-toggle__plus::after {
-    transform: rotate(90deg) scaleX(0);
+  .mobile-menu-toggle:hover {
+    color: var(--tint-red);
+  }
+}
+
+/* Under the pointer the plus turns, very slowly, half way round, and drifts
+   back as slowly when the pointer leaves. Owner, 2026-10-03: not a minus on
+   hover ("Make + in other effect when hover not - i dont like it"), and not
+   bigger — "only maybe a very slow changing posiition". The minus is kept for
+   the open menu only. */
+@media (hover: hover) {
+  .mobile-menu-toggle[aria-expanded="false"]:hover .mobile-menu-toggle__plus {
+    transform: rotate(180deg);
   }
 }
 
@@ -1640,26 +1662,6 @@ video {
   transition: color var(--duration-base) var(--ease-standard);
 }
 
-/* Down with the names. The mark is a 9x9 grid of squares — 9 dots and 8 gaps,
-   which at 2px and 1px is the 26px it was — and it has to come down with the
-   type or it reads as a mark that grew.
-
-   **Three class names, and every one of them is load-bearing.** The size does
-   not come from `.mobile-menu__index-arrow` at all: it comes from
-   `.pixel-arrow--small.pixel-arrow--square`, which is two classes to this
-   rule's one, so a single-class override here is simply ignored — the earlier
-   version of this rule set the gap to a value it already had and changed
-   nothing. Beating it on order alone would work and would be a trap for
-   whoever moves a block. Three classes beat it outright. */
-.mobile-menu .mobile-menu__index-link .mobile-menu__index-arrow {
-  --pixel-arrow-dot: 1.5px;
-  --pixel-arrow-gap: 1px;
-}
-
-.mobile-menu__index-arrow {
-  color: var(--ink);
-}
-
 /* ── The way in, under the names ──
 
    **Owner, 2026-08-27, twice: simpler, then up on the right.** It was a
@@ -1720,11 +1722,6 @@ video {
 .mobile-menu__index-link:focus-visible,
 .mobile-menu__index-link.is-current {
   color: var(--accent-soft);
-}
-
-.mobile-menu__index-link:hover .mobile-menu__index-arrow,
-.mobile-menu__index-link:focus-visible .mobile-menu__index-arrow {
-  color: var(--accent);
 }
 
 .mobile-menu__detail {
@@ -1824,43 +1821,24 @@ video {
    amount to line up with the button's LABEL. A button that is only as wide as
    its word needs no such arrangement: the edge is the edge for all three
    rows. */
+/* As little as it can be — owner, 2026-10-03: "the section at bottom with
+   numbers social medai etc make a better minimal aproach". One quiet line,
+   where Mardal is and its number, in the paragraph size and the muted ink. No
+   marks, no rule. */
 .mobile-menu__foot {
-  display: grid;
-  gap: clamp(0.9rem, 2.4vh, 1.45rem);
   margin-top: clamp(1rem, 3vh, 2rem);
 }
 
-/* The two controls share a line. They are the only marks down here, they are
-   both switches rather than reading, and split to the two edges they close the
-   sheet the way the mega menu's foot closes the panel. */
-.mobile-menu__marks {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.mobile-menu__social {
-  display: flex;
-  align-items: center;
-  gap: 1.15rem;
-  margin: 0;
-  padding: 0;
-  color: var(--ink);
-  font-size: var(--text-copy);
-  list-style: none;
-}
-
-/* Quieter than the controls above it, because it is the only thing at this
-   foot that is read rather than pressed — and the number is the one line of it
-   that can be acted on, so it is the one line that answers to a hover. */
+/* The number is the one part of it that can be acted on, so it is the one part
+   that answers to a hover. */
 .mobile-menu__contact {
-  display: grid;
-  gap: 0.3rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem clamp(1.5rem, 3vw, 3rem);
   margin: 0;
-  color: color-mix(in srgb, var(--ink) 60%, transparent);
-  font-size: var(--text-copy);
-  line-height: 1.35;
+  color: var(--ink-muted);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
 }
 
 /* `dd` carries a 40px inline start margin from the user agent, which would
@@ -1952,11 +1930,14 @@ video {
   display: inline-block;
 }
 
-/* How many pages are behind the word, set small against its cap height in the
-   paragraph size. Muted, and the word's own colour when the word is in hand. */
-/* Its top on the word's cap line: a fifth of the word's size down from the top
-   of the line, measured by the word rather than by its own small type. */
+/* How many pages are behind the word, in front of it (owner, 2026-10-03:
+   "numbers put in front"), set small against its cap height in the paragraph
+   size. A slot of its own width on every word, Clients' empty, so the four
+   words start on one line. Muted, and the word's own colour when the word is
+   in hand. Its top is on the word's cap line: a fifth of the word's size down
+   from the top of the line, measured by the word rather than its own type. */
 .mobile-menu__count {
+  min-width: 1.4em;
   margin-top: calc(var(--menu-word-size) * 0.2);
   color: var(--ink-muted);
   font-size: var(--text-body);
@@ -2053,14 +2034,14 @@ video {
   line-height: 1.04;
 }
 
-/* The redaction bar, at the size of the word: struck through in lilac from the
+/* The redaction bar, at the size of the word: struck through in red from the
    left under the pointer, held on the word whose list is open, wiped off to
    the right when the pointer goes. */
 .mobile-menu--wide .mobile-menu__index-link::before {
   position: absolute;
   z-index: -1;
   inset: 0.1em 0 0.06em;
-  background: var(--tint-lilac);
+  background: var(--tint-red);
   content: "";
   transform: scaleX(0);
   transform-origin: right;
@@ -2078,21 +2059,6 @@ video {
   transform-origin: left;
 }
 
-/* The corner arrow, at the word's scale, and only on the word in hand. */
-.mobile-menu--wide .mobile-menu__index-link .mobile-menu__index-arrow {
-  --pixel-arrow-dot: 0.26rem;
-  --pixel-arrow-gap: 0.08rem;
-
-  color: currentcolor;
-  opacity: 0;
-  transition: opacity var(--duration-fast) var(--ease-standard);
-}
-
-.mobile-menu--wide .mobile-menu__index-link[aria-expanded="true"] .mobile-menu__index-arrow,
-.mobile-menu--wide .mobile-menu__index-link:focus-visible .mobile-menu__index-arrow {
-  opacity: 1;
-}
-
 @media (hover: hover) {
   .mobile-menu--wide .mobile-menu__index-link:hover {
     color: var(--ink-on-tint);
@@ -2102,14 +2068,11 @@ video {
     transform: scaleX(1);
     transform-origin: left;
   }
-
-  .mobile-menu--wide .mobile-menu__index-link:hover .mobile-menu__index-arrow {
-    opacity: 1;
-  }
 }
 
-/* The way in under the words, as a lilac pill: the one filled shape on the
-   screen, so the action is never one more word in the list. */
+/* The way in under the words, as a line of text with its arrow — no ground of
+   its own (owner, 2026-10-03: "Change the button of START a project withou
+   bacground"). */
 .mobile-menu--wide .mobile-menu__cta-row {
   justify-content: flex-start;
   margin-top: clamp(1.5rem, 4.5vh, 3rem);
@@ -2118,13 +2081,8 @@ video {
 }
 
 .mobile-menu--wide .mobile-menu__cta {
-  margin-block: 0;
-  padding: 0.85rem 1.25rem;
-  border-radius: var(--radius-full);
-  background: var(--tint-lilac);
-  color: var(--ink-on-tint);
   font-size: var(--text-body);
-  font-weight: var(--weight-strong);
+  font-weight: var(--weight-medium);
 }
 
 /* Services' two halves side by side, at the header size: the second step down
@@ -2161,29 +2119,6 @@ video {
 /* Nothing to go back to: the words never left. */
 .mobile-menu--wide .mobile-menu__back {
   display: none;
-}
-
-/* The foot as one line under a hairline: where to find us on the left, the
-   marks and the switch on the right. */
-.mobile-menu--wide .mobile-menu__foot {
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  padding-top: clamp(1rem, 2.5vh, 1.5rem);
-  border-top: 1px solid var(--line-soft);
-}
-
-.mobile-menu--wide .mobile-menu__marks {
-  grid-column: 2;
-  grid-row: 1;
-  gap: clamp(1.5rem, 3vw, 2.5rem);
-}
-
-.mobile-menu--wide .mobile-menu__contact {
-  display: flex;
-  flex-wrap: wrap;
-  grid-column: 1;
-  grid-row: 1;
-  gap: 0.3rem clamp(1.5rem, 3vw, 3rem);
 }
 
 /* Reading across the words: the one under the pointer keeps its strength and
@@ -2504,7 +2439,7 @@ video {
    unrelated drawings rather than one set. The lilac bar is the same step in its
    own family as the three it replaces. */
 .why-card {
-  --art-accent: var(--tint-lilac-bar);
+  --art-accent: var(--tint-red-bar);
 
   position: relative;
   display: flex;
@@ -3626,7 +3561,7 @@ video {
    1.27 to 1.22, clay 1.53 to 1.41. A softening, not a fade.
 
    **`color-mix` was the obvious way to write it and does not survive the
-   build.** `color-mix(in srgb, var(--tint-lilac-bar) 20%, transparent)` compiles
+   build.** `color-mix(in srgb, var(--tint-red-bar) 20%, transparent)` compiles
    to an `@supports` block with a fallback the build derives ITSELF, by dropping
    the percentage — so a browser without `color-mix` was served the colour at
    full strength. Declaring a fallback above it did not help: the generated one
@@ -3637,8 +3572,8 @@ video {
    derives it instead: every `--card-tint-bar` must be its own tint's bar plus
    `cc`, and a bar changed without its card following fails there. */
 .difference-card--one {
-  --card-tint: var(--tint-lilac);
-  --card-tint-bar: #c3aef3cc;
+  --card-tint: var(--tint-red);
+  --card-tint-bar: #c9000bcc;
 }
 
 .difference-card--two {
@@ -3779,7 +3714,7 @@ video {
 
 .industries-key[data-key="logistics"],
 .industries-who[data-sector="logistics"] {
-  --sector: var(--tint-lilac-bar);
+  --sector: var(--tint-red-bar);
 }
 
 .industries-key[data-key="public-sector"],
@@ -3984,7 +3919,7 @@ video {
        Finance        #7b64ab   4.94:1     passes
        Retail         #fd7979   2.56
        Public Sector  #4fb98a   2.43
-       Logistics      #c3aef3   1.97
+       Logistics      #c9000b   4.60   (the red, since 2026-10-03)
        Automotive     #8ec5ef   1.84
        Healthcare     #6fdd9f   1.68
        Manufacturing  #e8dd48   1.41
@@ -4227,7 +4162,7 @@ video {
   grid-column: 1 / span 3;
   margin-top: 0;
   --work-ratio: 3 / 4;
-  --work-tint: var(--tint-lilac);
+  --work-tint: var(--tint-red);
 }
 
 .work-piece:nth-child(2) {
@@ -6133,7 +6068,7 @@ video {
    is read off `.difference-card--one` through `--five` and the order the boxes
    are authored in, and `pattern-drift.test.mjs` asserts the two agree.
 
-       Branding         box 1   lilac
+       Branding         box 1   red
        Websites         box 2   butter
        Software         box 3   mint
        CRM Solution     box 4   sky
@@ -6154,7 +6089,7 @@ video {
 }
 
 .service-hero__pattern--branding .service-hero__bars {
-  fill: var(--tint-lilac-bar);
+  fill: var(--tint-red-bar);
 }
 
 .service-hero__pattern--websites .service-hero__bars {
@@ -8035,12 +7970,12 @@ video {
   font-size: 1.25em;
   letter-spacing: var(--tracking-display);
   line-height: 1.6em;
-  background: var(--tint-lilac-bar);
+  background: var(--tint-red-bar);
   transition: background-color var(--duration-base) var(--ease-standard);
 }
 
 .letter__blank:not(:placeholder-shown) {
-  background: var(--tint-lilac);
+  background: var(--tint-red);
 }
 
 /* What an empty blank says, in the display face's italic — the one place on the
@@ -8092,7 +8027,7 @@ video {
 .letter__blank--choice {
   padding-right: 2em;
   appearance: none;
-  background: var(--tint-lilac);
+  background: var(--tint-red);
   cursor: pointer;
 }
 
@@ -8102,7 +8037,7 @@ video {
 .letter__blank--choice:has(option[value=""]:checked) {
   color: var(--accent-contrast);
   font-style: italic;
-  background: var(--tint-lilac-bar);
+  background: var(--tint-red-bar);
 }
 
 /* The chevron follows the words: white while nothing is chosen. */
@@ -8784,8 +8719,8 @@ video {
    field and the homepage boxes already use, so a plate here is the same object
    those are. Cycled by position, so no card sits under its own colour. */
 .clients-card__plate[data-tint="one"] {
-  --plate-tint: var(--tint-lilac);
-  --plate-bar: var(--tint-lilac-bar);
+  --plate-tint: var(--tint-red);
+  --plate-bar: var(--tint-red-bar);
 }
 
 .clients-card__plate[data-tint="two"] {
