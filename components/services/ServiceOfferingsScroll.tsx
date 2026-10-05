@@ -152,6 +152,20 @@ export function ServiceOfferingsScroll() {
         (card) => Number(card.dataset.serviceGroup ?? 0) === groupIndex,
       );
 
+    /* The label rolls under the pointer (RollingLabel, owner 2026-10-05): its
+       word stands twice, once on each face, so a new word goes to both — set
+       on the span itself it would wipe the faces and the roll with them. */
+    const setNextLabel = (text: string) => {
+      const faces = nextLabel.querySelectorAll<HTMLElement>(".roll__face");
+      if (faces.length === 0) {
+        nextLabel.textContent = text;
+        return;
+      }
+      faces.forEach((face) => {
+        face.textContent = text;
+      });
+    };
+
     const updateGroup = (groupIndex: number) => {
       if (activeGroup === groupIndex && nextLabel.textContent) return;
       activeGroup = groupIndex;
@@ -171,11 +185,12 @@ export function ServiceOfferingsScroll() {
 
       if (nextGroupCard) {
         nextLink.href = `#${nextGroupCard.id}`;
-        nextLabel.textContent =
-          groupLinks[nextGroupIndex]?.textContent?.trim() || "Next services";
+        setNextLabel(
+          groupLinks[nextGroupIndex]?.textContent?.trim() || "Next services",
+        );
       } else {
         nextLink.href = ctaTitle ? `#${ctaTitle.id}` : "#contact";
-        nextLabel.textContent = "Let’s build";
+        setNextLabel("Let’s build");
       }
     };
 

@@ -153,7 +153,9 @@ export const placeholders = {
     description: "Who Mardal is and how it works.",
     support: "Who we are and how we work.",
     cta: "Why Mardal",
-    ctaHref: "/#company",
+    /* The homepage's "about" section — "#company", the Why Mardal section,
+       left the homepage on the owner's word on 2026-10-05. */
+    ctaHref: "/#about",
   },
   privacy: {
     label: "Privacy",

@@ -5,6 +5,7 @@ import { HeaderSpace } from "../../components/layout/HeaderSpace";
 import { SectionEnter } from "../../components/motion/SectionEnter";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
 import { PixelArrow } from "../../components/ui/PixelArrow";
+import { RollingLabel } from "../../components/ui/RollingLabel";
 import { careers } from "../../content/careers";
 
 export const metadata: Metadata = {
@@ -78,10 +79,11 @@ export default function CareersPage() {
                   no link points at an anchor its page has not got covers it. */}
               <a
                 className="service-hero__cta"
+                data-roll
                 href={careers.heroCtaHref}
                 data-service-hero-cta
               >
-                {careers.heroCta}
+                <RollingLabel>{careers.heroCta}</RollingLabel>
                 <PixelArrow
                   className="service-hero__cta-arrow"
                   direction="up-right"
@@ -189,8 +191,8 @@ export default function CareersPage() {
                 {careers.cta.title}
               </h2>
 
-              <a className="service-cta__link" href={careers.cta.href}>
-                {careers.cta.label}
+              <a className="service-cta__link" data-roll href={careers.cta.href}>
+                <RollingLabel>{careers.cta.label}</RollingLabel>
                 <PixelArrow
                   className="service-cta__arrow"
                   direction="up-right"

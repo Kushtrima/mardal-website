@@ -12,6 +12,7 @@ import { SectionWash } from "../../components/motion/SectionWash";
 import { MediaReveal } from "../../components/motion/MediaReveal";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
 import { PixelArrow } from "../../components/ui/PixelArrow";
+import { RollingLabel } from "../../components/ui/RollingLabel";
 import { about } from "../../content/about";
 
 /**
@@ -161,10 +162,11 @@ export default function AboutPage() {
 
               <a
                 className="service-hero__cta"
+                data-roll
                 href={about.ctaHref}
                 data-service-hero-cta
               >
-                {about.cta}
+                <RollingLabel>{about.cta}</RollingLabel>
                 <PixelArrow
                   className="service-hero__cta-arrow"
                   direction="up-right"

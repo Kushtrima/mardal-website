@@ -8,6 +8,7 @@ import { ServicePageMotion } from "../../../components/services/ServicePageMotio
 import { PatternDrift } from "../../../components/services/PatternDrift";
 import { ServiceHeroBars } from "../../../components/services/ServiceHeroBars";
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
+import { RollingLabel } from "../../../components/ui/RollingLabel";
 import { crmSolution } from "../../../content/crm-solution";
 import { products } from "../../../content/home";
 import { crmSolutionPattern } from "../../../lib/crm-solution-pattern";
@@ -86,10 +87,11 @@ export default function CrmSolutionsPage() {
 
             <a
               className="service-hero__cta"
+              data-roll
               href={products.ctaHref}
               data-service-hero-cta
             >
-              {crmSolution.heroCta}
+              <RollingLabel>{crmSolution.heroCta}</RollingLabel>
               <PixelArrow
                 className="service-hero__cta-arrow"
                 direction="up-right"
@@ -223,11 +225,12 @@ export default function CrmSolutionsPage() {
 
                 <a
                   className="service-journey__next"
+                  data-roll
                   href={`#${crmSolution.chapters[1].services[0].id}`}
                   data-service-next-link
                 >
                   <span data-service-next-label>
-                    {crmSolution.chapters[1].title}
+                    <RollingLabel>{crmSolution.chapters[1].title}</RollingLabel>
                   </span>
                   <PixelArrow
                     className="service-journey__next-arrow"
@@ -259,8 +262,8 @@ export default function CrmSolutionsPage() {
                 {crmSolution.cta.title}
               </h2>
 
-              <a className="service-cta__link" href={products.ctaHref}>
-                {crmSolution.cta.label}
+              <a className="service-cta__link" data-roll href={products.ctaHref}>
+                <RollingLabel>{crmSolution.cta.label}</RollingLabel>
                 <PixelArrow className="service-cta__arrow" direction="up-right" size="small" />
               </a>
             </div>

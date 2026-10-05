@@ -186,7 +186,9 @@ test("under it, a letter, and the blanks are where you write", async () => {
   const buttons = [...form.matchAll(/<button[^>]*>/g)];
   assert.equal(buttons.length, 1, "the letter has more than one button");
   assert.match(buttons[0][0], /type="submit"/);
-  assert.match(form, />Send<span class="pixel-arrow/);
+  /* "Send" rolls under the pointer (RollingLabel, 2026-10-05): the word twice,
+     the copy hidden, and the arrow straight after it, still. */
+  assert.match(form, /<span class="roll__face">Send<\/span><span class="roll__face roll__face--next" aria-hidden="true">Send<\/span><\/span><span class="pixel-arrow/);
 
   /* Five bars draw in: four blanks in the sentences and the message. */
   assert.equal((form.match(/data-blank="true"/g) ?? []).length, 5);

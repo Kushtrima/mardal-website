@@ -79,9 +79,8 @@
      reason. */
   --wash-about-close: #ffa769;
 
-
-  /* The ground a panel sits on: the Why Mardal cards, the boxes — the lavender
-     it has worn on the light page all along. The drawings' fill is
+  /* The ground a panel sits on: the boxes — the lavender it has worn on the
+     light page all along. The drawings' fill is
      --art-surface, kept apart so a masked shape never takes this colour. */
   /* A step lighter than the page, in its own warm grey — it was a lavender
      (#efedf8) until the red replaced every purple on 2026-10-03. */
@@ -109,26 +108,6 @@
   --ink-read: #08080a;
   --ink-muted: #5e5a69;
 
-  /* **A quieter grey than `--ink-muted`, and the industries run is the only
-     thing set in it.** Owner, 2026-08-27: more grey.
-
-     ⚠ **1.61:1 on the light canvas and 1.63 on the dark, well under the line.**
-     WCAG asks 3:1 of large text. Asked for lighter six times — 6.68, 3.53, 3.07,
-     2.47, 1.94, this — with the number given each time. His call, and settled;
-     the figure is recorded here rather than argued again.
-
-     What keeps it from being the fault the section was rebuilt to fix: that one
-     took SIX of seven rows to about 1.5:1 while leaving one black, so most of the
-     section was unreadable AND singled out as such. This is uniform and it is a
-     resting state — every phrase goes to full ink the moment its sector is
-     pointed at, from either end, and the sector names beside it are black
-     throughout. Nothing here is only available in grey.
-
-     It is NOT for small text, and nothing else on the site uses it.
-
-     Derived rather than picked: the muted grey's own hue and saturation, 256 at
-     8%, lightened until the ratio landed. */
-  --ink-quiet: #cccbd2;
   /* The same job as --ink-muted with the lavender taken out. --ink-muted is
      the page's tint carried down into a quiet ink, and it works on a word or
      two — on a label, a date and three lines of standfirst together it stops
@@ -147,6 +126,10 @@
      Solid, not a tint of the ink, so a rule reads the same grey wherever it
      runs. */
   --line-grid: #8c8c8c;
+  /* The page's vertical rules, white since 2026-10-05: there, on the grid,
+     and not seen (owner: "in white i dont want to be seeen"). `--line-grid`
+     still draws the services' rules under "Our expertise". */
+  --line-grid-vertical: #ffffff;
   /* **The accent is the red** — owner, 2026-10-03: "the red is not globally we
      need to put globall instead of the pink". It was a purple (#8362b8, with a
      #6f4fa7 cut for small type and focus); every hover, mark, link and button
@@ -259,25 +242,6 @@
      Ink on the new panel is 11.86:1, so the box's own title is untouched. */
   --tint-clay: #ffb885;
   --tint-clay-bar: #ff9b54;
-
-  /* **The plus on the Why Mardal boxes.** Owner, 2026-08-26, with the value.
-     These are brand colours, set flat.
-
-     It is the same `#fd7979` as `--tint-clay-bar` and is deliberately not an
-     alias of it. That one is AI & Automation's — the pattern on its hero and the
-     mark on its homepage box — and pointing this at it would mean the next
-     change to that service's colour silently repainting four plusses on an
-     unrelated section. The same reason `--why-ground` was not an alias of
-     `--wash-about`. */
-  --why-mark: #fd7979;
-
-  /* **The seventh sector's colour, and the only new one this page needed.** The
-     industries legend gives each of the seven a colour, and six of them already
-     existed — `--accent` and the five tint bars. Public Sector is this: the same
-     hue family as healthcare's mint, set apart by lightness rather than by hue,
-     because a seventh hue would have been a seventh brand colour rather than a
-     seventh label. */
-  --sector-public: #4fb98a;
 
   /* Typography */
   --type-body: var(--font-geist), Arial, Helvetica, sans-serif;
@@ -530,11 +494,9 @@
   --page-gutter: clamp(1rem, 4vw, 2.5rem);
 
   /* **The page's column gap**, named for the page rather than for a section:
-     the Why Mardal boxes and the industries roll sit on these three columns,
-     and a gap changed in one and not the other puts two sections on two
-     different edges. The Fusion statement shared it, and the 700px measure it
-     was held to, until 2026-10-05 — it is on five ruled columns of its own now,
-     from the owner's comp, and the measure went with it. */
+     the Why Mardal boxes and the industries roll shared it until they left the
+     homepage (owner, 2026-10-05), and the Fusion statement until it moved onto
+     four ruled columns of its own the same day. */
   --column-gap: clamp(0.65rem, 0.9vw, 0.85rem);
   /* The space between any two sections, top to bottom. Each section pays half
      of it either side, so this is the number you actually see — not twice it.
@@ -619,7 +581,6 @@
   --menu-edge-shadow: var(--shadow-menu-edge);
   --font-smoothing: auto;
 }
-
 
 /* The footer's black block, and everything on it — the mark, the closing line
    and the bar field — is drawn in --accent-contrast.
@@ -1418,7 +1379,6 @@ video {
   z-index: 1;
 }
 
-
 .brand {
   display: inline-flex;
   width: max-content;
@@ -1485,6 +1445,70 @@ video {
   transition: filter var(--duration-base) var(--ease-standard);
 }
 
+/* ── The roll ──
+
+   Owner, 2026-10-05: "when hover the arrows dont move but text all text in
+   same time to rotate like vertically" (VIEW ALL), then "i want Menu to have
+   same effect on hover as VIEW ALL". RollingLabel writes the word twice in
+   one cell: under the pointer, or on keyboard focus, the first turns up and
+   away about the axis of a cube half a line behind it while the second turns
+   in from below — the whole word at once, no letter before another. Each face
+   hides its back, so a face edge-on to the reader is not seen. The control
+   that holds it carries `data-roll`; whatever stands beside the word — an
+   arrow, a plus — does not move. */
+.roll {
+  display: inline-grid;
+  perspective: 12em;
+}
+
+/* The cube's axis half a LINE behind the word, not half an em: the controls
+   that carry it set their own leading, and a face turns about the middle of
+   its own line box. */
+.roll__face {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  transform-origin: 50% 50% -0.5lh;
+  transition: transform var(--duration-base) var(--ease-handover);
+}
+
+.roll__face--next {
+  transform: rotateX(-90deg);
+}
+
+@media (hover: hover) {
+  [data-roll]:hover .roll__face {
+    transform: rotateX(90deg);
+  }
+
+  [data-roll]:hover .roll__face--next {
+    transform: rotateX(0deg);
+  }
+}
+
+[data-roll]:focus-visible .roll__face {
+  transform: rotateX(90deg);
+}
+
+[data-roll]:focus-visible .roll__face--next {
+  transform: rotateX(0deg);
+}
+
+/* **The arrow beside it stays still** — owner, 2026-10-05, of every button
+   that is a word and an arrow: "when hover the arrows dont move". The pixel
+   arrows otherwise rebuild themselves, dot by dot, on a loop while their
+   control is hovered; on a rolling control they keep only their colour. */
+[data-roll]:hover .pixel-arrow--animated > span,
+[data-roll]:focus-visible .pixel-arrow--animated > span {
+  animation: none;
+}
+
+/* Asked for no motion: the word changes in place rather than turning. */
+@media (prefers-reduced-motion: reduce) {
+  .roll__face {
+    transition: none;
+  }
+}
+
 /* ── The menu button ──
 
    Owner, 2026-10-03: "i want BIG MENU so Only BURGER menu", and then "instead
@@ -1512,8 +1536,11 @@ video {
   color: var(--ink);
   cursor: pointer;
   font: inherit;
+  /* VIEW ALL's size and weight — owner, 2026-10-05: "same px As View all". The
+     size was already the same token; it was the medium weight that made the
+     word read larger, so it is the paragraph weight now, as VIEW ALL is. */
   font-size: var(--text-body);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-body);
   line-height: 1;
   transition: color var(--duration-base) var(--ease-standard);
 }
@@ -1527,9 +1554,6 @@ video {
   flex: none;
   width: round(0.98em, 2px);
   height: round(0.98em, 2px);
-  /* Twice the handover — slow enough to read as drifting rather than as a
-     reaction, eased at both ends so it starts and settles without a jolt. */
-  transition: transform calc(var(--duration-handover) * 2) var(--ease-handover);
 }
 
 .mobile-menu-toggle__plus::before,
@@ -1576,7 +1600,7 @@ video {
   transform: scaleY(0);
 }
 
-/* Under the pointer MENU and its mark turn the site's red — owner, 2026-10-03:
+/* Under the pointer Menu and its mark turn the site's red — owner, 2026-10-03:
    "when hover the Menu + to be in red". The plus is drawn in currentColor, so
    one colour carries both. */
 @media (hover: hover) {
@@ -1585,16 +1609,10 @@ video {
   }
 }
 
-/* Under the pointer the plus turns, very slowly, half way round, and drifts
-   back as slowly when the pointer leaves. Owner, 2026-10-03: not a minus on
-   hover ("Make + in other effect when hover not - i dont like it"), and not
-   bigger — "only maybe a very slow changing posiition". The minus is kept for
-   the open menu only. */
-@media (hover: hover) {
-  .mobile-menu-toggle[aria-expanded="false"]:hover .mobile-menu-toggle__plus {
-    transform: rotate(180deg);
-  }
-}
+/* Under the pointer the word rolls (`.roll`) and the plus stays still — owner,
+   2026-10-05: Menu to have VIEW ALL's hover, "not to move the icon". (It
+   turned slowly half way round from 2026-10-03.) The minus is the open menu's
+   only. */
 
 /* ── The menu ──
 
@@ -2211,7 +2229,7 @@ video {
   }
 }
 
-/* ----------------------------- Why Mardal ----------------------------- */
+/* -------------------------- Under the opening -------------------------- */
 
 /* The opening pays nothing: its photograph runs to the section's own edge, so
    the section beneath it carries the whole gap rather than half, and the join
@@ -2224,8 +2242,9 @@ video {
 
 /* Human Creativity + Artificial Intelligence — the owner's comp of 2026-10-05.
 
-   Five equal columns across the page column, ruled in grey from the top of the
-   section to its foot, and the statement set ON them: owner, the same day, "the
+   Four equal columns across the page column — five in his comp, four on his
+   word the same day ("we need only 4 spaces not five") — ruled in grey from
+   the top of the section to its foot, and the statement set ON them: owner, the same day, "the
    text needs to be at start of the vertical lines alwasy use as a grid". So
    every block starts exactly on a rule, never part-way across one:
 
@@ -2239,8 +2258,9 @@ video {
                                 text closer"; his comp had 2.28F); 0.265F,
                                 three lines broken where his are
 
-   F is the heading's size, the opening's own — face, size, weight, tracking,
-   leading — because his comp draws the two at one size. The vertical distances
+   F is the heading's size: the opening's face, weight, tracking and leading,
+   at the site's big-header size since the owner asked for the lines smaller
+   (2026-10-05; his comp drew them at the opening's size). The vertical distances
    are his, measured off the screenshot in F. The spacing is the site's: the
    whole joint under the opening above (the rule just before this one), half a
    joint below — which is also what his frame measures, 271 and 127 px. */
@@ -2250,43 +2270,72 @@ video {
   background: var(--canvas);
 }
 
-/* The rules: one 0.7px tile repeated five times across the page column, so
-   six hairlines land on the five columns' edges, the last on the column's right
-   edge. 0.7px on the owner's word, 2026-10-05 — a shade under a pixel, so on a
-   1x screen it draws as a lighter 1px line and on a 2x screen as about 1.4
-   device pixels. Drawn on the section, the whole height of it, and nothing in the
-   accessible tree. **Under the type** since the owner's note of 2026-10-05
-   ("not inside the line"): where a long word crosses a rule the letters stay
-   whole — the container stands above this layer. */
-.fusion-section::before {
+/* **The ruled page.** The four columns' hairlines, drawn on every section
+   from this one to the foot of the page — owner, 2026-10-05: "i want thos
+   vertical line to stretc to the end of website all the way down". Each
+   section marked `data-ruled` draws its own length of them, the whole height
+   of its box, so they run unbroken from one section into the next and on
+   through the footer, and on the homepage only (the footer is told by a prop).
+
+   One 0.7px tile repeated four times across the page column, so five
+   hairlines land on the four columns' edges, the last on the column's right
+   edge. 0.7px on the owner's word — a shade under a pixel, so on a 1x screen
+   it draws as a lighter 1px line and on a 2x screen as about 1.4 device
+   pixels. Nothing in the accessible tree.
+
+   **Under everything the section holds** ("not inside the line"): the section
+   isolates its own stacking, and the rules sit at -1 in it — above its ground,
+   below its type, pictures and cards, which cover them where they stand. */
+[data-ruled] {
+  position: relative;
+  isolation: isolate;
+}
+
+/* **Drawn in white since 2026-10-05** — owner: the lines off the whole site
+   ("remove the vertical lines … but you need to leave it here … to make text
+   fit in those"), then "revrse back the vertical lines but in white i dont
+   want to be seeen". So they are there again, on the page's white where no
+   one sees them, and the grid they mark still sets every section's type and
+   pictures. Their colour is `--line-grid-vertical`; the grey back in it shows
+   them again. */
+[data-ruled]::before {
   position: absolute;
+  z-index: -1;
   inset-block: 0;
   inset-inline: var(--page-gutter);
   background: linear-gradient(
       to right,
-      var(--line-grid) 0.7px,
+      var(--line-grid-vertical) 0.7px,
       transparent 0.7px
     )
-    0 0 / calc((100% - 0.7px) / 5) 100% repeat-x;
-  /* Drawn down the section as it arrives: FusionReveal turns --fusion-rules
-     from 0 to 1. Unset — no script — it is whole. */
-  clip-path: inset(0 0 calc((1 - var(--fusion-rules, 1)) * 100%) 0);
+    0 0 / calc((100% - 0.7px) / 4) 100% repeat-x;
   content: "";
   pointer-events: none;
 }
 
+/* In this section they are drawn down as it arrives: FusionReveal turns
+   --fusion-rules from 0 to 1. Unset — no script — they are whole. Below it
+   they simply stand. */
+.fusion-section::before {
+  clip-path: inset(0 0 calc((1 - var(--fusion-rules, 1)) * 100%) 0);
+}
+
 .container.fusion-container {
-  --fusion-size: var(--text-house);
+  /* The site's big-header size, 72px at its widest — owner, 2026-10-05, of
+     the four lines: "can you make those smaller". It was the opening's size
+     (98.6px at 1440). The plus and every distance below are in F, so they
+     come down with it; the sentence does not (see .fusion-copy). */
+  --fusion-size: var(--text-heading-xl);
 
   position: relative;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .fusion-title {
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: start;
   margin: 0;
   font-family: var(--type-display);
@@ -2397,56 +2446,679 @@ video {
   grid-column: 2 / -1;
   max-width: 30.85em;
   margin: calc(var(--fusion-size) - 0.915em) 0 0;
-  font-size: max(var(--text-copy), calc(var(--fusion-size) * 0.265));
+  /* Its own size, not the heading's: when the heading came down a step
+     (2026-10-05) the sentence stayed where it was — and where "about"'s
+     paragraph is, which is set to match it. */
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.265));
   font-weight: var(--weight-body);
   letter-spacing: -0.015em;
   line-height: var(--leading-heading);
 }
 
-/* Plain canvas, and it has been three other things today.
+/* **On a phone the composition moves one column left.** Four columns of a
+   390px screen are 90px each, and "Intelligence" set from rule 3 runs past the
+   page; from rule 2 it ends inside it. So everything steps one rule left — the
+   first half, the plus and the sentence from rule 1, the second half from rule
+   2 — which keeps the diagonal and every block on a rule. The plus is held to
+   four fifths of its column so it stands clear of "Artificial", and the heading
+   to a tenth of the screen (the opening's size floors at 40px). From about
+   480px up the four columns are wide enough for the arrangement above. */
+@media (max-width: 30rem) {
+  .container.fusion-container {
+    --fusion-size: min(var(--text-heading-xl), 10vw);
+  }
 
-   Owner asked for the page to turn `#faff89` inside this section, and it went
-   through a flat fill on this box (a hard line across the top of it, because a
-   rectangle has edges at every opacity), a gradient inside the box (no line,
-   but the colour arrived as a shape travelling up the window while the header
-   and the sections either side stayed white), and then a page-wide wash on
-   every surface that paints. Then: remove the yellow completely, and make the
-   boxes light grey. So the ground is the page's own again and the separation is
-   the boxes'. */
-.why-section {
-  position: relative;
-  background: var(--canvas);
-  padding-block: var(--section-space-lg);
+  .fusion-title__half[data-fusion-half="left"],
+  .fusion-copy {
+    grid-column: 1 / -1;
+  }
+
+  .fusion-title__half[data-fusion-half="right"] {
+    grid-column: 2 / -1;
+  }
+
+  .fusion-plus {
+    --fusion-plus-size: min(
+      1.97em,
+      (100vw - var(--page-gutter) * 2) / 4 * 0.8
+    );
+
+    grid-column: 1;
+  }
 }
 
-/* **Equal thirds, and the Fusion block above comes to THEM.**
+/* ------------------------------ Selected work ------------------------------ */
 
-   The first attempt at aligning the two sections derived this column from the
-   Fusion block's centred edge — `calc(50% - measure / 2 - gap)`. It aligned
-   exactly, at every width, and it cost the arrangement: a first column narrower
-   than the other two cannot hold a card, so the brick had to become a 2x2. The
-   owner wants the brick.
+/* The owner's comp of 2026-10-05, under Human Creativity + Artificial
+   Intelligence. Measured off his screenshot against its own content width
+   (1269px there, the page column here):
 
-   A brick needs equal columns — the second row is the first row moved by exactly
-   one of them — so the columns went back and `.fusion-container` moved onto this
-   grid instead. Its edge is now a grid line rather than a centred one, which is
-   the only arrangement that gives all three of: equal cards, a second row offset
-   by one, and one left edge shared with the section above. (Until 2026-10-05:
-   the Fusion section is now on five ruled columns of its own, from the owner's
-   comp, and no longer shares this edge.)
+     the heading     two lines, VIEW ALL's size since the owner asked (the
+                     comp set it at the opening's size, F); "Work"'s baseline
+                     0.59F above the pictures, as in the comp
+     VIEW ALL        the paragraph size (the comp's 0.245F, then "make view all
+                     smaller" the same day), standing on that same baseline at
+                     the column's right edge, with a thin arrow its capitals'
+                     height
+     the pieces      two equal halves, 4.65% of the column apart — which puts
+                     the gap's middle on the middle rule of the section above,
+                     so the two share one grid; a tall picture (607×764) and a
+                     wide one (603×427), the same photograph at the same scale
+     the lines       0.21 of the heading (a quarter in the comp; "the text
+                     under the project little smaller"), their capitals 0.25F
+                     under the picture (0.63F in the comp; owner, the same
+                     day: "move this closer to the project")
 
-   The intro and the grid below share one gap. They were 1rem and 0.85rem, which
-   put the heading and the cards under it 0.8px apart — invisible, and two grids
-   that happen to nearly agree rather than one that does. */
-.why-intro {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+   Its spacing is the site's: half a joint above and below, so the join with
+   the section above it is a whole one. */
+.selected-work {
+  position: relative;
+  padding-block: var(--section-space-lg);
+  background: var(--canvas);
+}
+
+.selected-work__head {
+  display: flex;
+  align-items: last baseline;
+  justify-content: space-between;
   gap: var(--column-gap);
+}
+
+/* VIEW ALL's own size and setting — owner, 2026-10-05: "make also Selected
+   Work in same px of font as View All". It was the opening's size, as the
+   comp drew it; the two now stand as one quiet row over the pictures. */
+.selected-work__title {
+  margin: 0;
+  font-family: var(--type-body);
+  font-size: var(--text-body);
+  font-weight: var(--weight-body);
+  line-height: var(--leading-body);
+}
+
+/* Each line the mask its word rises out of, as in the section above — open
+   past the box at the foot so descenders are whole at rest. */
+.selected-work__title-line {
+  display: block;
+  clip-path: inset(-0.15em -0.25em -0.3em);
+}
+
+.selected-work__rise {
+  display: block;
+  will-change: transform;
+}
+
+.selected-work__all {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.7em;
+  color: var(--ink);
+  font-size: var(--text-body);
+  line-height: 1;
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* The arrow drawn rather than typed, so it is the weight of a hairline and
+   not of whichever face is set — exactly the capitals' height, as in the comp
+   (the path spans three quarters of a 0.95em box: 0.71em, Geist's capitals),
+   and the same thin stroke at any size. */
+.selected-work__all-arrow {
+  width: 0.95em;
+  height: 0.95em;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: square;
+  stroke-width: 1.25px;
+}
+
+/* On the path: `vector-effect` is not inherited from the svg. */
+.selected-work__all-arrow path {
+  vector-effect: non-scaling-stroke;
+}
+
+/* VIEW ALL goes somewhere, so it answers the pointer: the site's red, and its
+   word rolls (`.roll`, shared with the bar's Menu); the arrow does not move. */
+@media (hover: hover) {
+  .selected-work__all:hover {
+    color: var(--accent);
+  }
+}
+
+.selected-work__all:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.35em;
+}
+
+/* "Work"'s baseline to the pictures: 0.59F (F, the opening's size — the
+   comp's distance, kept when the heading came down to VIEW ALL's size), less
+   the 0.295em the heading's last line keeps below its baseline at its
+   leading. */
+.selected-work__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 4.65%;
+  align-items: start;
+  margin: calc(var(--text-house) * 0.59 - var(--text-body) * 0.295) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.selected-work__figure {
+  margin: 0;
+}
+
+.selected-work__frame {
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.selected-work__item--tall .selected-work__frame {
+  aspect-ratio: 607 / 764;
+}
+
+/* The same photograph at the same scale, cut lower: covered from its top. */
+.selected-work__item--wide .selected-work__frame {
+  aspect-ratio: 603 / 427;
+}
+
+.selected-work__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0;
+}
+
+/* Capitals 0.25F under the picture — 25px at 1440 — the margin less the
+   0.295em a line keeps above its capitals at this leading; never under half
+   a rem, so on a phone the lines still stand clear of the picture. It was the
+   comp's 0.63F until the owner asked for it "closer to the project". */
+.selected-work__meta {
+  margin-top: max(0.5rem, calc(var(--text-house) * 0.25 - 0.295em));
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
+  letter-spacing: -0.015em;
+  line-height: var(--leading-body);
+}
+
+.selected-work__meta-line {
+  display: block;
+}
+
+/* **The two features** — owner, 2026-10-05: two more pieces "in differen
+   format", "not same" as the pair above, "near each other", then the right
+   one "to the end of the width" — the left left as it was. Two squares on the
+   page's columns, each starting on its rule, their lines under them: the left
+   in the second column, stopping a narrow seam short of the next rule; the
+   right from the third rule to the right edge of the page — two columns, so
+   it stands twice the size of its neighbour. Tops level. */
+.selected-work__features {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  margin: var(--section-space-lg) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.selected-work__feature:nth-child(1) {
+  grid-column: 2;
+  padding-right: calc(var(--column-gap) * 2.5);
+}
+
+.selected-work__feature:nth-child(2) {
+  grid-column: 3 / -1;
+}
+
+/* Square, and cut from the photograph's middle — the phone and the chair it
+   rests on — where the wide piece above shows its top. */
+.selected-work__feature .selected-work__frame {
+  aspect-ratio: 1;
+}
+
+.selected-work__feature .selected-work__image {
+  object-position: 50% 45%;
+}
+
+/* One piece under the other on a phone: two halves of a 390px screen are
+   170px pictures. */
+@media (max-width: 30rem) {
+  .selected-work__list {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: calc(var(--text-house) * 1.2);
+  }
+
+  /* The features too: one under the other, the width of the page. */
+  .selected-work__features {
+    grid-template-columns: minmax(0, 1fr);
+    gap: calc(var(--text-house) * 1.2);
+    margin-top: calc(var(--text-house) * 1.2);
+  }
+
+  .selected-work__feature,
+  .selected-work__feature:nth-child(n) {
+    grid-column: auto;
+    padding-inline: 0;
+  }
+}
+
+/* --------------------------------- about --------------------------------- */
+
+/* The owner's comp of 2026-10-05, under Selected Work: "about" with its "o"
+   set as a square of the site's red, and the paragraph beside it. Measured off
+   his screenshot in the word's own size (F, the headings' size — his "b" is
+   64px tall, Geist's 0.71em):
+
+     the square     0.567em — the lowercase's height and a hair, as an "o"
+                    overshoots it — standing on the baseline; 5px off the "b"
+                    and 10px off the "u", ink to ink: 0.012em and 0.031em once
+                    Geist's own side bearings (0.044em, 0.080em) are counted
+     the paragraph  the size of the Fusion paragraph (his set within 3% of it),
+                    his leading 1.2, from the second rule — the word from the
+                    first — its first capitals level with the top of the "b"
+
+   On the page's grid and ruled with the sections around it. */
+.about-intro {
+  padding-block: var(--section-space-lg);
+  background: var(--canvas);
+}
+
+.container.about-intro__layout {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: start;
 }
 
+.about-intro__title {
+  grid-column: 1;
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: var(--text-house);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-heading);
+  white-space: nowrap;
+}
+
+/* The mask the word rises out of, open past its box at the foot so nothing
+   is shaved at rest. */
+.about-intro__line {
+  display: block;
+  clip-path: inset(-0.15em -0.25em -0.3em);
+}
+
+.about-intro__rise {
+  display: block;
+  will-change: transform;
+}
+
+/* An empty inline box: its foot is its baseline, so it stands on the line the
+   letters stand on. The letter inside is out of the flow (visually hidden),
+   so it does not move that baseline. */
+.about-intro__mark {
+  position: relative;
+  display: inline-block;
+  width: 0.567em;
+  height: 0.567em;
+  margin: 0 0.031em 0 0.012em;
+  background: var(--accent);
+  vertical-align: baseline;
+}
+
+/* The top of the "b" is 0.205em of the word under its line's top at this
+   leading; a capital is 0.245em of the paragraph under its own at 1.2. The
+   difference is the margin that sets one level with the other. */
+.about-intro__copy {
+  grid-column: 2 / -1;
+  margin: calc(var(--text-house) * 0.205 - 0.245em) 0 0;
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.265));
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+/* His lines, one to a line, where the column holds them (see aboutIntroLines
+   in content/home.ts) — from 56rem: below about 850px the paragraph's size
+   has reached its floor while the column keeps narrowing, and his longest
+   line no longer fits (measured: it broke in two at 768). Below that the
+   paragraph simply wraps. */
+@media (min-width: 56rem) {
+  .about-intro__copy-line {
+    display: block;
+  }
+}
+
+/* One under the other on a phone. */
+@media (max-width: 30rem) {
+  .about-intro__title,
+  .about-intro__copy {
+    grid-column: 1 / -1;
+  }
+
+  .about-intro__copy {
+    margin-top: calc(var(--text-house) * 0.5);
+  }
+}
+
+/* ------------------------------ Our expertise ------------------------------ */
+
+/* The owner's comp of 2026-10-05, under "about": the label, then two rows —
+   a red cross and a word — and under the pointer each row opens its services
+   (his second comp). Measured off his screenshot in the word's own size (W,
+   the site's big-header size, 72px at its widest, as the Fusion heading):
+
+     the label     the paragraph size (the about paragraph's), two lines, on the
+                   first rule, its capitals level with the first word's
+     the cross     1.93W square, a 2px stroke, centred on the middle of its
+                   word's capitals, 0.46W before the word
+     the word      on the third rule (his sits in the second column; on this
+                   grid the words stand on a rule and the cross comes to them)
+     the rows      2.73W apart, cross top to cross top
+     the services  the label's size, 2.2 to a line, under the word
+
+   On the page's grid and ruled with the sections around it. */
+.expertise {
+  padding-block: var(--section-space-lg);
+  background: var(--canvas);
+}
+
+.container.expertise__layout {
+  --expertise-size: var(--text-heading-xl);
+
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+}
+
+/* Level with the first word's capitals: the word's capitals stand 0.205W
+   under its line's top, which is 0.405W under the row's (see .expertise__title);
+   the label's own stand 0.295em under its line's top. */
+.expertise__label {
+  grid-row: 1;
+  grid-column: 1;
+  margin: calc(var(--expertise-size) * 0.61 - 0.295em) 0 0;
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.265));
+  font-weight: var(--weight-body);
+  letter-spacing: -0.015em;
+  line-height: var(--leading-body);
+}
+
+.expertise__label-line {
+  display: block;
+}
+
+.expertise__list {
+  display: grid;
+  grid-row: 1;
+  grid-column: 2 / -1;
+  row-gap: calc(var(--expertise-size) * 0.8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each row on the list's three columns: the cross in the first, standing at
+   its right end just before the third rule; the word and its services from
+   the third rule on. */
+.expertise__row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  font-size: var(--expertise-size);
+}
+
+.expertise__cross {
+  position: relative;
+  grid-column: 1;
+  justify-self: end;
+  width: 1.93em;
+  height: 1.93em;
+  margin-right: 0.46em;
+  color: var(--accent);
+}
+
+.expertise__stroke {
+  position: absolute;
+  background: currentcolor;
+}
+
+.expertise__stroke--up {
+  top: 0;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 100%;
+}
+
+.expertise__stroke--across {
+  top: calc(50% - 1px);
+  left: 0;
+  width: 100%;
+  height: 2px;
+}
+
+.expertise__body {
+  grid-column: 2 / -1;
+  min-width: 0;
+}
+
+/* The cross is centred on the middle of the word's capitals, 0.56W under the
+   top of its line at this leading; the line is set that far below the row's
+   top less half the cross, 0.965W: 0.405W. */
+.expertise__title {
+  margin: 0.405em 0 0;
+  font-family: var(--type-display);
+  font-size: 1em;
+  font-weight: var(--weight-body);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-heading);
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* **Under the pointer the word turns the site's red and rolls** — owner,
+   2026-10-05: "when hover turn the title in red our color and pply the
+   animation", the roll VIEW ALL and Menu make (`.roll`; the row carries
+   `data-roll`). The cross beside it is already the red, and stays still.
+   Open by a tap, the word holds the red. */
+@media (hover: hover) {
+  .expertise__row:hover .expertise__title {
+    color: var(--accent);
+  }
+}
+
+.expertise__row:has([aria-expanded="true"]) .expertise__title {
+  color: var(--accent);
+}
+
+.expertise__toggle {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+}
+
+.expertise__toggle:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.1em;
+}
+
+.expertise__word-line {
+  display: block;
+  clip-path: inset(-0.15em -0.25em -0.3em);
+}
+
+.expertise__word {
+  display: block;
+  will-change: transform;
+}
+
+/* **The services open under the word.** Closed, the panel is a zero-height
+   row and out of reach; under the pointer — or once the word has been pressed
+   — it grows to its content and the services come up in turn, the next row
+   giving way below. Hidden only while closed: this is the control's state, not
+   an entrance. */
+.expertise__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.265));
+  transition:
+    grid-template-rows var(--duration-handover) var(--ease-handover),
+    visibility 0s linear var(--duration-handover);
+}
+
+/* Its clip is what lets the panel close to nothing. */
+.expertise__subs {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  letter-spacing: -0.015em;
+  line-height: var(--leading-body);
+  list-style: none;
+}
+
+.expertise__subs::before {
+  display: block;
+  height: 0.6em;
+  content: "";
+}
+
+/* **Each service opens as a ruled line** — owner, 2026-10-05: not the plain
+   fade ("i dont like the opening"), and not colour either ("i dont like
+   colorfull make something else"). So the page's own grey hairline, the one
+   its columns are ruled with, is drawn under each service from the left, one
+   after the next, and each word rises out of its own line to stand on it —
+   the headings' motion, in the services' size. The open list reads as a
+   ruled index across the two columns; closing, the words drop away and the
+   rules are wiped off to the right. */
+.expertise__sub {
+  position: relative;
+  padding-block: 0.5em 0.55em;
+  overflow: hidden;
+}
+
+.expertise__sub::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: var(--line-grid);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--duration-handover) var(--ease-handover);
+}
+
+.expertise__sub-word {
+  display: block;
+  transform: translateY(110%);
+  transition: transform var(--duration-handover) var(--ease-standard);
+}
+
+.expertise__row:has([aria-expanded="true"]) .expertise__panel {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition:
+    grid-template-rows var(--duration-handover) var(--ease-handover),
+    visibility 0s;
+}
+
+.expertise__row:has([aria-expanded="true"]) .expertise__sub-word {
+  transform: none;
+}
+
+.expertise__row:has([aria-expanded="true"]) .expertise__sub::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+@media (hover: hover) {
+  .expertise__row:hover .expertise__panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition:
+      grid-template-rows var(--duration-handover) var(--ease-handover),
+      visibility 0s;
+  }
+
+  .expertise__row:hover .expertise__sub-word {
+    transform: none;
+  }
+
+  .expertise__row:hover .expertise__sub::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+/* One after the next as the panel opens: each rule 90ms behind the last, each
+   word 120ms behind its own rule. */
+.expertise__sub-word {
+  transition-delay: 120ms;
+}
+
+.expertise__sub:nth-child(2)::after {
+  transition-delay: 90ms;
+}
+
+.expertise__sub:nth-child(2) .expertise__sub-word {
+  transition-delay: 210ms;
+}
+
+.expertise__sub:nth-child(3)::after {
+  transition-delay: 180ms;
+}
+
+.expertise__sub:nth-child(3) .expertise__sub-word {
+  transition-delay: 300ms;
+}
+
+.expertise__sub:nth-child(4)::after {
+  transition-delay: 270ms;
+}
+
+.expertise__sub:nth-child(4) .expertise__sub-word {
+  transition-delay: 390ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expertise__panel,
+  .expertise__sub::after,
+  .expertise__sub-word {
+    transition: none;
+  }
+}
+
+/* On a phone everything steps one column left, as Fusion does: the label
+   above, the cross in the first column, the word from the second rule —
+   "Development" from the third outruns a 390px screen. */
+@media (max-width: 30rem) {
+  .expertise__label {
+    grid-column: 1 / -1;
+    margin: 0 0 calc(var(--expertise-size) * 0.8);
+  }
+
+  .expertise__list {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+
+  .expertise__row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .expertise__cross {
+    width: min(1.93em, (100vw - var(--page-gutter) * 2) / 4 - 0.46em);
+    height: min(1.93em, (100vw - var(--page-gutter) * 2) / 4 - 0.46em);
+  }
+}
+
 /* `.section-label` is the same treatment for every section added below. */
-.why-label,
 .section-label {
   margin: 0;
   font-size: var(--text-body);
@@ -2454,130 +3126,6 @@ video {
   letter-spacing: -0.025em;
   line-height: 1;
   text-transform: uppercase;
-}
-
-.why-title__line {
-  display: block;
-}
-
-.why-title {
-  grid-column: 2 / -1;
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading-xl);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading-xl);
-}
-
-.why-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--column-gap);
-  /* The lede sits in this grid's first column, so this one margin carries the
-     whole block — the copy and the four cards move together. Less the 120px it
-     has been pulled up by. */
-  margin-top: calc(clamp(10rem, 17vw, 16rem) - 120px);
-}
-
-/* Leading is looser than the display copy elsewhere: this now runs to nine
-   lines, where the tighter setting read as a block rather than a paragraph. */
-.why-copy {
-  grid-column: 1;
-  grid-row: 1;
-  max-width: 18rem;
-  margin: 0;
-  font-size: var(--text-copy);
-  font-weight: var(--weight-body);
-  letter-spacing: -0.025em;
-  line-height: var(--leading-body);
-}
-
-/* Every drawing takes its colour from the card it sits in, so a card is
-   recoloured in one place. All four now carry the same light purple: they were
-   a muted purple, butter, mint and sky, borrowed from the tint boxes further
-   down the page, and on a white ground four hues across one row read as four
-   unrelated drawings rather than one set. The lilac bar is the same step in its
-   own family as the three it replaces. */
-.why-card {
-  --art-accent: var(--tint-red-bar);
-
-  position: relative;
-  display: flex;
-  min-width: 0;
-  /* Sized by its own copy — the row stretches every card to match the tallest,
-     so a title that wraps can never be clipped. */
-  /* **The air is the design.** Measured off the reference: its card is 672 by
-     795, a portrait of 1.183, and it holds a number, a title and a mark with
-     the rest empty. Removing the drawing without this left four squat boxes
-     with the plus sitting under the title.
-
-     36vw is that ratio at this grid's own column: a third of the page less the
-     gutters is about 445px at 1440, and 1.183 of it is 526 against the 518 this
-     gives. Capped at 33rem, where a card 700px tall stops being a card. */
-  min-height: clamp(19rem, 36vw, 33rem);
-  flex-direction: column;
-  padding: clamp(1.25rem, 1.75vw, 2rem);
-  overflow: hidden;
-  border-radius: var(--shape-card);
-  /* **Light grey, on the page's own white.** Owner, 2026-08-26, after the
-     yellow came out: these in light grey. It was `--surface`, the lavender
-     panel, and white for the hour the yellow ground existed.
-
-     `--surface-raised` rather than a grey written here. It is the site's own
-     answer to exactly this — a panel raised off the page rather than a second
-     colour on it — and it is defined as a few percent of the OPPOSITE of the
-     ground, so it lifts on the white page and on the black one alike. A literal
-     `#f3f3f3` would be a light grey card on a light page and a light grey card
-     on a dark one.
-
-     It lands at #f3f3f3 over white, against the #f8f9f9 of the reference he
-     sent: a shade deeper, and the same idea. The separation is 1.06:1 either
-     way — panel-on-ground rather than text, read as a lift rather than as a
-     contrast — so the number is low by design and a hairline is the fix if the
-     edges ever want one. */
-  background: var(--surface-raised);
-  /* No shadow, either way up — owner's call, 2026-08-24. It carried
-     `var(--panel-shadow)`, which is nothing on the dark page and a real drop on
-     the light one, so this only ever showed in light mode. The tint is left to
-     be the whole of the separation, which is what `.difference-card` — the same
-     lavender panel further down the page — has always done. */
-}
-
-/* The number opens the card, above its title.
-
-   **The paragraph's size, and the same token as the paragraph.** Owner,
-   2026-08-26: the numbers at the same px as the paragraphs. Written as
-   `--text-copy` rather than as the number that token happens to resolve to, so
-   the two stay equal when either moves — and one of them moved today, when the
-   whole copy ramp was lifted for a 16in laptop.
-
-   It was its own ramp, `clamp(1.05rem, 1.4vw, 1.3rem)`, measured off the
-   reference: its number is 30px in a 672px card, which is 4.46% of the card's
-   width and about 20px at this grid's 445px column. That is a shade larger than
-   the paragraph and the owner's call is that they match.
-
-   `tabular-nums` because these are a column of figures, and `01` over `02` with
-   proportional digits sits a hair out of line. */
-.why-card__number {
-  margin: 0;
-  /* **The same coral as the plus.** Owner, 2026-08-26. It was `--ink-muted`, and
-     grey until a pointer arrived is what the reference does; his is one colour
-     throughout.
-
-     ⚠ **2.31:1 on the grey panel, which fails AA for text.** WCAG asks 4.5:1 at
-     this size — 3:1 only from 24px, and these run 16 to 19 with the paragraphs.
-     The mark below can be under it because it is `aria-hidden` and decorative;
-     a number is neither.
-     `#df0303` is the same hue at 4.5:1 if he wants it to pass — and it is a
-     noticeably harder red, which is what 4.5:1 costs on this hue. His value stands;
-     the number is written here so the choice is visible rather than discovered. */
-  color: var(--why-mark);
-  font-size: var(--text-copy);
-  font-weight: var(--weight-medium);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
 }
 
 /* The product cards' corner marker. */
@@ -2625,254 +3173,6 @@ video {
 /* Balanced rather than greedy, so each title breaks at its own sentence
    instead of at the box edge, with two lines' height always reserved so the
    copy underneath starts on the same line across a row. */
-/* The display face, as the headings above them are. Its tracking comes with it:
-   -0.045em is drawn to hold the grotesque together and is too loose under a
-   face this tight. The weight does not change and must not — CS Alistair ships
-   Regular only, so 400 is the one weight there is and anything else would be
-   synthesised. The leading does not change either, because min-height below is
-   two lines of it and the four titles only align while the two agree. */
-.why-card__title {
-  /* In em, not ch. ch is the width of the zero, which is a property of the
-     face — swapping to CS Alistair narrowed 16ch from about 9.6em to 7.23em
-     without a number changing, and "Built with you. Improved as you grow."
-     needs 7.38em to hold two lines, so it fell to three and stood taller than
-     the other three cards. Measured, the four want between 7.38em (that title)
-     and 9.37em (the point where "Everything working together" would come up
-     onto one line); this sits in the middle of that band. */
-  /* **All four sit on one line, which is what the cap has to allow.** Measured
-     in the real face at this tracking: `We understand business` is the longest
-     at 8.54em, `We think strategically` 7.78, `Engagement` 4.20, `Technology`
-     3.93. It was 8.4em, which broke the longest of the four onto a second line
-     while the other three stayed on one — the reference sets all of them on
-     one.
-
-     9em rather than 8.6 so a slightly longer title later still holds, and the
-     card has the room either way: 8.54em is 256px at the 30px cap against a
-     394px column at 1440.
-
-     The `min-height: 2.24em` that used to be here reserved a second line so the
-     paragraphs under the four titles lined up. There are no paragraphs now, and
-     the mark below is pinned to the card's floor rather than to the title, so
-     nothing needs the reservation. */
-  max-width: 9em;
-  margin: clamp(0.4rem, 0.7vw, 0.6rem) 0 0;
-  font-family: var(--type-title);
-  /* **Its own size, not `--text-heading`.** Owner, 2026-08-26: a little bigger.
-     That token is on twelve rules across the site and moving it would take every
-     one of them along for a change asked of these four boxes.
-
-     The ramp is lifted rather than the ceiling raised — the same reason as
-     `--text-copy`: a 16in laptop is not one width. It was `clamp(24px, 2.35vw,
-     30px)`, which is already at its cap from 1277 up, so raising only the cap
-     would give a 1280 window a third of a pixel and a 1728 window four. Lifted,
-     every laptop gains about the same:
-
-       1024   24.1 -> 26.6
-       1280   30.0 -> 33.3
-       1440   30.0 -> 34.0
-       1728   30.0 -> 34.0
-
-     Against the reference, which sets its title at 7.29% of its card's width:
-     this is 8.5% at 1280 and 7.6% at 1440, so a touch larger than the drawing it
-     came from. That is what "bigger" was asked for.
-
-     `max-width` above still holds all four on one line at the new size: the
-     longest is 8.54em, which is 290px at the 34px cap against a 394px column at
-     1440, and 228 against 273 just above the split. */
-  font-size: clamp(1.625rem, 2.6vw, 2.125rem);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading);
-  text-wrap: balance;
-}
-
-/* The reference's corner mark: a filled disc with a plus in it, on the card's
-   floor at the left.
-
-   Built on `.card-plus`, which is the site's own plus and is what the product
-   cards carry, rather than a second one drawn here — the geometry of the cross
-   stays in one rule and this changes only its size and its colours.
-
-   **11.6% of the card's width**, which is 78px of the reference's 672 and about
-   52 of this grid's 445 at 1440. The product cards' own size is half that and
-   reads as a marker; at this size it reads as the button the reference draws.
-
-   ⚠ **The reference's plus is orange and this one is not.** Orange is not a
-   colour this site has — the nearest is `--tint-clay-bar`, a coral used on one
-   homepage box — so adopting it here would be introducing a brand colour inside
-   a content change. `--accent` is the site's own, and it is one value if he
-   wants the reference's.
-
-   `margin-top: auto` is what puts it on the floor: the card is a flex column,
-   so the mark takes all the space the number and title leave. That is also why
-   the empty middle of the card needs no filler element. */
-.why-card__mark {
-  width: clamp(2.6rem, 3.5vw, 3.25rem);
-  margin-top: auto;
-  border-color: transparent;
-  background: var(--canvas);
-}
-
-.why-card__mark::before,
-.why-card__mark::after {
-  width: 34%;
-  /* Thicker than the product cards' hairline, in proportion with the disc. */
-  height: 2px;
-  /* 2.56:1 on the white disc it sits in. Under the 3:1 that WCAG asks of a
-     meaningful graphic — and this one is not: it is `aria-hidden`, nothing
-     opens, and it carries no information the card does not already show. Worth
-     the number being written down rather than discovered if it is ever given
-     something to do. */
-  background: var(--why-mark);
-}
-
-/* ── The box's paragraph, and how it arrives ──
-
-   Owner, 2026-08-26, with the reference's hover state: the text has to appear
-   from below.
-
-   **It is written for the pointer, and the page works without one.** The
-   paragraph is plain and visible here; everything that hides it is inside
-   `@media (hover: hover)` below. A phone has no hover and would otherwise get a
-   card with a title, a lot of white and no way to open it — the content would
-   be there in the markup and unreachable, which is the failure mode of every
-   hover-only disclosure.
-
-   **`margin-top: auto` puts it on the floor of the card**, which is where the
-   reference sets it: the number and title at the top, the paragraph across the
-   bottom half, the air in between. It shares the floor with the mark rather
-   than replacing it, and the two trade places on hover.
-
-   28ch because the box is narrow — about 39 real characters a line at this
-   face, four to five lines for these paragraphs, which is the shape in the
-   reference. */
-.why-card__copy {
-  max-width: 28ch;
-  margin: auto 0 0;
-  /* **Grey on the light page, the page's white on the dark one.** Owner,
-     2026-09-30: the hover text in white in dark mode. `--ink-muted` alone turns
-     over to its own dark half, #a09aad, which is still a grey. */
-  color: var(--ink-muted);
-  font-size: var(--text-copy);
-  letter-spacing: -0.015em;
-  line-height: var(--leading-body);
-}
-
-/* No pointer, no mark: the paragraph is already showing, and a plus that opens
-   nothing is a control that lies. */
-.why-card__mark {
-  display: none;
-}
-
-@media (hover: hover) {
-  .why-card__mark {
-    display: block;
-  }
-
-  /* **The plus becomes a minus.** Owner, 2026-08-26: do not remove it on hover,
-     make it a `-`.
-
-     It was fading out with the paragraph, which left the corner empty. The two
-     strokes are `::before` and `::after` of the same disc — one horizontal, one
-     turned 90deg — so the minus is the upright one laid down on the other. They
-     end exactly on top of each other, which is a single bar.
-
-     Turned rather than hidden. Fading the upright stroke out gives the same
-     still image and none of the sense that the mark closed; a quarter turn is
-     the movement the shape is asking for, and it reverses on the way out.
-
-     **On the paragraph's curve and the paragraph's clock — owner, 2026-08-27.**
-     It kept `--duration-base` / `--ease-standard` when the copy moved to the
-     even curve below, and 200ms apart on two different curves is enough to see:
-     the corner had finished turning while the text was still on its way up, so
-     one hover read as two events. They are one — the card opening — and the
-     giveaway that they had come apart was the mark looking like it was racing
-     the text rather than trading places with it.
-
-     Same pair as the copy, deliberately, and the test holds them equal rather
-     than pinning each: whichever of the two is tuned next, the other has to
-     come with it. */
-  .why-card__mark::after {
-    transition: transform var(--duration-slow) var(--ease-handover);
-  }
-
-  .why-card:hover .why-card__mark::after,
-  .why-card:focus-within .why-card__mark::after {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-
-  /* **Up from further down, and evenly — owner's call, 2026-08-27.**
-
-     It was 1.5rem on `--duration-base` / `--ease-standard`, and the curve is
-     what made it snap rather than the distance: `cubic-bezier(0.22, 1, 0.36, 1)`
-     spends most of its time in the first quarter of the move, which is right for
-     something answering a press and wrong for a paragraph appearing under a
-     pointer that has only just arrived. The site already learned this on the
-     Clients cards' plus, 2026-08-25, and the answer is the same one.
-
-     `--ease-handover` is the even curve — eased at both ends — and
-     `--duration-slow` gives the longer travel room to be watched. 3rem is a
-     little over two lines of this face, twice what it was.
-
-     The note this replaces warned that anything past a line and a half reads as
-     the text being thrown rather than uncovered. That was true where it was
-     written: on a front-loaded curve at 420ms, distance buys speed, so the only
-     way to keep the paragraph from being flung was to give it nowhere to travel
-     from. On an even curve over 620ms distance buys the rise instead, which is
-     the thing that was actually being asked for.
-
-     Opacity and transform only — never `display`, `visibility` or `height`. The
-     first two take it out of the accessible tree, and the third changes the
-     card's height, which would move the whole row every time a pointer crossed
-     one of them.
-
-     The reduced-motion block near the foot of this file already cuts every
-     transition on the page to 0.01ms, so this needs no rule of its own there:
-     the paragraph still arrives, it simply does not travel. */
-  .why-card__copy {
-    opacity: 0;
-    transform: translateY(3rem);
-    transition:
-      opacity var(--duration-slow) var(--ease-handover),
-      transform var(--duration-slow) var(--ease-handover);
-  }
-
-  /* `focus-within` costs nothing and covers the day one of these boxes is given
-     something to focus. Nothing inside is focusable today, and the cards are
-     not made focusable to fix that: four tab stops that do nothing is a worse
-     answer than the text a screen reader can already read at rest. */
-  .why-card:hover .why-card__copy,
-  .why-card:focus-within .why-card__copy {
-    opacity: 1;
-    transform: none;
-  }
-
-  /* **The number does not change on hover any more.** It went to `--accent`
-     there, which was the other half of the reference's hover state — grey at
-     rest, orange under the pointer. The owner has made it the mark's colour at
-     rest instead, so there is nothing left for the hover to say: coral turning
-     purple would be the card changing colour rather than opening. */
-}
-
-/* One height for all four, so the drawings sit on a common line however wide
-   each one happens to be. Each carries its own margin inside its viewBox, so
-   what gets pulled to the card's left edge is the drawing, not its box. */
-.why-card__image {
-  width: auto;
-  max-width: none;
-  height: 100%;
-  transform: translateX(calc(var(--art-ink-inset, 0%) * -1));
-  object-fit: contain;
-}
-
-/* Its columns fill the viewBox edge to edge, where the other three leave a
-   margin, so it is held back a little to match them optically. */
-.why-card__image--ipo {
-  --art-ink-inset: 6%;
-
-  height: 85%;
-  overflow: visible;
-}
 
 .ipo-column {
   --ipo-delay: -1s;
@@ -2920,14 +3220,6 @@ video {
   100% {
     color: var(--art-surface);
   }
-}
-
-/* Same case as the handoff drawing: room inside the viewBox to make up for. */
-.why-card__image--recurring {
-  --art-ink-inset: 25.5%;
-
-  height: 118%;
-  overflow: visible;
 }
 
 .recurring-sphere__cover {
@@ -3103,12 +3395,6 @@ video {
   }
 }
 
-.why-card__image--support {
-  --art-ink-inset: 18%;
-
-  overflow: visible;
-}
-
 .support-color-part {
   fill: var(--art-accent);
   opacity: 0;
@@ -3151,15 +3437,6 @@ video {
   }
 }
 
-/* The opposite case to the columns: its drawing sits well inside its viewBox,
-   so it is pushed past the shared height to match the others optically. */
-.why-card__image--recommendations {
-  --art-ink-inset: 26%;
-
-  height: 118%;
-  overflow: visible;
-}
-
 .recommendation-wall {
   fill: var(--art-accent);
   opacity: 0;
@@ -3195,31 +3472,6 @@ video {
   100% {
     opacity: 0;
   }
-}
-
-/* **A brick: 2 and 3 on the first row, 1 and 2 on the second.** The block steps
-   left by exactly one column as it comes down, which is only true while the
-   three columns are equal — and it is why the alignment with the section above
-   is solved up there rather than here. It was briefly a 2x2 in the right-hand
-   two thirds; the owner asked for the arrangement back. */
-.why-card--one {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-.why-card--two {
-  grid-column: 3;
-  grid-row: 1;
-}
-
-.why-card--three {
-  grid-column: 1;
-  grid-row: 2;
-}
-
-.why-card--four {
-  grid-column: 2;
-  grid-row: 2;
 }
 
 /* ----------------------------- Isometric art ------------------------------ */
@@ -3662,234 +3914,6 @@ video {
 /* No step off the grid line here: with three columns it left one gap wider
    than the other, so every box sits square and the gaps are equal. */
 
-/* ------------------------------- Industries ------------------------------- */
-
-/* The drawing is wider than the page on purpose: it runs off the right edge,
-   and the section is what cuts it. */
-.industries-section {
-  position: relative;
-  overflow: hidden;
-  background: var(--canvas);
-  padding-block: var(--section-space-lg);
-}
-
-/* ── Who we build for, as a roll call ──
-
-   Rebuilt 2026-08-26, after the owner rejected the section that was here and
-   then rejected three redesigns of it — all three of which were ways of setting
-   the same seven rows. What was wrong with it was not the layout:
-
-     - **Six of the seven were unreadable at any moment.** The section held one
-       industry and dimmed the rest almost to the ground, so the list nobody
-       could scan was the list whose whole job is naming an audience.
-     - **The first column was empty for four fifths of its height** — a heading
-       using 194px of a 1,034px section, and nothing under it.
-     - **Copy was written for that column and never rendered.** `eyebrow` and
-       `title` both sat in `content/home.ts` unused. They are in it now.
-
-   The page's three columns, shared with the Why Mardal boxes above, so both
-   sections start on one edge. (The Fusion statement left them on 2026-10-05
-   for five ruled columns of its own.) */
-.industries-layout {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--column-gap);
-  align-items: start;
-}
-
-.industries-header {
-  display: grid;
-  gap: 1rem;
-  align-content: start;
-}
-
-.industries-title {
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading-xl);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading-xl);
-}
-
-/* Blocks, so the authored break holds without a `<br>`. */
-.industries-title__line {
-  display: block;
-}
-
-.industries-keys {
-  display: grid;
-  margin: 1rem 0 0;
-  padding: 0;
-  gap: 0.15rem;
-  list-style: none;
-}
-
-.industries-key {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding-block: 0.3rem;
-  color: var(--ink);
-  font-size: var(--text-copy);
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-/* **A colour per sector, and six of the seven already existed.**
-
-   The first build gave every dot the same neutral and lit every phrase in the
-   one accent, on the reasoning that only one sector is ever shown and one colour
-   would do. It does the job and it is not the design: a dot that promises a
-   colour the highlight does not deliver is a legend that does not legend.
-
-   `--accent` and the five tint bars are five of the seven; `--sector-public` is
-   the only new value on this page and it is a deeper mint, set apart from
-   healthcare's by lightness rather than hue. One value to change if the owner
-   wants another.
-
-   Set once here for both the dot and the words, so a sector cannot end up with
-   two colours. */
-.industries-key[data-key="finance"],
-.industries-who[data-sector="finance"] {
-  --sector: var(--accent);
-}
-
-.industries-key[data-key="healthcare"],
-.industries-who[data-sector="healthcare"] {
-  --sector: var(--tint-mint-bar);
-}
-
-.industries-key[data-key="manufacturing"],
-.industries-who[data-sector="manufacturing"] {
-  --sector: var(--tint-butter-bar);
-}
-
-.industries-key[data-key="automotive"],
-.industries-who[data-sector="automotive"] {
-  --sector: var(--tint-sky-bar);
-}
-
-.industries-key[data-key="retail"],
-.industries-who[data-sector="retail"] {
-  --sector: var(--tint-clay-bar);
-}
-
-.industries-key[data-key="logistics"],
-.industries-who[data-sector="logistics"] {
-  --sector: var(--tint-red-bar);
-}
-
-.industries-key[data-key="public-sector"],
-.industries-who[data-sector="public-sector"] {
-  --sector: var(--sector-public);
-}
-
-
-/* **The gap between the run and the way out lives here, not on the link.**
-
-   It was `margin-top` on `.industries-explore` and it did nothing: a shared
-   tap-target rule further down this file gives that class
-   `margin-block: -0.6875rem` to cancel its own padding, and being later with the
-   same specificity it won. The gap asked for was discarded twice, silently.
-
-   A column gap cannot be overridden by the child, and the link's negative margin
-   still does its own job inside it. */
-.industries-roll {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  grid-column: 2 / -1;
-  gap: clamp(5rem, 13vh, 9rem);
-}
-
-/* **Ragged, not justified.** The design this came from justified the run, and at
-   this size it opened word gaps wide enough to read as columns of their own —
-   `insurance      companies` on one line, `service        providers` on the
-   next. Justification spreads its slack across word spaces, and a run of two-
-   and three-word noun phrases at 2rem has almost none to spread it over. */
-.industries-run {
-  /* **The measure is 26em, and the TYPE scales to the column — not the other
-     way round.**
-
-     Two wrong versions came first and they were wrong in opposite directions.
-     The run was given the whole two-column block at 34px: 34em of this face, six
-     very long lines, a block wider than it is tall, reading as a caption. Then
-     the measure was capped at 23em and left at 34px, which is the design's
-     measure and none of its proportion — a 792px strip inside an 1,147px column,
-     with dead space to its right and the section half empty under it.
-
-     The design's block FILLED its column. So this sizes the type until 26em is
-     the column rather than shrinking the column to 26em of small type:
-
-         1200   column  743px   type 29.3px   26em =  761px
-         1440   column  902px   type 35.1px   26em =  914px
-         1808   column 1147px   type 44.1px   26em = 1147px
-
-     2.44vw is that ratio — the run takes about 63% of the window and 26em of it
-     is 2.44 hundredths. Nine lines at every one of those widths. Capped at 3rem,
-     above which the block stops growing and the column runs on past it; that is
-     a 2200px window and a 48px face, and a bigger one would be a headline rather
-     than a paragraph.
-
-     In `em`, so the line count holds as the clamp moves. */
-  max-width: 26em;
-  margin: 0;
-  /* **Grey until a sector is asked for.** Owner, 2026-08-27.
-
-     This is not the fault the section was rebuilt to fix. That one held ONE
-     industry and took the other six to about 1.5:1 — six of seven singled out as
-     unreadable while one was not. This is uniform: every phrase is the same
-     grey, nothing is picked out as disabled, and `--ink-muted` measures 6.68:1
-     on the canvas, which is AA for small text and this is large. The run is
-     entirely readable before a pointer ever arrives.
-
-     What hovering does is add: the sector's own words go to full ink and take
-     their rule. Nothing anywhere is taken further down. */
-  color: var(--ink-quiet);
-  font-family: var(--type-title);
-  font-size: clamp(1.25rem, 2.44vw, 3rem);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-display);
-  line-height: 1.3;
-}
-
-/* The gap either side is real whitespace in the markup now — a no-break space
-   before, an ordinary one after — because that is what gives the paragraph
-   somewhere to turn. Padding here would have been a second, invisible gap on
-   top of it. */
-.industries-run__dot {
-  color: var(--line-soft);
-}
-
-/* **The rule is added under a phrase, and nothing is taken from the others.** A
-   background grown from zero width rather than a border, so it draws across the
-   word instead of appearing under it whole. */
-/* **A phrase never breaks across two lines.** These are names for kinds of
-   organisation, not prose: `financial service providers` split over three lines,
-   which is what the first build did, reads as three fragments rather than as one
-   answer to the question the section asks.
-
-   Safe from 48rem up and no further: the longest phrase is 14.8em of this face
-   — `businesses managing industrial operations` — which is 355px at the size
-   clamp's floor, against 706px of column at 768. Below that a 320px phone has
-   288px to give and the same phrase would run off the page, so down there it
-   breaks like any other text. */
-.industries-who {
-  background-image: linear-gradient(var(--sector), var(--sector));
-  background-repeat: no-repeat;
-  background-position: 0 92%;
-  background-size: 0% 0.07em;
-  transition:
-    background-size var(--duration-base) var(--ease-standard),
-    color var(--duration-base) var(--ease-standard);
-}
-
-@media (min-width: 48rem) {
-  .industries-who {
-    white-space: nowrap;
-  }
-}
-
 /* **The label turns purple with its arrow.** Owner, 2026-08-27, and it makes
    the family agree: this was three different answers to one question. The
    service hero's CTA and the product link went to `--accent-strong`, the blog's
@@ -3904,7 +3928,6 @@ video {
 @media (hover: hover) {
   .service-hero__cta:hover,
   .product__cta:hover,
-  .industries-explore:hover,
   .blog-more__all:hover,
   .mobile-menu__cta:hover {
     color: var(--accent);
@@ -3919,150 +3942,9 @@ video {
   }
 }
 
-/* **`:has()`, so the section needs no JavaScript at all.** It was a client
-   component with a wheel-momentum recogniser, a step lock, a three-second hold
-   and a pin; the highlight is the only interaction left, and the stylesheet can
-   do it — which means it works before hydration and on a page whose script
-   never arrives.
-
-   Seven rules rather than one: CSS cannot carry the hovered key's value across
-   to the words, so each sector has to name itself. */
-/* **Either end lights the pair.** Owner, 2026-08-27: hovering the run should
-   activate its part the same way hovering the name does. So each sector answers
-   to a pointer on its name OR on any of its words, and both the name and the
-   words respond — the legend is no longer the only way in, and it is no longer
-   the only thing that moves.
-
-   `:has()` takes a selector list, which is what keeps this to one condition a
-   sector rather than two; `:is()` does the same for the two targets. The key
-   carries no background image, so the `background-size` here is inert on it and
-   only the run draws a rule.
-
-   Still seven rules and not one: CSS cannot carry the hovered element's own
-   value across to its siblings, so every sector has to name itself twice. */
-/* **Either end lights the pair.** Owner, 2026-08-27: hovering the run should
-   activate its part the way hovering the name does. So a sector answers to a
-   pointer on its name OR on any of its words, and both respond — the legend is a
-   second entrance rather than the only one.
-
-   `:has()` takes a selector list, which keeps this to one condition a sector
-   rather than two. Still seven rules and not one: CSS cannot carry the hovered
-   element's own value across to its siblings, so every sector names itself.
-
-   ── The words go to ink ── */
-.industries-layout:has([data-key="finance"]:hover, [data-sector="finance"]:hover)
-  .industries-who[data-sector="finance"],
-.industries-layout:has([data-key="healthcare"]:hover, [data-sector="healthcare"]:hover)
-  .industries-who[data-sector="healthcare"],
-.industries-layout:has([data-key="manufacturing"]:hover, [data-sector="manufacturing"]:hover)
-  .industries-who[data-sector="manufacturing"],
-.industries-layout:has([data-key="automotive"]:hover, [data-sector="automotive"]:hover)
-  .industries-who[data-sector="automotive"],
-.industries-layout:has([data-key="retail"]:hover, [data-sector="retail"]:hover)
-  .industries-who[data-sector="retail"],
-.industries-layout:has([data-key="logistics"]:hover, [data-sector="logistics"]:hover)
-  .industries-who[data-sector="logistics"],
-.industries-layout:has([data-key="public-sector"]:hover, [data-sector="public-sector"]:hover)
-  .industries-who[data-sector="public-sector"] {
-  color: var(--ink);
-  background-size: 100% 0.07em;
-}
-
-/* ── And the name goes to its sector's colour ──
-
-   Owner, 2026-08-27: black, and on hover change to the specific colour. The
-   names rested in the muted grey and went to ink; they rest in ink now and take
-   their tint.
-
-   ⚠ **His call, made after the numbers.** These are set at about 17px, where AA
-   asks 4.5:1 — the large-text 3:1 does not apply until 24. As type on the
-   canvas:
-
-       Finance        #7b64ab   4.94:1     passes
-       Retail         #fd7979   2.56
-       Public Sector  #4fb98a   2.43
-       Logistics      #cc2900   5.41   (the red's bar, #ff3300's, since 2026-10-05)
-       Automotive     #8ec5ef   1.84
-       Healthcare     #6fdd9f   1.68
-       Manufacturing  #e8dd48   1.41
-
-   Only Finance clears it. The mitigation is real but partial: the tint is a
-   hover state, the name is fully black at rest, and nothing is only available
-   in colour — the words it lights go to ink at the same moment, and the sector
-   is named there too. Nobody loses information; the name is simply hard to read
-   for the moment a pointer is on it.
-
-   Darker tints of the same hues would clear 4.5:1 and would no longer be the
-   colours under the words. That is the trade this is on the far side of. */
-.industries-layout:has([data-key="finance"]:hover, [data-sector="finance"]:hover)
-  .industries-key[data-key="finance"],
-.industries-layout:has([data-key="healthcare"]:hover, [data-sector="healthcare"]:hover)
-  .industries-key[data-key="healthcare"],
-.industries-layout:has([data-key="manufacturing"]:hover, [data-sector="manufacturing"]:hover)
-  .industries-key[data-key="manufacturing"],
-.industries-layout:has([data-key="automotive"]:hover, [data-sector="automotive"]:hover)
-  .industries-key[data-key="automotive"],
-.industries-layout:has([data-key="retail"]:hover, [data-sector="retail"]:hover)
-  .industries-key[data-key="retail"],
-.industries-layout:has([data-key="logistics"]:hover, [data-sector="logistics"]:hover)
-  .industries-key[data-key="logistics"],
-.industries-layout:has([data-key="public-sector"]:hover, [data-sector="public-sector"]:hover)
-  .industries-key[data-key="public-sector"] {
-  color: var(--sector);
-}
-
-
-
-/* Owner, 2026-08-27: on hover change the colour of the text, nothing else. The
-   mark that used to sit beside each name went with the same instruction — the
-   name IS the control now, and the colour is the whole of what it does.
-
-   `--ink`, not the sector's own colour. The tints are drawn to be seen as a
-   ground or a rule and several of them are unreadable as type: butter measures
-   1.33:1 on the canvas, so `Manufacturing` would vanish at the moment it was
-   pointed at. The tint stays where it works — under the words in the run. */
-
-/* Under the run, and well under it — owner, 2026-08-27: further down. It sat a
-   line and a half below, which read as the last line of the paragraph rather
-   than as the way out of the section. */
-.industries-explore {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--ink);
-  font-size: var(--text-cta);
-  text-decoration: none;
-}
-
-/* Stacked where the rest of the page stacks. The run keeps its size on a phone:
-   it is the content, and shrinking it to a caption would give back the
-   scannability this section exists to have. */
-@media (max-width: 64rem) {
-  .industries-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .industries-roll {
-    grid-column: 1;
-    margin-top: 2.5rem;
-  }
-}
-
 /* The film frames the drawing against the page, with the ring held to the
    left and its arc fading out before it reaches the words. */
-/* Held to the left and centred on the list, its width setting the size of the
-   drawing rather than the height of the block it sits over. */
-.industries-art {
-  position: absolute;
-  top: 50%;
-  left: calc(18% + 100px);
-  width: 74%;
-  aspect-ratio: 16 / 9;
-  pointer-events: none;
-  transform: translateY(-50%);
-}
 
-.industries-art__stage,
 .industry-art {
   width: 100%;
   height: 100%;
@@ -4105,276 +3987,6 @@ video {
   fill: var(--accent-strong);
   stroke: var(--accent-strong);
   stroke-width: 2.5;
-}
-
-/* ----------------------------- Selected work ------------------------------ */
-
-/* ── Five pieces, scattered, under covers that come off ──
-
-   Owner, 2026-08-27, under Built across industries: five of the works from the
-   Clients page, not a generic design, and almost no text — a company name
-   somewhere.
-
-   **The pictures are the section.** The first build read "minimal text" as "no
-   pictures" and set the five names alone at the header size under bars; his
-   answer was the correct one — "only names, no images, nothing." A section about
-   work has to show the work, and the name is the label on it rather than the
-   content of it.
-
-   **Scattered, and that is the arrangement rather than a decoration of it.**
-   Five plates on ONE grid row of twelve columns, each in its own run of columns,
-   each dropped by its own amount, each at its own ratio — so no two share a top,
-   a foot, a width or a shape. It is the language the owner asked for on the
-   About page in his own words, "smaller, and not aligned, something creative",
-   applied to the only other place on this site that sets a group of pictures.
-   The two things it is deliberately not: a card grid, which is on this site's
-   rejected list, and five equal boxes in a row, which is the logo strip every
-   competitor has.
-
-   **The covers are the redaction bars.** They are the one motif this site owns:
-   each plate arrives under a solid tint and the covers come off one at a time as
-   the block is watched, so the section resolves from five colours into five
-   pictures. Nothing travels and nothing scales — the only thing that happens is
-   that the covers leave.
-
-   **The finished state is the state in this file.** Every cover below is
-   collapsed against its own right edge; `WorkReveal` puts them on and takes them
-   off again. So a reader whose JavaScript never arrives, or who has asked for no
-   motion, meets the five pictures. An effect that hides content in CSS is an
-   effect that can fail with the content still hidden. */
-.work-section {
-  background: var(--canvas);
-  padding-block: var(--section-space-lg);
-}
-
-/* **The rule over the label is the About page's, used over the same content.**
-   Owner asked for it there on 2026-08-26 — a black horizontal line on top of his
-   client list — and this is five of that list. `--ink` rather than a literal
-   black, so it turns over with the page; on the inner rather than the section,
-   so it runs gutter to gutter with the block under it rather than edge to edge
-   with the window. The homepage has no full-bleed rule anywhere. */
-.work-layout {
-  padding-top: clamp(1.25rem, 3vh, 2rem);
-  border-top: 1px solid var(--ink);
-}
-
-/* Reading size in the normal face, set exactly as `.about-clients__title` is and
-   for the reason recorded there: the display face at a heading size would put
-   this label in competition with the work it heads.
-
-   `letter-spacing: normal` is written out rather than left off. This site fits
-   the display face with `--tracking-display`, which is cut for type at 40px and
-   up; inherited down here it would just be tight. */
-.work-title {
-  margin: 0;
-  color: var(--ink-muted);
-  font-family: var(--type-body);
-  font-size: var(--text-copy);
-  font-weight: 400;
-  letter-spacing: normal;
-  line-height: 1.2;
-}
-
-/* `container-type` so the drops below can be a fraction of the BLOCK. Without
-   it `cqw` reads whatever the nearest container is, or the viewport — and a
-   percentage would be worse: the containing block of a GRID ITEM is its own grid
-   area, so `14%` would mean 14% of one plate. That mistake cost the About
-   scatter a 252px overlap, and the note over `about-rooms__inner` records it.
-
-   Written WITHOUT the leading dot on purpose. `tests/about.test.mjs` finds that
-   section's stacking rule by taking the first `@media (max-width: 64rem)` after
-   the first mention of that section's own class in this file — so a comment up
-   here naming that selector points the search at THIS block's media query
-   instead, and the About test then fails on a stylesheet where nothing about
-   About has changed. It did. */
-.work-scatter {
-  display: grid;
-  container-type: inline-size;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  margin: clamp(2rem, 5vh, 3.5rem) 0 0;
-  padding: 0;
-  align-items: start;
-  gap: clamp(1rem, 1.35vw, 1.4rem);
-  list-style: none;
-}
-
-/* **All five on one row: the vertical placement is the margin, not the grid.**
-   Left to auto-placement, two items sharing a column would be pushed onto rows
-   of their own and the scatter would become a list.
-
-   **No two share a column either**, which is worth more than it looks: side by
-   side there is no vertical clearance to get wrong, so they cannot collide
-   whatever their drops or the section's entrance do to them. The About page's
-   scatter was rebuilt into adjacent runs for the same reason. */
-.work-piece {
-  grid-row: 1;
-  margin: 0;
-}
-
-/* The five runs, the five drops and the five shapes. Twelve columns spent 3-2-3-
-   2-2, and the drops are 0, 14, 4, 22 and 9 of the block's width — at a 1490
-   container that is tops at 0, 209, 60, 328 and 134 and feet at 459, 432, 318,
-   625 and 357. Ten numbers, no two the same, which is the whole of what "not
-   aligned" asks for.
-
-   The ratios alternate upright, square, wide so that the row is not five of one
-   shape at five sizes. The tints are the five the cards use and no more — two
-   extra colours were added to this site once and removed the same day. */
-.work-piece:nth-child(1) {
-  grid-column: 1 / span 3;
-  margin-top: 0;
-  --work-ratio: 3 / 4;
-  --work-tint: var(--tint-red);
-}
-
-.work-piece:nth-child(2) {
-  grid-column: 4 / span 2;
-  margin-top: 14cqw;
-  --work-ratio: 1 / 1;
-  --work-tint: var(--tint-butter);
-}
-
-.work-piece:nth-child(3) {
-  grid-column: 6 / span 3;
-  margin-top: 4cqw;
-  --work-ratio: 4 / 3;
-  --work-tint: var(--tint-mint);
-}
-
-.work-piece:nth-child(4) {
-  grid-column: 9 / span 2;
-  margin-top: 22cqw;
-  --work-ratio: 3 / 4;
-  --work-tint: var(--tint-sky);
-}
-
-.work-piece:nth-child(5) {
-  grid-column: 11 / span 2;
-  margin-top: 9cqw;
-  --work-ratio: 1 / 1;
-  --work-tint: var(--tint-clay);
-}
-
-/* **A block, and the piece's whole hit area.** Both the picture and the name
-   are inside it, so the accessible name of the link is the company and the
-   pointer target is the piece rather than the plate alone. `color: inherit` and
-   no underline because this is a picture with a caption, not a text link — what
-   answers the pointer is the plate, below. */
-.work-piece__link {
-  display: block;
-  color: inherit;
-  text-decoration: none;
-}
-
-/* The name turns with the picture, exactly as the Clients card's does, and to
-   the same purple. `--accent-strong` rather than `--accent`: this is the card
-   language, not the arrow-link language that was unified on 2026-08-27 across
-   the four CTAs — those carry a mark that has to agree with them and this does
-   not. 6.32:1 on the light canvas. */
-@media (hover: hover) {
-  .work-piece__link:hover .work-piece__name {
-    color: var(--accent-strong);
-  }
-}
-
-/* **The tint is the plate's ground as well as its cover.** It is what stands in
-   the box while a remote frame is in flight and what is left there if it never
-   arrives — a plate whose picture fails should be a coloured panel, not a broken
-   one. The Clients card does the same, for the same reason.
-
-   `overflow: clip` rather than `hidden`: nothing here scrolls, and `hidden`
-   would make this a scroll container the page could be sent to. */
-.work-piece__plate {
-  position: relative;
-  overflow: clip;
-  aspect-ratio: var(--work-ratio);
-  background: var(--work-tint);
-}
-
-/* The frames are 16:9 and no plate is, so every one of them is cropped rather
-   than squashed. The intrinsic size on the `img` is what reserves the box before
-   the picture lands, which is why the scatter does not move as they arrive. */
-.work-piece__art {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* The cover, collapsed against its own right edge — this is what a reader
-   without `WorkReveal` sees, which is nothing. */
-/* **Above the hover treatment as well as above the picture**, which is what the
-   `z-index` is for and it is not decoration. The plus and its wash are the
-   plate's two pseudo-elements: `::before` paints under every child of the plate
-   and `::after` over every one of them, so without this a pointer arriving while
-   a cover was still on would find the cross drawn on top of a flat tint and the
-   wash hidden underneath it — half a treatment, on a plate showing nothing. One
-   step up puts the cover over both. */
-.work-piece__cover {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  background: var(--work-tint);
-  transform: scaleX(0);
-  transform-origin: 100% 50%;
-}
-
-/* The name, and three facts under it — owner, 2026-09-30, from his own
-   portfolio's featured work: the company in the page's ink, then industry,
-   service and place in the quieter grey, one to a line. All four at paragraph
-   size in the normal face: this site has three sizes, and anything that is not
-   a heading is this one.
-
-   One leading for all four, 1.4 as his portfolio has it (the name was 1.2 while
-   it stood alone), so the block reads as four lines on one pitch rather than a
-   name with a list hung under it. */
-.work-piece__name {
-  margin: 0.85rem 0 0;
-  color: var(--ink);
-  font-size: var(--text-body);
-  line-height: 1.4;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-/* `--ink-grey`, the neutral grey, not the lavender `--ink-muted`: his is a plain
-   grey. #9a9a9a on the black page and #595959 on the white, 7.46:1 and 7.00:1.
-   They stay grey when the name turns purple on hover — the name is what the
-   pointer answers with. */
-.work-piece__industry,
-.work-piece__service,
-.work-piece__location {
-  margin: 0;
-  color: var(--ink-grey);
-  font-size: var(--text-body);
-  line-height: 1.4;
-}
-
-/* **Two up on a tablet, one up on a phone, and the scatter survives both.**
-
-   Written with `:nth-child(n)` rather than on `.work-piece` alone, and that is
-   not a flourish: the five rules above are `(0,2,0)` and a plain `.work-piece`
-   here would be `(0,1,0)`, so it would lose to them however far down the file it
-   sat. `:nth-child(n)` matches everything at the same weight, and later wins.
-
-   The drops go to a single alternating one. The block is a fifth of the width it
-   was and a 22cqw drop down there is half a screen of nothing. */
-@media (max-width: 64rem) {
-  .work-piece:nth-child(n) {
-    grid-row: auto;
-    grid-column: span 6;
-    margin-top: 0;
-  }
-
-  .work-piece:nth-child(even) {
-    margin-top: 10cqw;
-  }
-}
-
-@media (max-width: 30rem) {
-  .work-piece:nth-child(n) {
-    grid-column: 1 / -1;
-    margin-top: 0;
-  }
 }
 
 /* -------------------------------- Products -------------------------------- */
@@ -4599,13 +4211,11 @@ video {
   color: var(--accent-contrast);
 }
 
-
 .site-footer__slab,
 .site-footer__panel {
   --accent: #08080a;
   --accent-contrast: #ffffff;
 }
-
 
 /* The ring alone: the leftmost square of the wordmark, 163.92 of its 694.25
    units, cropped to rather than shipped as a second asset. */
@@ -4652,7 +4262,6 @@ video {
   gap: 2rem;
 }
 
-
 /* Everything functional in one band: three menus and the ways to reach us, all
    on one row. `auto` tracks rather than equal ones — the lists are the width of
    their own longest line and the row is packed left, so it reads as one block
@@ -4667,13 +4276,11 @@ video {
   gap: clamp(2rem, 5cqi, 3rem) clamp(2.5rem, 6cqi, 5rem);
 }
 
-
 .site-footer__nav {
   display: flex;
   flex-wrap: wrap;
   gap: clamp(2rem, 5cqi, 3rem) clamp(2.5rem, 6cqi, 5rem);
 }
-
 
 /* The three facts and the marks, stacked under one heading rather than each
    carrying its own — they are one address between them. */
@@ -4685,11 +4292,6 @@ video {
   margin: 0;
 }
 
-
-
-
-
-
 /* The legal line, last of the words. */
 .site-footer__legal {
   display: flex;
@@ -4698,19 +4300,6 @@ video {
   gap: 0.65rem 1.5rem;
   font-size: var(--text-small);
 }
-
-
-/* ── Narrow ──
- *
- * The band of columns wraps on its own — it is a flex row of `auto` lists and
- * needs nothing said. What does need saying is the sign-off: below this the
- * name would set at 20.5% of a 500px panel, which is 102px, and `Mardal` at
- * 102px is 300px wide against a panel that is 500. It stops filling the width
- * and starts floating in the middle of it, so the crop comes off and it becomes
- * a line of type like any other. */
-@container footer-panel (max-width: 34rem) {
-  }
-
 
 /* --------------------------------- Footer --------------------------------- */
 
@@ -4722,8 +4311,6 @@ video {
   padding-bottom: clamp(1.25rem, 2.5vw, 2rem);
   background: var(--canvas);
 }
-
-
 
 /* The h1's size, set exactly as the h1 is: this is the closing line of the page
    and it closes it at the size the page opened. */
@@ -4737,8 +4324,6 @@ video {
   line-height: var(--leading-heading-xl);
 }
 
-
-
 /* Set as two lines, so the break falls in the same place at every width. Not
    optional: without it the spans run together and the block reads
    `Let's buildsmarter`, which is what happened for one pass here — the rules
@@ -4746,8 +4331,6 @@ video {
 .site-footer__title-line {
   display: block;
 }
-
-
 
 /* A step under the links, which are themselves a step under the paragraph:
    labels, then what they label. */
@@ -4760,9 +4343,6 @@ video {
   font-size: var(--text-small);
 }
 
-
-
-
 .site-footer__links {
   display: grid;
   margin: 0;
@@ -4770,18 +4350,12 @@ video {
   list-style: none;
 }
 
-
-
-
 .site-footer__link {
   position: relative;
   font-size: var(--text-body);
   letter-spacing: -0.02em;
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
-
-
-
 
 /* The rule that wipes in under a footer link.
 
@@ -4806,9 +4380,6 @@ video {
   transform-origin: right;
 }
 
-
-
-
 /* Slower, and eased at both ends rather than one.
 
    --ease-standard is cubic-bezier(0.22, 1, 0.36, 1): it leaves at full speed
@@ -4821,8 +4392,6 @@ video {
     transition: transform var(--duration-slow) var(--ease-handover);
   }
 }
-
-
 
 /* **The names are not drawn here, only spoken.** An email address, a phone
    number and a street are each the only thing they could be, and EMAIL / PHONE
@@ -4842,9 +4411,6 @@ video {
   white-space: nowrap;
 }
 
-
-
-
 .site-footer__detail-label {
   color: var(--ink-muted);
   font-size: var(--text-small);
@@ -4853,17 +4419,11 @@ video {
   text-transform: uppercase;
 }
 
-
-
-
 .site-footer__detail-value {
   margin: 0;
   font-size: var(--text-body);
   line-height: 1.35;
 }
-
-
-
 
 /* Three marks in a row. No rule between them any more — a drawn mark is its
    own unit and does not need dividing from the next one the way two words
@@ -4874,9 +4434,6 @@ video {
   align-items: center;
   gap: clamp(0.75rem, 1.5vw, 1.15rem);
 }
-
-
-
 
 /* Sized off the text beside them rather than set in pixels, so the row keeps
    its proportion to the details it sits among at every width — and sized to
@@ -4893,19 +4450,10 @@ video {
   stroke-width: 1.6;
 }
 
-
-
-
 .social-icon__dot {
   fill: currentColor;
   stroke: none;
 }
-
-
-
-
-
-
 
 /* A rule between one item and the next. Drawn rather than typed as a pipe:
    the same mark on screen, and nothing for a screen reader to read out
@@ -4920,9 +4468,6 @@ video {
   padding-left: clamp(0.65rem, 1.3cqi, 1.25rem);
 }
 
-
-
-
 .site-footer__legal > * + *::before {
   content: "";
   position: absolute;
@@ -4933,9 +4478,6 @@ video {
   background: var(--panel-line);
   transform: translateY(-50%);
 }
-
-
-
 
 /* Narrow enough that the line no longer fits between the panel's edge and the
    first bar, so it is allowed to break rather than run under them. */
@@ -4961,14 +4503,10 @@ video {
 .site-footer__link,
 .site-footer__top-link,
 .site-footer__legal a,
-.product__cta,
-.industries-explore {
+.product__cta {
   padding-block: 0.6875rem;
   margin-block: -0.6875rem;
 }
-
-
-
 
 /* The air between one link and the next, and the only place it is set — the
    rule that lays these lists out states no gap of its own.
@@ -4987,16 +4525,10 @@ video {
   gap: 0.75rem;
 }
 
-
-
-
 .site-footer__legal,
 .site-footer__social {
   align-items: center;
 }
-
-
-
 
 /* The only thing in its row now that the mark has moved up, so it is pushed
    to the right rather than left to space-between, which has nothing to space
@@ -5026,17 +4558,12 @@ video {
   transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
-
-
-
 .site-footer__top-link::after {
   position: absolute;
   inset: -0.125rem;
   border-radius: inherit;
   content: "";
 }
-
-
 
 @media (hover: hover) {
   .site-footer__link:hover::after {
@@ -5053,9 +4580,6 @@ video {
     opacity: 1;
   }
 }
-
-
-
 
 /* The way back up is on every width and every pointer, phones included —
  * owner's call, 2026-08-12, reversing what was here.
@@ -5091,32 +4615,15 @@ video {
     padding: 0.65rem 0.65rem 0.65rem 0;
   }
 
-  .why-intro {
-    grid-template-columns: minmax(10rem, 0.7fr) minmax(0, 2fr);
-  }
+  
 
-  .why-title {
-    grid-column: 2;
-  }
+  
 
-  .why-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: clamp(7rem, 13vw, 10rem);
-  }
+  
 
-  .why-copy {
-    grid-column: 1 / -1;
-    grid-row: auto;
-    margin-bottom: 2rem;
-  }
+  
 
-  .why-card--one,
-  .why-card--two,
-  .why-card--three,
-  .why-card--four {
-    grid-column: auto;
-    grid-row: auto;
-  }
+  
 
   .services-intro,
   .solutions-intro,
@@ -5177,48 +4684,17 @@ video {
 
   /* The list keeps the page; the drawing drops below it and still runs off the
      right edge. */
-  /* Not enough width for a column beside the drawing: the words stack, and
-     nothing is shifted off the page's own column. */
-  .industries-layout {
-    grid-template-columns: minmax(0, 1fr);
-    gap: clamp(3rem, 7vw, 5rem);
-  }
+  
 
+  
 
-  .industries-intro {
-    width: auto;
-    margin-inline: 0;
-    padding-left: 0;
-  }
+  
 
-  /* Room for the rule to hang into.
-   *
-   * It sits out to the left of the name rather than in the row, so that no
-   * name moves when it appears. On the wide page it hangs into the white
-   * between the heading and the list; stacked there is nothing out there but
-   * the edge of the screen, and it was drawn off it — a stub against the
-   * margin. The list starts far enough in to hold it. */
-  .industries-list {
-    padding-left: calc(2.5 * var(--text-heading));
-  }
+  
 
-  .industries-header {
-    gap: 1.75rem;
-  }
+  
 
-  .industries-title {
-    max-width: 34ch;
-  }
-
-  .industries-art {
-    position: relative;
-    inset: auto;
-    width: auto;
-    height: 62vw;
-    margin-top: clamp(2.5rem, 6vw, 4rem);
-    aspect-ratio: auto;
-    transform: none;
-  }
+  
 
   .products-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5273,62 +4749,19 @@ video {
     height: 2.75rem;
   }
 
-  /* The same composition on the same five columns, two things changed. A
-     column here is narrower than the 1.97F mark beside it, so the plus moves
-     into the first column — from rule 1, as everything starts on a rule — and
-     is held to that column's width, so it never crosses rule 2. And the
-     heading is held to a tenth of the screen: the opening's size floors at
-     40px, and "Intelligence" from rule 3 then outruns a 360px phone; at a
-     tenth it ends inside the column down to 320. */
-  .container.fusion-container {
-    --fusion-size: min(var(--text-house), 10vw);
-  }
+  
 
-  .fusion-plus {
-    --fusion-plus-size: min(
-      1.97em,
-      (100vw - var(--page-gutter) * 2) / 5 - 1px
-    );
+  
 
-    grid-column: 1;
-  }
+  
 
-  .why-section {
-    padding-block: 4rem;
-  }
+  
 
-  .why-intro {
-    display: block;
-  }
+  
 
-  .why-title {
-    margin-top: 2rem;
-    line-height: 0.95;
-  }
+  
 
-  .why-grid {
-    display: block;
-    margin-top: 6rem;
-  }
-
-  .why-copy {
-    max-width: 19rem;
-    margin-bottom: 4rem;
-    line-height: var(--leading-body);
-  }
-
-  .why-card {
-    /* The portrait goes with the grid. Stacked, a card is the full width of the
-       page and 1.183 of that is most of a screen — four of them would be four
-       screens of scroll for four titles. */
-    min-height: 14rem;
-    margin-top: 0.75rem;
-    padding: 1.25rem;
-  }
-
-  .why-card__title {
-    margin-top: 0.4rem;
-  }
+  
 
   .difference-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -5349,7 +4782,6 @@ video {
   .services-section,
   .solutions-section,
   .difference-section,
-  .industries-section,
   .products-section,
   .case-section,
   .process-section,
@@ -5357,38 +4789,20 @@ video {
     padding-block: 4rem;
   }
 
-  .industries-list {
-    margin-top: 2.5rem;
-  }
+  
 
   /* Not enough width for two columns: the description drops under its name. */
-  /* No room for the link beside the line, so it drops under it. */
-  .industries-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.75rem;
-  }
+  
 
-  .industries-title {
-    max-width: none;
-  }
+  
 
-  .industries-list {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: 2rem;
-  }
+  
 
-  .industries-list > li,
-  .industries-item {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  
 
-  .industries-item__name {
-  }
+  
 
-  .industries-item__note {
-    margin-top: 0.75rem;
-  }
+  
 
   .services-intro,
   .solutions-intro,
@@ -5590,7 +5004,6 @@ video {
   gap: 0.15rem;
   padding-right: clamp(1rem, 2vw, 2rem);
 }
-
 
 /* Uppercase and letterspaced, the way the reference sets its labels — but at
    the paragraph size, because this site has three type sizes and no fourth. */

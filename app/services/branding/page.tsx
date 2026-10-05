@@ -8,6 +8,7 @@ import { ServicePageMotion } from "../../../components/services/ServicePageMotio
 import { PatternDrift } from "../../../components/services/PatternDrift";
 import { ServiceHeroBars } from "../../../components/services/ServiceHeroBars";
 import { PixelArrow, PixelX } from "../../../components/ui/PixelArrow";
+import { RollingLabel } from "../../../components/ui/RollingLabel";
 import { branding } from "../../../content/branding";
 import { products } from "../../../content/home";
 import { brandingPattern } from "../../../lib/branding-pattern";
@@ -86,10 +87,11 @@ export default function BrandingPage() {
 
             <a
               className="service-hero__cta"
+              data-roll
               href={products.ctaHref}
               data-service-hero-cta
             >
-              {branding.heroCta}
+              <RollingLabel>{branding.heroCta}</RollingLabel>
               <PixelArrow
                 className="service-hero__cta-arrow"
                 direction="up-right"
@@ -221,11 +223,12 @@ export default function BrandingPage() {
 
                 <a
                   className="service-journey__next"
+                  data-roll
                   href={`#${branding.chapters[1].services[0].id}`}
                   data-service-next-link
                 >
                   <span data-service-next-label>
-                    {branding.chapters[1].title}
+                    <RollingLabel>{branding.chapters[1].title}</RollingLabel>
                   </span>
                   <PixelArrow
                     className="service-journey__next-arrow"
@@ -257,8 +260,8 @@ export default function BrandingPage() {
                 {branding.cta.title}
               </h2>
 
-              <a className="service-cta__link" href={products.ctaHref}>
-                {branding.cta.label}
+              <a className="service-cta__link" data-roll href={products.ctaHref}>
+                <RollingLabel>{branding.cta.label}</RollingLabel>
                 <PixelArrow className="service-cta__arrow" direction="up-right" size="small" />
               </a>
             </div>

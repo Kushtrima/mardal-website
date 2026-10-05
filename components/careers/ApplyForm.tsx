@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { PixelArrow } from "../ui/PixelArrow";
+import { RollingLabel } from "../ui/RollingLabel";
 import { careers } from "../../content/careers";
 
 /**
@@ -282,10 +283,11 @@ export function ApplyForm({ role, roleTitle }: { role: string; roleTitle: string
       <div className="apply-form__foot">
         <button
           className="apply-form__submit"
+          data-roll
           type="submit"
           disabled={status === "sending"}
         >
-          {status === "sending" ? apply.sending : apply.submit}
+          <RollingLabel>{status === "sending" ? apply.sending : apply.submit}</RollingLabel>
           <PixelArrow
             className="apply-form__arrow"
             direction="up-right"

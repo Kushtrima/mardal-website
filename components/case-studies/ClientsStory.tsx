@@ -7,6 +7,7 @@ import { HeaderSpace } from "../layout/HeaderSpace";
 import { SectionEnter } from "../motion/SectionEnter";
 import { ServicePageEntry } from "../services/ServicePageEntry";
 import { PixelArrow } from "../ui/PixelArrow";
+import { RollingLabel } from "../ui/RollingLabel";
 import { pilotStory } from "../../content/case-studies";
 import { industries, products } from "../../content/home";
 
@@ -96,10 +97,11 @@ export function ClientsStory() {
 
               <a
                 className="service-hero__cta"
+                data-roll
                 href={products.ctaHref}
                 data-service-hero-cta
               >
-                {pilotStory.cta}
+                <RollingLabel>{pilotStory.cta}</RollingLabel>
                 <PixelArrow
                   className="service-hero__cta-arrow"
                   direction="up-right"
@@ -226,8 +228,8 @@ export function ClientsStory() {
 
             <div className="story-reading">
               <p className="story-out">
-                <Link className="story-out__link" href="/case-studies">
-                  {pilotStory.backLabel}
+                <Link className="story-out__link" data-roll href="/case-studies">
+                  <RollingLabel>{pilotStory.backLabel}</RollingLabel>
                   <PixelArrow
                     className="story-out__arrow"
                     direction="up-right"

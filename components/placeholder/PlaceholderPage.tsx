@@ -4,6 +4,7 @@ import { HeaderSpace } from "../layout/HeaderSpace";
 import { SectionEnter } from "../motion/SectionEnter";
 import { ServicePageEntry } from "../services/ServicePageEntry";
 import { PixelArrow } from "../ui/PixelArrow";
+import { RollingLabel } from "../ui/RollingLabel";
 import {
   placeholderTitleLines,
   placeholders,
@@ -52,10 +53,11 @@ export function PlaceholderPage({ page }: { page: PlaceholderKey }) {
           than to a generic call to action. */}
       <a
         className="service-hero__cta"
+        data-roll
         href={content.ctaHref}
         data-service-hero-cta
       >
-        {content.cta}
+        <RollingLabel>{content.cta}</RollingLabel>
         <PixelArrow
           className="service-hero__cta-arrow"
           direction="up-right"

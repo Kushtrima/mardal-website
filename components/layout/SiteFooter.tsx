@@ -43,9 +43,18 @@ const groups = menu.filter((group) => group.key !== "case-studies");
  * carried), the paragraph under the closing line is gone, and the contact block
  * is three facts under one spoken heading rather than four labelled cells.
  */
-export function SiteFooter() {
+/**
+ * `ruled`: the homepage's hairlines run on through the footer to the foot of
+ * the page (owner, 2026-10-05: "all the way down"). Only the homepage asks for
+ * them; every other page's footer stays plain.
+ */
+export function SiteFooter({ ruled = false }: { ruled?: boolean } = {}) {
   return (
-    <footer className="site-footer" id={contact.id}>
+    <footer
+      className="site-footer"
+      id={contact.id}
+      data-ruled={ruled ? true : undefined}
+    >
       <Container>
         <div className="site-footer__panel" data-bar-dark>
           {/* The one line that is an invitation rather than a list, and the way

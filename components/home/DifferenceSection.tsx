@@ -17,11 +17,15 @@ export function DifferenceSection() {
   return (
     <section
       className="difference-section"
+      /* The page's hairlines run through it — see [data-ruled] in globals.css. */
+      data-ruled
       id={difference.id}
       aria-labelledby="difference-title"
       data-route-section
     >
-      <Container>
+      {/* The entrance moves this, not the section: the section carries the
+          page's hairlines, and they must not slide with it. */}
+      <Container data-enter>
         <div>
           <h2
             className="display-heading difference-title"

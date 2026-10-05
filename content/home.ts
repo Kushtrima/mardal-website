@@ -7,16 +7,6 @@
  */
 
 /**
- * The Clients page's entries, read here for the five names the homepage shows.
- *
- * Imported rather than copied for the reason `content/about.ts` imports the
- * same array: the day the real names land they land in one file, and no page
- * keeps a private list that quietly stops agreeing with it. `case-studies.ts`
- * imports nothing itself, so this cannot close a circle.
- */
-import { clientEntries } from "./case-studies";
-
-/**
  * The seven sectors, written once.
  *
  * They are read in two places now — the Solutions section down the homepage and
@@ -116,22 +106,6 @@ function audiencesOf(descriptor: string): string[] {
     .map((phrase) => phrase.trim())
     .filter(Boolean);
 }
-
-/**
- * Every organisation the seven descriptors name, in order, each carrying the
- * sector it came from.
- *
- * Twenty-five of them, and the number is nowhere in the source: the section
- * counts this array. A typed count is a fact that goes stale silently, and this
- * one was already wrong once — the design that proposed the section said
- * twenty-six.
- */
-export const audiences = industries.flatMap((industry) =>
-  audiencesOf(industry.descriptor).map((name) => ({
-    sector: industry.id,
-    name,
-  })),
-);
 
 /**
  * The services, in the two halves the owner split them into on 2026-10-03:
@@ -388,71 +362,147 @@ export const fusion = {
     "We unite the power and precision of artificial intelligence with the imagination and originality of human creativity, creating technology that thinks smarter, feels more human, and unlocks new possibilities.",
 } as const;
 
-export const whyMardal = {
-  label: "Why Mardal?",
-  titleLines: ["Build smarter.", "Scale faster."],
-  copy:
-      "We help your business work better by building and connecting the technology you use every day, from AI and automation to CRM, custom software, web platforms and apps. Everything is shaped around your team, your processes and the way your business actually works.",
-  /**
-   * The four boxes, rebuilt 2026-08-26 from a reference the owner sent: a
-   * number, a short title, a great deal of air, and a plus mark in the corner.
-   *
-   * **What went, and it was most of it.** Each card carried an animated
-   * isometric drawing, a label in the opposite corner — Applied AI, Automation,
-   * Connected Systems, Technology Partnership — a two-line serif title and a
-   * line of copy under it. Owner: remove the animation icons, and these titles.
-   * The whole previous section is in `backup/2026-08-26-why-mardal/`, files and
-   * stylesheet both, with a note on putting it back.
-   *
-   * ⚠ **The four drawings are still in the tree and nothing renders them.**
-   * `AnimatedIpoImage`, `AnimatedRecurringImage`, `AnimatedRecommendationsImage`
-   * and `AnimatedSupportImage` were imported by `WhyMardal` and by nothing else,
-   * and so are the ~340 lines of `.why-card__image--*` rules that dress them.
-   * They are left standing rather than deleted because removing four components
-   * is a decision of its own and this was a content change.
-   *
-   * **No number is stored.** They are the position in this array, written by the
-   * component — a number in the data can disagree with where the card sits, and
-   * `01` on the second box is the kind of thing nobody sees until a client does.
-   *
-   * **The copy came back on 2026-08-26, for the hover.** Owner, with the
-   * reference's hover state: the text has to appear from below. So each box has
-   * a paragraph again — held under the fold of the card and rising into it.
-   *
-   * ⚠ **These four paragraphs are mine, not his and not the reference's.** Every
-   * claim in them is already made somewhere on this site — the lede above them
-   * ("shaped around your team, your processes and the way your business actually
-   * works"), the four cards this section replaced ("where it can make work
-   * faster, decisions clearer, and services more useful", "we stay involved
-   * beyond launch, adapting and improving your technology as your business
-   * changes"), and the About page's note on expectations. Nothing new is
-   * claimed: no number, no client, no capability the site does not already state.
-   *
-   * The reference's own paragraph for box 01 was NOT taken. Its titles are
-   * generic phrases; forty words of another company's marketing prose is their
-   * writing, and it is about their business rather than this one. Four lines to
-   * replace if he has his own.
-   */
-  cards: [
+/**
+ * Selected Work, under Human Creativity + Artificial Intelligence — the
+ * owner's comp of 2026-10-05: the heading, VIEW ALL, and two pieces of work,
+ * a tall picture and a wide one, three lines under each.
+ *
+ * Every word is his comp's, line for line. Both pieces read "Buhler" in it;
+ * they are set as he drew them, not filled in with a second client.
+ *
+ * ⚠ The picture is cut from his screenshot of the comp, 607×764 — the only
+ * copy of it on this machine. It is soft on a 2x screen; the original file
+ * replaces it at the same path. Both pieces use it: the wide one is the same
+ * photograph at the same scale, cut lower (his comp, measured).
+ *
+ * No piece links anywhere: there is no Buhler page, and a card that opens
+ * nothing is the promise this site refuses to make (see `work.items`). VIEW
+ * ALL goes to the case-studies index, which exists.
+ *
+ * (Three in a row with a hover that opened the picture was tried the same day
+ * and reverted on his word: "i dont like the selectec work design, revers as
+ * it was".)
+ */
+export const selectedWork = {
+  id: "selected-work",
+  /* Capitals, written as he wrote them — owner, 2026-10-05: "make in lletter
+     in upperc case SELECTED WORK" — like VIEW ALL beside it. */
+  titleLines: ["SELECTED", "WORK"],
+  viewAll: { label: "VIEW ALL", href: "/case-studies" },
+  items: [
     {
-      position: "one",
-      title: "We think strategically",
-      copy: "We start from how your business actually works — your team, your processes, the decisions you need to make — and shape the technology around that, rather than the other way round.",
+      key: "buhler-tall",
+      shape: "tall",
+      name: "Buhler",
+      services: "Software, CRM",
+      location: "Switzerland",
+      image: {
+        src: "/selected-work-buhler.webp",
+        width: 607,
+        height: 764,
+        alt: "A phone showing the Bühler Law website, resting on the arm of a chair.",
+      },
     },
     {
-      position: "two",
-      title: "Technology",
-      copy: "AI and automation, CRM, custom software, web platforms and apps. We build what you need and connect it to what you already have, so information moves without unnecessary manual work.",
+      key: "buhler-wide",
+      shape: "wide",
+      name: "Buhler",
+      services: "Software, CRM",
+      location: "Switzerland",
+      image: {
+        src: "/selected-work-buhler.webp",
+        width: 607,
+        height: 764,
+        alt: "A phone showing the Bühler Law website, resting on the arm of a chair.",
+      },
+    },
+  ],
+  /* **Two more, in a format of their own** — owner, 2026-10-05: "add more two
+     project to the homepage in differen format"; "change format of prject not
+     same" (of a row that only turned the first round); then, of two squares
+     each on its own row with its lines beside it, "i want those two last …
+     to be near each other". So: two squares side by side, close, on the
+     page's second and third columns, their lines under them. ⚠ Buhler again,
+     as every piece in his comps reads; his own projects replace them when he
+     sends them. */
+  features: [
+    {
+      key: "buhler-feature-1",
+      name: "Buhler",
+      services: "Software, CRM",
+      location: "Switzerland",
+      image: {
+        src: "/selected-work-buhler.webp",
+        width: 607,
+        height: 764,
+        alt: "A phone showing the Bühler Law website, resting on the arm of a chair.",
+      },
     },
     {
-      position: "three",
-      title: "We understand business",
-      copy: "We use technology where it makes work faster, decisions clearer and services more useful — not where it only adds a layer. What is measured is the outcome, not the stack.",
+      key: "buhler-feature-2",
+      name: "Buhler",
+      services: "Software, CRM",
+      location: "Switzerland",
+      image: {
+        src: "/selected-work-buhler.webp",
+        width: 607,
+        height: 764,
+        alt: "A phone showing the Bühler Law website, resting on the arm of a chair.",
+      },
+    },
+  ],
+} as const;
+
+/**
+ * "about" — the owner's comp of 2026-10-05, under Selected Work: the word with
+ * its "o" set as the site's red square, and beside it the paragraph. Every word
+ * is his, line for line; the "o" stays in the heading for anyone who reads it
+ * rather than sees it (the square carries it, visually hidden).
+ */
+/** His lines, as his comp breaks them. Set one to a line from 56rem up —
+ *  where his longest still fits the column; the paragraph's size follows the
+ *  window down to its floor — and run together as one paragraph below that.
+ *  No single measure
+ *  could break them his way in this face: his first line sets wider than his
+ *  third would with the next word added. */
+const aboutIntroLines = [
+  "We’re a small team of curious humans who create work we’re proud of for people",
+  "and brands we believe in. With collaboration at the heart of every project, we",
+  "identify what skills are required and then bring the best people together to",
+  "create something truly extraordinary. Combining strategy, branding, web design",
+  "and development, we build digital experiences that transform the way people",
+  "connect and interact with brands.",
+] as const;
+
+export const aboutIntro = {
+  id: "about",
+  title: { before: "ab", letter: "o", after: "ut" },
+  copyLines: aboutIntroLines,
+  copy: aboutIntroLines.join(" "),
+} as const;
+
+/**
+ * "Our expertise" — the owner's comp of 2026-10-05, under "about": two words,
+ * each behind a red cross, and under the pointer each opens its services.
+ *
+ * Creative's four are his, word for word, from the comp he sent with it.
+ * Development's are the menu's own Development half (`serviceGroups`) — the
+ * same four services under the same name, so the two never disagree; he gave
+ * no list for it.
+ */
+export const expertise = {
+  id: "expertise",
+  labelLines: ["Our", "expertise"],
+  groups: [
+    {
+      key: "creative",
+      title: "Creative",
+      items: ["Branding", "UX / UI", "Web design", "Social Media"],
     },
     {
-      position: "four",
-      title: "Engagement",
-      copy: "We stay involved beyond launch, adapting and improving what we have built as your business changes. Expectations are set at the start, so everyone stays aligned throughout.",
+      key: "development",
+      title: "Development",
+      items: serviceGroups[0].items.map((item) => item.label),
     },
   ],
 } as const;
@@ -566,88 +616,6 @@ export const solutions = {
      drifted once already and there is an assertion holding them apart. */
   cta: "Explore All",
   ctaHref: "/case-studies",
-} as const;
-
-/**
- * Five names, under the section that says who Mardal builds for.
- *
- * Owner, 2026-08-27: put some of the work on the homepage too, five of it, not
- * a generic design, and keep the text to almost nothing — a company name
- * somewhere and little else. So this block holds one label and no sentences.
- * What the section says is the names.
- *
- * ⚠ **NOT MARDAL CLIENTS. MUST NOT SHIP.** These are the placeholders from the
- * Clients page, and every word of the warning on `clientEntries` applies here —
- * with the page added to it. Clients is a page a reader chooses to open; the
- * homepage is the one they land on, so this is the most visible version of that
- * claim the site can make. It is pinned in `tests/rendered-html.test.mjs`
- * alongside the assertion holding the Clients page, so publishing means deleting
- * an assertion on purpose rather than forgetting a comment.
- *
- * **Taken from `clientEntries` rather than written out**, so there is no second
- * list to remember. `slice` and not a hand-picked five: the order on the Clients
- * index is the order here, and the homepage does not get to choose a favourite
- * five out of eight.
- */
-export const work = {
-  id: "work",
-  /* The label, and the only word in the section that is not a name. The Clients
-     page's rail already calls this "Selected work" — the same two words, so a
-     reader who follows the section through meets the phrase it promised.
-
-     It is the section's heading as well as its label. Set small and in the
-     normal face, which is how the About page sets the heading over its own
-     client list: the display face at a heading size would put this in
-     competition with the work it heads. */
-  title: "Selected work",
-  /* A picture, and under it four short lines: the company, its industry, the
-     service and where — owner, 2026-09-30, the way his own portfolio sets its
-     featured work. It was the name alone before (2026-08-27: almost no text, a
-     company name somewhere, the pictures to carry the section). The pictures
-     still carry it; the three new lines are facts, not copy.
-
-     The industry is the Industries run's own title for the sector, looked up
-     the way the Clients card does, so a sector renamed there is renamed here.
-     The service is every discipline the entry lists, in its order. These are
-     the entries the Clients rail filters by discipline, and a piece naming one
-     of its three would disagree with the page it links to.
-
-     `image` is `clientEntries`' own, so the homepage and the Clients index show
-     the same frame for the same piece of work rather than two different ones,
-     and the day real screenshots land they land in one place. ⚠ They are stock
-     frames off picsum.photos today and the warning on `clientEntries` applies
-     here word for word: stock photography is on this site's rejected list, it is
-     a live request to a third party on every plate, and not one of these
-     pictures has anything to do with the work. */
-  items: clientEntries.slice(0, 5).map((entry) => ({
-    slug: entry.slug,
-    name: entry.name,
-    industry:
-      industries.find((industry) => industry.id === entry.sector)?.title ??
-      entry.sector,
-    service: entry.disciplines.join(", "),
-    location: entry.location,
-    image: entry.image,
-    /* **Every piece opens something, and that is what buys it the plus.**
-
-       The hover treatment this section borrows — the picture darkening under a
-       drawn cross — is written in the stylesheet for cards that GO somewhere,
-       and the note over it is explicit: a plus appearing under the pointer on a
-       card that answers with an empty page is the promise this site refuses to
-       make. So the plus and the destination arrive together or neither does.
-
-       One of the five has a story written behind it and goes to it. The other
-       four go to the index, which is not a consolation: it is the page that
-       lists this piece, with its sector, its location and the disciplines it
-       was. What is NOT here is a link per piece to a page nobody has written —
-       that is the one thing the Clients index refuses for its own seven, and
-       the refusal is the same.
-
-       This differs from the Clients index deliberately. There, a card linking
-       to the index would be a link to the page it is already on. Here it is the
-       way through, and it is why this section needs no CTA of its own. */
-    href: "story" in entry ? `/case-studies/${entry.slug}` : "/case-studies",
-  })),
 } as const;
 
 export const products = {

@@ -10,6 +10,7 @@ import {
 } from "react";
 import gsap from "gsap";
 import { PixelArrow } from "../ui/PixelArrow";
+import { RollingLabel } from "../ui/RollingLabel";
 import { contactEmail } from "../../content/home";
 import { contactPage } from "../../content/contact";
 
@@ -217,6 +218,7 @@ export function LetterForm() {
         </p>
         <button
           className="letter__send"
+          data-roll
           type="button"
           onClick={() => {
             setFlagged([]);
@@ -224,7 +226,7 @@ export function LetterForm() {
             setStatus("idle");
           }}
         >
-          {letter.again}
+          <RollingLabel>{letter.again}</RollingLabel>
           <PixelArrow
             className="letter__send-arrow"
             direction="up-right"
@@ -360,10 +362,11 @@ export function LetterForm() {
 
         <button
           className="letter__send"
+          data-roll
           type="submit"
           disabled={status === "sending"}
         >
-          {status === "sending" ? letter.sending : letter.send}
+          <RollingLabel>{status === "sending" ? letter.sending : letter.send}</RollingLabel>
           <PixelArrow
             className="letter__send-arrow"
             direction="up-right"

@@ -1,5 +1,6 @@
 import { Container } from "../layout/Container";
 import { PixelArrow } from "../ui/PixelArrow";
+import { RollingLabel } from "../ui/RollingLabel";
 import { ProductsPin } from "./ProductsPin";
 import { products } from "../../content/home";
 
@@ -18,6 +19,8 @@ export function ProductsSection() {
   return (
     <section
       className="products-section"
+      /* The page's hairlines run through it — see [data-ruled] in globals.css. */
+      data-ruled
       id={products.id}
       aria-labelledby="products-title"
       data-route-section
@@ -86,8 +89,8 @@ export function ProductsSection() {
                   <h3 className="product__name">{product.title}</h3>
                   <p className="product__copy">{product.description}</p>
 
-                  <a className="product__cta" href={products.ctaHref}>
-                    {products.cta}
+                  <a className="product__cta" data-roll href={products.ctaHref}>
+                    <RollingLabel>{products.cta}</RollingLabel>
                     <PixelArrow
                       className="product__arrow"
                       direction="up-right"

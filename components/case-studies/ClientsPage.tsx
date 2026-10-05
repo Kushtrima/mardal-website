@@ -5,6 +5,7 @@ import { ClientsIndex } from "./ClientsIndex";
 import { SectionEnter } from "../motion/SectionEnter";
 import { ServicePageEntry } from "../services/ServicePageEntry";
 import { PixelArrow } from "../ui/PixelArrow";
+import { RollingLabel } from "../ui/RollingLabel";
 import { caseStudies } from "../../content/case-studies";
 import { products } from "../../content/home";
 
@@ -95,10 +96,11 @@ export function ClientsPage() {
 
               <a
                 className="service-hero__cta"
+                data-roll
                 href={products.ctaHref}
                 data-service-hero-cta
               >
-                {caseStudies.heroCta}
+                <RollingLabel>{caseStudies.heroCta}</RollingLabel>
                 <PixelArrow
                   className="service-hero__cta-arrow"
                   direction="up-right"

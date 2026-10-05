@@ -27,6 +27,8 @@ export function FusionSection() {
   return (
     <section
       className="fusion-section"
+      /* The page's hairlines run through it — see [data-ruled] in globals.css. */
+      data-ruled
       id="approach"
       aria-labelledby="fusion-title"
       data-route-section

@@ -6,6 +6,7 @@ import { HeaderSpace } from "../../../components/layout/HeaderSpace";
 import { BlogPattern } from "../../../components/blog/BlogPattern";
 import { SectionEnter } from "../../../components/motion/SectionEnter";
 import { PixelArrow } from "../../../components/ui/PixelArrow";
+import { RollingLabel } from "../../../components/ui/RollingLabel";
 import { blog, formatDate, readingMinutes } from "../../../content/blog";
 import { products } from "../../../content/home";
 
@@ -243,8 +244,8 @@ export default async function BlogPostPage({
                 {blog.cta.title}
               </h2>
 
-              <a className="service-cta__link" href={products.ctaHref}>
-                {blog.cta.label}
+              <a className="service-cta__link" data-roll href={products.ctaHref}>
+                <RollingLabel>{blog.cta.label}</RollingLabel>
                 <PixelArrow
                   className="service-cta__arrow"
                   direction="up-right"

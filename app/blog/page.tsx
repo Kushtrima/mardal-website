@@ -6,6 +6,7 @@ import { RedactedLines } from "../../components/home/RedactedLines";
 import { SectionEnter } from "../../components/motion/SectionEnter";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
 import { PixelArrow } from "../../components/ui/PixelArrow";
+import { RollingLabel } from "../../components/ui/RollingLabel";
 import { blog, formatDate, readingMinutes } from "../../content/blog";
 import { products } from "../../content/home";
 
@@ -97,10 +98,11 @@ export default function BlogPage() {
 
               <a
                 className="service-hero__cta"
+                data-roll
                 href={products.ctaHref}
                 data-service-hero-cta
               >
-                {blog.heroCta}
+                <RollingLabel>{blog.heroCta}</RollingLabel>
                 <PixelArrow
                   className="service-hero__cta-arrow"
                   direction="up-right"

@@ -121,7 +121,7 @@ const pages = [
     label: "Company",
     support: "Who we are and how we work.",
     cta: "Why Mardal",
-    ctaHref: "/#company",
+    ctaHref: "/#about",
   },
   {
     path: "/privacy",

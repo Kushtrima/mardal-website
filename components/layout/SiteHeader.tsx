@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { MOBILE_MENU } from "../../lib/breakpoints";
 import { HEADER_AT_REST, nextHeaderState } from "../../lib/header-reveal";
 import { PixelArrow } from "../ui/PixelArrow";
+import { RollingLabel } from "../ui/RollingLabel";
 import { Container } from "./Container";
 import { brandPlace, footer, menu, menuButton } from "../../content/home";
 
@@ -541,6 +542,7 @@ export function SiteHeader() {
             ref={toggleRef}
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
+            data-roll
             onClick={() => {
               if (menuOpen) {
                 closeMenu();
@@ -551,7 +553,11 @@ export function SiteHeader() {
               setActiveMenu(wide ? FIRST_LIST : null);
             }}
           >
-            <span className="mobile-menu-toggle__label">{menuButton}</span>
+            {/* The word rolls under the pointer, as VIEW ALL's does; the plus
+                beside it stays still (owner, 2026-10-05). */}
+            <span className="mobile-menu-toggle__label">
+              <RollingLabel>{menuButton}</RollingLabel>
+            </span>
             <span className="mobile-menu-toggle__plus" aria-hidden="true" />
           </button>
         </nav>
@@ -649,10 +655,11 @@ export function SiteHeader() {
               <div className="mobile-menu__cta-row" data-mobile-menu-entry>
                 <a
                   className="mobile-menu__cta"
+                  data-roll
                   href="/contact"
                   onClick={closeMenu}
                 >
-                  Start a project
+                  <RollingLabel>Start a project</RollingLabel>
                   <PixelArrow
                     className="mobile-menu__cta-arrow"
                     direction="up-right"
@@ -712,6 +719,7 @@ export function SiteHeader() {
                   reader, which meets this button with no list in view. */}
               <button
                 className="mobile-menu__back"
+                data-roll
                 type="button"
                 aria-label={`Back to the main menu from ${displayItem.label}`}
                 onClick={() => setActiveMenu(null)}
@@ -722,7 +730,7 @@ export function SiteHeader() {
                   direction="left"
                   size="small"
                 />
-                <span>Back</span>
+                <span><RollingLabel>Back</RollingLabel></span>
               </button>
             </div>
           </div>

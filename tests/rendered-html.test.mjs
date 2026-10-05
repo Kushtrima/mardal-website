@@ -25,21 +25,14 @@ async function render(path = "/") {
 
 /** The anchors that are still on the page. The menu also links to Services,
  *  Company and Products, whose sections are not on the page, and to Clients,
- *  which is not an anchor at all any more but a link to /case-studies — the
- *  seven sectors in its panel are the anchors from `finance` down. */
+ *  which is not an anchor at all any more but a link to /case-studies.
+ *  `solutions` and the seven sector anchors went with Built across industries
+ *  (owner, 2026-10-05); nothing links to them. */
 const menuAnchors = [
-  "solutions",
   "products",
   "arvena-ai",
   "ftesa",
   "ihrauto",
-  "finance",
-  "healthcare",
-  "manufacturing",
-  "automotive",
-  "retail",
-  "logistics",
-  "public-sector",
 ];
 
 test("server-renders the Mardal homepage", async () => {
@@ -102,50 +95,9 @@ test("server-renders the Mardal homepage", async () => {
      this whole change was about. */
   assert.doesNotMatch(html, /difference-card--six/);
 
-  /* **The seven industries are text, and only `Explore All` goes anywhere.**
-
-     They have been three things: anchors to a run further down this page, which
-     only ever scrolled you; links to `/case-studies/{id}`, a sector view of the
-     Clients page; then, when that taxonomy was removed, seven links all
-     pointing at `/case-studies` — seven different words promising one
-     destination, which is what the owner took out on 2026-08-25.
-
-     Both halves are asserted, because each catches the other's failure. Seven
-     items still render — a name silently losing its element would otherwise
-     pass — and none of them is an anchor. */
-  /* **The seven are a legend now, not a run.** The section was rebuilt on
-     2026-08-26 as a roll call of the twenty-five organisations the descriptors
-     name; the sector titles moved to the side of it as keys that light their own
-     words. `industries-item` and everything under it is gone with the run.
-
-     Still seven, and still not links — that half of the assertion is what it
-     always was. */
-  const keys = [
-    ...html.matchAll(/<(\w+) class="industries-key" id="([\w-]+)" data-key="\2"/g),
-  ];
-  assert.equal(keys.length, 7);
-  assert.deepEqual([...new Set(keys.map((m) => m[1]))], ["li"]);
-  assert.doesNotMatch(html, /class="industries-item/);
-
-  /* The way out is still a link, and it is the only one on this section. */
-  assert.match(html, /<a [^>]*class="industries-explore"[^>]*href="\/case-studies"|<a [^>]*href="\/case-studies"[^>]*class="industries-explore"/);
-
-  /* And nothing here promises a press: the finger came off with the link, and
-     the keys that replaced the names are `li`, not buttons — seven tab stops
-     that only tint some words is a worse outcome than no tab stop, because the
-     words they light are already black. */
-  assert.doesNotMatch(html, /class="industries-key[^"]*"[^>]*data-cursor/);
-  assert.doesNotMatch(html, /<button[^>]*industries-key|<a[^>]*industries-key/);
-
-  /* And the one that does not narrow. `Explore` pointing at `#contact` was the
-     only destination this run had before the Clients page existed — seven
-     sectors naming an audience and then handing you an email address. Both
-     halves are pinned: the label, and that the dead anchor is gone. */
-  const explore = html.match(/<a ([^>]*industries-explore[^>]*)>([^<]*)/);
-  assert.ok(explore, "the way on from the industries run is missing");
-  assert.match(explore[1], /href="\/case-studies"/);
-  assert.match(explore[2], /Explore All/);
-  assert.doesNotMatch(html, /industries-explore[^>]*href="#contact"/);
+  /* Built across industries left the homepage on the owner's word, 2026-10-05
+     ("delete also this section"), after Why Mardal and the old Selected work. */
+  assert.doesNotMatch(html, /class="industries-section"|industries-explore|industries-key/);
   assert.equal(
     (html.match(/class="[^"]*product__arrow[^"]*"/g) ?? []).length,
     3,
@@ -240,7 +192,10 @@ test("server-renders the Mardal homepage", async () => {
   /* "Menu" and a drawn plus (owner, 2026-10-03), where the two lines were — the
      same word open and shut; the mark folds to a minus. Sentence case and the
      plus split into four strokes since 2026-10-05, from his screenshot. */
-  assert.match(bar, /class="mobile-menu-toggle__label">Menu</);
+  /* The word rolls under the pointer, as VIEW ALL's does (owner, 2026-10-05):
+     written twice, the copy hidden, so the button is still named "Menu". */
+  assert.match(bar, /class="mobile-menu-toggle__label"><span class="roll"><span class="roll__face">Menu<\/span><span class="roll__face roll__face--next" aria-hidden="true">Menu<\/span>/);
+  assert.match(bar, /aria-controls="mobile-navigation" data-roll="true"/);
   assert.match(bar, /class="mobile-menu-toggle__plus" aria-hidden="true"/);
   assert.doesNotMatch(bar, /mobile-menu-toggle__bars|CLOSE/);
 
@@ -262,7 +217,17 @@ test("server-renders the Mardal homepage", async () => {
   /* A minus only while the menu is open; under the pointer the plus turns
      slowly instead, at its own size — he wanted neither the minus nor a bigger
      plus on hover. */
-  assert.match(CSS, /\.mobile-menu-toggle\[aria-expanded="false"\]:hover \.mobile-menu-toggle__plus\s*\{\s*transform:\s*rotate\(180deg\);\s*\}/);
+  /* Under the pointer the plus does not move at all since 2026-10-05 — Menu
+     takes VIEW ALL's hover, "not to move the icon" — and the word is set at
+     VIEW ALL's size and weight. */
+  assert.doesNotMatch(CSS.replace(/\/\*[\s\S]*?\*\//g, ""), /:hover \.mobile-menu-toggle__plus/);
+  /* The rule that sets its type — the first `.mobile-menu-toggle {` in the
+     file is a shared pointer-events rule. */
+  const toggle = [...CSS.matchAll(/(?:^|\n)\.mobile-menu-toggle \{([^}]*)\}/g)]
+    .map((match) => match[1])
+    .find((body) => /font-size/.test(body)) ?? "";
+  assert.match(toggle, /font-size:\s*var\(--text-body\)/);
+  assert.match(toggle, /font-weight:\s*var\(--weight-body\)/);
   assert.doesNotMatch(CSS, /\.mobile-menu-toggle:hover \.mobile-menu-toggle__plus::after/);
   /* And under the pointer the whole button is the site's red — the owner's,
      which took the lilac's place everywhere on 2026-10-03, and is #ff3300 since
@@ -525,13 +490,15 @@ test("server-renders the Mardal homepage", async () => {
   // One arrival per section: the section moves as a whole, so no element
   // inside it carries its own reveal.
   assert.doesNotMatch(html, /data-reveal-item/);
-  // Every section on the page is one, including Why Mardal.
-  assert.match(html, /class="why-section"[^>]*data-route-section/);
-  /* Six since 2026-08-27: Selected work went in under Built across industries.
+  /* Six since 2026-10-05: the owner's Selected Work, "about" and "Our
+     expertise" went in under Fusion, and Why Mardal, the old Selected work and Built across industries
+     left the homepage ("delete this section … completwly from home page");
+     six since 2026-08-27: Selected work went in under Built across industries.
      Counted rather than listed, so a section added without one is caught — the
      entrance is applied by `SectionEnter` to `main > section[data-route-section]`
      and a section without the attribute simply never arrives. */
   assert.equal((html.match(/<section class="[^"]*"[^>]*data-route-section/g) ?? []).length, 6);
+  assert.doesNotMatch(html, /class="why-section"|class="work-section"|class="industries-section"/);
 
   // Artificial Intelligence + Human Creativity, under the hero.
   assert.match(html, /class="fusion-section"[^>]*data-route-section/);
@@ -724,7 +691,7 @@ test("server-renders the AI & Automation service page", async () => {
      "Explore more" on 2026-08-09 and these did not; the two labels live in
      different content modules and this is the assertion that keeps them
      apart. */
-  assert.match(html, /class="service-cta__link" href="[^"]*">Get in touch/);
+  assert.match(html, /class="service-cta__link" data-roll="true" href="[^"]*"><span class="roll"><span class="roll__face">Get in touch/);
 
   // The page carries the site's own header and footer.
   assert.match(html, /class="site-nav"/);
@@ -1601,323 +1568,6 @@ const WHY_TITLES = [
   "Engagement",
 ];
 
-test("the Why Mardal boxes are a number, a title and a mark", async () => {
-  const html = await (await render("/")).text();
-  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
-  const at = main.indexOf('<div class="why-grid">');
-  assert.ok(at > 0, "the Why Mardal grid is not on the page");
-  const grid = main.slice(at, main.indexOf("</section>", at));
-
-  const cards = grid.match(/<article class="why-card why-card--\w+"[\s\S]*?<\/article>/g) ?? [];
-  assert.equal(cards.length, 4, `found ${cards.length} boxes`);
-
-  cards.forEach((card, index) => {
-    /* **The number is the position, written by the component.** A number stored
-       beside its title can disagree with where the card sits, and `01` on the
-       second box is the sort of thing nobody notices until a client does.
-       Padded, because `9` then `10` is a step in width the eye reads as a
-       wobble down the column. */
-    const number = String(index + 1).padStart(2, "0");
-    assert.match(
-      card,
-      new RegExp(`<p class="why-card__number">${number}</p>`),
-      `box ${index + 1} does not carry ${number}`,
-    );
-    assert.match(
-      card,
-      new RegExp(`<h3 class="why-card__title">${WHY_TITLES[index]}</h3>`),
-      `box ${index + 1} is not "${WHY_TITLES[index]}"`,
-    );
-
-    /* A mark, not a control: nothing here opens, so it is silent to a screen
-       reader rather than announced as something to press. */
-    assert.match(card, /<span class="card-plus why-card__mark" aria-hidden="true"/);
-
-    /* **The paragraph is in the markup at rest.** The pointer reveals it; it is
-       never removed from the document to be hidden, so a screen reader has it
-       whether or not a pointer ever crosses the card, and a phone — which has
-       no hover to give — simply shows it. A hover-only disclosure that is not
-       in the DOM is content nobody without a mouse can reach. */
-    assert.match(
-      card,
-      new RegExp(`<p class="why-card__copy">${WHY_COPY[index]}`),
-      `box ${index + 1} has no paragraph, or not its own`,
-    );
-    assert.doesNotMatch(card, /aria-hidden="true"[^>]*why-card__copy|why-card__copy[^>]*hidden/);
-  });
-
-  /* **Nothing of the section it replaced.** It carried an animated isometric
-     drawing per card, a label in the opposite corner and a line of copy under
-     each title; all three are gone and the copy went with them. Asserted as
-     absences because the failure being caught is a half-applied revert — one
-     card left with its drawing, or a stray label — which reads as a bug rather
-     than as a design. The whole previous section is in
-     `backup/2026-08-26-why-mardal/`. */
-  for (const gone of [
-    "why-card__art",
-    "why-card__label",
-    "why-card__image",
-    "Applied AI",
-    "Connected Systems",
-    "Technology Partnership",
-    "Solving real business problems",
-  ]) {
-    assert.ok(!grid.includes(gone), `${gone} is still in the Why Mardal grid`);
-  }
-
-  /* The lede above them is untouched — he changed the boxes, not the section. */
-  assert.match(grid, /class="why-copy"/);
-  assert.match(grid, /We help your business work better/);
-});
-
-test("the Why Mardal box is built on air and a floor", () => {
-  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
-
-  const at = CSS.indexOf(".why-card {");
-  assert.ok(at > 0, "the box has no rule");
-  const card = CSS.slice(at, CSS.indexOf("\n}", at));
-
-  /* **The air is the design.** Measured off the reference: its card is 672 by
-     795, a portrait of 1.183, holding a number, a title and a mark with the rest
-     empty. 36vw is that ratio at this grid's own column — a third of the page
-     less its gutters is about 445px at 1440, and 1.183 of it is 526 against the
-     518 this gives. Without it, removing the drawing left four squat boxes with
-     the plus tucked under the title. */
-  assert.match(card, /min-height:\s*clamp\(19rem, 36vw, 33rem\)/);
-  assert.match(card, /flex-direction:\s*column/);
-
-  /* The mark is pinned to the card's floor by the column's own spare space,
-     which is also why the empty middle needs no filler element. */
-  const mark = CSS.indexOf(".why-card__mark {");
-  assert.ok(mark > 0, "the mark has no rule");
-  assert.match(CSS.slice(mark, CSS.indexOf("}", mark)), /margin-top:\s*auto/);
-
-  /* **All four titles sit on one line**, which is what the cap has to allow.
-     Measured in the real face at this tracking: `We understand business` is
-     8.54em, `We think strategically` 7.78, `Engagement` 4.20, `Technology`
-     3.93. It was 8.4em, which broke the longest onto a second line while the
-     other three stayed on one. */
-  const title = CSS.indexOf(".why-card__title {");
-  assert.ok(title > 0, "the title has no rule");
-  /* Comments stripped before the absence is checked. The note explaining WHY the
-     reserved second line went says `min-height` in prose, and a guard read
-     against the raw rule matches its own explanation — which is a test that
-     passes on the comment and would go on passing if the declaration came
-     back. */
-  const rule = CSS.slice(title, CSS.indexOf("\n}", title)).replace(
-    /\/\*[\s\S]*?\*\//g,
-    "",
-  );
-  assert.match(rule, /max-width:\s*9em/);
-  assert.doesNotMatch(rule, /min-height/);
-
-  /* **Its own size, not `--text-heading`.** Owner: a little bigger. That token
-     is on twelve rules across the site, and moving it would take every one of
-     them along for a change asked of these four boxes.
-
-     Lifted rather than capped higher, the same reason as `--text-copy`: the old
-     `clamp(24px, 2.35vw, 30px)` was already at its ceiling from 1277 up, so
-     raising only the ceiling gives a 1280 window a third of a pixel. Lifted,
-     1280 goes 30.0 to 33.3 and 1440 goes 30.0 to 34.0. */
-  assert.match(rule, /font-size:\s*clamp\(1\.625rem, 2\.6vw, 2\.125rem\)/);
-  assert.doesNotMatch(rule, /var\(--text-heading\)/);
-
-  /* Figures in a column: `01` over `02` sits a hair out of line without this. */
-  const number = CSS.indexOf(".why-card__number {");
-  assert.ok(number > 0, "the number has no rule");
-  const figures = CSS.slice(number, CSS.indexOf("\n}", number)).replace(
-    /\/\*[\s\S]*?\*\//g,
-    "",
-  );
-  assert.match(figures, /font-variant-numeric:\s*tabular-nums/);
-
-  /* **The same coral as the plus, at rest and on hover both.** Owner: the
-     numbers in the mark's colour. It was `--ink-muted` going to `--accent`
-     under the pointer, which is the reference's behaviour; one colour throughout
-     is his.
-
-     ⚠ 2.31:1 on the grey panel, against the 4.5:1 WCAG asks of text this size —
-     3:1 applies only from 24px and these are about 20. The mark can be under it
-     because it is `aria-hidden` and decorative; a number is neither. `#df0303`
-     is the same hue at 4.56:1. Recorded, not enforced: it is his colour, and the
-     point of the assertion is that nobody changes it without meeting the note. */
-  assert.match(figures, /color:\s*var\(--why-mark\)/);
-  assert.doesNotMatch(figures, /--ink-muted/);
-
-  /* **The number is the paragraph's size**, owner 2026-08-26 — and it is the
-     same TOKEN, not the number that token happens to resolve to, so the two stay
-     equal when either moves. One of them moved today: the whole copy ramp was
-     lifted for a 16in laptop.
-
-     Compared rather than pinned, so tuning the pair stays free while the
-     equality does not. */
-  const paragraph = CSS.indexOf(".why-card__copy {");
-  const sizeOf = (from) => {
-    const rule = CSS.slice(from, CSS.indexOf("\n}", from)).replace(
-      /\/\*[\s\S]*?\*\//g,
-      "",
-    );
-    const value = rule.match(/font-size:\s*([^;]+);/);
-    assert.ok(value, "no font-size");
-    return value[1].trim();
-  };
-  assert.equal(sizeOf(number), sizeOf(paragraph));
-
-  /* **The paragraph is plain where there is no pointer.** Its base rule sets no
-     opacity and no transform: everything that hides it lives in the hover query
-     below, so a phone gets the text instead of a card it cannot open. */
-  const copy = CSS.indexOf(".why-card__copy {");
-  assert.ok(copy > 0, "the paragraph has no rule");
-  const base = CSS.slice(copy, CSS.indexOf("\n}", copy)).replace(/\/\*[\s\S]*?\*\//g, "");
-  assert.doesNotMatch(base, /opacity|transform|display|visibility/);
-  assert.match(base, /margin:\s*auto 0 0/);
-
-  /* And the hiding is inside `@media (hover: hover)`, which is the whole of
-     that guarantee. */
-  const query = CSS.indexOf("@media (hover: hover) {", copy);
-  assert.ok(query > 0, "the reveal is not behind a hover query");
-  const hover = CSS.slice(query, CSS.indexOf("\n}\n", query));
-  assert.match(hover, /\.why-card__copy \{[\s\S]*?opacity:\s*0/);
-  /* **The travel and the curve are the owner's, 2026-08-27** — 3rem on the even
-     curve, up from 1.5rem on the front-loaded one. Both pinned, because the pair
-     is the whole of the change: `--ease-standard` puts most of the move in its
-     first quarter, and over this distance that is the throw the paragraph was
-     asked to stop being. Either one alone undoes it. */
-  assert.match(hover, /transform:\s*translateY\(3rem\)/);
-  assert.match(
-    hover,
-    /\.why-card__copy \{[\s\S]*?transform var\(--duration-slow\) var\(--ease-handover\)/,
-  );
-  assert.match(hover, /\.why-card:hover \.why-card__copy/);
-
-  /* **Opacity and transform only — never display, visibility or height.** The
-     first two take the paragraph out of the accessible tree; the third changes
-     the card's height, and a row that resizes every time a pointer crosses one
-     of four boxes is the jump this avoids. */
-  const reveal = hover.slice(hover.indexOf(".why-card:hover .why-card__copy"));
-  assert.doesNotMatch(reveal.slice(0, reveal.indexOf("}")), /display|visibility|height/);
-
-  /* **The plus is the owner's coral, and its own token.** 2026-08-26, with the
-     value. It is the same `#fd7979` as `--tint-clay-bar` and deliberately not an
-     alias of it: that one is AI & Automation's, the pattern on its hero and the
-     mark on its homepage box, and pointing this at it would mean the next change
-     to that service's colour silently repainting four plusses on an unrelated
-     section.
-
-     2.56:1 on the white disc, under the 3:1 WCAG asks of a meaningful graphic —
-     and this one is not one: it is `aria-hidden`, nothing opens, and it carries
-     nothing the card does not already show. The purple it replaces was 4.94. */
-  assert.match(CSS, /--why-mark:\s*#fd7979/);
-  const plus = CSS.indexOf(".why-card__mark::before,");
-  assert.ok(plus > 0, "the plus has no rule");
-  const strokes = CSS.slice(plus, CSS.indexOf("\n}", plus)).replace(/\/\*[\s\S]*?\*\//g, "");
-  assert.match(strokes, /background:\s*var\(--why-mark\)/);
-  assert.doesNotMatch(strokes, /var\(--accent\)|var\(--tint-clay-bar\)/);
-
-  /* **The plus becomes a minus, and is not removed.** Owner, 2026-08-26: do not
-     remove it on hover, make it a `-`. It was fading out with the paragraph,
-     which left the corner empty.
-
-     The two strokes are the disc's `::before` and `::after`, one horizontal and
-     one turned 90deg, so the minus is the upright one laid down on the other —
-     turned rather than hidden, because fading it out gives the same still image
-     and none of the sense that the mark closed. */
-  assert.match(
-    hover,
-    /\.why-card:hover \.why-card__mark::after[\s\S]*?transform:\s*translate\(-50%, -50%\) rotate\(0deg\)/,
-  );
-  assert.doesNotMatch(hover, /\.why-card:hover \.why-card__mark,[\s\S]{0,120}?opacity:\s*0/);
-
-  /* **The turn keeps the paragraph's clock and the paragraph's curve** — owner,
-     2026-08-27. The copy moved to `--duration-slow` / `--ease-handover` and the
-     mark was left on `--duration-base` / `--ease-standard`; 200ms apart on two
-     different curves is visible, and the corner finished turning while the text
-     was still rising, so one hover read as two events.
-
-     Compared rather than pinned. Both are the card opening, and what has to hold
-     is that they are the SAME pair — tuning the reveal stays free, taking the
-     mark along with it does not. */
-  const timingOf = (selector) => {
-    const at = hover.indexOf(selector);
-    assert.ok(at > 0, `no rule for ${selector}`);
-    const rule = hover.slice(at, hover.indexOf("}", at)).replace(/\/\*[\s\S]*?\*\//g, "");
-    const transform = rule.match(/transform (var\(--duration-[\w-]+\) var\(--ease-[\w-]+\))/);
-    assert.ok(transform, `no transform timing on ${selector}`);
-    return transform[1];
-  };
-  assert.equal(
-    timingOf(".why-card__mark::after {"),
-    timingOf(".why-card__copy {"),
-    "the mark and the paragraph have come apart",
-  );
-
-  /* **And the number no longer changes under the pointer.** It went to
-     `--accent` there — grey at rest, coloured on hover, which is the reference's
-     behaviour. The owner has made it the mark's colour at rest instead, so there
-     is nothing left for the hover to say: coral turning purple would be the card
-     changing colour rather than opening. */
-  assert.doesNotMatch(hover, /\.why-card:hover \.why-card__number/);
-});
-
-test("the Why Mardal boxes are a light grey panel on the page's own ground", () => {
-  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
-
-  /* **The section paints the page's ground and nothing of its own**, and it has
-     been three other things in a day. The owner asked for `#faff89` inside this
-     section, and it went through a flat fill on this box — a hard line across
-     the top, because a rectangle has edges at every opacity — a gradient inside
-     the box, which lost the line but arrived as a shape travelling up the window
-     while the header and the sections either side stayed white, and then a
-     page-wide wash on every surface that paints. Then: take the yellow out
-     completely and make the boxes light grey.
-
-     Asserted as an absence as much as a value. Each of those three left
-     something behind — a token, a gradient, a client component — and a stray one
-     is a colour nobody asked for arriving on scroll. */
-  const at = CSS.indexOf(".why-section {");
-  assert.ok(at > 0, "the section has no rule");
-  const section = CSS.slice(at, CSS.indexOf("\n}", at)).replace(/\/\*[\s\S]*?\*\//g, "");
-  assert.match(section, /background:\s*var\(--canvas\)/);
-  assert.doesNotMatch(section, /linear-gradient|--why-ground/);
-  /* Comments stripped, and the declaration form matched rather than the name.
-     The note on `--why-mark` explains that it is deliberately not an alias of
-     `--tint-clay-bar`, "the same reason `--why-ground` was not an alias of
-     `--wash-about`" — and a guard read against the raw file matches that
-     sentence and reports the token as still present. */
-  const declared = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
-  assert.doesNotMatch(declared, /--why-ground\s*:/);
-
-  const why = readFileSync(
-    new URL("../components/home/WhyMardal.tsx", import.meta.url),
-    "utf8",
-  );
-  assert.doesNotMatch(why, /WhyWash|WhyGround/);
-  for (const driver of ["WhyWash", "WhyGround"]) {
-    assert.throws(
-      () =>
-        readFileSync(
-          new URL(`../components/home/${driver}.tsx`, import.meta.url),
-          "utf8",
-        ),
-      `${driver}.tsx is back, and the yellow with it`,
-    );
-  }
-
-  /* **`--surface-raised`, not a grey written here.** It is the site's own answer
-     to exactly this — a panel raised off the page rather than a second colour on
-     it — and it is defined as a few percent of the OPPOSITE of the ground, so it
-     lifts on the white page and on the black one alike. A literal `#f3f3f3`
-     would be a light grey card on a light page and a light grey card on a dark
-     one.
-
-     It lands at #f3f3f3 over white against the #f8f9f9 of the reference: a shade
-     deeper, the same idea. */
-  const card = CSS.indexOf(".why-card {");
-  const rule = CSS.slice(card, CSS.indexOf("\n}", card)).replace(/\/\*[\s\S]*?\*\//g, "");
-  assert.match(rule, /background:\s*var\(--surface-raised\)/);
-  assert.doesNotMatch(rule, /var\(--surface\)|var\(--canvas\)|#[0-9a-f]{3,8}/i);
-});
-
 test("the fusion mark is two strokes, and still says nothing", async () => {
   const html = await (await render("/")).text();
   const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
@@ -2030,33 +1680,244 @@ test("the fusion reveal draws the rules and the mark, and raises the lines", () 
   assert.match(code, /context\.revert\(\)/);
 });
 
-test("the Why boxes keep their three columns, and Fusion has its five", () => {
+test("Selected Work stands under Fusion, as the owner's comp draws it", async () => {
+  const html = await (await render("/")).text();
+  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  const fusion = main.indexOf('class="fusion-section"');
+  const at = main.indexOf('class="selected-work"');
+  assert.ok(fusion > 0 && at > fusion, "Selected Work is not under the Fusion section");
+  assert.ok(at < main.indexOf('class="difference-section"'), "Selected Work is not above Difference");
+  const section = main.slice(at, main.indexOf("</section>", at));
+
+  /* His words, line for line: the heading in two lines, VIEW ALL to the index
+     that exists, and two pieces with the same three lines under each. */
+  assert.match(section, /data-selected-work-line[^>]*>SELECTED<\/span>/);
+  assert.match(section, /data-selected-work-line[^>]*>WORK<\/span>/);
+  /* Attributes in either order — the worker's Link writes href first. */
+  const viewAll = section.match(/<a [^>]*selected-work__all[^>]*>[\s\S]*?<\/a>/)?.[0] ?? "";
+  assert.match(viewAll, /href="\/case-studies"/);
+  /* **The roll** (owner, 2026-10-05: "text all text in same time to rotate
+     like vertically"): the word twice in one cell, the copy hidden from the
+     screen reader so the link is named once. */
+  assert.match(viewAll, /data-roll="true"/);
+  assert.match(viewAll, /<span class="roll__face">VIEW ALL<\/span>/);
+  assert.match(viewAll, /class="roll__face roll__face--next" aria-hidden="true">VIEW ALL<\/span>/);
+  /* The comp's pair — tall, then wide — and since 2026-10-05 two more "in
+     differen format", "near each other": two squares side by side on the
+     page's second and third columns, their lines under them. */
+  const shapes = [...section.matchAll(/class="selected-work__item selected-work__item--(\w+)"/g)].map((m) => m[1]);
+  assert.deepEqual(shapes, ["tall", "wide"]);
+  assert.equal((section.match(/class="selected-work__feature"/g) ?? []).length, 2);
+  const CSSF = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(CSSF, /\.selected-work__feature \.selected-work__frame \{\s*aspect-ratio:\s*1;/);
+  /* The left in the second column, as it was; the right "to the end of the
+     width" — from the third rule to the page's right edge. */
+  assert.match(CSSF, /\.selected-work__features \{[^}]*grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\);/);
+  assert.match(CSSF, /\.selected-work__feature:nth-child\(1\) \{\s*grid-column:\s*2;/);
+  assert.match(CSSF, /\.selected-work__feature:nth-child\(2\) \{\s*grid-column:\s*3 \/ -1;/);
+  for (const line of ["Buhler", "Software, CRM", "Switzerland"]) {
+    assert.equal(
+      (section.match(new RegExp(`>${line}<`, "g")) ?? []).length,
+      4,
+      `"${line}" is not under every piece`,
+    );
+  }
+  assert.equal((section.match(/src="\/selected-work-buhler\.webp"/g) ?? []).length, 4);
+
+  /* **No piece opens anything** — there is no Buhler page, and a card that
+     answers with nothing is the promise this site refuses to make. VIEW ALL is
+     the section's one link. */
+  const list = section.slice(section.indexOf('class="selected-work__list"'));
+  assert.doesNotMatch(list, /<a /);
+
+  /* Its own entrance, so it declines the site's, and nothing in the
+     stylesheet hides it before the script runs. */
+  assert.match(main.slice(at - 300, at + 400), /data-enter-mode="none"/);
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  for (const selector of [".selected-work__rise {", ".selected-work__frame {", ".selected-work__meta {"]) {
+    const rule = CSS.slice(CSS.indexOf(selector), CSS.indexOf("}", CSS.indexOf(selector)));
+    assert.doesNotMatch(rule, /opacity|clip-path:\s*inset\(100%|transform:/, `${selector} hides itself`);
+  }
+
+  /* The word turns, the whole of it at once, and the arrow stays where it
+     is: "the arrows dont move". */
+  assert.match(CSS, /\[data-roll\]:hover \.roll__face \{\s*transform:\s*rotateX\(90deg\);/);
+  assert.match(CSS, /\[data-roll\]:hover \.roll__face--next \{\s*transform:\s*rotateX\(0deg\);/);
+  assert.doesNotMatch(CSS, /\.selected-work__all:hover \.selected-work__all-arrow/);
+
+  /* The three-in-a-row design with a hover was tried and reverted on the
+     owner's word the same day: "i dont like the selectec work design, revers
+     as it was". */
+  assert.doesNotMatch(CSS, /selected-work__stage|45\.3cqi/);
+});
+
+test("about stands under Selected Work: the word, its red o, and his paragraph", async () => {
+  const html = await (await render("/")).text();
+  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  const work = main.indexOf('class="selected-work"');
+  const at = main.indexOf('class="about-intro"');
+  assert.ok(work > 0 && at > work, "about is not under Selected Work");
+  assert.ok(at < main.indexOf('class="difference-section"'), "about is not above Difference");
+  const section = main.slice(at, main.indexOf("</section>", at));
+
+  /* The heading still reads "about": the "o" is in the square, hidden from
+     sight, not from the reader. */
+  const heading = section.match(/<h2[^>]*>([\s\S]*?)<\/h2>/)?.[1] ?? "";
+  assert.equal(heading.replace(/<[^>]+>/g, ""), "about");
+  assert.match(heading, /ab<span class="about-intro__mark" data-about-mark="true"><span class="visually-hidden">o<\/span><\/span>ut/);
+
+  /* His paragraph, every word, as six lines that run together as one. */
+  const copy = (section.match(/<p class="about-intro__copy"[^>]*>([\s\S]*?)<\/p>/)?.[1] ?? "").replace(/<[^>]+>/g, "");
+  assert.equal(
+    copy,
+    "We’re a small team of curious humans who create work we’re proud of for people and brands we believe in. With collaboration at the heart of every project, we identify what skills are required and then bring the best people together to create something truly extraordinary. Combining strategy, branding, web design and development, we build digital experiences that transform the way people connect and interact with brands.",
+  );
+  assert.equal((section.match(/class="about-intro__copy-line"/g) ?? []).length, 6);
+
+  /* The square is the site's red, on the grid, and nothing hides the section
+     before its script runs. */
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  const mark = CSS.slice(CSS.indexOf(".about-intro__mark {"), CSS.indexOf("}", CSS.indexOf(".about-intro__mark {")));
+  assert.match(mark, /background:\s*var\(--accent\)/);
+  assert.match(mark, /width:\s*0\.567em;\s*height:\s*0\.567em/);
+  assert.match(section.slice(0, 600), /data-enter-mode="none"/);
+});
+
+test("Our expertise stands under about, and each word opens its services", async () => {
+  const html = await (await render("/")).text();
+  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  const about = main.indexOf('class="about-intro"');
+  const at = main.indexOf('class="expertise"');
+  assert.ok(about > 0 && at > about, "Our expertise is not under about");
+  assert.ok(at < main.indexOf('class="difference-section"'), "Our expertise is not above Difference");
+  const section = main.slice(at, main.indexOf("</section>", at));
+
+  /* His label and words, and Creative's four as his second comp lists them.
+     Development's are the menu's Development half — the same four services. */
+  assert.match(section, /<span class="expertise__label-line">Our<\/span><span class="expertise__label-line">expertise<\/span>/);
+  /* Each word rolls under the pointer (RollingLabel), so it is written twice;
+     the first face is the one read. */
+  const words = [...section.matchAll(/data-expertise-word="true"><span class="roll"><span class="roll__face">([^<]+)</g)].map((m) => m[1]);
+  assert.deepEqual(words, ["Creative", "Development"]);
+  assert.equal((section.match(/class="expertise__row" data-expertise-row="true" data-roll="true"/g) ?? []).length, 2);
+  const subs = (key) =>
+    [...(section.match(new RegExp(`id="expertise-${key}"[\\s\\S]*?</ul>`))?.[0] ?? "").matchAll(/<li class="expertise__sub"><span class="expertise__sub-word">([^<]+)<\/span><\/li>/g)].map((m) => m[1]);
+  assert.deepEqual(subs("creative"), ["Branding", "UX / UI", "Web design", "Social Media"]);
+  assert.deepEqual(subs("development"), ["Websites", "Software", "CRM Solution", "AI &amp; Automation"]);
+
+  /* Each word is a button that names the panel it opens, closed to start. */
+  assert.equal((section.match(/<button class="expertise__toggle" type="button" aria-expanded="false" aria-controls="expertise-(creative|development)"/g) ?? []).length, 2);
+
+  /* It opens under the pointer, or once pressed — and the cross is the
+     site's red, drawn, never typed. */
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.match(CSS, /@media \(hover: hover\) \{\s*\.expertise__row:hover \.expertise__panel \{\s*grid-template-rows:\s*1fr;/);
+  assert.match(CSS, /\.expertise__row:has\(\[aria-expanded="true"\]\) \.expertise__panel \{\s*grid-template-rows:\s*1fr;/);
+  assert.match(CSS, /\.expertise__cross \{[^}]*color:\s*var\(--accent\)/);
+  assert.match(section.slice(0, 700), /data-enter-mode="none"/);
+});
+
+test("every word-and-arrow button rolls its word and keeps its arrow still", async () => {
+  /* Owner, 2026-10-05: "make this on hovver effect globall when we have button
+     we have simple text + arro and that hover animation" — VIEW ALL's roll.
+     Every control that is a word and an arrow carries `data-roll` and its word
+     twice; cards and rows that only end in an arrow are not buttons and keep
+     their own hover. */
+  const rolling = (html, host) => {
+    const at = html.indexOf(`class="${host}"`);
+    assert.ok(at > 0, `${host} is not on the page`);
+    const tag = html.slice(html.lastIndexOf("<", at), html.indexOf(">", at) + 1);
+    assert.match(tag, /data-roll="true"/, `${host} does not roll`);
+    const body = html.slice(html.indexOf(">", at) + 1, html.indexOf("pixel-arrow", at));
+    assert.match(body, /<span class="roll"><span class="roll__face">[^<]+<\/span><span class="roll__face roll__face--next" aria-hidden="true">/, `${host}'s word is not doubled`);
+  };
+  const home = await (await render("/")).text();
+  for (const host of ["product__cta"]) rolling(home, host);
+  const service = await (await render("/services/ai-automation")).text();
+  for (const host of ["service-hero__cta", "service-journey__next", "service-cta__link"]) rolling(service, host);
+
+  /* And the arrow does not move: the pixel arrows' dot-by-dot rebuild is off
+     on a rolling control, which keeps only the colour change. */
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(CSS, /\[data-roll\]:hover \.pixel-arrow--animated > span,\s*\[data-roll\]:focus-visible \.pixel-arrow--animated > span \{\s*animation:\s*none;/);
+
+  /* The service pages rewrite their next-chapter word as the reader moves on;
+     it goes to both faces, or the roll would be wiped by the first update. */
+  const scroll = readFileSync(new URL("../components/services/ServiceOfferingsScroll.tsx", import.meta.url), "utf8");
+  assert.match(scroll, /querySelectorAll<HTMLElement>\("\.roll__face"\)/);
+  assert.doesNotMatch(scroll, /nextLabel\.textContent =\s*(groupLinks|"Let)/);
+});
+
+test("the hairlines run from Fusion to the foot of the homepage, and nowhere else", async () => {
+  /* Owner, 2026-10-05: "i want thos vertical line to stretc to the end of
+     website all the way down". Every homepage section from Fusion on, and the
+     footer, draws them; the opening above Fusion does not, and the footer on
+     any other page stays plain. */
+  const html = await (await render("/")).text();
+  const page = html.slice(html.indexOf("<main"), html.indexOf("</footer>") + 9);
+  for (const name of [
+    "fusion-section",
+    "selected-work",
+    "about-intro",
+    "expertise",
+    "difference-section",
+    "products-section",
+  ]) {
+    assert.match(page, new RegExp(`<section class="${name}"[^>]*data-ruled`), `${name} is not ruled`);
+  }
+  assert.doesNotMatch(page, /<section class="house-hero"[^>]*data-ruled/);
+  assert.match(page, /<footer class="site-footer"[^>]*data-ruled/);
+
+  /* **The entrance moves the content, not the section.** SectionEnter slides
+     the block it is given; given a whole section it slid the hairlines with it
+     and opened 133px of white between two sections until it caught up
+     (measured). Each ruled section that enters nominates its inner block. */
+  for (const name of ["difference-section"]) {
+    const at = page.indexOf(`<section class="${name}"`);
+    const open = page.slice(at, page.indexOf(">", page.indexOf("<div", at)) + 1);
+    assert.match(open, /<div class="container[^"]*"[^>]*data-enter="true"/, `${name} moves its hairlines on entering`);
+  }
+
+  const about = await (await render("/about")).text();
+  assert.doesNotMatch(about, /<footer class="site-footer"[^>]*data-ruled/);
+});
+
+test("Fusion has its four ruled columns, every block on a rule", () => {
   const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
   const bare = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
 
-  /* **Fusion is on five ruled columns of its own** — the owner's comp of
+  /* **Fusion is on ruled columns of its own** — the owner's comp of
      2026-10-05. Until then it sat on the Why section's three columns so both
-     started on one edge; the comp puts "Human Creativity" by the second of
-     five rules instead, so that alignment, and the 700px measure the block
-     was held to, went. */
+     started on one edge; the comp puts "Human Creativity" by the second rule
+     instead, so that alignment, and the 700px measure the block was held to,
+     went. Five columns in the comp, four on his word the same day: "we need
+     only 4 spaces not five". */
   assert.match(bare, /--column-gap:\s*clamp\(0\.65rem, 0\.9vw, 0\.85rem\)/);
   assert.doesNotMatch(bare, /--statement-measure/);
 
   const fusion = bare.indexOf(".container.fusion-container {");
   assert.ok(fusion > 0, "the fusion column has no rule");
   const container = bare.slice(fusion, bare.indexOf("\n}", fusion));
-  assert.match(container, /grid-template-columns:\s*repeat\(5, minmax\(0, 1fr\)\)/);
+  assert.match(container, /grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\)/);
 
-  /* The rules are the five columns' six edges, across the page column — the
+  /* The rules are the four columns' five edges, across the page column — the
      container's own inset — and under the type (owner: "not inside the
-     line"), the container standing above them. */
-  const rules = bare.indexOf(".fusion-section::before {");
+     line"). Since 2026-10-05 they run from this section to the foot of the
+     page ("all the way down"): every section that carries `data-ruled` draws
+     its own length, under its content. */
+  const rules = bare.indexOf("[data-ruled]::before {");
   assert.ok(rules > 0, "the section draws no rules");
   const ruled = bare.slice(rules, bare.indexOf("\n}", rules));
   assert.match(ruled, /inset-inline:\s*var\(--page-gutter\)/);
-  assert.match(ruled, /var\(--line-grid\) 0\.7px,\s*transparent 0\.7px\s*\)/);
-  assert.match(ruled, /calc\(\(100% - 0\.7px\) \/ 5\) 100% repeat-x/);
+  assert.match(ruled, /var\(--line-grid-vertical\) 0\.7px,\s*transparent 0\.7px\s*\)/);
+  assert.match(ruled, /calc\(\(100% - 0\.7px\) \/ 4\) 100% repeat-x/);
   assert.match(bare, /--line-grid:\s*#8c8c8c;/);
+  assert.match(ruled, /z-index:\s*-1/);
+  /* Drawn in white since 2026-10-05 — there, and not seen ("revrse back the
+     vertical lines but in white i dont want to be seeen"). */
+  assert.doesNotMatch(ruled, /display:\s*none/);
+  assert.match(bare, /--line-grid-vertical:\s*#ffffff;/);
+  assert.match(bare, /\[data-ruled\] \{\s*position:\s*relative;\s*isolation:\s*isolate;/);
 
   assert.match(container, /position:\s*relative/);
 
@@ -2083,505 +1944,5 @@ test("the Why boxes keep their three columns, and Fusion has its five", () => {
        request removed. */
     assert.doesNotMatch(rule, /margin-left|margin-inline|-0\.285em|-0\.157em|0\.146em|-0\.151\)/, `${selector} is nudged off its rule`);
   }
-
-  /* **The Why grids are the same three columns.** The Why heading and the Why
-     cards — a column count or a gap changed in one and not the other puts the
-     heading and the boxes under it out of line with each other. */
-  for (const selector of [".why-intro {", ".why-grid {"]) {
-    const at = bare.indexOf(selector);
-    assert.ok(at > 0, `${selector} has no rule`);
-    const grid = bare.slice(at, bare.indexOf("\n}", at));
-    assert.match(grid, /grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\)/);
-    assert.match(grid, /gap:\s*var\(--column-gap\)/, `${selector} sets its own gap`);
-  }
-
-  /* The identity, checked as arithmetic rather than as a string: three equal
-     columns and one gap put every one of these blocks on the same line. */
-  for (const V of [1025, 1200, 1440, 1808, 2560]) {
-    const gutter = Math.min(Math.max(0.04 * V, 16), 40);
-    const gap = Math.min(Math.max(0.009 * V, 10.4), 13.6);
-    const column = (V - 2 * gutter - 2 * gap) / 3;
-    const line = gutter + column + gap;
-    assert.ok(column > 200, `a column is ${column}px at ${V}`);
-    assert.ok(line > gutter, `the line is at the gutter at ${V}`);
-  }
-
-  /* **The brick: 2 and 3 on the first row, 1 and 2 on the second.** It steps
-     left by exactly one column as it comes down, which is only true while the
-     three columns are equal. It was briefly a 2x2 in the right-hand two thirds
-     and the owner asked for the arrangement back. */
-  const places = ["one", "two", "three", "four"].map((name) => {
-    const at = bare.indexOf(`.why-card--${name} {`);
-    assert.ok(at > 0, `card ${name} has no placement`);
-    const card = bare.slice(at, bare.indexOf("}", at));
-    return {
-      column: card.match(/grid-column:\s*(\d+)/)?.[1],
-      row: card.match(/grid-row:\s*(\d+)/)?.[1],
-    };
-  });
-  assert.deepEqual(places, [
-    { column: "2", row: "1" },
-    { column: "3", row: "1" },
-    { column: "1", row: "2" },
-    { column: "2", row: "2" },
-  ]);
 });
 
-test("the industries section is a roll call, and it is all legible", async () => {
-  const html = await (await render("/")).text();
-  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
-  const at = main.indexOf('class="industries-section"');
-  assert.ok(at > 0, "the industries section is not on the page");
-  const section = main.slice(at, main.indexOf("</section>", at));
-
-  /* **The twenty-five organisations the seven descriptors name, run together.**
-     The sector titles used to BE the content; they are a legend beside it now.
-
-     Split from the descriptors rather than written out beside them — a second
-     copy of the same words is a second thing to keep in step. This is the check
-     that the split still produces the descriptor it came from: rejoin the
-     phrases of a sector with the commas and the `and`, and the sentence has to
-     come back whole. It fails the day a line is rewritten with an `and` inside
-     one of its phrases. */
-  const WHO = {
-    finance: "Banks, insurance companies, fintech platforms, payment providers, asset managers, credit unions and financial service providers.",
-    healthcare: "Hospitals, clinics, pharmacies, dental practices, diagnostic laboratories, care providers and organizations delivering health services.",
-    manufacturing: "Factories, production companies, engineering firms, component suppliers, assembly plants and businesses managing industrial operations.",
-    automotive: "Dealerships, repair services, parts distributors, fleet operators, leasing companies, vehicle platforms and mobility companies.",
-    retail: "Physical stores, e-commerce businesses, marketplaces, wholesalers, franchise networks and consumer-focused brands.",
-    logistics: "Transport companies, warehouses, freight forwarders, courier networks, distributors and delivery service providers.",
-    "public-sector": "Government institutions, municipalities, public agencies, schools, utilities and organizations providing public services.",
-  };
-
-
-  let counted = 0;
-  for (const [sector, descriptor] of Object.entries(WHO)) {
-    const said = [
-      ...section.matchAll(
-        new RegExp(`<span class="industries-who" data-sector="${sector}">([^<]+)</span>`, "g"),
-      ),
-    ].map((m) => m[1]);
-    assert.ok(said.length > 0, `${sector} names nobody`);
-    counted += said.length;
-
-    const rejoined =
-      said.length > 1
-        ? `${said.slice(0, -1).join(", ")} and ${said[said.length - 1]}.`
-        : `${said[0]}.`;
-    assert.equal(
-      rejoined.toLowerCase(),
-      descriptor.toLowerCase(),
-      `${sector}'s words do not rejoin into its descriptor`,
-    );
-  }
-  /* Forty five, up from twenty five: the owner asked for more per sector on
-     2026-08-27 and the extra twenty are written in `content/home.ts` with a note
-     saying they are mine. They are categories, not claims — a kind of
-     organisation that exists in the sector, never a client. */
-  assert.equal(counted, 45);
-
-  /* **The heading is broken where the owner broke it**, and it is spans rather
-     than a `<br>` — this site authors its heading breaks, because where a
-     heading turns is a decision about the copy and not a consequence of how wide
-     its column happens to be that day.
-
-     `aria-label` carries the sentence whole: the two spans render adjacent, and
-     without it a screen reader reads `Built acrossindustries`. */
-  assert.match(
-    section,
-    /<h2 class="industries-title" id="industries-title" aria-label="Built across industries">/,
-  );
-  assert.match(section, /<span class="industries-title__line">Built across<\/span>/);
-  assert.match(section, /<span class="industries-title__line">industries<\/span>/);
-  assert.doesNotMatch(section, /<br/);
-
-  /* **Three blocks came out on the owner's word**: the kicker over the heading,
-     the line under it, and the tally that counted the run. Asserted as absences,
-     because each was added deliberately and the temptation on the next pass is
-     to put one back to fill a gap.
-
-     The way out stays. It is the only thing in this section that goes
-     anywhere. */
-  assert.doesNotMatch(section, /industries-kicker|Who we build for/);
-  assert.doesNotMatch(section, /industries-lede|Technology shaped around/);
-  assert.doesNotMatch(section, /industries-tally|kinds of organisation/);
-
-  /* **Nothing is dimmed, and nothing needs to be.** The section it replaced held
-     one industry and took the other six almost to the ground — six of seven
-     unreadable at any moment, on a list whose whole job is naming an audience.
-     No `data-active` survives, and neither does the machinery that set it. */
-  assert.doesNotMatch(section, /data-active/);
-
-  /* And no client component drives it: the highlight is `:has()` in the
-     stylesheet, so it works before hydration and on a page whose script never
-     arrives. */
-  /* Comments stripped first. The component's own note explains what came out —
-     "the ScrollTrigger that drove them" — and a guard read against the raw file
-     matches that sentence and reports the machinery as still present. */
-  const code = readFileSync(
-    new URL("../components/home/IndustriesSection.tsx", import.meta.url),
-    "utf8",
-  ).replace(/\/\*[\s\S]*?\*\//g, "");
-  assert.doesNotMatch(code, /"use client"/);
-  assert.doesNotMatch(code, /ScrollTrigger|createWheelGate|useEffect|useState/);
-
-  /* The run is one paragraph to a screen reader, not twenty-five fragments. */
-  assert.match(section, /<p class="industries-run" aria-label="Banks, insurance/);
-
-  /* **There is real whitespace between the phrases, and it is load-bearing.**
-     The spans are written adjacent, so the only break opportunities in this
-     paragraph were the spaces INSIDE phrases — and the moment a phrase was told
-     not to break, the whole run became one unbreakable word and ran off the
-     page at full width.
-
-     A no-break space before each separator and an ordinary one after: the dot
-     stays with the phrase it follows and the line may turn after it. */
-  assert.match(section, /<\/span>\u00a0<span class="industries-run__dot"/);
-  assert.match(section, /<\/span> <span class="industries-who"/);
-});
-
-test("the roll call adds a rule and never takes one away", () => {
-  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
-  const bare = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
-
-  /* **The highlight is drawn under a phrase; the others are untouched.** That
-     inversion is the whole point of the rebuild — the section it replaced made
-     six of seven rows unreadable to emphasise one — so what is asserted is that
-     the lit rule GROWS a background and that nothing anywhere dims a sibling. */
-  const who = bare.indexOf(".industries-who {");
-  assert.ok(who > 0, "the words have no rule");
-  const rest = bare.slice(who, bare.indexOf("\n}", who));
-  assert.match(rest, /background-size:\s*0% 0\.07em/);
-  assert.match(rest, /transition:\s*background-size/);
-  assert.match(rest, /linear-gradient\(var\(--sector\), var\(--sector\)\)/);
-  assert.doesNotMatch(rest, /opacity/);
-
-  /* **Grey at rest, ink on hover** — owner, 2026-08-27 — and the distinction
-     from the section this replaced is the number, not the idea. That one held
-     one industry and took the other six to about 1.5:1: six of seven singled out
-     as unreadable. This is uniform. `--ink-muted` measures 6.68:1 on the canvas,
-     AA for small text and this is large, so the whole run reads before a pointer
-     ever arrives.
-
-     A token, not a literal: a grey written into this rule is a grey nobody has
-     measured. `--ink-quiet` is 3.53:1 on the light canvas and 3.51 on the dark,
-     both above the 3:1 floor for large text, and this run is large by
-     construction at 29 to 48px. Nothing else on the site uses it. */
-  const runColour = bare.indexOf(".industries-run {");
-  assert.match(
-    bare.slice(runColour, bare.indexOf("\n}", runColour)),
-    /color:\s*var\(--ink-quiet\)/,
-  );
-  /* ⚠ **1.61:1, well under the line.** WCAG asks 3:1 of large text. Asked for
-     six times — 6.68, 3.53, 3.07, 2.47, 1.94, this — with the number given each
-     time. The owner's call, and settled.
-
-     What keeps it from being the fault this section was rebuilt to fix: that one
-     took six of seven rows to about 1.5 while leaving one black, so most of the
-     section was unreadable and singled out as such. This is uniform, it is a
-     resting state, every phrase goes to full ink the moment its sector is
-     pointed at from either end, and the names beside it are black throughout. */
-  assert.match(bare, /--ink-quiet:\s*#cccbd2;/);
-
-  /* **The gap before the way out is on the container, not on the link.** It was
-     `margin-top` on `.industries-explore` and it did nothing twice: a shared
-     tap-target rule further down the file gives that class
-     `margin-block: -0.6875rem` to cancel its own padding, and being later with
-     the same specificity it won. A column gap cannot be overridden by the
-     child. */
-  const rollBlock = bare.indexOf(".industries-roll {");
-  const rollRule = bare.slice(rollBlock, bare.indexOf("\n}", rollBlock));
-  assert.match(rollRule, /flex-direction:\s*column/);
-  assert.match(rollRule, /gap:\s*clamp\(5rem, 13vh, 9rem\)/);
-  const way = bare.indexOf(".industries-explore {");
-  assert.doesNotMatch(bare.slice(way, bare.indexOf("\n}", way)), /margin-top/);
-
-  const lit = bare.indexOf(".industries-layout:has(");
-  assert.ok(lit > 0, "there is no lit state");
-  const rule = bare.slice(lit, bare.indexOf("\n}", lit));
-  assert.match(rule, /background-size:\s*100% 0\.07em/);
-  /* Full ink, which is the other half of what hovering adds to the words. */
-  assert.match(rule, /color:\s*var\(--ink\)/);
-  assert.doesNotMatch(rule, /opacity/);
-
-  /* **The names rest in ink and take their tint on hover** — owner, 2026-08-27:
-     black, and on hover change to the specific colour. They rested in the muted
-     grey and went to ink before that.
-
-     ⚠ His call, made after the numbers. The names are about 17px, where AA asks
-     4.5:1 — the large-text 3:1 does not apply until 24 — and as type on the
-     canvas only Finance clears it: 4.94, then Retail 2.56, Public Sector 2.43,
-     Logistics 1.97, Automotive 1.84, Healthcare 1.68, Manufacturing 1.41.
-
-     What keeps it defensible: the tint is a hover state, the name is fully black
-     at rest, and nothing is available only in colour — the words it lights go to
-     ink at the same moment. */
-  const named = bare.indexOf(".industries-layout:has(", bare.indexOf("\n}", lit));
-  assert.ok(named > 0, "the names do not light");
-  const nameRule = bare.slice(named, bare.indexOf("\n}", named));
-  assert.match(nameRule, /color:\s*var\(--sector\)/);
-  assert.doesNotMatch(nameRule, /background-size/);
-
-  const keyRest = bare.indexOf(".industries-key {");
-  assert.match(
-    bare.slice(keyRest, bare.indexOf("\n}", keyRest)),
-    /color:\s*var\(--ink\)/,
-  );
-
-  /* **Either end lights the pair.** Owner, 2026-08-27: hovering the run should
-     activate its part the way hovering the name does. So a sector answers to a
-     pointer on its name OR on any of its words, and the name and the words
-     respond together — the legend is a second entrance rather than the only
-     one.
-
-     All seven name themselves twice, and both halves are checked: a sector
-     missing its `[data-sector]:hover` condition lights only from the legend,
-     which is the state this replaced and looks identical from a screenshot. */
-  for (const sector of [
-    "finance",
-    "healthcare",
-    "manufacturing",
-    "automotive",
-    "retail",
-    "logistics",
-    "public-sector",
-  ]) {
-    assert.ok(
-      rule.includes(`:has([data-key="${sector}"]:hover, [data-sector="${sector}"]:hover)`),
-      `${sector} does not light from both ends`,
-    );
-    assert.ok(
-      rule.includes(`.industries-who[data-sector="${sector}"]`),
-      `${sector} does not light its words`,
-    );
-    assert.ok(
-      nameRule.includes(`.industries-key[data-key="${sector}"]`) &&
-        nameRule.includes(`:has([data-key="${sector}"]:hover, [data-sector="${sector}"]:hover)`),
-      `${sector} does not light its name from both ends`,
-    );
-  }
-
-  /* **Ragged, not justified.** The design this came from justified the run and
-     at this size it opened word gaps wide enough to read as columns of their
-     own. Justification spreads slack across word spaces, and two- and
-     three-word noun phrases at 2rem have almost none to spread it over. */
-  const run = bare.indexOf(".industries-run {");
-  assert.ok(run > 0, "the run has no rule");
-  const runRule = bare.slice(run, bare.indexOf("\n}", run));
-  assert.doesNotMatch(runRule, /text-align/);
-
-  /* **23em, and the number is the difference between the design and the build.**
-
-     The first build gave the run the whole two-column block — 1,147px at a 1808
-     window, which is 34em of this face: six long lines, and a block wider than
-     it is tall. Measured in the real face at this tracking, the twenty-five
-     phrases and their separators are 183.1em end to end, so:
-
-         20em   11 lines
-         23em   10 lines      <- the design
-         26em    9 lines
-         30em    7 lines
-         34em    6 lines      <- what shipped first
-
-     Same type size in both. The measure is the whole of what made one read as a
-     statement and the other as a caption. In `em`, so the line count holds at
-     every size rather than re-breaking as the clamp grows. */
-  assert.match(runRule, /max-width:\s*26em/);
-  /* **2.44vw is the type scaled to the column, not the column shrunk to the
-     type.** The run takes about 63% of the window and 26em of it is 2.44
-     hundredths — 29.3px in a 743px column at 1200, 44.1px in an 1,147px column
-     at 1808. The version before this one capped the measure at 23em and left the
-     type at 34px, which gave the design's measure and none of its proportion: a
-     792px strip inside an 1,147px column with dead space beside it. */
-  assert.match(runRule, /font-size:\s*clamp\(1\.25rem, 2\.44vw, 3rem\)/);
-
-  /* And a phrase never breaks across two lines above the phone: these are names
-     for kinds of organisation, and `financial service providers` split over
-     three lines reads as three fragments. */
-  const nowrap = bare.indexOf("@media (min-width: 48rem)");
-  assert.ok(nowrap > 0, "the phrases can break anywhere");
-  assert.match(bare.slice(nowrap, nowrap + 200), /\.industries-who \{\s*white-space: nowrap/);
-
-  /* **A colour per sector, set once for the dot and the words together.** The
-     first build gave every dot one neutral and lit every phrase in one accent,
-     which is a legend promising a colour the highlight does not deliver.
-
-     Six of the seven already existed — `--accent` and the five tint bars — and
-     `--sector-public` is the only new value. Asserted as PAIRS: a mapping that
-     names the key without the words, or the words without the key, is a sector
-     whose dot and underline disagree. */
-  const sectors = {
-    finance: "var(--accent)",
-    healthcare: "var(--tint-mint-bar)",
-    manufacturing: "var(--tint-butter-bar)",
-    automotive: "var(--tint-sky-bar)",
-    retail: "var(--tint-clay-bar)",
-    logistics: "var(--tint-red-bar)",
-    "public-sector": "var(--sector-public)",
-  };
-  for (const [sector, colour] of Object.entries(sectors)) {
-    const pair = new RegExp(
-      `\\.industries-key\\[data-key="${sector}"\\],\\s*\\n\\s*\\.industries-who\\[data-sector="${sector}"\\] \\{\\s*--sector: ${colour.replace(/[()\-]/g, "\\$&")};`,
-    );
-    assert.match(bare, pair, `${sector} does not map its key and its words to one colour`);
-  }
-  assert.match(bare, /--sector-public:\s*#4fb98a/);
-
-  /* **Nothing beside the names.** They were dots, then short rules, and the
-     owner took the mark off entirely on 2026-08-27: on hover, change the colour
-     of the text and nothing else. Asserted as an absence in both the stylesheet
-     and the markup, because the temptation on the next pass is to put a mark
-     back to carry the sector's colour. */
-  assert.ok(bare.indexOf(".industries-key__dot") === -1, "the legend still has a mark");
-
-  /* And the colour it changes to is `--ink`, not the sector's own. The tints are
-     drawn to be a ground or a rule and several are unreadable as type — butter
-     measures 1.33:1 on the canvas, so `Manufacturing` would vanish at the moment
-     it was pointed at. The tint stays where it works, under the words. */
-  assert.match(rule, /color:\s*var\(--ink\)/);
-
-  /* The section sits on the page's three columns, with the roll where the
-     Fusion statement and the Why boxes start. */
-  const layout = bare.indexOf(".industries-layout {");
-  const grid = bare.slice(layout, bare.indexOf("\n}", layout));
-  assert.match(grid, /grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\)/);
-  assert.match(grid, /gap:\s*var\(--column-gap\)/);
-  const roll = bare.indexOf(".industries-roll {");
-  assert.match(bare.slice(roll, bare.indexOf("}", roll)), /grid-column:\s*2 \/ -1/);
-});
-
-test("selected work is five pictures, scattered, under covers", async () => {
-  const html = await (await render("/")).text();
-  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
-  const at = main.indexOf('class="work-section"');
-  assert.ok(at > 0, "the selected work section is not on the page");
-  const section = main.slice(at, main.indexOf("</section>", at));
-
-  /* ⚠ **THE FIVE NAMES ON THE HOMEPAGE ARE INVENTED AND MUST NOT SHIP.**
-
-     The same assertion the Clients page carries over the same eight, and it is
-     here for the one thing that page does not have: this is the front door.
-     Clients is a page a reader chooses to open; the homepage is the one they
-     land on. None of these is a company Mardal has worked for. The real archive
-     is in PRODUCT.md, behind a naming decision nobody has made.
-
-     Delete this in the same commit that puts real names in — and note it will
-     not go quietly: `content/home.ts` slices these off `clientEntries`, so the
-     Clients page's assertion and this one fail together, which is the point. */
-  assert.deepEqual(
-    [...section.matchAll(/<p class="work-piece__name">([^<]*)</g)].map((m) => m[1]),
-    ["Nordvik", "Alturi", "Solvei", "Marren", "Brekk"],
-  );
-  /* **Under each name, three facts — owner, 2026-09-30, from his own portfolio's
-     featured work:** industry, service and place, one to a line, in that order.
-     Read off the same entries as the names, so they are as invented as the
-     names and go when they go. Every discipline an entry lists is on its
-     service line, because the Clients rail files it under each of them. */
-  assert.deepEqual(
-    [...section.matchAll(/<li class="work-piece">([\s\S]*?)<\/li>/g)].map((piece) =>
-      [
-        ...piece[1].matchAll(
-          /<p class="work-piece__(name|industry|service|location)">([^<]*)<\/p>/g,
-        ),
-      ].map((m) => `${m[1]}: ${m[2]}`),
-    ),
-    [
-      ["name: Nordvik", "industry: Finance", "service: UX/UI Design, Branding, Websites", "location: Switzerland"],
-      ["name: Alturi", "industry: Finance", "service: Software, CRM", "location: Germany"],
-      ["name: Solvei", "industry: Healthcare", "service: UX/UI Design, Websites", "location: Switzerland"],
-      ["name: Marren", "industry: Healthcare", "service: Applications, Software", "location: Austria"],
-      ["name: Brekk", "industry: Manufacturing", "service: Software, AI &amp; Automation", "location: Germany"],
-    ],
-  );
-
-  /* ⚠ **AND THE FIVE PICTURES ARE STOCK, ON A THIRD PARTY'S SERVER.** The same
-     guard the Clients index carries over its eight, for the same reason and now
-     on the page that matters most: stock photography is on this site's rejected
-     list, every one of these frames is of something with nothing to do with the
-     work, and it is a live request to picsum.photos on every plate. Delete it in
-     the commit that puts real screenshots in.
-
-     Counted as five DISTINCT seeds, not five matches: this route is
-     server-rendered, so the RSC payload after the markup repeats every `src`. */
-  const seeds = new Set(
-    [...section.matchAll(/https:\/\/picsum\.photos\/seed\/([a-z0-9-]+)/g)].map(
-      (m) => m[1],
-    ),
-  );
-  assert.equal(seeds.size, 5);
-
-  /* Decorative, so every one of them is silent to a screen reader — describing a
-     placeholder to somebody is worse than saying nothing. And every one carries
-     its intrinsic size, so the scatter does not move as the frames land. */
-  assert.equal((section.match(/class="work-piece__art"/g) ?? []).length, 5);
-  assert.doesNotMatch(section, /class="work-piece__art"[^>]*alt="[^"]+"/);
-  assert.equal(
-    (section.match(/class="work-piece__art"[^>]*width="640" height="360"/g) ?? []).length,
-    5,
-  );
-
-  /* **The finished state is what is server-rendered.** Every cover is an empty
-     span the stylesheet leaves collapsed, and `WorkReveal` is what puts them on
-     before taking them off. So this asserts the thing a reader without
-     JavaScript gets: five pictures, and five covers that show nothing. A reveal
-     that hid the pictures in the markup would pass every other assertion in this
-     file and ship a blank section to anyone whose script never arrived. */
-  assert.equal(
-    (section.match(/class="work-piece__cover" aria-hidden="true" data-work-cover/g) ?? [])
-      .length,
-    5,
-  );
-
-  /* Little text, which is what was asked for: one label, and four short lines
-     under each picture. The
-     label heads the section rather than captioning it, so it is the `h2` the
-     section is named by — and it is the Clients rail's own two words, so a
-     reader who follows this through meets the phrase it promised. */
-  assert.match(section, /<h2 class="work-title" id="work-title">Selected work<\/h2>/);
-  assert.match(section, /aria-labelledby="work-title"/);
-
-  /* **Every piece opens something, and the plus is why that is not optional.**
-
-     Owner, 2026-08-27: the same hover as the Clients card — the picture darkens
-     and a cross is drawn on it. That treatment is written in the stylesheet for
-     `[data-opens]`/`[data-opens-mark]` and the note over it is explicit that it
-     belongs only to a card that goes somewhere: a plus under the pointer on a
-     card answering with an empty page is the promise this site refuses. So this
-     asserts the pair — five links, and the two hooks on every one of them.
-
-     Five anchors and no more: the section has no CTA of its own, because the
-     pieces ARE the way through and `Explore All` sits immediately above them. */
-  const links = [...section.matchAll(/<a ([^>]*)>/g)].map((m) => m[1]);
-  assert.equal(links.length, 5);
-  for (const attrs of links) {
-    assert.match(attrs, /class="work-piece__link"/);
-    /* `data-opens` is written bare in JSX and React renders it `="true"`, which
-       is the same string the Clients card produces from `"true"`. Matched with
-       the `=` so it cannot be satisfied by `data-opens-mark` instead. */
-    assert.match(attrs, /\sdata-opens="true"/, `a piece opens nothing: ${attrs}`);
-  }
-  assert.equal((section.match(/class="work-piece__plate" data-opens-mark/g) ?? []).length, 5);
-
-  /* **The one with a story goes to the story; the other four go to the index.**
-     Not to a page nobody has written — that is the one thing the Clients index
-     refuses for its own seven, and the refusal is the same here. Asserted as a
-     shape rather than as five strings so a second story landing does not fail
-     this, only a piece pointed at nothing would. */
-  const hrefs = links.map((attrs) => attrs.match(/href="([^"]*)"/)[1]);
-  assert.equal(hrefs.filter((href) => href === "/case-studies").length, 4);
-  assert.deepEqual(
-    hrefs.filter((href) => href !== "/case-studies"),
-    ["/case-studies/healthcare-office-website"],
-  );
-
-  /* The link is named by the company, because the name is INSIDE it. The Clients
-     card wraps the plate alone and has to carry an `aria-label` for that reason;
-     an anchor here whose only content was an image with an empty alt would
-     announce itself as "link" with nothing to say. */
-  assert.doesNotMatch(section, /<a [^>]*class="work-piece__link"[^>]*aria-label/);
-  assert.equal((section.match(/<p class="work-piece__name">/g) ?? []).length, 5);
-
-  /* No bracket reached the page — the one failure mode a placeholder list has
-     that is worse than the placeholders. */
-  assert.doesNotMatch(section, /\[Client|\[Project|\[Location\]/);
-});

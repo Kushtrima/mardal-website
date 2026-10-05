@@ -240,17 +240,23 @@ test("every arrow link is one size, and one step", () => {
 
      Held as a SET rather than as four assertions of the same value: what has to
      be true is that they agree, and the token is what makes that structural. */
+  /* `.industries-explore` left with its section on 2026-10-05. */
   const LINKS = [
     ".service-hero__cta {",
     ".product__cta {",
-    ".industries-explore {",
     ".blog-more__all {",
   ];
+  /* The rule that sizes it, wherever it is: a selector can also close a
+     shared list (the footer's quiet links) that sets no size. */
   const sizes = LINKS.map((selector) => {
-    const at = CSS.indexOf(selector);
+    let at = CSS.indexOf(selector);
     assert.ok(at > 0, `${selector} has no rule`);
-    const rule = CSS.slice(at, CSS.indexOf("\n}", at)).replace(/\/\*[\s\S]*?\*\//g, "");
-    const size = rule.match(/font-size:\s*([^;]+);/);
+    let size = null;
+    while (at > 0 && !size) {
+      const rule = CSS.slice(at, CSS.indexOf("\n}", at)).replace(/\/\*[\s\S]*?\*\//g, "");
+      size = rule.match(/font-size:\s*([^;]+);/);
+      at = CSS.indexOf(selector, at + selector.length);
+    }
     assert.ok(size, `${selector} sets no size`);
     return size[1].trim();
   });
@@ -282,7 +288,6 @@ test("every arrow link is one size, and one step", () => {
   for (const link of [
     ".service-hero__cta:hover",
     ".product__cta:hover",
-    ".industries-explore:hover",
     ".blog-more__all:hover",
   ]) {
     assert.ok(rule.includes(link), `${link} is not in the family`);

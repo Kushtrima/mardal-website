@@ -3,6 +3,7 @@ import { SiteFooter } from "../layout/SiteFooter";
 import { HeaderSpace } from "../layout/HeaderSpace";
 import { SectionEnter } from "../motion/SectionEnter";
 import { PixelArrow } from "../ui/PixelArrow";
+import { RollingLabel } from "../ui/RollingLabel";
 import { ApplyForm } from "./ApplyForm";
 import { RolePin } from "./RolePin";
 import { careers } from "../../content/careers";
@@ -70,8 +71,8 @@ export function RolePage({ role }: { role: Role }) {
                 {/* Down to the form rather than out to an email. It travels with
                     the rail, so the way to apply is on screen from the first
                     line of the role to the last. */}
-                <a className="role-page__apply" href={`#${careers.apply.id}`}>
-                  {careers.apply.title}
+                <a className="role-page__apply" data-roll href={`#${careers.apply.id}`}>
+                  <RollingLabel>{careers.apply.title}</RollingLabel>
                   <PixelArrow
                     className="role-page__apply-arrow"
                     direction="up-right"
