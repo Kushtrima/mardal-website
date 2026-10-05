@@ -532,8 +532,9 @@ export function SiteHeader() {
             <span className="site-nav__place">{brandPlace}</span>
           </div>
 
-          {/* MENU and a drawn plus — owner, 2026-10-03, in place of the two
-              lines: a minus under the pointer and while the menu is open. */}
+          {/* "Menu" and a drawn plus — owner, 2026-10-03, in place of the two
+              lines; split into four strokes on 2026-10-05. A minus while the
+              menu is open. */}
           <button
             className="mobile-menu-toggle"
             type="button"

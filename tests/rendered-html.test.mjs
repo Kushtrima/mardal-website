@@ -69,11 +69,11 @@ test("server-renders the Mardal homepage", async () => {
     ],
   );
   assert.match(hero, /<h1 class="house-hero__title" id="house-hero-title"/);
-  assert.match(hero, /<img class="house-hero__image" src="\/house-hero-1540\.webp" alt="[^"]+" width="1540" height="1021"/);
+  assert.match(hero, /<img class="house-hero__image" src="\/house-hero-1540-ff3300\.webp" alt="[^"]+" width="1540" height="1021"/);
   assert.doesNotMatch(html, /data-hero-line/);
 
   /* The bar names where Mardal is, beside the wordmark. */
-  assert.match(html, /<span class="site-nav__place">Kosova<\/span>/);
+  assert.match(html, /<span class="site-nav__place">Operating from Kosova<\/span>/);
   /* ── What Makes Us Different: five boxes, five colours ──
      This block was destroyed on 2026-08-25 along with the header assertions, in
      the commit that replaced the Clients taxonomy, and its absence is why
@@ -237,9 +237,10 @@ test("server-renders the Mardal homepage", async () => {
     bar,
     /<button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-navigation"/,
   );
-  /* MENU and a drawn plus (owner, 2026-10-03), where the two lines were — the
-     same word open and shut; the mark folds to a minus. */
-  assert.match(bar, /class="mobile-menu-toggle__label">MENU</);
+  /* "Menu" and a drawn plus (owner, 2026-10-03), where the two lines were — the
+     same word open and shut; the mark folds to a minus. Sentence case and the
+     plus split into four strokes since 2026-10-05, from his screenshot. */
+  assert.match(bar, /class="mobile-menu-toggle__label">Menu</);
   assert.match(bar, /class="mobile-menu-toggle__plus" aria-hidden="true"/);
   assert.doesNotMatch(bar, /mobile-menu-toggle__bars|CLOSE/);
 
@@ -254,15 +255,19 @@ test("server-renders the Mardal homepage", async () => {
     CSS,
     /\.site-header:not\(\[data-header="top"\]\):not\(\.site-header--mobile-menu-open\)\s*\.site-nav__lead\s*\{[^}]*opacity:\s*0/,
   );
-  assert.match(CSS, /\.mobile-menu-toggle\[aria-expanded="true"\] \.mobile-menu-toggle__plus::after\s*\{[^}]*scaleX\(0\)/);
+  assert.match(CSS, /\.mobile-menu-toggle\[aria-expanded="true"\] \.mobile-menu-toggle__plus::after\s*\{[^}]*scaleY\(0\)/);
+  /* The split: each stroke's middle is left open, upright and level alike. */
+  assert.match(CSS, /\.mobile-menu-toggle__plus::before\s*\{[^}]*linear-gradient\(\s*to right,\s*currentcolor var\(--plus-arm\),\s*transparent 0 calc\(100% - var\(--plus-arm\)\)/);
+  assert.match(CSS, /\.mobile-menu-toggle__plus::after\s*\{[^}]*linear-gradient\(\s*to bottom,\s*currentcolor var\(--plus-arm\),\s*transparent 0 calc\(100% - var\(--plus-arm\)\)/);
   /* A minus only while the menu is open; under the pointer the plus turns
      slowly instead, at its own size — he wanted neither the minus nor a bigger
      plus on hover. */
   assert.match(CSS, /\.mobile-menu-toggle\[aria-expanded="false"\]:hover \.mobile-menu-toggle__plus\s*\{\s*transform:\s*rotate\(180deg\);\s*\}/);
   assert.doesNotMatch(CSS, /\.mobile-menu-toggle:hover \.mobile-menu-toggle__plus::after/);
-  /* And under the pointer the whole button is the site's red — #fb000e, the
-     owner's, which took the lilac's place everywhere on 2026-10-03. */
-  assert.match(CSS, /--tint-red:\s*#fb000e;/);
+  /* And under the pointer the whole button is the site's red — the owner's,
+     which took the lilac's place everywhere on 2026-10-03, and is #ff3300 since
+     2026-10-05 ("also use this color as a globall : FF3300"). */
+  assert.match(CSS, /--tint-red:\s*#ff3300;/);
   assert.doesNotMatch(CSS, /--tint-lilac/);
   assert.match(CSS, /\.mobile-menu-toggle:hover\s*\{\s*color:\s*var\(--tint-red\);\s*\}/);
 
@@ -1957,116 +1962,131 @@ test("the fusion mark is two strokes, and still says nothing", async () => {
   assert.match(section, /data-enter-mode="none"/);
 });
 
-test("the fusion reveal draws the mark and uncovers the words", () => {
+test("the fusion reveal draws the rules and the mark, and raises the lines", () => {
   const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
   const code = readFileSync(
     new URL("../components/home/FusionReveal.tsx", import.meta.url),
     "utf8",
   ).replace(/\/\*[\s\S]*?\*\//g, "");
+  const bare = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
+  const rule = (selector) => {
+    const at = bare.indexOf(selector);
+    assert.ok(at > 0, `${selector} has no rule`);
+    return bare.slice(at, bare.indexOf("}", at));
+  };
 
-  /* **The stylesheet no longer draws the plus too.** Leaving the pseudo-elements
+  /* **The stylesheet does not draw the plus too.** Leaving pseudo-elements
      behind would put two crossbars in the mark, one of them undrawable. */
-  const strokes = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
-  assert.doesNotMatch(strokes, /\.fusion-plus::(before|after)/);
+  assert.doesNotMatch(bare, /\.fusion-plus::(before|after)/);
 
-  /* **And nothing is hidden in CSS.** No clip-path, no opacity: the start state
-     is written by the reveal on its first frame, so a page with the script
-     blocked shows the heading whole rather than a permanently clipped one. */
-  const half = strokes.indexOf(".fusion-title__half {");
-  assert.ok(half > 0, "the half has no rule");
-  const rule = strokes.slice(half, strokes.indexOf("}", half));
-  assert.match(rule, /will-change:\s*clip-path/);
-  assert.doesNotMatch(rule, /clip-path:\s*inset|opacity/);
+  /* **Played, not scrolled** — owner, 2026-10-05: "remove the on scroll
+     effect put a normal effect from gsap". No pin holds the page and no scrub
+     ties the beats to the scroll: each trigger only says when, and plays once. */
+  assert.doesNotMatch(code, /pin:|scrub:|HOLD/);
+  assert.match(code, /once: true/);
+  assert.match(code, /const START = "top 85%";/);
 
-  /* It pins, and for long enough that the strokes read as being drawn rather
-     than as appearing — under about two screens they simply arrive. */
-  assert.match(code, /const HOLD = 2\.5;/);
-  assert.match(code, /pin: true/);
-  assert.match(code, /start: "top top"/);
-  assert.match(code, /"\+=" \+ window\.innerHeight \* HOLD/);
-  assert.match(code, /scrub: 0\.4/);
+  /* **Smoother, more elegant** — the same day. Each block arrives as it comes
+     into view rather than one timeline for a composition taller than the
+     screen; nothing overshoots, and the mark neither rises nor grows. */
+  assert.doesNotMatch(code, /back\.out|scale: 0\.72|y: still \? 0 : 90/);
+  for (const block of ["once(section)", "once(left)", "once(right)", 'once(copy, "top 92%")']) {
+    assert.ok(code.includes(block), `${block} has no trigger of its own`);
+  }
 
-  /* **The upright draws out of its own foot.** The origin at the bottom is what
-     makes `scaleY` run upward instead of from the middle — the difference
-     between a line being drawn and a line being stretched, and the one
-     declaration the whole idea rests on. */
-  assert.match(code, /transformOrigin: "50% 100%"/);
-  assert.match(code, /\{ scaleY: 0,/);
+  /* **Each heading line rises out of its own mask**, the menu's motion: the
+     line clips, the inner span travels. Clipped at the line, not the half, so
+     the lines arrive one after the next — and opened at the foot so the
+     descenders are whole at rest. */
+  assert.match(rule(".fusion-title__line {"), /clip-path:\s*inset\(-0\.15em -0\.25em -0\.3em\)/);
+  assert.match(code, /\{ yPercent: 120 \}/);
+  assert.match(code, /const RISE = \{ duration: 1\.4, ease: "expo\.out", stagger: 0\.12 \};/);
 
-  /* And the crossbar opens from the centre, a little past its width and back.
-     The one ease on this page that overshoots. */
-  assert.match(code, /transformOrigin: "50% 50%"/);
-  assert.match(code, /"back\.out\(1\.7\)"/);
+  /* **The mark is drawn, as he chose on 2026-08-26**: the upright out of its
+     own foot, the crossbar from the centre, eased at both ends. */
+  assert.match(code, /scaleY: 0, transformOrigin: "50% 100%"/);
+  assert.match(code, /scaleX: 0, transformOrigin: "50% 50%"/);
+  assert.match(code, /const DRAW = "power3\.inOut";/);
 
-  /* **Clipped, not sized.** A width animated across a heading re-wraps it on
-     every frame; a clip leaves the type laid out at its final size. The insets
-     run past the box by a fifth of an em so ascenders and descenders are never
-     shaved by a rounding difference. */
-  assert.match(code, /clipPath: "inset\(-0\.2em 100% -0\.2em 0\)"/);
-  assert.match(code, /clipPath: "inset\(-0\.2em 0 -0\.2em 100%\)"/);
-  assert.doesNotMatch(code, /width:|maxWidth:/);
+  /* **The rules are drawn first**, down the section, through a custom property
+     the stylesheet's clip reads — whole when the script never runs. */
+  assert.match(rule(".fusion-section::before {"), /clip-path:\s*inset\(0 0 calc\(\(1 - var\(--fusion-rules, 1\)\) \* 100%\) 0\)/);
+  assert.match(code, /"--fusion-rules": 1/);
 
-  /* The two halves close on the mark from opposite edges, the right four percent
-     behind the left so the pair reads as a pair rather than as one movement
-     mirrored. */
-  assert.match(code, /const LEFT = \{ at: 0\.5, run: 0\.3 \}/);
-  assert.match(code, /const RIGHT = \{ at: 0\.54, run: 0\.3 \}/);
+  /* **And nothing is hidden in CSS.** The start states are written by the
+     script, so a page with it blocked shows the section whole. */
+  for (const selector of [".fusion-title__line {", ".fusion-title__rise {", ".fusion-copy {"]) {
+    assert.doesNotMatch(rule(selector), /opacity|transform:|translate/, `${selector} hides itself`);
+  }
 
-  /* **Reduced motion keeps the order and drops the travel.** Being drawn is the
-     idea rather than the decoration, so the strokes still draw and the clips
-     still open; what goes is everything that flies. */
+  /* **Reduced motion keeps the order and drops the travel**: the lines fade
+     where they would rise, the sentence does not lift, the strokes still draw. */
   assert.match(code, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)/);
-  assert.match(code, /y: still \? 0 : 90/);
-  assert.match(code, /y: still \? 0 : 48/);
+  assert.match(code, /still \? \{ opacity: 0 \} : \{ yPercent: 120 \}/);
+  assert.match(code, /y: still \? 0 : 24/);
 
-  /* An empty tween holding the end, and it is not filler: a scrub maps the whole
-     scroll to the timeline's duration, so without it the paragraph lands at the
-     exact moment the pin lets go. */
-  assert.match(code, /timeline\.to\(\{\}, \{ duration: HELD \}/);
-
-  /* Reverted on unmount, or a route change leaves a pin and its spacer behind on
-     a page that no longer has the section. */
+  /* Reverted on unmount, or a route change leaves triggers behind on a page
+     that no longer has the section. */
   assert.match(code, /context\.revert\(\)/);
 });
 
-test("the Why boxes start where the Fusion block starts", () => {
+test("the Why boxes keep their three columns, and Fusion has its five", () => {
   const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
   const bare = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
 
-  /* **One left edge for both sections, and it is a grid line.**
-
-     Fusion was centred on a 700 measure and the boxes sat on equal thirds — two
-     rules that can only agree at ONE window width, solved: 2207px. At 1808 they
-     were 65px apart and the distance grew with the window, which is the kind of
-     near-miss that reads as a mistake rather than a decision.
-
-     Both ways of closing it were built. Deriving the boxes' first column from
-     the centred edge — `calc(50% - measure / 2 - gap)` — aligned exactly and
-     cost the brick, because a first column narrower than the other two cannot
-     hold a card. The owner wants the brick, so the Fusion block moved onto the
-     grid instead. */
-  assert.match(bare, /--statement-measure:\s*700px/);
+  /* **Fusion is on five ruled columns of its own** — the owner's comp of
+     2026-10-05. Until then it sat on the Why section's three columns so both
+     started on one edge; the comp puts "Human Creativity" by the second of
+     five rules instead, so that alignment, and the 700px measure the block
+     was held to, went. */
   assert.match(bare, /--column-gap:\s*clamp\(0\.65rem, 0\.9vw, 0\.85rem\)/);
+  assert.doesNotMatch(bare, /--statement-measure/);
 
-  /* The measure is kept and the centring is gone: the block is three columns of
-     the page's own grid with its content on 2 to 3. */
   const fusion = bare.indexOf(".container.fusion-container {");
   assert.ok(fusion > 0, "the fusion column has no rule");
   const container = bare.slice(fusion, bare.indexOf("\n}", fusion));
-  assert.match(container, /grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\)/);
-  assert.match(container, /gap:\s*var\(--column-gap\)/);
-  assert.doesNotMatch(container, /max-width/);
+  assert.match(container, /grid-template-columns:\s*repeat\(5, minmax\(0, 1fr\)\)/);
 
-  const placed = bare.indexOf(".fusion-title,\n.fusion-copy {");
-  assert.ok(placed > 0, "the fusion content is not placed on the grid");
-  const rule = bare.slice(placed, bare.indexOf("\n}", placed));
-  assert.match(rule, /grid-column:\s*2 \/ -1/);
-  assert.match(rule, /max-width:\s*var\(--statement-measure\)/);
+  /* The rules are the five columns' six edges, across the page column — the
+     container's own inset — and under the type (owner: "not inside the
+     line"), the container standing above them. */
+  const rules = bare.indexOf(".fusion-section::before {");
+  assert.ok(rules > 0, "the section draws no rules");
+  const ruled = bare.slice(rules, bare.indexOf("\n}", rules));
+  assert.match(ruled, /inset-inline:\s*var\(--page-gutter\)/);
+  assert.match(ruled, /var\(--line-grid\) 0\.7px,\s*transparent 0\.7px\s*\)/);
+  assert.match(ruled, /calc\(\(100% - 0\.7px\) \/ 5\) 100% repeat-x/);
+  assert.match(bare, /--line-grid:\s*#8c8c8c;/);
 
-  /* **The three grids are the same three columns.** The Fusion container, the
-     Why heading and the Why cards — a column count or a gap changed in one and
-     not the others puts the heading, the boxes and the statement above them out
-     of line with each other. */
+  assert.match(container, /position:\s*relative/);
+
+  /* **Every block starts ON a rule** — owner, 2026-10-05: "the text needs to
+     be at start of the vertical lines alwasy use as a grid". The first half
+     and the sentence from rule 2, the second half from rule 3, the plus from
+     rule 2 — and none of them nudged off it by a side margin. */
+  const block = (selector) => {
+    const at = bare.indexOf(selector);
+    assert.ok(at > 0, `${selector} has no rule`);
+    return bare.slice(at, bare.indexOf("}", at));
+  };
+  const placed = {
+    '.fusion-title__half[data-fusion-half="left"] {': "2 / -1",
+    '.fusion-title__half[data-fusion-half="right"] {': "3 / -1",
+    ".fusion-plus {": "2",
+    ".fusion-copy {": "2 / -1",
+  };
+  for (const [selector, column] of Object.entries(placed)) {
+    const rule = block(selector);
+    assert.match(rule, new RegExp(`grid-column:\\s*${column.replace("/", "\\/")};`), selector);
+    /* The side offsets the first build took off the screenshot — a few
+       hundredths of the heading either side of the rule — are what this
+       request removed. */
+    assert.doesNotMatch(rule, /margin-left|margin-inline|-0\.285em|-0\.157em|0\.146em|-0\.151\)/, `${selector} is nudged off its rule`);
+  }
+
+  /* **The Why grids are the same three columns.** The Why heading and the Why
+     cards — a column count or a gap changed in one and not the other puts the
+     heading and the boxes under it out of line with each other. */
   for (const selector of [".why-intro {", ".why-grid {"]) {
     const at = bare.indexOf(selector);
     assert.ok(at > 0, `${selector} has no rule`);
@@ -2083,21 +2103,12 @@ test("the Why boxes start where the Fusion block starts", () => {
     const column = (V - 2 * gutter - 2 * gap) / 3;
     const line = gutter + column + gap;
     assert.ok(column > 200, `a column is ${column}px at ${V}`);
-    /* **And the statement is the smaller of its measure and its column**, which
-       is what a `max-width` does everywhere else on this site. It gets the full
-       700 from about 1130 up; between the 64rem split and there the two columns
-       are the narrower of the two and it sits at 627 to 700. That is the block
-       narrowing gracefully, not a break — but it is a real change from the
-       centred version, which held 700 down to a 780px window. */
-    const statement = Math.min(700, 2 * column + gap);
-    assert.ok(statement >= 600, `the statement block is ${statement}px at ${V}`);
     assert.ok(line > gutter, `the line is at the gutter at ${V}`);
   }
 
   /* **The brick: 2 and 3 on the first row, 1 and 2 on the second.** It steps
      left by exactly one column as it comes down, which is only true while the
-     three columns are equal — and is why the alignment is solved on the Fusion
-     block rather than here. It was briefly a 2x2 in the right-hand two thirds
+     three columns are equal. It was briefly a 2x2 in the right-hand two thirds
      and the owner asked for the arrangement back. */
   const places = ["one", "two", "three", "four"].map((name) => {
     const at = bare.indexOf(`.why-card--${name} {`);

@@ -321,14 +321,16 @@ export const menu = [
 
 export const contactEmail = "info@mardal.co";
 
-/** The word beside the wordmark in the bar, from the owner's comp of
- *  2026-10-03. Mardal is a registered Kosovo company (PRODUCT.md). */
-export const brandPlace = "Kosova";
+/** The words beside the wordmark in the bar. "Kosova" from the owner's comp of
+ *  2026-10-03; "Operating from Kosova" on his word of 2026-10-05. Mardal is a
+ *  registered Kosovo company (PRODUCT.md). */
+export const brandPlace = "Operating from Kosova";
 
 /** The menu button's word — owner, 2026-10-03: "instead of two horisontal for
  *  burger menu lets try MENU +". The same word open and shut; the mark beside
- *  it says which (a plus, a minus while it is open or under the pointer). */
-export const menuButton = "MENU";
+ *  it says which (a plus, a minus while it is open). Sentence case since
+ *  2026-10-05, from the owner's screenshot of "Menu -¦-". */
+export const menuButton = "Menu";
 
 /**
  * The homepage's opening, the owner's concept of 2026-10-03: the heading and a
@@ -338,7 +340,11 @@ export const menuButton = "MENU";
  * capitals.
  *
  * The red square is in the photograph itself, not drawn by the page. (Tried
- * in bright orange on 2026-10-03 and put back to his red the same day.)
+ * in bright orange on 2026-10-03 and put back to his red the same day.) Since
+ * 2026-10-05 it is the site's red, #ff3300, on the owner's word ("make also th
+ * ebox on herobanner with same color"): the square alone was recoloured, edge
+ * and grain kept, into house-hero-1540-ff3300.webp. The untouched original,
+ * house-hero-1540.webp, is still in public/ — one line back if he wants it.
  */
 export const houseHero = {
   titleLines: ["HOUSE OF CREATIVITY", "& TECHNOLOGY"],
@@ -347,7 +353,7 @@ export const houseHero = {
     "We create for people, businesses and society.",
   ],
   image: {
-    src: "/house-hero-1540.webp",
+    src: "/house-hero-1540-ff3300.webp",
     width: 1540,
     height: 1021,
     alt: "A woman and a man in traditional dress walking past, blurred by their movement, with a red square between them.",
@@ -365,9 +371,10 @@ export const fusion = {
   /* Human Creativity reads first — owner's call, 2026-08-24, and the two
      halves swapped rather than the component being taught which side to put
      which on. The field names say where the words go and that is all the
-     header needs to know; nothing else on the site reads either of them, and
-     the stylesheet has no rule that treats one half differently from the
-     other. */
+     header needs to know; nothing else on the site reads either of them. Since
+     the owner's comp of 2026-10-05 the stylesheet places the two halves apart
+     — "left" up by the second rule, "right" lower, beside the plus, from the
+     third — by the `data-fusion-half` the component writes from these. */
   left: ["Human", "Creativity"],
   right: ["Artificial", "Intelligence"],
   /* The drawn plus is hidden from the accessible tree, so this is the whole of
@@ -375,8 +382,10 @@ export const fusion = {
      screen reader is given the old sentence off a page that now says the
      other. */
   spoken: "Human Creativity plus Artificial Intelligence",
+  /* The first sentence alone, as the owner's comp of 2026-10-05 sets it; the
+     second ("Together, these strengths…") is not in it. */
   copy:
-    "We unite the power and precision of artificial intelligence with the imagination and originality of human creativity, creating technology that thinks smarter, feels more human, and unlocks new possibilities. Together, these strengths help us build solutions that solve challenges, transform how businesses work, and deliver lasting impact.",
+    "We unite the power and precision of artificial intelligence with the imagination and originality of human creativity, creating technology that thinks smarter, feels more human, and unlocks new possibilities.",
 } as const;
 
 export const whyMardal = {

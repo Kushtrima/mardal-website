@@ -63,6 +63,8 @@ export function HouseHeroMotion() {
     const padBottom = () => parseFloat(getComputedStyle(hero).paddingBottom);
     const titleEnd = () => hero.clientHeight - padBottom() - title.offsetHeight;
 
+    let trigger: ScrollTrigger | undefined;
+
     const context = gsap.context(() => {
       const timeline = gsap.timeline({
         defaults: { ease: "power2.inOut" },
@@ -136,9 +138,43 @@ export function HouseHeroMotion() {
 
       /* A moment held at the end before the page moves on. */
       timeline.to({}, { duration: 0.12 });
+
+      trigger = timeline.scrollTrigger;
     }, hero);
 
+    /* **The opening keeps pace with a resize.** The pin holds the section at
+       pixel sizes, and ScrollTrigger measures again only 0.2s after the last
+       resize event — so while a window was dragged the band and the photograph
+       kept their old width and caught up after the drag, behind the heading,
+       whose size is in vw. Owner, 2026-10-05: "when i resize the content is not
+       reizeing in same pace as page its move later". While the opening is on
+       screen this trigger measures again on every frame of a resize; the
+       page-wide refresh still runs after it. The update after each refresh
+       matters: a refresh leaves the trigger's progress at 0 until the next
+       scroll, so without it the next frame's refresh would take that 0 as
+       where the opening stood and close the photograph back into its band
+       halfway through the drag. On a touch-only screen a change of height
+       alone is the address bar coming and going while the page scrolls, which
+       ScrollTrigger itself ignores, so this does too. */
+    let lastWidth = window.innerWidth;
+    let resizeFrame = 0;
+    const onResize = () => {
+      if (resizeFrame) return;
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = 0;
+        const widthChanged = window.innerWidth !== lastWidth;
+        lastWidth = window.innerWidth;
+        if (!trigger || (ScrollTrigger.isTouch === 1 && !widthChanged)) return;
+        if (window.scrollY >= trigger.end + window.innerHeight) return;
+        trigger.refresh();
+        ScrollTrigger.update();
+      });
+    };
+    window.addEventListener("resize", onResize);
+
     return () => {
+      window.removeEventListener("resize", onResize);
+      cancelAnimationFrame(resizeFrame);
       context.revert();
       setFlag("data-header-hold", false);
     };

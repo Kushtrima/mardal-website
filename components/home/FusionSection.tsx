@@ -3,7 +3,12 @@ import { fusion } from "../../content/home";
 import { FusionReveal } from "./FusionReveal";
 
 /**
- * Artificial Intelligence + Human Creativity.
+ * Human Creativity + Artificial Intelligence.
+ *
+ * Laid out from the owner's comp of 2026-10-05: five ruled columns, the two
+ * halves on a diagonal with the red plus between them, the sentence under it.
+ * The rules are drawn by the stylesheet on the section itself, so they add
+ * nothing here (see `.fusion-section::after`).
  *
  * The plus is drawn in CSS rather than typed. A "+" glyph belongs to whichever
  * face is set and would arrive at that face's own weight and optical size,
@@ -26,10 +31,13 @@ export function FusionSection() {
       aria-labelledby="fusion-title"
       data-route-section
       data-fusion
-      /* **It declines the site's section entrance.** A block that holds itself
-         in place cannot also be arriving: a pin is measured while its ancestor's
-         lag is still applied and then rests exactly that far out. SectionEnter
-         reads this off the section when it finds no inner block to move. */
+      /* **It declines the site's section entrance.** FusionReveal is its
+         entrance — the rules drawn, the lines risen, the mark drawn — and a
+         second one
+         moving the same block at the same moment would fight it. (It was
+         declined first for the pin, which is gone since 2026-10-05.)
+         SectionEnter reads this off the section when it finds no inner block
+         to move. */
       data-enter-mode="none"
     >
       <FusionReveal />
@@ -39,7 +47,10 @@ export function FusionSection() {
           <span className="fusion-title__half" data-fusion-half="left">
             {fusion.left.map((line) => (
               <span className="fusion-title__line" key={line}>
-                {line}
+                {/* What rises: the line is the mask it rises out of. */}
+                <span className="fusion-title__rise" data-fusion-line>
+                  {line}
+                </span>
               </span>
             ))}
           </span>
@@ -61,7 +72,10 @@ export function FusionSection() {
           <span className="fusion-title__half" data-fusion-half="right">
             {fusion.right.map((line) => (
               <span className="fusion-title__line" key={line}>
-                {line}
+                {/* What rises: the line is the mask it rises out of. */}
+                <span className="fusion-title__rise" data-fusion-line>
+                  {line}
+                </span>
               </span>
             ))}
           </span>

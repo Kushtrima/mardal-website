@@ -12,8 +12,8 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
  * thing that comes back one `light-dark()` at a time, from an old snippet or a
  * habit, and each piece of it would still build and still pass.
  *
- * The ground is the owner's grey, the same day: "make backgournd of website in
- * this color: #e1e1df so globally".
+ * The ground was the owner's grey #e1e1df the same day, and is white since
+ * 2026-10-05: "make bacrgound of al website white not grey globally".
  */
 
 const ROOT = new URL("../", import.meta.url);
@@ -58,8 +58,8 @@ test("the page is light, and only light", () => {
   assert.doesNotMatch(CSS_CODE, /theme-toggle/, "the switch has styles again");
 });
 
-test("the ground is the owner's grey", () => {
-  assert.match(rule(":root"), /--canvas:\s*#e1e1df\s*;/);
+test("the ground is white", () => {
+  assert.match(rule(":root"), /--canvas:\s*#ffffff\s*;/);
 });
 
 test("the four values that are not colours are the light page's", () => {

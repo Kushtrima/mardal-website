@@ -85,10 +85,10 @@ mode we dont need it delete it all". No `light-dark()`, no `data-theme`, no
 switch, no `prefers-color-scheme`; `tests/theme.test.mjs` fails if any comes back.
 The things on the page carry the tint.
 
-- `--canvas` `#e1e1df` — the page (owner, 2026-10-03)
+- `--canvas` `#ffffff` — the page, white (owner, 2026-10-05; it was grey `#e1e1df` from 2026-10-03)
 - `--surface` `#efefed` — cards; `--menu-surface` white
 - `--ink` `#08080a`, `--ink-muted` `#5e5a69`
-- `--accent` = `--tint-red` `#fb000e` (owner 2026-10-03: the red replaced every purple and pink); small type and focus use `--tint-red-bar` `#c9000b`
+- `--accent` = `--tint-red` `#ff3300` (owner 2026-10-05; the red replaced every purple and pink on 2026-10-03, then `#fb000e`); small type and focus use `--tint-red-bar` `#cc2900`
 - Four card tints, each with a deeper bar shade: `--tint-red`, `--tint-butter`,
   `--tint-mint`, `--tint-sky`, and `--tint-*-bar`
 

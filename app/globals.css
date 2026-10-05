@@ -44,9 +44,9 @@
   /* One page, one value per colour. Every token here carried a light and a
      dark half until 2026-10-03, when the owner deleted the dark page; the light
      halves are what stayed. */
-  /* The page's ground, owner 2026-10-03: "make backgournd of website in this
-     color: #e1e1df so globally". */
-  --canvas: #e1e1df;
+  /* The page's ground: white, owner 2026-10-05 — "make bacrgound of al website
+     white not grey globally". It was his grey #e1e1df from 2026-10-03. */
+  --canvas: #ffffff;
 
   /* **The wash the About photographs sit on.** Owner, 2026-08-26, with a swatch:
      this colour when entering that section.
@@ -142,12 +142,18 @@
   --ink-grey: #595959;
   --line: rgb(8 8 10 / 72%);
   --line-soft: rgb(8 8 10 / 16%);
+  /* The Fusion section's column rules, owner's comp of 2026-10-05: #6a6a6a as
+     measured, then "make it little more grey" the same day — a step lighter.
+     Solid, not a tint of the ink, so a rule reads the same grey wherever it
+     runs. */
+  --line-grid: #8c8c8c;
   /* **The accent is the red** — owner, 2026-10-03: "the red is not globally we
      need to put globall instead of the pink". It was a purple (#8362b8, with a
      #6f4fa7 cut for small type and focus); every hover, mark, link and button
      that wore it wears the red now. The bright red is the accent itself; the
-     deeper one carries small type and the focus ring, where it reads 4.6:1 on
-     the page against the bright red's 3.1. The footer's slab names its own. */
+     deeper one carries small type and the focus ring, where it reads 5.41:1 on
+     the white page against the bright red's 3.67. The footer's slab names its
+     own. */
   --accent: var(--tint-red);
   --accent-soft: var(--tint-red-bar);
   --accent-strong: var(--tint-red-bar);
@@ -167,15 +173,20 @@
      lilac's place everywhere the lilac stood — the redaction bar behind the
      menu's words and the menu's pill, the letter's blanks, the first box, piece
      and card, Branding's hero, logistics — and it is the colour MENU turns under
-     the pointer. Its bar shade is the same red a fifth darker. */
-  --tint-red: #fb000e;
+     the pointer. Its bar shade is the same red a fifth darker.
+
+     **#ff3300 since 2026-10-05** — owner: "also use this color as a globall :
+     FF3300 make also th ebox on herobanner with same color menu etc". The
+     opening's photograph was recoloured with it (house-hero-1540-ff3300.webp),
+     so the square and every red on the page are one red. */
+  --tint-red: #ff3300;
   /* What stands on a tint. Named once, for the redaction bar the menu draws
      behind a word. */
   --ink-on-tint: #08080a;
   /* What stands on the photograph in the homepage's opening — the heading,
      the sentence, and the bar while it is over it. */
   --ink-on-photo: #ffffff;
-  --tint-red-bar: #c9000b;
+  --tint-red-bar: #cc2900;
   /* **The owner's yellow, and a bar derived from it.** 2026-08-26, pointing at
      the Websites box: this background, and the pattern the same yellow slightly
      darker.
@@ -518,23 +529,12 @@
      room the product facts need to hold one line. */
   --page-gutter: clamp(1rem, 4vw, 2.5rem);
 
-  /* **The page's statement column, and the one number two sections share.**
-
-     The Fusion block is held to this and centred; the Why Mardal block starts
-     where it starts. Before 2026-08-26 the second was a coincidence rather than
-     a rule — Fusion sat on a centred 700 and Why sat on equal thirds, and the
-     two edges could only meet at ONE window width. Solved: 2207px. Everywhere
-     else they were apart, by 65px at 1808 and by more as the window widened,
-     which is the distance that reads as a mistake rather than as a decision.
-
-     Now the Why grid's first column is derived from this, so the edges are the
-     same line by construction and cannot drift. Move this and both move.
-
-     `--column-gap` is a token for the same reason, and is named for the page
-     rather than for a section: the Fusion statement, the Why Mardal boxes and
-     the industries roll all sit on these three columns, and a gap changed in one
-     of them and not the others puts three sections on three different edges. */
-  --statement-measure: 700px;
+  /* **The page's column gap**, named for the page rather than for a section:
+     the Why Mardal boxes and the industries roll sit on these three columns,
+     and a gap changed in one and not the other puts two sections on two
+     different edges. The Fusion statement shared it, and the 700px measure it
+     was held to, until 2026-10-05 — it is on five ruled columns of its own now,
+     from the owner's comp, and the measure went with it. */
   --column-gap: clamp(0.65rem, 0.9vw, 0.85rem);
   /* The space between any two sections, top to bottom. Each section pays half
      of it either side, so this is the number you actually see — not twice it.
@@ -577,7 +577,7 @@
   --radius-full: 999px;
   --radius-circle: 50%;
   --shadow-soft: 0 1rem 3rem rgb(21 21 21 / 8%);
-  --shadow-accent: 0 0.75rem 2rem rgb(201 0 11 / 22%);
+  --shadow-accent: 0 0.75rem 2rem rgb(204 41 0 / 22%);
   /* The mega menu's left edge, and only its left edge. The panel is white on a
      white page, so the seam where it begins is the one thing telling you there
      are two surfaces — a shadow all the way round would draw a box, which the
@@ -1454,6 +1454,19 @@ video {
   transition: color var(--duration-base) var(--ease-standard);
 }
 
+/* **Under the wordmark on a phone.** "Operating from Kosova" (owner,
+   2026-10-05) is three words where "Kosova" was one, and beside the wordmark
+   it stops fitting the bar under about 480px — measured, it broke onto two
+   lines 10px off Menu and squeezed the wordmark from 144px to 80px at 320.
+   Under it, it keeps one line and the wordmark keeps its size, and the pair
+   still ends inside the bar's own height (82px of the 93 the page leaves it). */
+@media (max-width: 30rem) {
+  .site-nav__lead {
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+}
+
 /* Over a dark ground the bar is drawn in white — the homepage's photograph, the
    footer's black panel, anything marked `data-bar-dark` (SiteHeader sets the
    flag while one stands behind the bar). Not while the menu is open: the bar
@@ -1479,12 +1492,20 @@ video {
    and this, at every width: the word, in the paragraph size like "Kosova" on
    the other side of the bar, and a plus drawn beside it — a mark rather than a
    character, so it can turn on hover and fold its upright away to a minus
-   while the menu is open. */
+   while the menu is open.
+
+   Owner, 2026-10-05, with a screenshot of "Menu -¦-": the word in sentence
+   case, and the plus split — four short strokes round an open middle. Measured
+   off his screenshot against the capitals (Geist's are 0.71em): the mark is
+   1.38 capitals square (0.98em), a stroke a sixth of a capital (2px across the
+   16–18px this size runs between), an arm 31% of the mark, and the word stands
+   0.59 capitals from it, ink to ink — 0.34em of gap plus the 0.08em the "u"
+   keeps to its own right. */
 .mobile-menu-toggle {
   display: inline-flex;
   height: 3rem;
   align-items: center;
-  gap: 0.55em;
+  gap: 0.34em;
   padding: 0 0 0 0.75rem;
   border: 0;
   background: transparent;
@@ -1493,19 +1514,19 @@ video {
   font: inherit;
   font-size: var(--text-body);
   font-weight: var(--weight-medium);
-  letter-spacing: 0.04em;
   line-height: 1;
   transition: color var(--duration-base) var(--ease-standard);
 }
 
-/* The plus: two hairlines the weight of the bar's other marks, crossed in a
-   box the height of the word's capitals. */
+/* Whole pixels throughout: an even box and a 2px stroke put every stroke on
+   the pixel grid, so the short arms stay square-ended rather than soft. */
 .mobile-menu-toggle__plus {
+  --plus-arm: round(calc(round(0.98em, 2px) * 0.31), 1px);
   position: relative;
   display: block;
   flex: none;
-  width: 0.78em;
-  height: 0.78em;
+  width: round(0.98em, 2px);
+  height: round(0.98em, 2px);
   /* Twice the handover — slow enough to read as drifting rather than as a
      reaction, eased at both ends so it starts and settles without a jolt. */
   transition: transform calc(var(--duration-handover) * 2) var(--ease-handover);
@@ -1514,26 +1535,45 @@ video {
 .mobile-menu-toggle__plus::before,
 .mobile-menu-toggle__plus::after {
   position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 1.5px;
-  margin-top: -0.75px;
-  background: currentcolor;
   content: "";
 }
 
-.mobile-menu-toggle__plus::after {
-  transform: rotate(90deg);
+/* The two level arms: one bar with its middle left open… */
+.mobile-menu-toggle__plus::before {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  margin-top: -1px;
+  background: linear-gradient(
+    to right,
+    currentcolor var(--plus-arm),
+    transparent 0 calc(100% - var(--plus-arm)),
+    currentcolor 0
+  );
 }
 
-/* Open, the upright stroke folds flat into the crossbar: a minus. */
+/* …and the two upright ones, drawn upright rather than turned, so they sit on
+   the grid as sharply as the level pair. */
 .mobile-menu-toggle__plus::after {
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  margin-left: -1px;
+  background: linear-gradient(
+    to bottom,
+    currentcolor var(--plus-arm),
+    transparent 0 calc(100% - var(--plus-arm)),
+    currentcolor 0
+  );
   transition: transform var(--duration-base) var(--ease-standard);
 }
 
+/* Open, the upright arms fold into the middle and the level pair is left: a
+   minus, split like the plus. */
 .mobile-menu-toggle[aria-expanded="true"] .mobile-menu-toggle__plus::after {
-  transform: rotate(90deg) scaleX(0);
+  transform: scaleY(0);
 }
 
 /* Under the pointer MENU and its mark turn the site's red — owner, 2026-10-03:
@@ -2182,166 +2222,185 @@ video {
   padding-top: var(--section-gap);
 }
 
-/* Artificial Intelligence + Human Creativity.
+/* Human Creativity + Artificial Intelligence — the owner's comp of 2026-10-05.
 
-   The three columns are sized to their words and pushed apart, rather than
-   given a half of the line each. Equal halves put the mark on the container's
-   centre line, which is right only if both sides fill their half — and in this
-   face they do not. "Intelligence" sets 260px where the same word sets 355px in
-   the grotesque this was drawn in, so the left half stood barely half full and
-   opened a 427px hole before the plus against 128px after it. Pushed apart, the
-   two halves hold the outer margins, the plus takes the midpoint of whatever is
-   left between them, and the composition stays balanced however long the words
-   are. Both halves set flush left inside their own block, so the second reads
-   as a second statement rather than the tail of the first. */
+   Five equal columns across the page column, ruled in grey from the top of the
+   section to its foot, and the statement set ON them: owner, the same day, "the
+   text needs to be at start of the vertical lines alwasy use as a grid". So
+   every block starts exactly on a rule, never part-way across one:
+
+     "Human Creativity"         from rule 2
+     the plus                   from rule 2, 1.97F square, centred on the first
+                                baseline of "Artificial"
+     "Artificial Intelligence"  from rule 3, its first baseline 2.22F under the
+                                last of "Creativity"
+     the sentence               from rule 2, its first baseline 1.2F under
+                                "Intelligence" (owner, 2026-10-05: "move this
+                                text closer"; his comp had 2.28F); 0.265F,
+                                three lines broken where his are
+
+   F is the heading's size, the opening's own — face, size, weight, tracking,
+   leading — because his comp draws the two at one size. The vertical distances
+   are his, measured off the screenshot in F. The spacing is the site's: the
+   whole joint under the opening above (the rule just before this one), half a
+   joint below — which is also what his frame measures, 271 and 127 px. */
 .fusion-section {
   position: relative;
-  background: var(--canvas);
   padding-block: var(--section-space-lg);
+  background: var(--canvas);
 }
 
-/* **On the page's own grid, and left-aligned on it rather than centred.**
+/* The rules: one 0.7px tile repeated five times across the page column, so
+   six hairlines land on the five columns' edges, the last on the column's right
+   edge. 0.7px on the owner's word, 2026-10-05 — a shade under a pixel, so on a
+   1x screen it draws as a lighter 1px line and on a 2x screen as about 1.4
+   device pixels. Drawn on the section, the whole height of it, and nothing in the
+   accessible tree. **Under the type** since the owner's note of 2026-10-05
+   ("not inside the line"): where a long word crosses a rule the letters stay
+   whole — the container stands above this layer. */
+.fusion-section::before {
+  position: absolute;
+  inset-block: 0;
+  inset-inline: var(--page-gutter);
+  background: linear-gradient(
+      to right,
+      var(--line-grid) 0.7px,
+      transparent 0.7px
+    )
+    0 0 / calc((100% - 0.7px) / 5) 100% repeat-x;
+  /* Drawn down the section as it arrives: FusionReveal turns --fusion-rules
+     from 0 to 1. Unset — no script — it is whole. */
+  clip-path: inset(0 0 calc((1 - var(--fusion-rules, 1)) * 100%) 0);
+  content: "";
+  pointer-events: none;
+}
 
-   The measure has not changed: the two halves are still held to
-   `--statement-measure` so they stand near enough to read as one statement
-   rather than as two things at opposite ends of a 1360px line. What changed is
-   where that block sits. It was centred on the window, and the Why Mardal boxes
-   below sit on equal thirds — two rules that can only agree at one width, solved:
-   2207px. At 1808 they were 65px apart and the distance grew with the window,
-   which is the kind of near-miss that reads as a mistake rather than a decision.
-
-   Owner, with a line drawn down a screenshot: the boxes should start where this
-   does. Both ways of closing it were built. Deriving the boxes' first column
-   from this block's centred edge aligned perfectly and cost the brick — a
-   narrow first column cannot hold a card. So this moved instead: same three
-   columns as the section below, content on 2 to 3, capped at the measure.
-
-   The block is no longer centred on the page. Its left edge is a grid line the
-   heading and all four boxes share, and the empty third to its left is the same
-   third the label and the paragraph stand in below. One column system rather
-   than an island in the middle of one.
-
-   Written against `.container` because that rule sets `max-width: none` to beat
-   a Tailwind utility of the same name, and a single class would lose to it. */
 .container.fusion-container {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--column-gap);
-}
+  --fusion-size: var(--text-house);
 
-.fusion-title,
-.fusion-copy {
-  grid-column: 2 / -1;
-  max-width: var(--statement-measure);
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .fusion-title {
   display: grid;
-  grid-template-columns: auto auto auto;
-  justify-content: space-between;
-  /* A floor, not the spacing: space-between hands the leftover width to the
-     two gaps, so whenever there is room this is overridden and the mark sits
-     evenly between the halves regardless. It only has to be low enough that
-     the three columns cannot outgrow 700 — at 4rem they came within 6px of
-     it, which a font fallback or a rounding difference would have spent. */
-  gap: clamp(1rem, 2.5vw, 2.5rem);
-  align-items: center;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: start;
   margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading-xl);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading-xl);
+  font-family: var(--type-display);
+  font-size: var(--fusion-size);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-heading);
 }
 
+/* **Each line is the mask its words rise out of** (FusionReveal, 2026-10-05:
+   "make a smoother intro for this page more elegant"). The clip is the line's
+   own box, opened past it a little each side and further at the foot, where
+   this face's descenders hang below the leading — the "y" of Creativity and
+   the "g" of Intelligence would otherwise be shaved at rest. The words start
+   1.2 lines down, which puts even the tallest ascender below the open foot.
+
+   **Nothing is hidden here.** The start state is written by the script, so a
+   page without it shows the heading whole; at rest the mask cuts nothing. */
 .fusion-title__line {
   display: block;
+  clip-path: inset(-0.15em -0.25em -0.3em);
 }
 
-/* **The half is clipped, and that is the whole of how the words arrive.**
-
-   Owner, 2026-08-26, choosing between three models: the plus drawn stroke by
-   stroke, and the type uncovered from its outer edge inward rather than slid in
-   from the side. A word that travels is a word being moved; a word behind a
-   moving edge is a word being drawn, which is the same act as the mark beside
-   it. Two gestures became one.
-
-   **Nothing is set here.** No `clip-path`, no opacity, no transform: the start
-   state is written by `FusionReveal` on the first frame it renders, so a page
-   with the script blocked shows the heading whole rather than a permanently
-   clipped one. Every reveal on this site is built that way.
-
-   `will-change` because a clip animated across large type is a repaint of the
-   whole half on every frame, and it is the one hint that reliably keeps it off
-   the main thread. */
-.fusion-title__half {
-  will-change: clip-path;
+.fusion-title__rise {
+  display: block;
+  will-change: transform;
 }
 
-/* Just under two thirds of the height of the two lines it stands beside. The
-   height is still taken from the leading rather than typed, so the mark cannot
-   come loose from the type; it simply no longer competes with it. The arms are
-   a fraction of that height, and now sit a little under the stem weight of a
-   430-weight face, so the mark reads as a hairline join rather than a glyph. */
+/* Placed by side, since 2026-10-05 the two halves stand in different places,
+   each from the start of its column — on the rule, with no offset. The
+   baselines: at this leading the first baseline is 0.915em under the top
+   of its line and the last 0.205em over the foot (Geist's ascent 1.005,
+   descent 0.295), so 1.1em between the halves puts 2.22F from baseline to
+   baseline, as in the comp. */
+.fusion-title__half[data-fusion-half="left"] {
+  grid-column: 2 / -1;
+  grid-row: 1;
+}
+
+.fusion-title__half[data-fusion-half="right"] {
+  grid-column: 3 / -1;
+  grid-row: 2;
+  margin-top: 1.1em;
+}
+
+/* The plus, in the site's red, its centre on the first baseline of
+   "Artificial": the row's 1.1em, then 0.915em down to the baseline, less half
+   the mark. A hairline — his strokes are 2–3px on a 189px mark — rounded to
+   whole pixels so the two strokes come out the same weight. */
 .fusion-plus {
-  --fusion-plus-size: calc(2 * var(--leading-heading-xl) * 0.62em);
-  --fusion-plus-arm: calc(var(--fusion-plus-size) * 0.055);
+  --fusion-plus-size: 1.97em;
+  --fusion-plus-arm: max(
+    2px,
+    round(calc(var(--fusion-plus-size) * 0.0135), 1px)
+  );
 
   position: relative;
+  grid-column: 2;
+  grid-row: 2;
   width: var(--fusion-plus-size);
   height: var(--fusion-plus-size);
+  margin-top: calc(1.1em + 0.915em - var(--fusion-plus-size) / 2);
+  color: var(--accent);
 }
 
 /* **Two real spans, not `::before` and `::after`.** They were pseudo-elements
    until 2026-08-26, and the reveal is what changed it: the mark is drawn one
-   stroke at a time now, and a tween cannot reach a pseudo-element. Nothing about
-   how they look moved — the same size vars, the same `currentcolor`, the same
-   centring — and they stay out of the accessible tree with the mark, which
-   carries `aria-hidden` and leaves the heading to speak for itself.
+   stroke at a time now, and a tween cannot reach a pseudo-element. They stay
+   out of the accessible tree with the mark, which carries `aria-hidden` and
+   leaves the heading to speak for itself.
 
-   `translate` rather than `transform` for the centring, which is what they
-   already used and is now load-bearing: it is an independent property, so the
-   reveal's `transform` composes on top of it instead of overwriting it. */
+   **Centred by position, not by `translate`** (2026-10-05). GSAP folds a CSS
+   `translate` into its own transform the first time it animates an element and
+   sets `translate: none`; after a refresh it re-read the strokes with nothing
+   left to fold, and both were drawn from the mark's centre outward — a corner,
+   not a plus (measured: both at 424,649 in a 194px mark at 326,551). With no
+   transform of their own the reveal's scale has nothing to swallow. */
 .fusion-plus__stroke {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
   background: currentcolor;
 }
 
 .fusion-plus__stroke--across {
+  top: calc(50% - var(--fusion-plus-arm) / 2);
+  left: 0;
   width: 100%;
   height: var(--fusion-plus-arm);
 }
 
 .fusion-plus__stroke--up {
+  top: 0;
+  left: calc(50% - var(--fusion-plus-arm) / 2);
   width: var(--fusion-plus-arm);
   height: 100%;
 }
 
-/* Set exactly as the body paragraphs elsewhere on the page are — the same size
-   token, tracking and leading as .difference-intro__text. It was on
-   --text-heading, a step above every other paragraph on the site, which made it
-   the one piece of running text set to its own rule.
+/* The sentence, at a quarter of the heading as in the comp (never under the
+   paragraph size), ragged right as his is. 30.85em is what breaks it where he
+   did — after "with the" and "technology": measured in Chrome, the three lines
+   set 28.7, 29.5 and 30.2em, and the next word would take the first two to
+   34.1 and 31.5, so the measure stands midway in that 30.2–31.5 window.
 
-   No measure of its own: the 700 the section is held to is already one, and a
-   second cap under it would only pull the paragraph in from a block edge the
-   heading above it sets. */
+   The margin puts its first baseline 1.2F under "Intelligence": 1F from the
+   heading's foot, less the 0.915em its own first line keeps above its
+   baseline. It was 2.28F, his comp's; owner, 2026-10-05: "move this text
+   closer to Arificial Intelegence" — about half the gap. */
 .fusion-copy {
-  margin: clamp(3rem, 6vw, 6rem) 0 0;
-  /* Justified, so the paragraph squares off against those same edges, and the
-     last line with it rather than left ragged. Forcing the last line is only
-     safe while it carries enough words to take up the slack: a line with a
-     single word has no word space to stretch and simply sits short, and one
-     with two or three would be pulled apart. It is checked against the copy
-     above, not assumed — see the note on the copy in content/home.ts. */
-  text-align: justify;
-  text-align-last: justify;
-  font-size: var(--text-copy);
+  grid-column: 2 / -1;
+  max-width: 30.85em;
+  margin: calc(var(--fusion-size) - 0.915em) 0 0;
+  font-size: max(var(--text-copy), calc(var(--fusion-size) * 0.265));
   font-weight: var(--weight-body);
   letter-spacing: -0.015em;
-  line-height: var(--leading-body);
+  line-height: var(--leading-heading);
 }
 
 /* Plain canvas, and it has been three other things today.
@@ -2372,7 +2431,9 @@ video {
    one of them — so the columns went back and `.fusion-container` moved onto this
    grid instead. Its edge is now a grid line rather than a centred one, which is
    the only arrangement that gives all three of: equal cards, a second row offset
-   by one, and one left edge shared with the section above.
+   by one, and one left edge shared with the section above. (Until 2026-10-05:
+   the Fusion section is now on five ruled columns of its own, from the owner's
+   comp, and no longer shares this edge.)
 
    The intro and the grid below share one gap. They were 1rem and 0.85rem, which
    put the heading and the cards under it 0.8px apart — invisible, and two grids
@@ -3573,7 +3634,7 @@ video {
    `cc`, and a bar changed without its card following fails there. */
 .difference-card--one {
   --card-tint: var(--tint-red);
-  --card-tint-bar: #c9000bcc;
+  --card-tint-bar: #cc2900cc;
 }
 
 .difference-card--two {
@@ -3626,8 +3687,9 @@ video {
      - **Copy was written for that column and never rendered.** `eyebrow` and
        `title` both sat in `content/home.ts` unused. They are in it now.
 
-   The page's three columns, shared with the Fusion statement above and the Why
-   Mardal boxes below, so all three sections start on one edge. */
+   The page's three columns, shared with the Why Mardal boxes above, so both
+   sections start on one edge. (The Fusion statement left them on 2026-10-05
+   for five ruled columns of its own.) */
 .industries-layout {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3919,7 +3981,7 @@ video {
        Finance        #7b64ab   4.94:1     passes
        Retail         #fd7979   2.56
        Public Sector  #4fb98a   2.43
-       Logistics      #c9000b   4.60   (the red, since 2026-10-03)
+       Logistics      #cc2900   5.41   (the red's bar, #ff3300's, since 2026-10-05)
        Automotive     #8ec5ef   1.84
        Healthcare     #6fdd9f   1.68
        Manufacturing  #e8dd48   1.41
@@ -5029,15 +5091,6 @@ video {
     padding: 0.65rem 0.65rem 0.65rem 0;
   }
 
-  /* No three-column structure down here, so the Fusion block goes back to being
-     a centred measure of its own — the container is already narrower than it
-     from about 780 down, and this never binds. */
-  .container.fusion-container {
-    display: block;
-    max-width: var(--statement-measure);
-    margin-inline: auto;
-  }
-
   .why-intro {
     grid-template-columns: minmax(10rem, 0.7fr) minmax(0, 2fr);
   }
@@ -5220,26 +5273,24 @@ video {
     height: 2.75rem;
   }
 
-  /* One row here too, as on desktop. The row is 7.86em wide whatever the size —
-     3.53em for the longer half, 3.17em for the other, 1.17em for the mark — so
-     it fits only while the type is under about an eighth of the screen. The
-     shared display size floors at 40px and stops shrinking, which overruns a
-     360px phone; capping it against the viewport lets it carry on down. At
-     390px this still resolves to 37px, so nothing is smaller than it was
-     stacked until the screen is narrower than that. */
-  .fusion-title {
-    gap: clamp(0.35rem, 2vw, 1rem);
-    font-size: min(var(--text-heading-xl), 9.6vw);
+  /* The same composition on the same five columns, two things changed. A
+     column here is narrower than the 1.97F mark beside it, so the plus moves
+     into the first column — from rule 1, as everything starts on a rule — and
+     is held to that column's width, so it never crosses rule 2. And the
+     heading is held to a tenth of the screen: the opening's size floors at
+     40px, and "Intelligence" from rule 3 then outruns a 360px phone; at a
+     tenth it ends inside the column down to 320. */
+  .container.fusion-container {
+    --fusion-size: min(var(--text-house), 10vw);
   }
 
-  /* The forced last line comes off here. Above this width the block is always
-     exactly 700 and the copy was checked to fill its last line edge to edge, so
-     forcing it costs nothing. Below it the block is the screen, the paragraph
-     rewraps to a width nobody has measured, and a last line that lands on two
-     or three words would be dragged to both margins. Ragged is the lesser
-     fault; the other three edges stay square. */
-  .fusion-copy {
-    text-align-last: auto;
+  .fusion-plus {
+    --fusion-plus-size: min(
+      1.97em,
+      (100vw - var(--page-gutter) * 2) / 5 - 1px
+    );
+
+    grid-column: 1;
   }
 
   .why-section {
