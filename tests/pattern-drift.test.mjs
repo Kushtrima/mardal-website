@@ -207,82 +207,30 @@ test("no hero is masked by a PNG any more", () => {
   assert.match(rule, /aspect-ratio:\s*1447 \/ 1087/);
 });
 
-test("each hero wears its own card's colour, read from the homepage", () => {
+test("each hero keeps the colour its homepage card gave it", () => {
   /* **Owner, 2026-08-26, with the Different section on screen: take the stronger
-     colour from each card, not the pale background.**
-
-     Asserted by DERIVING the pairing rather than restating it. The homepage
-     already names five colours, in a fixed order, against five boxes — and every
-     hero fill is now supposed to agree with the box for its own service. Written
-     out as a list here, this test would pass just as happily if the stylesheet
-     and the homepage drifted apart, which is exactly how the old set got into
-     the state it was in: Branding on butter, Websites on lilac, Software on sky,
-     CRM on mint. Every one of the five was wrong, and none of it was visible
-     unless you had both pages open. */
+     colour from each card, not the pale background.** This test derived each
+     hero's fill from the homepage box for its service, so the two could not
+     drift apart. The boxes left the homepage on 2026-10-05 ("delete also thi
+     section"); the heroes keep the colours they were given, and those are what
+     is pinned now — five services, five tints, none shared. */
   const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
-  const home = readFileSync(new URL("../content/home.ts", import.meta.url), "utf8");
-  const section = readFileSync(
-    new URL("../components/home/DifferenceSection.tsx", import.meta.url),
-    "utf8",
-  );
-
-  /* The boxes, in the order they are authored — which is the order they are
-     rendered and therefore the order the tints are handed out in. */
-  const boxes = [
-    ...home
-      .slice(home.indexOf('id: "difference"'), home.indexOf('id: "solutions"'))
-      .matchAll(/\{ id: "([\w-]+)", lines:/g),
-  ].map((m) => m[1]);
-
-  /* The tint classes, in the order the component cycles them. */
-  const at = section.indexOf("const TINTS");
-  const tints = [
-    ...section.slice(at, section.indexOf("]", at)).matchAll(/"(\w+)"/g),
-  ].map((m) => m[1]);
-
-  assert.equal(boxes.length, 5, `found ${boxes.length} boxes on the homepage`);
-  assert.equal(tints.length, 5, `found ${tints.length} tints`);
-
-  /* Which service page each box belongs to. The only thing stated rather than
-     derived, because a box id and a route are two different names for the same
-     service and neither can be spelled from the other. */
-  const PAGE = {
-    "ux-ui-branding": "branding",
-    "web-platforms": "websites",
-    "custom-software": "software",
-    "crm-solutions": "crm-solution",
-    "ai-automation": "ai-automation",
+  const HERO = {
+    branding: "--tint-red-bar",
+    websites: "--tint-butter-bar",
+    software: "--tint-mint-bar",
+    "crm-solution": "--tint-sky-bar",
+    "ai-automation": "--tint-clay-bar",
   };
-
   const fills = new Set();
-
-  boxes.forEach((box, index) => {
-    /* **Read from the PANEL, which is the token that still names the tint.**
-       It read `--card-tint-bar` until the marks were thinned to `cc` — a card's
-       bar is a literal hex now, because `color-mix` does not survive the build
-       and an alpha pair does. The panel still says `var(--tint-butter)`, and
-       what this test is about is which of the five tints a card belongs to, not
-       what shade the mark on it happens to be. */
-    const card = css.slice(css.indexOf(`.difference-card--${tints[index]} {`));
-    const panel = card.slice(0, card.indexOf("}")).match(/--card-tint:\s*var\(--tint-(\w+)\)/);
-    assert.ok(panel, `card ${tints[index]} names no tint`);
-    const bar = [null, `--tint-${panel[1]}-bar`];
-
-    const page = PAGE[box];
-    assert.ok(page, `homepage box "${box}" has no service page`);
-
+  for (const [page, tint] of Object.entries(HERO)) {
     const rule = css.indexOf(`.service-hero__pattern--${page} .service-hero__bars {`);
     assert.ok(rule > 0, `${page} names no fill`);
     const hero = css.slice(rule, css.indexOf("}", rule)).match(/fill:\s*var\((--[\w-]+)\)/);
     assert.ok(hero, `${page} has a rule but sets no fill`);
-
-    assert.equal(
-      hero[1],
-      bar[1],
-      `${page}'s hero is ${hero[1]} but its homepage card is ${bar[1]}`,
-    );
+    assert.equal(hero[1], tint, `${page}'s hero is ${hero[1]}, not ${tint}`);
     fills.add(hero[1]);
-  });
+  }
 
   /* Five services, five colours. Two pages on one tint is the bug that put
      AI & Automation in Branding's lilac on the homepage in the first place. */

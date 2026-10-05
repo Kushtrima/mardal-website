@@ -7,7 +7,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MOBILE_MENU } from "../../lib/breakpoints";
 import { HEADER_AT_REST, nextHeaderState } from "../../lib/header-reveal";
-import { PixelArrow } from "../ui/PixelArrow";
 import { RollingLabel } from "../ui/RollingLabel";
 import { Container } from "./Container";
 import { brandPlace, footer, menu, menuButton } from "../../content/home";
@@ -17,28 +16,21 @@ import { brandPlace, footer, menu, menuButton } from "../../content/home";
  *
  * **One menu, behind one burger, at every width — owner, 2026-10-03:** "i dont
  * like it i want BIG MENU so Only BURGER menu". The bar is the wordmark and the
- * burger and nothing else. The menu is the sheet the phone already had, grown
- * into the whole screen on a wide window: the four words set big down the left,
- * the list of whichever one you are on to the right of them. Its class names
- * still say `mobile-menu`, after where it began.
+ * burger and nothing else. Its class names still say `mobile-menu`, after
+ * where it began.
  *
- * What it replaced — the words in the bar and a white sheet down the right — is
- * in backup/2026-10-03-site-header/, with how to put it back.
- */
-
-/**
- * The two lines the sheet carries at its foot, in the order the owner asked for
- * them: the street, then the number.
+ * **Inside it, since 2026-10-05** — after three goes the owner turned down
+ * ("uncovensional", "no logic", "somthing different") and an hour in the
+ * site's red: a white sheet coming down over the page like a blind, with four
+ * words on it, grey at rest and black in hand — Services, Products, Clients,
+ * About, starting on the email's rule with the red plus in front. Three of
+ * them are parents: pointed at, focused or pressed, their pages open in a
+ * list to the right on a wide window, under the word on a phone. Clients is
+ * a page. Along the foot, "Start a project" and the ways to reach Mardal.
  *
- * Picked out of `footer.details` by label rather than retyped. The phone and the
- * address are written once, in content/home.ts, and the day one of them changes
- * the sheet must not be the place still saying the old one.
+ * What came before the burger — the words in the bar and a white sheet down
+ * the right — is in backup/2026-10-03-site-header/, with how to put it back.
  */
-const SHEET_CONTACT = ["Address", "Phone"].flatMap((label) =>
-  footer.details.filter((detail) => detail.label === label),
-);
-
-type NavigationKey = (typeof menu)[number]["key"];
 
 type MenuLink = { readonly label: string; readonly href: string };
 type MenuGroup = {
@@ -47,300 +39,268 @@ type MenuGroup = {
 };
 
 /**
- * The halves an entry's list is split into, or null for a list that is one.
- * Services is the only entry with groups — Development and Creative, owner,
- * 2026-10-03 — and the menu sets a heading over each half.
+ * What the sheet lists, in order, read from the one `menu` the footer reads
+ * too: four words. Services and Products are parents — they open their pages
+ * and go nowhere themselves (owner's call, 2026-08-24: disclosures, not
+ * destinations), Services in its two halves, Development and Creative
+ * (2026-10-03). Clients is a page. The fourth is the company's own four pages
+ * under the name of the first of them — owner, 2026-10-05: "maybe Blog
+ * carreers and contact to be under About".
  */
-function groupsOf(entry: (typeof menu)[number]): readonly MenuGroup[] | null {
-  return "groups" in entry ? entry.groups : null;
-}
+type MenuEntry =
+  | {
+      readonly kind: "parent";
+      readonly key: string;
+      readonly label: string;
+      /* Headed halves (Services), or one list with no heading of its own. */
+      readonly groups: readonly MenuGroup[];
+      readonly headed: boolean;
+    }
+  | { readonly kind: "page"; readonly key: string; readonly label: string; readonly href: string };
 
-/** The list a wide menu opens on, so its right-hand side is never empty. */
-const FIRST_LIST: NavigationKey = "services";
+/**
+ * **The row the bar opens on a desktop** — owner, 2026-10-05: "no big menu
+ * but when hover to aper menu on the left so in same text as Menu … Home,
+ * Services, Products, Clients, about … only as a text not with bacground",
+ * then "when click inside to have all services and other not as a sublink".
+ * Five words, each a page that holds everything under it: the services'
+ * page lists all seven, the products' page all three. Read from `menu` and
+ * the footer's pages, so no word or address is written twice.
+ */
+const BAR_LINKS: readonly MenuLink[] = [
+  footer.pages[0],
+  ...menu
+    .filter((item) => item.key !== "company")
+    .map((item) => ({ label: item.label, href: item.href })),
+  footer.pages[1],
+];
+
+const ENTRIES: readonly MenuEntry[] = menu.map((item): MenuEntry => {
+  if (item.key === "company") {
+    return {
+      kind: "parent",
+      key: "about",
+      label: item.items[0].label,
+      groups: [{ label: item.items[0].label, items: item.items }],
+      headed: false,
+    };
+  }
+  if (item.panelOnly) {
+    const halves = "groups" in item ? item.groups : null;
+    return {
+      kind: "parent",
+      key: item.key,
+      label: item.label,
+      groups: halves ?? [{ label: item.label, items: item.items }],
+      headed: halves !== null,
+    };
+  }
+  return { kind: "page", key: item.key, label: item.label, href: item.href };
+});
 
 export function SiteHeader() {
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const navigationRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
-  const indexRef = useRef<HTMLDivElement>(null);
-  const detailRef = useRef<HTMLDivElement>(null);
-  const footRef = useRef<HTMLDivElement>(null);
-  /* Whether the menu was already open the last time the motion ran, so a
-     change of list is not played as an arrival. */
-  const wasOpenRef = useRef(false);
+  const sheetRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  /* The list being read: on a phone, null is the four words and a key is that
-     word's list sliding over them; on a wide window both are on screen, and
-     this is which list stands to the right of the words. */
-  const [activeMenu, setActiveMenu] = useState<NavigationKey | null>(null);
-  /* The list rendered in the detail. It lags `activeMenu` on a phone, so the
-     list does not empty while it is sliding away. */
-  const [displayMenu, setDisplayMenu] = useState<NavigationKey>(FIRST_LIST);
-  /* Which arrangement the stylesheet is drawing. False on the server and on
-     the first paint, which is also the phone's — see the effect that sets it. */
-  const [wide, setWide] = useState(false);
-
-  const displayItem =
-    menu.find((item) => item.key === displayMenu) ?? menu[0];
-  const displayGroups = groupsOf(displayItem);
+  /* A phone's pace for the arrival: the same motion, shorter. */
+  const [compact, setCompact] = useState(false);
+  /* Whether a parent opens under the pointer: only where there is a mouse
+     and the panel stands beside the words. Asked of the pointer, not of the
+     window's width — a narrow desktop window still has a mouse, and asking
+     the width left one parent open while the pointer lit another. */
+  const [hoverOpen, setHoverOpen] = useState(false);
+  /* The parent whose pages are open, if any. */
+  const [openParent, setOpenParent] = useState<string | null>(null);
+  /* The bar's row of pages on a desktop: opened and closed by a press of
+     Menu, never by the pointer alone. */
+  const [barOpen, setBarOpen] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
 
   function closeMenu() {
     setMenuOpen(false);
-    setActiveMenu(null);
+    setOpenParent(null);
   }
 
-  function showList(key: NavigationKey) {
-    setDisplayMenu(key);
-    setActiveMenu(key);
+  /**
+   * **The wordmark and Home, on the homepage, go back to its beginning** —
+   * owner, 2026-10-05: "when Click logo or home page needs to move up at the
+   * begining". A link to the page you are on goes nowhere, so on the homepage
+   * the press scrolls it back to the top instead, through the smoother when
+   * there is one so the opening plays back on the way up; anywhere else it is
+   * the ordinary link home.
+   */
+  function toHomeTop(event: React.MouseEvent<HTMLAnchorElement>) {
+    closeMenu();
+    setBarOpen(false);
+    if (pathname !== "/") return;
+    event.preventDefault();
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const smoother = ScrollSmoother.get();
+    if (smoother) smoother.scrollTo(0, !still);
+    else window.scrollTo({ top: 0, behavior: still ? "auto" : "smooth" });
   }
 
-  function detailLink(link: MenuLink) {
+  /* A parent's page: one ruled row, its name and VIEW ALL's thin arrow. */
+  function menuLink(link: MenuLink) {
     const isCurrent = link.href.startsWith("/") && pathname === link.href;
 
     return (
-      <li key={link.label} data-mobile-detail-entry>
+      <li className="mobile-menu__item" key={link.href}>
         <a
-          className={`mobile-menu__detail-link${isCurrent ? " is-current" : ""}`}
+          className="mobile-menu__link"
           href={link.href}
           aria-current={isCurrent ? "page" : undefined}
           onClick={closeMenu}
         >
-          <span>{link.label}</span>
+          <span className="mobile-menu__link-text">{link.label}</span>
+          <svg
+            className="mobile-menu__link-arrow"
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M2 14 14 2M4.5 2H14v9.5" />
+          </svg>
         </a>
       </li>
     );
   }
 
   /**
-   * The two arrangements, and the motion inside each.
-   *
-   * On a phone the words and a list take turns: choosing a word slides the
-   * words out and its list in, and Back reverses it. On a wide window both
-   * stand at once, so choosing a word only brings its list up on the right.
-   * The sheet itself fades in by CSS; this moves what is on it.
+   * The arrival, in reading order, each time the sheet opens: as the
+   * blind comes down, the four words rise out of their own lines one close
+   * behind the next, the foot's hairline draws from the left, and the foot
+   * fades up once the words can be read. The sheet itself fades in by CSS; this moves
+   * what is on it. Closing is the sheet's own fade, and the next opening starts
+   * every part from its beginning again.
    */
   useLayoutEffect(() => {
-    const index = indexRef.current;
-    const detail = detailRef.current;
-    if (!index || !detail) return;
+    const sheet = sheetRef.current;
+    if (!sheet) return;
 
-    const indexEntries = index.querySelectorAll<HTMLElement>(
-      "[data-mobile-menu-entry]",
-    );
-    const detailEntries = detail.querySelectorAll<HTMLElement>(
-      "[data-mobile-detail-entry]",
-    );
-    /* The words themselves, each inside a mask the height of its line, and
-       what follows them: the counts, the way in, the foot. */
-    const words = index.querySelectorAll<HTMLElement>("[data-menu-word]");
-    const counts = index.querySelectorAll<HTMLElement>(".mobile-menu__count");
-    const wayIn = index.querySelectorAll<HTMLElement>(".mobile-menu__cta-row");
-    const foot = footRef.current;
-    const targets = [
-      index,
-      detail,
-      ...indexEntries,
-      ...detailEntries,
-      ...words,
-      ...counts,
-      ...(foot ? [foot] : []),
-    ];
-    const wasOpen = wasOpenRef.current;
-    wasOpenRef.current = menuOpen;
+    const rules = sheet.querySelectorAll<HTMLElement>("[data-menu-rule]");
+    const words = sheet.querySelectorAll<HTMLElement>("[data-menu-word]");
+    const fades = sheet.querySelectorAll<HTMLElement>("[data-menu-fade]");
+    const targets = [...rules, ...words, ...fades];
 
     gsap.killTweensOf(targets);
     if (!menuOpen) return;
 
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(rules, { scaleX: 1 });
+      gsap.set(words, { yPercent: 0 });
+      gsap.set(fades, { autoAlpha: 1, y: 0 });
+      return;
+    }
 
-    if (wide) {
-      /* Nothing slides here, so whatever a phone left on the two columns —
-         an offset, a fade — is cleared before anything else is said. */
-      gsap.set([index, detail], { clearProps: "all" });
-
-      if (reducedMotion) {
-        gsap.set([...indexEntries, ...detailEntries, ...counts], {
-          autoAlpha: 1,
-          y: 0,
-        });
-        gsap.set(words, { yPercent: 0 });
-        if (foot) gsap.set(foot, { autoAlpha: 1, y: 0 });
-        return;
-      }
-
-      if (!wasOpen) {
-        /* The arrival, in reading order. The words rise out of their own line,
-           one close behind the next, while the blind is still coming down; the
-           counts, the way in and the foot follow once the words can be read.
-           Each word is masked, so it is uncovered where it stands rather than
-           floating in from somewhere else. */
-        gsap.set(indexEntries, { autoAlpha: 1, y: 0 });
-        gsap.fromTo(
-          words,
-          { yPercent: 110 },
-          {
-            yPercent: 0,
-            duration: 1,
-            ease: "expo.out",
-            stagger: 0.07,
-            delay: 0.12,
-          },
-        );
-        gsap.fromTo(
-          counts,
-          { autoAlpha: 0, y: 6 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.5,
-            ease: "power2.out",
-            stagger: 0.06,
-            delay: 0.55,
-          },
-        );
-        gsap.fromTo(
-          wayIn,
-          { autoAlpha: 0, y: 18 },
-          { autoAlpha: 1, y: 0, duration: 0.7, ease: "expo.out", delay: 0.5 },
-        );
-        if (foot) {
-          gsap.fromTo(
-            foot,
-            { autoAlpha: 0, y: 12 },
-            { autoAlpha: 1, y: 0, duration: 0.7, ease: "expo.out", delay: 0.6 },
-          );
-        }
-      }
-
-      /* The list comes up into the column on every change, quick enough that
-         reading across the words is not a queue. */
-      gsap.fromTo(
-        detailEntries,
-        { autoAlpha: 0, y: 22 },
+    const pace = compact ? 0.8 : 1;
+    /* The words wait for the blind: it is most of the way down by then. */
+    const after = 0.3;
+    const timeline = gsap.timeline();
+    timeline
+      .fromTo(
+        words,
+        { yPercent: 110 },
         {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.6,
+          yPercent: 0,
+          duration: 1.1 * pace,
           ease: "expo.out",
-          stagger: 0.03,
-          delay: wasOpen ? 0 : 0.3,
+          stagger: 0.08,
         },
-      );
-      return;
-    }
-
-    if (reducedMotion) {
-      gsap.set(index, {
-        autoAlpha: activeMenu ? 0 : 1,
-        pointerEvents: activeMenu ? "none" : "auto",
-        xPercent: 0,
-      });
-      gsap.set(detail, {
-        autoAlpha: activeMenu ? 1 : 0,
-        pointerEvents: activeMenu ? "auto" : "none",
-        xPercent: 0,
-      });
-      return;
-    }
-
-    const timeline = gsap.timeline({ defaults: { ease: "power3.inOut" } });
-
-    if (activeMenu) {
-      gsap.set(detail, { pointerEvents: "auto", visibility: "visible" });
-      timeline.to(
-        index,
-        { autoAlpha: 0, duration: 0.36, pointerEvents: "none", xPercent: -14 },
-        0,
-      );
-      timeline.fromTo(
-        detail,
-        { autoAlpha: 0, xPercent: 18 },
-        { autoAlpha: 1, duration: 0.48, xPercent: 0 },
-        0.06,
-      );
-      timeline.fromTo(
-        detailEntries,
-        { autoAlpha: 0, x: 18 },
+        after,
+      )
+      .fromTo(
+        rules,
+        { scaleX: 0, transformOrigin: "0% 50%" },
         {
-          autoAlpha: 1,
-          duration: 0.42,
-          ease: "power3.out",
-          stagger: 0.035,
-          x: 0,
+          scaleX: 1,
+          duration: 1.1 * pace,
+          ease: "expo.inOut",
         },
-        0.17,
-      );
-    } else {
-      gsap.set(index, { pointerEvents: "auto", visibility: "visible" });
-      timeline.to(
-        detail,
-        { autoAlpha: 0, duration: 0.34, pointerEvents: "none", xPercent: 18 },
-        0,
-      );
-      timeline.fromTo(
-        index,
-        { autoAlpha: 0, xPercent: -10 },
-        { autoAlpha: 1, duration: 0.46, xPercent: 0 },
-        0.04,
-      );
-      timeline.fromTo(
-        indexEntries,
+        after + 0.15,
+      )
+      .fromTo(
+        fades,
         { autoAlpha: 0, y: 12 },
         {
           autoAlpha: 1,
-          duration: 0.4,
+          y: 0,
+          duration: 0.7 * pace,
           ease: "power3.out",
           stagger: 0.04,
-          y: 0,
         },
-        0.12,
+        after + 0.45,
       );
-      /* The same rise out of the line the wide menu has, at a phone's pace. */
-      timeline.fromTo(
-        words,
-        { yPercent: 110 },
-        { yPercent: 0, duration: 0.8, ease: "expo.out", stagger: 0.05 },
-        0.12,
-      );
-      if (foot) gsap.set(foot, { clearProps: "opacity,visibility,transform" });
-    }
 
     return () => {
       timeline.kill();
-      gsap.killTweensOf(targets);
     };
-  }, [activeMenu, displayMenu, menuOpen, wide]);
+  }, [menuOpen, compact]);
 
   /**
-   * Which arrangement, asked of the stylesheet's own query rather than a second
-   * one — see lib/breakpoints.ts for why a complement cannot be written exactly.
-   *
-   * Answered on every change, not once: a window widened past the line while
-   * the menu is open has to stop being a phone's menu there and then. Crossing
-   * it puts the menu on its starting list for the side it lands on — the four
-   * words on a phone, the first list beside them on a wide window — rather than
-   * leaving it half in the other arrangement.
+   * Which pace, asked of the stylesheet's own query rather than a second one —
+   * see lib/breakpoints.ts for why a complement cannot be written exactly.
+   * Answered on every change, not once, so a window resized while the menu is
+   * open plays its next arrival at its new width's pace.
    */
   useEffect(() => {
     const phone = window.matchMedia(MOBILE_MENU);
+    /* The stylesheet's own line for the stacked menu (the panel under the
+       word) — see "Inside the menu" in globals.css. */
+    const stacked = window.matchMedia("(max-width: 40rem)");
+    const mouse = window.matchMedia("(hover: hover)");
+    const queries = [phone, stacked, mouse];
 
     function sync() {
-      const isWide = !phone.matches;
-      setWide(isWide);
-      setDisplayMenu(FIRST_LIST);
-      setActiveMenu(isWide ? FIRST_LIST : null);
+      setCompact(phone.matches);
+      setHoverOpen(mouse.matches && !stacked.matches);
     }
 
     sync();
-    phone.addEventListener("change", sync);
+    queries.forEach((query) => query.addEventListener("change", sync));
 
     return () => {
-      phone.removeEventListener("change", sync);
+      queries.forEach((query) => query.removeEventListener("change", sync));
     };
   }, []);
+
+  /* The open row closes on Escape, on a press anywhere else, on scrolling
+     down (owner, 2026-10-05: "it can close when scrolling down"), and
+     wherever the bar stops opening it (a window narrowed to a phone's). */
+  useEffect(() => {
+    if (!barOpen) return;
+    if (!hoverOpen) {
+      setBarOpen(false);
+      return;
+    }
+
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") setBarOpen(false);
+    }
+    function onPress(event: PointerEvent) {
+      if (!barRef.current?.contains(event.target as Node)) setBarOpen(false);
+    }
+    /* Down only, and past a few pixels, so a trackpad's settle does not
+       count; scrolling back up leaves it open. */
+    let lastY = window.scrollY;
+    function onScroll() {
+      const y = window.scrollY;
+      if (y > lastY + 4) setBarOpen(false);
+      else if (y < lastY) lastY = y;
+    }
+
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPress);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPress);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [barOpen, hoverOpen]);
 
   /**
    * While it is open the page underneath holds still: the body is locked, and
@@ -358,7 +318,7 @@ export function SiteHeader() {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key !== "Escape") return;
       setMenuOpen(false);
-      setActiveMenu(null);
+      setOpenParent(null);
       toggleRef.current?.focus();
     }
 
@@ -493,10 +453,6 @@ export function SiteHeader() {
     header.dispatchEvent(new CustomEvent("mardal:header-shown"));
   }, [menuOpen]);
 
-  /* On a phone the words step aside while a list is open; on a wide window
-     they never do. */
-  const indexAway = !wide && activeMenu !== null;
-
   return (
     <header
       className={`site-header${menuOpen ? " site-header--mobile-menu-open" : ""}`}
@@ -519,7 +475,7 @@ export function SiteHeader() {
               className="brand"
               href="/"
               aria-label="Mardal home"
-              onClick={closeMenu}
+              onClick={toHomeTop}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -533,232 +489,216 @@ export function SiteHeader() {
             <span className="site-nav__place">{brandPlace}</span>
           </div>
 
-          {/* "Menu" and a drawn plus — owner, 2026-10-03, in place of the two
-              lines; split into four strokes on 2026-10-05. A minus while the
-              menu is open. */}
-          <button
-            className="mobile-menu-toggle"
-            type="button"
-            ref={toggleRef}
-            aria-expanded={menuOpen}
-            aria-controls="mobile-navigation"
-            data-roll
-            onClick={() => {
-              if (menuOpen) {
-                closeMenu();
-                return;
-              }
-              setMenuOpen(true);
-              setDisplayMenu(FIRST_LIST);
-              setActiveMenu(wide ? FIRST_LIST : null);
-            }}
+          {/* Menu, and the row of pages a press of it opens to its left on a
+              desktop. A phone, or anything without a pointer, opens the sheet
+              below instead. */}
+          <div
+            className={`site-nav__menu${barOpen ? " is-open" : ""}`}
+            ref={barRef}
           >
-            {/* The word rolls under the pointer, as VIEW ALL's does; the plus
-                beside it stays still (owner, 2026-10-05). */}
-            <span className="mobile-menu-toggle__label">
-              <RollingLabel>{menuButton}</RollingLabel>
-            </span>
-            <span className="mobile-menu-toggle__plus" aria-hidden="true" />
-          </button>
+            <ul className="bar-menu" id="bar-menu" aria-label="Pages">
+              {BAR_LINKS.map((link) => (
+                <li className="bar-menu__item" key={link.href}>
+                  <Link
+                    className="bar-menu__link"
+                    href={link.href}
+                    aria-current={pathname === link.href ? "page" : undefined}
+                    onClick={
+                      link.href === "/" ? toHomeTop : () => setBarOpen(false)
+                    }
+                    data-roll
+                  >
+                    <RollingLabel>{link.label}</RollingLabel>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            {/* "Menu" and a drawn plus — owner, 2026-10-03, in place of the
+                two lines; split into four strokes on 2026-10-05, and a plus
+                whether open or not. */}
+            <button
+              className="mobile-menu-toggle"
+              type="button"
+              ref={toggleRef}
+              aria-expanded={menuOpen || barOpen}
+              aria-controls="mobile-navigation"
+              data-roll
+              onClick={() => {
+                if (hoverOpen) {
+                  setBarOpen((open) => !open);
+                  return;
+                }
+                if (menuOpen) {
+                  closeMenu();
+                  return;
+                }
+                setOpenParent(null);
+                setMenuOpen(true);
+              }}
+            >
+              {/* The word rolls under the pointer, as VIEW ALL's does; the
+                  plus beside it stays still (owner, 2026-10-05). */}
+              <span className="mobile-menu-toggle__label">
+                <RollingLabel>{menuButton}</RollingLabel>
+              </span>
+              <span className="mobile-menu-toggle__plus" aria-hidden="true" />
+            </button>
+          </div>
         </nav>
       </Container>
 
       <div
-        className={`mobile-menu${wide ? " mobile-menu--wide" : ""}${
-          menuOpen ? " mobile-menu--open" : ""
-        }`}
+        className={`mobile-menu${menuOpen ? " mobile-menu--open" : ""}`}
         id="mobile-navigation"
+        ref={sheetRef}
         aria-hidden={!menuOpen}
         inert={menuOpen ? undefined : true}
       >
         <Container className="mobile-menu__content">
-          <div className="mobile-menu__viewport">
-            <div
-              className="mobile-menu__index"
-              ref={indexRef}
-              aria-hidden={indexAway}
-              inert={indexAway ? true : undefined}
-            >
-              <ul className="mobile-menu__index-list">
-                {menu.map((item) => {
-                  /* Services, Products and Company open their lists and go
-                     nowhere — owner's call, 2026-08-24: disclosures, not
-                     destinations. Clients is the one word that is a page. */
-                  const isLink = item.href.startsWith("/") && !item.panelOnly;
-                  const isCurrent = isLink
-                    ? pathname === item.href
-                    : pathname === item.href ||
-                      item.items.some((link) => pathname === link.href);
-                  const className = `mobile-menu__index-link${
-                    isCurrent ? " is-current" : ""
-                  }`;
-                  /* How many pages are behind the word, in front of it — owner,
-                     2026-10-03: "numbers put in front", and the arrows that
-                     stood after the words taken out. The count is a fact the
-                     list states again, so it is for the eye only. Clients is
-                     one page and has none, but keeps the slot, so all four
-                     words start on one line. Then the word, in a mask the
-                     height of its line, so it can rise out of it. */
-                  const name = (
-                    <span className="mobile-menu__name">
-                      <sup className="mobile-menu__count" aria-hidden="true">
-                        {item.items.length > 0 ? item.items.length : null}
-                      </sup>
-                      <span className="mobile-menu__word">
-                        <span className="mobile-menu__word-inner" data-menu-word>
-                          {item.label}
-                        </span>
-                      </span>
+          {/* The entries, big, down the left. A parent's pages open in its
+              panel — to the right on a wide window, under the word on a
+              phone — when it is pointed at, focused or pressed; pointing at
+              a page closes it again, so the panel only ever shows the pages
+              of the word in hand. */}
+          <ul className="mobile-menu__pages">
+            {ENTRIES.map((entry) => {
+              /* The word, in a mask the height of its line, so it can rise out
+                 of it; and doubled, so it can roll. */
+              const word = (
+                <span className="mobile-menu__word">
+                  <span className="mobile-menu__word-inner" data-menu-word>
+                    <RollingLabel>{entry.label}</RollingLabel>
+                  </span>
+                </span>
+              );
+
+              if (entry.kind === "page") {
+                const isCurrent = pathname === entry.href;
+
+                return (
+                  <li key={entry.key}>
+                    <Link
+                      className="mobile-menu__page"
+                      href={entry.href}
+                      aria-current={isCurrent ? "page" : undefined}
+                      onClick={closeMenu}
+                      onPointerEnter={(event) => {
+                        if (event.pointerType === "mouse" && hoverOpen) setOpenParent(null);
+                      }}
+                      data-roll
+                    >
+                      {/* The plus's place, empty, so all four words start on
+                          one line. */}
+                      <span className="mobile-menu__slot" aria-hidden="true" />
+                      {word}
+                    </Link>
+                  </li>
+                );
+              }
+
+              const isOpen = openParent === entry.key;
+              const panelId = `mobile-menu-panel-${entry.key}`;
+              const isCurrent = entry.groups.some((group) =>
+                group.items.some((link) => pathname === link.href),
+              );
+
+              return (
+                <li key={entry.key} className="mobile-menu__parent">
+                  <button
+                    className={`mobile-menu__page${isCurrent ? " is-current" : ""}`}
+                    type="button"
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    data-roll
+                    /* Where the pointer opens it, a press only ever opens it
+                       (the pointer got there first, and a press must not
+                       shut what it is pointing at); elsewhere a press opens
+                       and shuts it. */
+                    onClick={() =>
+                      setOpenParent(hoverOpen || !isOpen ? entry.key : null)
+                    }
+                    onPointerEnter={(event) => {
+                      if (event.pointerType === "mouse" && hoverOpen) setOpenParent(entry.key);
+                    }}
+                    onFocus={() => {
+                      if (hoverOpen) setOpenParent(entry.key);
+                    }}
+                  >
+                    {/* In front of the word, on its middle (owner,
+                        2026-10-05): a plus that folds to a minus while its
+                        pages are open — the Menu button's own mark. */}
+                    <span className="mobile-menu__slot" aria-hidden="true">
+                      <span className="mobile-menu__plus" />
                     </span>
-                  );
+                    {word}
+                  </button>
 
-                  return (
-                    <li key={item.key} data-mobile-menu-entry>
-                      {isLink ? (
-                        <Link
-                          className={className}
-                          href={item.href}
-                          aria-current={isCurrent ? "page" : undefined}
-                          onClick={closeMenu}
-                        >
-                          {name}
-                        </Link>
-                      ) : (
-                        <button
-                          className={className}
-                          type="button"
-                          aria-controls="mobile-menu-detail"
-                          aria-expanded={activeMenu === item.key}
-                          onClick={() => showList(item.key)}
-                          /* On a wide window the list beside the words
-                             follows the pointer and the keyboard, so reading
-                             across them needs no click. */
-                          onPointerEnter={(event) => {
-                            if (wide && event.pointerType === "mouse") {
-                              showList(item.key);
-                            }
-                          }}
-                          onFocus={() => {
-                            if (wide) showList(item.key);
-                          }}
-                        >
-                          {name}
-                        </button>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
+                  <div
+                    className={`mobile-menu__panel${isOpen ? " is-open" : ""}`}
+                    id={panelId}
+                  >
+                    <div className="mobile-menu__panel-inner">
+                      {entry.groups.map((group) => {
+                        const headingId = `mobile-menu-group-${group.label.toLowerCase()}`;
 
-              {/* The way in, under the words: to the contact page, which is a
-                  form since 2026-09-13. */}
-              <div className="mobile-menu__cta-row" data-mobile-menu-entry>
-                <a
-                  className="mobile-menu__cta"
-                  data-roll
-                  href="/contact"
-                  onClick={closeMenu}
-                >
-                  <RollingLabel>Start a project</RollingLabel>
-                  <PixelArrow
-                    className="mobile-menu__cta-arrow"
-                    direction="up-right"
-                    size="small"
-                  />
-                </a>
-              </div>
-            </div>
+                        return (
+                          <div className="mobile-menu__group" key={group.label}>
+                            {entry.headed ? (
+                              <p className="mobile-menu__group-title" id={headingId}>
+                                {group.label}
+                              </p>
+                            ) : null}
+                            <ul
+                              className="mobile-menu__links"
+                              aria-labelledby={entry.headed ? headingId : undefined}
+                              aria-label={entry.headed ? undefined : entry.label}
+                            >
+                              {group.items.map(menuLink)}
+                            </ul>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
 
-            <div
-              className="mobile-menu__detail"
-              id="mobile-menu-detail"
-              ref={detailRef}
-              aria-hidden={activeMenu === null}
-              inert={activeMenu ? undefined : true}
+          {/* The way in — to the contact page, which is a form since
+              2026-09-13 — and the ways to reach Mardal. */}
+          <div className="mobile-menu__foot" data-menu-fade>
+            <span className="mobile-menu__rule" aria-hidden="true" data-menu-rule />
+            <a
+              className="mobile-menu__cta"
+              data-roll
+              href="/contact"
+              onClick={closeMenu}
             >
-              {/* Services in its two halves, each under its heading; the other
-                  lists as one. One wrapper, so the column still sees one list
-                  followed by the way back. */}
-              {displayGroups ? (
-                <div className="mobile-menu__detail-groups">
-                  {displayGroups.map((group) => {
-                    const headingId = `mobile-menu-group-${group.label.toLowerCase()}`;
-
-                    return (
-                      <div className="mobile-menu__detail-group" key={group.label}>
-                        <p
-                          className="eyebrow mobile-menu__detail-heading"
-                          id={headingId}
-                          data-mobile-detail-entry
-                        >
-                          {group.label}
-                        </p>
-                        <ul
-                          className="mobile-menu__detail-list"
-                          aria-labelledby={headingId}
-                        >
-                          {group.items.map(detailLink)}
-                        </ul>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <ul className="mobile-menu__detail-list">
-                  {displayItem.items.map(detailLink)}
-                </ul>
-              )}
-
-              {/* A phone's way back to the four words. A wide window shows
-                  both at once, so it has nothing to go back to and the
-                  stylesheet takes this away there.
-
-                  Owner, 2026-08-27: the word is Back — it printed the
-                  section's own name, which reads as a link deeper in rather
-                  than the way out. The label keeps the section for a screen
-                  reader, which meets this button with no list in view. */}
-              <button
-                className="mobile-menu__back"
-                data-roll
-                type="button"
-                aria-label={`Back to the main menu from ${displayItem.label}`}
-                onClick={() => setActiveMenu(null)}
-                data-mobile-detail-entry
+              <RollingLabel>Start a project</RollingLabel>
+              {/* VIEW ALL's thin arrow; still while the word rolls. */}
+              <svg
+                className="mobile-menu__arrow"
+                viewBox="0 0 16 16"
+                aria-hidden="true"
+                focusable="false"
               >
-                <PixelArrow
-                  className="mobile-menu__back-arrow"
-                  direction="left"
-                  size="small"
-                />
-                <span><RollingLabel>Back</RollingLabel></span>
-              </button>
-            </div>
-          </div>
-
-          {/* The foot, as little as it can be — owner, 2026-10-03: "the section
-              at bottom with numbers social medai etc make a better minimal
-              aproach". One quiet line: where Mardal is and its number. The
-              social marks left it; the footer still carries them. */}
-          <div className="mobile-menu__foot" ref={footRef}>
-            <dl className="mobile-menu__contact">
-              {SHEET_CONTACT.map((detail) => (
-                <div className="mobile-menu__contact-row" key={detail.label}>
-                  <dt className="visually-hidden">{detail.label}</dt>
-                  <dd className="mobile-menu__contact-value">
-                    {detail.href ? (
-                      <a
-                        className="mobile-menu__contact-link"
-                        href={detail.href}
-                      >
-                        {detail.value}
-                      </a>
-                    ) : (
-                      detail.value
-                    )}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+                <path d="M2 14 14 2M4.5 2H14v9.5" />
+              </svg>
+            </a>
+            {footer.details.map((detail) => (
+              <p className="mobile-menu__contact" key={detail.label}>
+                <span className="visually-hidden">{`${detail.label}: `}</span>
+                {detail.href ? (
+                  <a className="mobile-menu__link" href={detail.href}>
+                    {detail.value}
+                  </a>
+                ) : (
+                  detail.value
+                )}
+              </p>
+            ))}
           </div>
         </Container>
       </div>

@@ -508,7 +508,11 @@
      breakpoint. */
   --section-gap: clamp(9.375rem, 19.5vw, 15.625rem);
   --section-space: calc(var(--section-gap) / 2);
-  --section-space-lg: calc(var(--section-gap) / 2);
+  /* The homepage's sections pay more — owner, 2026-10-05: "add more margin
+     betwen the section beacuase they are to close to each other". 0.7 of the
+     gap a side: 350px between two of them from about 1280 up, 210 on a
+     phone, where it was 250 and 150. The other pages keep --section-space. */
+  --section-space-lg: calc(var(--section-gap) * 0.7);
 
   /* Shape and effects */
   --shape-sm: 0.375rem;
@@ -580,42 +584,6 @@
   --panel-shadow: var(--shadow-soft);
   --menu-edge-shadow: var(--shadow-menu-edge);
   --font-smoothing: auto;
-}
-
-/* The footer's black block, and everything on it — the mark, the closing line
-   and the bar field — is drawn in --accent-contrast.
-
-   It used to be the whole panel. Since 2026-08-27 the lists stand off it, on the
-   page's own ground in the page's own ink, so what this pair governs is the
-   block alone.
-
-   It does not move between themes, so it takes itself off the themed --accent
-   and names both halves here. Every child reads them by inheritance, which is
-   why turning the whole panel over is one line.
-
-   **Black since 2026-08-27, the owner's call, and the note that used to stand
-   here comes down with it.** That note recorded a standing failure: white on
-   the #a98ad6 lavender was 2.88:1, which misses WCAG AA at both thresholds —
-   4.5:1 for body and 3:1 for large — and there was no fix on the ink's side,
-   because white is already the lightest colour there is. The slab was what had
-   to move, and it has. White on #08080a is 20.01:1. `theme.test.mjs` computes
-   that number from these two values on every run and prints it, so it is not
-   taken on trust here.
-
-   **#08080a and not #000000, and the difference matters in one place.** On a
-   light page either reads as black. On a dark page the canvas IS #000000, and a
-   panel painted the same would stop being a panel — its corners and its margins
-   would vanish and the footer would read as the page simply running out. Two
-   points of lift is enough to keep the slab a slab and still be black to the
-   eye. It is the site's own light-mode ink, so it is not a new colour either.
-
-   The one thing that does not follow --accent-contrast is the wordmark, which
-   is a raster and is driven by a filter instead; see .site-footer__mark img,
-   which has to be turned over by hand every time this line changes — and does
-   not, this time, because the ink has not moved. */
-.site-footer__slab {
-  --accent: #08080a;
-  --accent-contrast: #ffffff;
 }
 
 @theme inline {
@@ -725,13 +693,6 @@ video {
 /* Anything hoverable takes the finger. */
 [data-cursor] {
   cursor: pointer;
-}
-
-/* The bars are redrawn on hover, each growing from its own left edge, so the
-   origin has to be the rectangle rather than the whole drawing. */
-.difference-card__lines rect {
-  transform-box: fill-box;
-  transform-origin: left center;
 }
 
 /* ---------------------------- Layout primitives --------------------------- */
@@ -1142,16 +1103,6 @@ video {
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
-/* **Except on the accent panel, where purple on purple is nothing.** The
-   footer's way back up sits inside `.site-footer__panel`, whose background IS
-   `--accent` — the arrow would go invisible at the moment it was pointed at.
-   Its own contrast colour instead, which is what the panel's text already
-   uses. */
-.site-footer__panel :is(a, button):hover .pixel-arrow--animated,
-.site-footer__panel :is(a, button):focus-visible .pixel-arrow--animated {
-  color: var(--accent-contrast);
-}
-
 @keyframes pixel-arrow-matrix-reconstruct {
   0%,
   5% {
@@ -1240,6 +1191,30 @@ video {
   background: var(--surface-raised);
 }
 
+/* "Operating from Kosova", on arrival, at the band's right end just above it
+   — owner, 2026-10-05: "i need by default thi text to be move on that
+   position". The bar's size and setting; over the frame, and white while the
+   photograph is behind it (HouseHeroMotion, which also takes it down the
+   right edge to the foot of the opened photograph). */
+.house-hero__place {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: calc(100% + 14px);
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-body);
+  line-height: 1;
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-standard);
+  will-change: transform;
+}
+
+/* White only while the photograph is behind it (HouseHeroMotion asks). */
+.house-hero__place.is-on-photo {
+  color: var(--ink-on-photo);
+}
+
 /* Cover, so the band shows the middle of the photograph — the red square and
    the two figures between it — and the whole screen shows all of it. */
 .house-hero__image {
@@ -1311,22 +1286,29 @@ video {
   z-index: 1;
 }
 
-/* Scrolled: the wordmark and its place step up and away, and MENU stays. They
-   come back at the top of the page, and while the menu is open, which stands
-   on the whole screen with the bar drawn over it. */
-.site-nav__lead {
+/* **Scrolled: only the ring stays** — owner, 2026-10-05: "also when scroll
+   only icon of the logo to remain". The wordmark folds back to its ring, the
+   leftmost 163.92 of its 694.25 units, by a clip from the right — the letters
+   wiped away towards the mark, and drawn back out at the top of the page —
+   and the place beside it goes. MENU stays. All of it comes back at the top
+   of the page, and while the menu is open. */
+.site-nav__place {
   transition:
+    color var(--duration-base) var(--ease-standard),
     opacity var(--duration-base) var(--ease-standard),
-    transform var(--duration-base) var(--ease-standard),
     visibility var(--duration-base);
 }
 
 .site-header:not([data-header="top"]):not(.site-header--mobile-menu-open)
-  .site-nav__lead {
+  .site-nav__place {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-0.6rem);
   visibility: hidden;
+}
+
+.site-header:not([data-header="top"]):not(.site-header--mobile-menu-open)
+  .brand-logo {
+  clip-path: inset(0 76.39% 0 0);
 }
 
 /* The room the bar used to take up, in the page, exactly where it was. The
@@ -1337,9 +1319,10 @@ video {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* The wordmark still leaves and returns — that is navigation, not
+  /* The letters still leave and return — that is navigation, not
      decoration — but between frames rather than moving. */
-  .site-nav__lead {
+  .site-nav__place,
+  .brand-logo {
     transition: none;
   }
 }
@@ -1442,7 +1425,17 @@ video {
 }
 
 .brand-logo {
-  transition: filter var(--duration-base) var(--ease-standard);
+  clip-path: inset(0 0 0 0);
+  transition:
+    filter var(--duration-base) var(--ease-standard),
+    clip-path var(--duration-handover) var(--ease-handover);
+}
+
+/* On the homepage the bar's "Operating from Kosova" gives way to the
+   opening's own (.house-hero__place), which starts at the band's right end
+   and goes down to the foot of the opened photograph on the scroll. */
+:root:has([data-house-hero]) .site-nav__place {
+  visibility: hidden;
 }
 
 /* ── The roll ──
@@ -1594,11 +1587,9 @@ video {
   transition: transform var(--duration-base) var(--ease-standard);
 }
 
-/* Open, the upright arms fold into the middle and the level pair is left: a
-   minus, split like the plus. */
-.mobile-menu-toggle[aria-expanded="true"] .mobile-menu-toggle__plus::after {
-  transform: scaleY(0);
-}
+/* Open, it stays a plus — owner, 2026-10-05: "the + of menu need to saty as
+   it is not to transform to --". (It folded its upright away to a split
+   minus from 2026-10-03.) */
 
 /* Under the pointer Menu and its mark turn the site's red — owner, 2026-10-03:
    "when hover the Menu + to be in red". The plus is drawn in currentColor, so
@@ -1609,6 +1600,127 @@ video {
   }
 }
 
+/* ── The bar's row of pages ──
+
+   Owner, 2026-10-05: "no big menu but when hover to aper menu on the left so
+   in same text as Menu is write to aper Home, Services, Products, Clients,
+   about so to apear only as a text not with bacground". On a desktop — a
+   pointer to hover with, and room beside the button — the five words come in
+   to the left of Menu: Menu's own size and weight, no ground, opening from
+   right to left, the word nearest Menu first — on a press of Menu, and gone again
+   on the next, on Escape, on a press anywhere else, or on scrolling down.
+   They roll and turn the site's red under the pointer, as Menu does.
+   Anywhere else the row is not there and Menu opens the sheet.
+
+   The row hangs off the button's left edge rather than standing in the bar,
+   so hidden it takes no room and catches no pointer; it touches the button,
+   so moving from one to the other never leaves the hover. */
+.site-nav__menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.bar-menu {
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  display: flex;
+  gap: 1.6em;
+  margin: 0;
+  padding: 0 1.6em 0 0;
+  font-size: var(--text-body);
+  font-weight: var(--weight-body);
+  line-height: 1;
+  list-style: none;
+  white-space: nowrap;
+  transform: translateY(-50%);
+  /* **It opens from right to left** — owner, 2026-10-05: "i want to open
+     animation from right to left menu". Closed, the row is wiped back to
+     the edge it shares with Menu; open, the wipe runs out leftward from
+     there, and each word slides in after it from the right, the nearest
+     first. Closing folds it back the same way, quicker. Open a little above
+     and below so a rolling word is never cut. */
+  clip-path: inset(-0.6em 0 -0.6em 100%);
+  visibility: hidden;
+  transition:
+    clip-path 420ms var(--ease-handover),
+    visibility 0s linear 420ms;
+}
+
+.bar-menu__link {
+  display: inline-block;
+  color: var(--ink);
+  opacity: 0;
+  text-decoration: none;
+  transform: translateX(1.5em);
+  transition:
+    transform 320ms var(--ease-standard),
+    opacity 200ms var(--ease-standard),
+    color var(--duration-base) var(--ease-standard);
+}
+
+/* The one nearest Menu first, then outward. */
+.bar-menu__item:nth-last-child(2) {
+  --bar-step: 1;
+}
+
+.bar-menu__item:nth-last-child(3) {
+  --bar-step: 2;
+}
+
+.bar-menu__item:nth-last-child(4) {
+  --bar-step: 3;
+}
+
+.bar-menu__item:nth-last-child(5) {
+  --bar-step: 4;
+}
+
+/* Opened by a press of Menu, not by the pointer — owner, 2026-10-05: "on
+   hover i want menu to have that animation but not to open i want to be
+   click to open same to slose also it can close when scrolling down". Under
+   the pointer Menu only rolls. */
+@media (hover: hover) and (min-width: 40.0625rem) {
+  .site-nav__menu.is-open .bar-menu {
+    clip-path: inset(-0.6em 0 -0.6em 0);
+    visibility: visible;
+    transition:
+      clip-path var(--duration-handover) var(--ease-standard),
+      visibility 0s;
+  }
+
+  .site-nav__menu.is-open .bar-menu__link {
+    opacity: 1;
+    transform: none;
+    transition:
+      transform var(--duration-handover) var(--ease-standard),
+      opacity var(--duration-base) var(--ease-standard),
+      color var(--duration-base) var(--ease-standard);
+    transition-delay:
+      calc(var(--bar-step, 0) * 60ms),
+      calc(var(--bar-step, 0) * 60ms),
+      0s;
+  }
+
+  .bar-menu__link:hover {
+    color: var(--tint-red);
+  }
+}
+
+.bar-menu__link:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.3em;
+}
+
+/* No pointer to hover with, or no room beside the button: no row. */
+@media (hover: none), (max-width: 40rem) {
+  .bar-menu {
+    display: none;
+  }
+}
+
 /* Under the pointer the word rolls (`.roll`) and the plus stays still — owner,
    2026-10-05: Menu to have VIEW ALL's hover, "not to move the icon". (It
    turned slowly half way round from 2026-10-03.) The minus is the open menu's
@@ -1616,10 +1728,8 @@ video {
 
 /* ── The menu ──
 
-   The sheet the burger opens, at every width since 2026-10-03 — it was the
-   phone's only, inside the phone block further down, and the big menu on a
-   wide window is this with its halves side by side (`.mobile-menu--wide`,
-   below). The phone's own notes travel with it. */
+   The sheet the burger opens, at every width since 2026-10-03; what is on it
+   since 2026-10-05 is under "Inside the menu", below. */
 
 /* The sheet is the page, full-bleed — so it takes the page's own ground and
    ink rather than the near-black and near-white it used to name here. Those
@@ -1632,287 +1742,30 @@ video {
   inset: 0;
   z-index: 1;
   display: block;
-  overflow: hidden;
+  /* Taller than a short window, the sheet scrolls itself, and only itself. */
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* The page's white (owner, 2026-10-05: "make bacground white"; it was the
+     site's red for an hour). It comes down over the page like a blind and
+     goes back up the same way. */
   background: var(--canvas);
   color: var(--ink);
-  opacity: 0;
+  clip-path: inset(0 0 100% 0);
   pointer-events: none;
-  transform: translateY(-0.75rem);
   transition:
-    opacity 260ms var(--ease-standard),
-    transform 420ms var(--ease-standard),
-    visibility 420ms;
+    clip-path var(--duration-handover) var(--ease-handover),
+    visibility 0s linear var(--duration-handover);
   visibility: hidden;
 }
 
 .mobile-menu--open {
-  opacity: 1;
+  clip-path: inset(0);
   pointer-events: auto;
-  transform: translateY(0);
+  transition:
+    clip-path var(--duration-handover) var(--ease-handover),
+    visibility 0s;
   visibility: visible;
-}
-
-.mobile-menu__content {
-  display: grid;
-  height: 100dvh;
-  min-height: 34rem;
-  grid-template-rows: minmax(0, 1fr) auto;
-  padding-top: clamp(6.75rem, 15vh, 8.75rem);
-  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
-}
-
-.mobile-menu__viewport {
-  position: relative;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.mobile-menu__index,
-.mobile-menu__detail {
-  position: absolute;
-  inset: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: none;
-  will-change: opacity, transform;
-}
-
-.mobile-menu__index::-webkit-scrollbar,
-.mobile-menu__detail::-webkit-scrollbar {
-  display: none;
-}
-
-.mobile-menu__index-list,
-.mobile-menu__detail-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.mobile-menu__index-list {
-  display: grid;
-  gap: clamp(0.2rem, 1vh, 0.65rem);
-}
-
-.mobile-menu__index-link {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.15rem 0;
-  border: 0;
-  background: transparent;
-  color: var(--ink);
-  cursor: pointer;
-  font: inherit;
-  font-family: var(--type-display);
-  /* Owner, 2026-08-27: smaller. It was `clamp(2.35rem, 7.2vw, 4rem)`, and the
-     floor is what a phone actually gets — 7.2vw does not reach 2.35rem until
-     523px, so every phone read the same 37.6px regardless of its width. Four
-     names at that size fill the sheet and leave the way in and the theme row
-     reading as afterthoughts under them. */
-  font-size: var(--menu-word-size);
-  font-weight: var(--weight-body);
-  letter-spacing: var(--tracking-tight);
-  line-height: 1.08;
-  text-align: left;
-  transition: color var(--duration-base) var(--ease-standard);
-}
-
-/* ── The way in, under the names ──
-
-   **Owner, 2026-08-27, twice: simpler, then up on the right.** It was a
-   full-width purple block at the foot of the sheet, then an outlined pill on
-   the left. It is an arrow link now — the fifth of a set that was deliberately
-   brought to one size and one purple earlier the same day, so it should never
-   have been the one carrying a button.
-
-   Nothing here is its own idea. The box, the gap and the tap padding are
-   `.product__cta`'s to the number; `--text-cta` is the shared size; the hover
-   is added to the group the other four already share, so the five of them
-   still turn together. What is local is the row, and the row is only doing
-   one thing: putting it on the right edge the names run to. */
-.mobile-menu__cta-row {
-  display: flex;
-  justify-content: flex-end;
-  /* 30px of air under Company first, then 55 — the owner asked the rule
-     further down once he had seen it. The link travels with it: the two are
-     one object, a line with its way in underneath, and the gap that matters
-     between them is the `padding-top` below. */
-  margin-top: clamp(2.5rem, 6.5vh, 3.75rem);
-  /* Owner, 2026-08-27: a rule under the names, and the link below it — and
-     then, an hour later, the rules that used to run between the entries of an
-     opened section, which are gone. So this is the only hairline the sheet
-     draws now, and it is the better half of that trade: four rules stacked
-     between four entries divide a list into boxes, where one rule under the
-     whole list separates the names from what follows them.
-
-     The weight is theirs, kept deliberately — 0.5px at 28% of the ink rather
-     than `--line-soft`, which is the same grey the page uses for panel edges
-     and reads heavier under type this size.
-
-     `padding-top` and not a margin on the link: the link carries
-     `margin-block: -0.6875rem` to give its tap target back to the layout, so a
-     margin there would be eaten by it and the gap under the rule would come
-     out 11px shorter than whatever was typed. Padding on the row is measured
-     from the rule itself. */
-  padding-top: clamp(1.75rem, 4vh, 2.4rem);
-  border-top: 0.5px solid color-mix(in srgb, var(--ink) 28%, transparent);
-}
-
-.mobile-menu__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55em;
-  /* The same pair every arrow link on the site carries: a 44px target given
-     back to the layout, so the row does not grow around it. */
-  margin-block: -0.6875rem;
-  padding-block: 0.6875rem;
-  color: var(--ink);
-  font-size: var(--text-cta);
-  letter-spacing: -0.02em;
-  line-height: 1;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-.mobile-menu__index-link:hover,
-.mobile-menu__index-link:focus-visible,
-.mobile-menu__index-link.is-current {
-  color: var(--accent-soft);
-}
-
-.mobile-menu__detail {
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-}
-
-.mobile-menu__back {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.55rem;
-  margin-top: clamp(1rem, 2.5vh, 1.5rem);
-  padding: 0.25rem 0;
-  border: 0;
-  background: transparent;
-  color: var(--accent-soft);
-  cursor: pointer;
-  font: inherit;
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  letter-spacing: -0.025em;
-}
-
-.mobile-menu__detail-list {
-  display: grid;
-  gap: 0;
-  padding-bottom: 0;
-}
-
-/* Services' two halves on the phone, under the panel's two headings. Inset
-   by the names' own 1.1rem, so each word stands over the names it sorts and
-   not over the square that marks the current page. */
-.mobile-menu__detail-heading {
-  margin-bottom: clamp(0.15rem, 0.6vh, 0.35rem);
-  padding-left: 1.1rem;
-}
-
-.mobile-menu__detail-group + .mobile-menu__detail-group {
-  margin-top: clamp(1.25rem, 3.5vh, 2rem);
-}
-
-/* Mixed from the ink rather than named as a near-white at 28%, so the rule
-   keeps exactly the weight it was drawn at while following the page over. */
-.mobile-menu__detail-link {
-  position: relative;
-  display: block;
-  width: 100%;
-  padding: clamp(0.55rem, 1.25vh, 0.75rem) 0 clamp(0.55rem, 1.25vh, 0.75rem)
-    1.1rem;
-  color: var(--ink);
-  font-family: var(--type-display);
-  font-size: clamp(1.6rem, 4.8vw, 2.5rem);
-  /* Owner, 2026-08-27: normal. It was `--weight-heading-xl`, which is 430 —
-     the only weight in the whole sheet that was not 400, and Geist is variable
-     so those thirty units are a visible step rather than a rounding. It read
-     as heavier type for a SHORTER list than the four names that lead to it,
-     which is the wrong way round: an opened section is one level down, not one
-     level up. */
-  font-weight: var(--weight-body);
-  letter-spacing: var(--tracking-tight);
-  line-height: 1.08;
-  transition: color var(--duration-base) var(--ease-standard);
-}
-
-.mobile-menu__detail-link::before {
-  position: absolute;
-  top: calc(clamp(0.55rem, 1.25vh, 0.75rem) + 0.35em);
-  left: 0;
-  width: 0.5rem;
-  height: 0.5rem;
-  background: var(--accent);
-  content: "";
-  opacity: 0;
-}
-
-.mobile-menu__detail-link.is-current::before {
-  opacity: 1;
-}
-
-.mobile-menu__detail-link:hover,
-.mobile-menu__detail-link:focus-visible,
-.mobile-menu__detail-link.is-current {
-  color: var(--accent-soft);
-}
-
-/* ── The foot of the sheet ──
-
-   One block where there were two loose children, so the sheet's grid sees a
-   single `auto` row and the scrolling list above it gives up whatever height
-   this needs — rather than the sheet growing past the screen.
-
-   Everything here stands on the container's own left edge, which is where the
-   four names stand. The button it replaces was full-width with 1.15rem of
-   inside padding, and the switch under it had to be pushed in by the same
-   amount to line up with the button's LABEL. A button that is only as wide as
-   its word needs no such arrangement: the edge is the edge for all three
-   rows. */
-/* As little as it can be — owner, 2026-10-03: "the section at bottom with
-   numbers social medai etc make a better minimal aproach". One quiet line,
-   where Mardal is and its number, in the paragraph size and the muted ink. No
-   marks, no rule. */
-.mobile-menu__foot {
-  margin-top: clamp(1rem, 3vh, 2rem);
-}
-
-/* The number is the one part of it that can be acted on, so it is the one part
-   that answers to a hover. */
-.mobile-menu__contact {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem clamp(1.5rem, 3vw, 3rem);
-  margin: 0;
-  color: var(--ink-muted);
-  font-size: var(--text-body);
-  line-height: var(--leading-body);
-}
-
-/* `dd` carries a 40px inline start margin from the user agent, which would
-   step the address in past every other line on the sheet. */
-.mobile-menu__contact-value {
-  margin: 0;
-}
-
-.mobile-menu__contact-link {
-  color: inherit;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-.mobile-menu__contact-link:hover,
-.mobile-menu__contact-link:focus-visible {
-  color: var(--ink);
 }
 
 /* The bar while the sheet is open. It stands on the sheet, and the sheet is
@@ -1920,14 +1773,18 @@ video {
    than naming the near-black they used to. The logo needs no rule of its own
    any more either: it is already on --logo-filter, and the ground it is
    standing on is the same ground it was standing on before the sheet opened. */
+/* Standing on the red sheet: no ground of its own, so the red runs to the
+   top of the screen behind the wordmark and the button. */
 .site-header--mobile-menu-open {
-  background: var(--canvas);
+  background: transparent;
 }
 
 .site-header--mobile-menu-open .site-nav {
-  background: var(--canvas);
+  background: transparent;
   color: var(--ink);
 }
+
+
 
 .site-header--mobile-menu-open .mobile-menu-toggle {
   border-color: color-mix(in srgb, var(--ink) 62%, transparent);
@@ -1959,273 +1816,604 @@ video {
   z-index: 2;
 }
 
-/* The size of the four words, named so the count beside them can be placed by
-   it: the phone's size here, the hero's on a wide window (below). */
-.mobile-menu {
-  --menu-word-size: clamp(1.8rem, 6vw, 3.1rem);
+/* ── Inside the menu ──
+
+   Owner, 2026-10-05: "now i want to redesin comple the menu the burger menu
+   inside"; three goes later, "somthing different … maybe Blog carreers and
+   contact to be under About". So: the red sheet, and four words on it at the
+   size of the page, black, on the page's four columns.
+
+     the words        Services, Products, Clients, About, from the first
+                      rule; three are parents, with the Menu button's plus;
+                      white under the pointer, and white while open or while
+                      you are on one of their pages
+     the panel        a parent's pages, large, in the display face — from the
+                      third rule on a wide window, level with the first word;
+                      Services' two halves side by side under their headings;
+                      under the word on a phone, opening downward
+     the foot         under a hairline: "Start a project" on the first rule,
+                      the email, the phone and the address on the next three */
+.mobile-menu__content {
+  /* Owner, 2026-10-05: "make smaller more to the rigght make in vertical
+     line with email" — the words start on the second rule, where the email
+     in the foot does, and are sized so the longest of them, Products, ends
+     inside that column, short of the panel on the third. */
+  --menu-word-size: clamp(2.5rem, 4.8vw, 5rem);
+  --menu-link-size: clamp(1.5rem, 2.3vw, 2.25rem);
+  --menu-line: var(--line-grid);
+  /* **Grey at rest, black in hand** — owner, 2026-10-05: "when grey when is
+     not active black active". The page's grey, the one its hairlines are
+     drawn in: 3.4:1 on white, enough for words this size and the pages'
+     size beside them. */
+  --menu-rest: var(--line-grid);
+
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: auto 1fr auto;
+  min-height: 100dvh;
+  /* Lower on the sheet — owner, 2026-10-05: "move the grou more down". */
+  padding-top: clamp(8rem, 14vw, 13rem);
+  padding-bottom: clamp(1.25rem, 2.5vw, 2rem);
 }
 
-/* The word and its count, as one group, so the phone's arrow can still stand at
-   the far end of the row. */
-.mobile-menu__name {
-  display: inline-flex;
-  align-items: flex-start;
-  gap: calc(var(--menu-word-size) * 0.06);
+.mobile-menu__pages {
+  /* The plus's place in front of a word: the Menu button's plus, and a
+     little air between it and the word (owner, the same day: "add little
+     margin between"). */
+  /* The Menu button's plus, half as big again and in the site's red — owner,
+     2026-10-05: "+ ong red and make red bigger". */
+  --menu-plus: round(calc(var(--text-body) * 1.6), 2px);
+  --menu-slot: calc(var(--menu-plus) + 0.24em);
+
+  position: relative;
+  grid-row: 1;
+  grid-column: 2 / -1;
+  margin: 0;
+  padding: 0;
+  font-family: var(--type-display);
+  font-size: var(--menu-word-size);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.035em;
+  /* Air between one word and the next — owner, 2026-10-05: "add more space
+     between the links". */
+  line-height: 1.18;
+  list-style: none;
 }
 
-/* The mask each word rises out of. Padded past the line box and pulled back by
-   the same amount, so the descenders of "Company" and the tops of the capitals
-   are inside it rather than cut by it. */
+/* A page's link and a parent's button, one look. A block, as wide as its
+   word: inline, it would sit on a line of its own and leave a descender's
+   depth under every word. */
+.mobile-menu__page {
+  display: flex;
+  width: fit-content;
+  /* The plus's place hangs in front of the rule, so the word itself starts
+     on it. */
+  margin-left: calc(var(--menu-slot) * -1);
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  text-decoration: none;
+  color: var(--menu-rest);
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* The mask each word rises out of, open past its box at the foot so the
+   descenders are whole at rest. */
 .mobile-menu__word {
-  display: inline-block;
-  margin-block: -0.08em -0.14em;
-  padding-block: 0.08em 0.14em;
-  overflow: hidden;
-  vertical-align: top;
+  display: block;
+  clip-path: inset(-0.15em -0.25em -0.3em);
 }
 
 .mobile-menu__word-inner {
-  display: inline-block;
+  display: block;
+  will-change: transform;
 }
 
-/* How many pages are behind the word, in front of it (owner, 2026-10-03:
-   "numbers put in front"), set small against its cap height in the paragraph
-   size. A slot of its own width on every word, Clients' empty, so the four
-   words start on one line. Muted, and the word's own colour when the word is
-   in hand. Its top is on the word's cap line: a fifth of the word's size down
-   from the top of the line, measured by the word rather than its own type. */
-.mobile-menu__count {
-  min-width: 1.4em;
-  margin-top: calc(var(--menu-word-size) * 0.2);
-  color: var(--ink-muted);
+/* **The plus, in front of the word and on its middle** — owner, 2026-10-05:
+   "i want + to be on fron of the pages not in the end also in the midle",
+   then "Make + same as text menu": the Menu button's own plus, at its size —
+   whole pixels, 2px strokes, each stroke's middle left open — and, like it,
+   a plus whether its pages are open or not. Every word has the place,
+   Clients' empty, so the four start on one line; centred on the word's line,
+   which at this leading is the middle of its capitals too. */
+/* Its top on the top of the capitals — owner, 2026-10-05: "move plus in top
+   of the text in same horisontal line". They stand 0.235 of the word's size
+   under its line's top at this leading. */
+.mobile-menu__slot {
+  display: flex;
+  flex: none;
+  align-self: flex-start;
+  width: var(--menu-slot);
+  margin-top: 0.235em;
+}
+
+.mobile-menu__plus {
+  --plus-arm: round(calc(var(--menu-plus) * 0.31), 1px);
+
+  position: relative;
+  color: var(--accent);
+  display: block;
+  width: var(--menu-plus);
+  height: var(--menu-plus);
+}
+
+.mobile-menu__plus::before,
+.mobile-menu__plus::after {
+  position: absolute;
+  content: "";
+}
+
+.mobile-menu__plus::before {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  margin-top: -1px;
+  background: linear-gradient(
+    to right,
+    currentcolor var(--plus-arm),
+    transparent 0 calc(100% - var(--plus-arm)),
+    currentcolor 0
+  );
+}
+
+.mobile-menu__plus::after {
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  margin-left: -1px;
+  background: linear-gradient(
+    to bottom,
+    currentcolor var(--plus-arm),
+    transparent 0 calc(100% - var(--plus-arm)),
+    currentcolor 0
+  );
+}
+
+/* A hairline on the red: the ink at a third, a box so 0.8px is 0.8px. */
+.mobile-menu__rule {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 0.8px;
+  background: var(--menu-line);
+}
+
+/* **The panel**, on a wide window: from the third rule to the edge, every
+   parent's in the same place and only the open one there to be seen. Shown
+   and hidden at once, so going from one parent to the next the last one's
+   pages are gone before the next one's arrive.
+
+   **Its pages are an index** — owner, 2026-10-05, of large grey words in a
+   column: "i don like how sub links shows pls redesign that part". Each page
+   is a ruled row — its name, and VIEW ALL's thin arrow at the far end — a
+   hairline over the list and under every row, one list to a column: Services'
+   two halves side by side under their headings, Products and About one list
+   each. Grey at rest; under the pointer the name turns black and the arrow
+   the site's red, and the arrow does not move. */
+.mobile-menu__panel {
+  --menu-row: max(var(--text-copy), calc(var(--text-house) * 0.21));
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  /* The third rule: a third of the way across the list's three columns. */
+  left: calc(100% / 3);
+  /* The first hairline level with the first word's capitals' top, 0.235 of
+     the word's size under its line's top at this leading. */
+  margin-top: calc(var(--menu-word-size) * 0.235);
+  font-family: var(--type-body);
   font-size: var(--text-body);
-  font-weight: var(--weight-medium);
-  letter-spacing: 0;
-  line-height: 1;
-  vertical-align: baseline;
-  transition: color var(--duration-fast) var(--ease-standard);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-body);
+  pointer-events: none;
+  visibility: hidden;
 }
 
-.mobile-menu__index-link[aria-expanded="true"] .mobile-menu__count,
-.mobile-menu__index-link:focus-visible .mobile-menu__count {
-  color: inherit;
-}
-
-@media (hover: hover) {
-  .mobile-menu__index-link:hover .mobile-menu__count {
-    color: inherit;
-  }
-}
-
-/* ── The big menu, on a wide window ──
-
-   The sheet above, grown into the whole screen. It is the phone's menu with
-   its two halves set side by side instead of taking turns: the four words down
-   the left at the hero's size, the list of the one you are on to the right of
-   them. `.mobile-menu--wide` is set by the header from the same query the
-   stylesheet's phone block uses, so the two cannot disagree about where the
-   line is — and a complement of that two-clause query cannot be written. */
-.mobile-menu--wide {
-  /* The hero's size, held to the height of the window as well as its width,
-     so four of them and the way in always fit between the bar and the foot. */
-  --menu-word-size: min(var(--text-hero), 11svh);
-
-  /* Drawn down from the bar like a blind, rather than nudged into place: at
-     this size a small slide reads as a jolt. */
-  clip-path: inset(0 0 100% 0);
-  transform: none;
-  transition:
-    clip-path var(--duration-slow) var(--ease-standard),
-    opacity 260ms var(--ease-standard),
-    visibility var(--duration-slow);
-}
-
-.mobile-menu--wide.mobile-menu--open {
-  clip-path: inset(0);
-}
-
-.mobile-menu--wide .mobile-menu__content {
-  min-height: 0;
-  padding-top: calc(var(--header-space) + clamp(1.5rem, 6vh, 4rem));
-  padding-bottom: clamp(1.5rem, 4vh, 2.5rem);
-}
-
-/* Twelve columns, like the page under it: the words take seven, the list the
-   last five. */
-.mobile-menu--wide .mobile-menu__viewport {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: clamp(1rem, 2vw, 2rem);
-  align-items: start;
-  overflow: visible;
-}
-
-.mobile-menu--wide .mobile-menu__index,
-.mobile-menu--wide .mobile-menu__detail {
-  position: static;
-  overflow: visible;
-}
-
-.mobile-menu--wide .mobile-menu__index {
-  grid-column: 1 / span 7;
-}
-
-/* Both on screen at once here, so the list is never hidden; it only changes. */
-.mobile-menu--wide .mobile-menu__detail {
-  grid-column: 8 / -1;
-  padding-top: clamp(0.5rem, 2vh, 1.25rem);
-  opacity: 1;
+.mobile-menu__panel.is-open {
   pointer-events: auto;
   visibility: visible;
 }
 
-/* At the hero's size (`--menu-word-size`, above). */
-.mobile-menu--wide .mobile-menu__index-link {
+/* A headed half stands its heading above that line instead. */
+.mobile-menu__panel:has(.mobile-menu__group-title) {
+  margin-top: calc(var(--menu-word-size) * 0.235 - var(--text-body) * 1.3 - 0.6rem);
+}
+
+.mobile-menu__panel-inner {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mobile-menu__group {
+  min-width: 0;
+  padding-right: calc(var(--column-gap) * 2.5);
+}
+
+.mobile-menu__group-title {
+  margin: 0 0 0.6rem;
+}
+
+/* The list: a hairline over it, and one under every row. */
+.mobile-menu__links {
   position: relative;
-  isolation: isolate;
-  display: inline-flex;
-  width: auto;
-  justify-content: flex-start;
-  gap: 0.2em;
-  margin-inline: -0.08em;
-  padding: 0 0.08em;
-  line-height: 1.04;
+  margin: 0;
+  padding: 0;
+  font-size: var(--menu-row);
+  letter-spacing: -0.015em;
+  line-height: var(--leading-body);
+  list-style: none;
 }
 
-/* The redaction bar, at the size of the word: struck through in red from the
-   left under the pointer, held on the word whose list is open, wiped off to
-   the right when the pointer goes. */
-.mobile-menu--wide .mobile-menu__index-link::before {
+.mobile-menu__links::before,
+.mobile-menu__item::after {
   position: absolute;
-  z-index: -1;
-  inset: 0.1em 0 0.06em;
-  background: var(--tint-red);
+  right: 0;
+  left: 0;
+  height: 0.8px;
+  background: var(--menu-line);
   content: "";
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform var(--duration-base) var(--ease-standard);
-}
-
-.mobile-menu--wide .mobile-menu__index-link[aria-expanded="true"],
-.mobile-menu--wide .mobile-menu__index-link:focus-visible {
-  color: var(--ink-on-tint);
-}
-
-.mobile-menu--wide .mobile-menu__index-link[aria-expanded="true"]::before,
-.mobile-menu--wide .mobile-menu__index-link:focus-visible::before {
-  transform: scaleX(1);
   transform-origin: left;
 }
 
-@media (hover: hover) {
-  .mobile-menu--wide .mobile-menu__index-link:hover {
-    color: var(--ink-on-tint);
-  }
-
-  .mobile-menu--wide .mobile-menu__index-link:hover::before {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
+.mobile-menu__links::before {
+  top: 0;
 }
 
-/* The way in under the words, as a line of text with its arrow — no ground of
-   its own (owner, 2026-10-03: "Change the button of START a project withou
-   bacground"). */
-.mobile-menu--wide .mobile-menu__cta-row {
-  justify-content: flex-start;
-  margin-top: clamp(1.5rem, 4.5vh, 3rem);
-  padding-top: 0;
-  border-top: 0;
+/* The row is the mask its name and arrow rise out of. */
+.mobile-menu__item {
+  position: relative;
+  clip-path: inset(0 -0.5em);
 }
 
-.mobile-menu--wide .mobile-menu__cta {
-  font-size: var(--text-body);
-  font-weight: var(--weight-medium);
+.mobile-menu__item::after {
+  bottom: 0;
 }
 
-/* Services' two halves side by side, at the header size: the second step down
-   from the words, and still a list you read across rather than a column of
-   small print. */
-.mobile-menu--wide .mobile-menu__detail-groups {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: clamp(1rem, 2vw, 2rem);
+.mobile-menu__panel .mobile-menu__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.6em 0.65em;
+  color: var(--menu-rest);
 }
 
-.mobile-menu--wide .mobile-menu__detail-group + .mobile-menu__detail-group {
-  margin-top: 0;
+.mobile-menu__link-arrow {
+  width: 0.7em;
+  height: 0.7em;
+  flex: none;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: square;
+  stroke-width: 1.25px;
+  transition: color var(--duration-base) var(--ease-standard);
 }
 
-.mobile-menu--wide .mobile-menu__detail-heading {
-  margin-bottom: clamp(0.5rem, 1.2vh, 0.9rem);
-  padding-left: 0;
+/* On the path: `vector-effect` is not inherited from the svg. */
+.mobile-menu__link-arrow path {
+  vector-effect: non-scaling-stroke;
 }
 
-.mobile-menu--wide .mobile-menu__detail-link {
-  padding: clamp(0.3rem, 0.8vh, 0.5rem) 0;
-  font-size: var(--text-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: var(--leading-heading);
+/* **The arrival**: the hairline over the list draws from the left, then each
+   row in turn draws its own and its name and arrow rise into it. Closed, all
+   of it is put back at once, so the next opening plays from the start. */
+.mobile-menu__panel .mobile-menu__links::before,
+.mobile-menu__panel .mobile-menu__item::after {
+  transform: scaleX(0);
 }
 
-/* The square that marks the page you are on, level with the name's x-height.
-   It stands on the column's edge and the name steps aside for it (below). */
-.mobile-menu--wide .mobile-menu__detail-link::before {
-  top: calc(clamp(0.3rem, 0.8vh, 0.5rem) + 0.4em);
+.mobile-menu__panel .mobile-menu__link {
+  transform: translateY(105%);
 }
 
-/* Nothing to go back to: the words never left. */
-.mobile-menu--wide .mobile-menu__back {
-  display: none;
+.mobile-menu__panel .mobile-menu__group-title {
+  opacity: 0;
 }
 
-/* Reading across the words: the one under the pointer keeps its strength and
-   the rest step back, so the screen is about one word at a time. Asked with
-   `:has()`, so the list dims only while a word is actually under the pointer —
-   not while it is crossing the gaps between them. */
-.mobile-menu--wide .mobile-menu__index-link {
+.mobile-menu__panel.is-open .mobile-menu__links::before,
+.mobile-menu__panel.is-open .mobile-menu__item::after {
+  transform: none;
+  transition: transform var(--duration-handover) var(--ease-handover);
+  transition-delay: calc((var(--menu-step, 0) + var(--menu-half, 0) * 2) * 60ms);
+}
+
+.mobile-menu__panel.is-open .mobile-menu__link {
+  transform: none;
   transition:
-    color var(--duration-base) var(--ease-standard),
-    opacity var(--duration-base) var(--ease-standard);
+    transform var(--duration-handover) var(--ease-standard),
+    color var(--duration-base) var(--ease-standard);
+  transition-delay: calc((var(--menu-step, 0) + var(--menu-half, 0) * 2) * 60ms + 90ms), 0s;
 }
 
-@media (hover: hover) {
-  .mobile-menu--wide
-    .mobile-menu__index-list:has(.mobile-menu__index-link:hover)
-    .mobile-menu__index-link:not(:hover) {
-    opacity: 0.28;
-  }
-}
-
-/* A name in the list answers the pointer by stepping aside for the square the
-   current page wears: the square comes up where the name stood, so the same
-   mark says "here" and "you are about to go here". */
-.mobile-menu--wide .mobile-menu__detail-link > span {
-  display: inline-block;
-  transition: transform var(--duration-base) var(--ease-standard);
-}
-
-.mobile-menu--wide .mobile-menu__detail-link::before {
-  left: 0;
-  transition: opacity var(--duration-fast) var(--ease-standard);
-}
-
-.mobile-menu--wide .mobile-menu__detail-link.is-current > span,
-.mobile-menu--wide .mobile-menu__detail-link:focus-visible > span {
-  transform: translateX(1.1rem);
-}
-
-.mobile-menu--wide .mobile-menu__detail-link:focus-visible::before {
+.mobile-menu__panel.is-open .mobile-menu__group-title {
   opacity: 1;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.mobile-menu__item:nth-child(2) {
+  --menu-step: 1;
+}
+
+.mobile-menu__item:nth-child(3) {
+  --menu-step: 2;
+}
+
+.mobile-menu__item:nth-child(4) {
+  --menu-step: 3;
+}
+
+.mobile-menu__item:nth-child(5) {
+  --menu-step: 4;
+}
+
+.mobile-menu__item:nth-child(6) {
+  --menu-step: 5;
+}
+
+.mobile-menu__item:nth-child(7) {
+  --menu-step: 6;
+}
+
+/* Services' second half a beat behind its first. */
+.mobile-menu__group + .mobile-menu__group {
+  --menu-half: 1;
+}
+
+/* The page you are on, black, its arrow red. */
+.mobile-menu__panel .mobile-menu__link[aria-current="page"] {
+  color: var(--ink);
+}
+
+.mobile-menu__panel .mobile-menu__link[aria-current="page"] .mobile-menu__link-arrow {
+  color: var(--accent);
 }
 
 @media (hover: hover) {
-  .mobile-menu--wide .mobile-menu__detail-link:hover > span {
-    transform: translateX(1.1rem);
+  .mobile-menu__panel .mobile-menu__link:hover {
+    color: var(--ink);
   }
 
-  .mobile-menu--wide .mobile-menu__detail-link:hover::before {
-    opacity: 1;
+  .mobile-menu__panel .mobile-menu__link:hover .mobile-menu__link-arrow {
+    color: var(--accent);
+  }
+}
+
+.mobile-menu__link,
+.mobile-menu__cta {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* The foot, on the four rules under its own hairline. */
+.mobile-menu__foot {
+  position: relative;
+  display: grid;
+  grid-row: 3;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: baseline;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding-top: 1.1rem;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+.mobile-menu__contact {
+  min-width: 0;
+  margin: 0;
+  padding-right: var(--column-gap);
+}
+
+/* The way in: a step above the lines beside it, VIEW ALL's thin arrow. */
+.mobile-menu__cta {
+  display: inline-flex;
+  grid-column: 1;
+  justify-self: start;
+  align-items: center;
+  gap: 0.7em;
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
+}
+
+.mobile-menu__arrow {
+  width: 0.95em;
+  height: 0.95em;
+  flex: none;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: square;
+  stroke-width: 1.25px;
+}
+
+/* On the path: `vector-effect` is not inherited from the svg. */
+.mobile-menu__arrow path {
+  vector-effect: non-scaling-stroke;
+}
+
+.mobile-menu :is(a, button):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 0.2em;
+}
+
+/* In hand, black: the page you are on, the parent whose pages it is, and the
+   parent that is open. */
+.mobile-menu__page[aria-current="page"],
+.mobile-menu__page.is-current,
+.mobile-menu__page[aria-expanded="true"] {
+  color: var(--ink);
+}
+
+@media (hover: hover) {
+  .mobile-menu__page:hover {
+    color: var(--ink);
+  }
+
+  /* The foot's lines are black already: they take the site's red. */
+  .mobile-menu__foot .mobile-menu__link:hover,
+  .mobile-menu__cta:hover {
+    color: var(--accent);
+  }
+
+  /* One black word at a time: while the pointer is on a word, the others —
+     an open parent, the page you are on — go back to grey. (Moving on to a
+     panel's pages is not on a word, so its parent stays black.) */
+  .mobile-menu__pages:has(.mobile-menu__page:hover) .mobile-menu__page:not(:hover) {
+    color: var(--menu-rest);
+  }
+}
+
+/* On a phone: the words across the screen, a parent's pages opening under
+   its word and pushing the rest down, the foot one line under the next. */
+@media (max-width: 40rem) {
+  .mobile-menu__content {
+    --menu-word-size: 3rem;
+    --menu-link-size: 1.5rem;
+
+    padding-top: 8rem;
+  }
+
+  /* No margin to hang the plus in: the words take the whole width again,
+     the plus in front of each inside it. */
+  .mobile-menu__pages {
+    grid-column: 1 / -1;
+  }
+
+  .mobile-menu__page {
+    margin-left: 0;
+  }
+
+  .mobile-menu__panel,
+  .mobile-menu__panel:has(.mobile-menu__group-title) {
+    position: static;
+    display: grid;
+    grid-template-rows: 0fr;
+    margin-top: 0;
+    transition: grid-template-rows var(--duration-handover) var(--ease-handover);
+  }
+
+  .mobile-menu__panel.is-open {
+    grid-template-rows: 1fr;
+  }
+
+  /* Its clip is what lets the panel close to nothing; the air above and
+     below is the groups' own, inside it. */
+  .mobile-menu__panel-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* One list under the next, the whole width, under the word rather than
+     under its plus: in by the plus's place. */
+  .mobile-menu__panel-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mobile-menu__group {
+    padding-block: 0.75rem 1.25rem;
+    padding-right: 0;
+    padding-left: calc(var(--menu-plus) + var(--menu-word-size) * 0.24);
+  }
+
+  .mobile-menu__foot {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.35rem;
+  }
+
+  .mobile-menu__cta {
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* ── The index under an unwritten opening ──
+
+   Owner, 2026-10-05: "when click inside to have all services and other not
+   as a sublink". The services' page and the products' page list everything
+   they stand over, the menu's own lists: a ruled row to each, from the second
+   rule to the edge — its name at the headers' size, VIEW ALL's thin arrow at
+   the far end — a hairline over the list and under every row. Grey at rest;
+   under the pointer the name turns black and the arrow the site's red, and
+   the arrow does not move. */
+.page-index {
+  padding-block: 0 var(--section-space);
+  background: var(--canvas);
+}
+
+.container.page-index__inner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.page-index__list {
+  grid-column: 2 / -1;
+  margin: 0;
+  padding: 0;
+  border-top: 0;
+  background: linear-gradient(var(--line-grid), var(--line-grid)) 0 0 / 100% 0.8px no-repeat;
+  list-style: none;
+}
+
+.page-index__item {
+  background: linear-gradient(var(--line-grid), var(--line-grid)) 0 100% / 100% 0.8px no-repeat;
+}
+
+.page-index__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: clamp(1rem, 1.6vw, 1.4rem);
+  color: var(--line-grid);
+  font-family: var(--type-display);
+  font-size: var(--text-heading);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-heading);
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+.page-index__arrow {
+  width: 0.6em;
+  height: 0.6em;
+  flex: none;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: square;
+  stroke-width: 1.25px;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* On the path: `vector-effect` is not inherited from the svg. */
+.page-index__arrow path {
+  vector-effect: non-scaling-stroke;
+}
+
+.page-index__link:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.2em;
+}
+
+@media (hover: hover) {
+  .page-index__link:hover {
+    color: var(--ink);
+  }
+
+  .page-index__link:hover .page-index__arrow {
+    color: var(--accent);
+  }
+}
+
+/* On a phone the list takes the whole width. */
+@media (max-width: 40rem) {
+  .page-index__list {
+    grid-column: 1 / -1;
   }
 }
 
@@ -2237,7 +2425,7 @@ video {
    pinned, ScrollTrigger wraps it in a spacer, which is then the sibling. */
 .house-hero + section,
 .pin-spacer:has(> .house-hero) + section {
-  padding-top: var(--section-gap);
+  padding-top: calc(var(--section-space-lg) * 2);
 }
 
 /* Human Creativity + Artificial Intelligence — the owner's comp of 2026-10-05.
@@ -3698,222 +3886,6 @@ video {
   }
 }
 
-/* ------------------------------- Difference ------------------------------- */
-
-.difference-section {
-  position: relative;
-  background: var(--canvas);
-  padding-block: var(--section-space-lg);
-}
-
-/* The lines are set in the content, so neither one wraps on its own. */
-.difference-title {
-  max-width: none;
-}
-
-.difference-title__line {
-  display: block;
-}
-
-/* Four cards held to the foot of the section, the way the heading sits at
-   its head. */
-/* The same three columns the boxes use, so each paragraph sits exactly over
-   the box beneath it. The first column stays empty, under the heading. */
-/* The paragraphs and the boxes below them move together: this margin is what
-   sets the whole block under the heading, less the 40px it was moved up by. */
-.difference-intro {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(0.65rem, 0.9vw, 0.85rem);
-  margin-top: calc(clamp(3rem, 7vw, 6.5rem) - 40px);
-}
-
-.difference-intro__text:first-child {
-  grid-column: 2;
-}
-
-.difference-intro__text:last-child {
-  grid-column: 3;
-}
-
-.difference-intro__text {
-  /* The same, for the same reason: a third of an uncapped page is a very long
-     line. */
-  max-width: 58ch;
-  margin: 0;
-  color: var(--ink);
-  font-size: var(--text-copy);
-  letter-spacing: -0.015em;
-  line-height: var(--leading-body);
-}
-
-/* Three across, two rows, with the sixth cell left empty. A narrow gap on
-   purpose: the boxes are held to the page's own column, so the only width they
-   can gain is the space between them. */
-.difference-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(0.65rem, 0.9vw, 0.85rem);
-  margin: clamp(2.5rem, 5vw, 4.5rem) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* No card behind the copy: only the tint panel is a surface, and the words
-   below it sit straight on the page. */
-.difference-card {
-  display: flex;
-  container-type: inline-size;
-  flex-direction: column;
-}
-
-/* The colour, the bars and the title, in that order front to back. The title
-   sits at the foot of the panel with the bars running under it. */
-/* The shape the bars were traced from, plus the 110px the panel has been asked
-   to grow by in two goes. Reading the card's own width keeps that exact at
-   every size. */
-.difference-card__panel {
-  position: relative;
-  display: flex;
-  height: calc(100cqw * 336 / 716 + 110px);
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: clamp(1.1rem, 1.6vw, 1.5rem);
-  padding-bottom: clamp(1.25rem, 2.2vw, 1.85rem);
-  overflow: hidden;
-  border-radius: var(--shape-card);
-  background: var(--card-tint);
-}
-
-.difference-card__lines {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  fill: var(--card-tint-bar);
-}
-
-/* The display face, as the Why Mardal card titles are. Its tracking comes with
-   it: -0.045em is drawn to hold the grotesque together and is too loose under a
-   cut this tight. Nothing here is measured in ch and the lines are broken by
-   hand in the markup, so unlike the other card titles the swap cannot move a
-   line break. The weight stays at 400, which is the only one CS Alistair
-   ships. */
-.difference-card__title {
-  position: relative;
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading);
-}
-
-/* The break is set in the content, so it falls in the same place on every box
-   however wide the box gets. */
-.difference-card__title-line {
-  display: block;
-}
-
-/* A dash in the corner of every box, at the size of the type rather than the
-   size of the rule beside the industries. The upright stroke grows out of the
-   middle on hover, so the dash closes into a cross. */
-.difference-card__toggle {
-  position: absolute;
-  top: clamp(1.1rem, 1.6vw, 1.5rem);
-  right: clamp(1.1rem, 1.6vw, 1.5rem);
-  width: 1.75rem;
-  height: 1.75rem;
-}
-
-.difference-card__toggle::before,
-.difference-card__toggle::after {
-  position: absolute;
-  background: var(--ink);
-  content: "";
-}
-
-.difference-card__toggle::before {
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  transform: translateY(-50%);
-}
-
-.difference-card__toggle::after {
-  top: 0;
-  left: 50%;
-  width: 2px;
-  height: 100%;
-  transform: translateX(-50%) scaleY(0);
-  transition: transform var(--duration-base) var(--ease-standard);
-}
-
-.difference-card:hover .difference-card__toggle::after {
-  transform: translateX(-50%) scaleY(1);
-}
-
-/* The white below the panel is only this padding: the copy sets its own
-   height, so the card is as tall as its longest paragraph and no taller. */
-/* **One tint per card, and the pattern is thinned rather than the panel.**
-   Owner, 2026-08-26: on all five boxes make the pattern a little pale, around
-   20% transparent.
-
-   Built the other way round first — the panel derived from the bar at 20% — and
-   that was the wrong half. The panels are the tints they always were; it is the
-   marks on them that are softened, to `cc`, four fifths of an alpha channel.
-
-   Real transparency rather than a paler colour baked flat: the bars sit on their
-   own panel, so over it these are the same thing, and they differ anywhere the
-   panel is not what is behind them. It also means the marks follow their panel
-   if the panel ever moves.
-
-   The pattern stays legible and lands close to where it was — measured against
-   each panel: lilac 1.32 to 1.25, butter 1.33 to 1.25, mint 1.21 to 1.16, sky
-   1.27 to 1.22, clay 1.53 to 1.41. A softening, not a fade.
-
-   **`color-mix` was the obvious way to write it and does not survive the
-   build.** `color-mix(in srgb, var(--tint-red-bar) 20%, transparent)` compiles
-   to an `@supports` block with a fallback the build derives ITSELF, by dropping
-   the percentage — so a browser without `color-mix` was served the colour at
-   full strength. Declaring a fallback above it did not help: the generated one
-   replaced that too. Six hex digits and an alpha pair compile to themselves.
-
-   The cost of writing it out is that the mark no longer derives from the token,
-   and `--tint-butter-bar` has been three different colours today. So a test
-   derives it instead: every `--card-tint-bar` must be its own tint's bar plus
-   `cc`, and a bar changed without its card following fails there. */
-.difference-card--one {
-  --card-tint: var(--tint-red);
-  --card-tint-bar: #cc2900cc;
-}
-
-.difference-card--two {
-  --card-tint: var(--tint-butter);
-  --card-tint-bar: #e8dd48cc;
-}
-
-.difference-card--three {
-  --card-tint: var(--tint-mint);
-  --card-tint-bar: #6fdd9fcc;
-}
-
-/* The fifth box. Four tints for five boxes meant the run repeated, and the
-   repeat landed on a card two rows from the one it matched. */
-.difference-card--five {
-  --card-tint: var(--tint-clay);
-  --card-tint-bar: #ff9b54cc;
-}
-
-.difference-card--four {
-  --card-tint: var(--tint-sky);
-  --card-tint-bar: #8ec5efcc;
-}
-
-/* No step off the grid line here: with three columns it left one gap wider
-   than the other, so every box sits square and the gaps are equal. */
-
 /* **The label turns purple with its arrow.** Owner, 2026-08-27, and it makes
    the family agree: this was three different answers to one question. The
    service hero's CTA and the product link went to `--accent-strong`, the blog's
@@ -3928,8 +3900,7 @@ video {
 @media (hover: hover) {
   .service-hero__cta:hover,
   .product__cta:hover,
-  .blog-more__all:hover,
-  .mobile-menu__cta:hover {
+  .blog-more__all:hover {
     color: var(--accent);
   }
 }
@@ -4183,256 +4154,234 @@ video {
   }
 }
 
-/* --------------------------------- Footer --------------------------------- */
+/* --------------------------------- Footer ---------------------------------
 
-/* ── The panel, and the sign-off it ends on ──
- *
- * Fourth arrangement, 2026-08-27, and the first that is not a directory with the
- * furniture moved around. See the note on the component for what the three
- * before it had in common and why none of them worked.
- *
- * The shape: one invitation, one quiet band of everything functional, the legal
- * line, and then the name at the size of the panel, cut off by its bottom edge.
- */
-.site-footer__panel {
-  --footer-pad: clamp(2rem, 4vw, 3.25rem);
+   Owner, 2026-10-05, after a white version, a black one and two goes at its
+   links, a reference: "try this version maybe you can addapt with our
+   information also the logo without icon". As it is drawn there, on the
+   page's own four columns, white, black ink, one size of type:
 
-  container-type: inline-size;
-  container-name: footer-panel;
-  display: grid;
-  gap: clamp(2.5rem, 6cqi, 4.5rem);
-  overflow: hidden;
-  /* Padded on all four sides again. It was open at the foot for one pass, when
-     the name was set at the size of the panel and ran off the bottom edge —
-     with that gone the legal line was left standing on the edge itself. */
-  padding: var(--footer-pad);
-  border-radius: var(--shape-panel);
-  background: var(--accent);
-  color: var(--accent-contrast);
-}
-
-.site-footer__slab,
-.site-footer__panel {
-  --accent: #08080a;
-  --accent-contrast: #ffffff;
-}
-
-/* The ring alone: the leftmost square of the wordmark, 163.92 of its 694.25
-   units, cropped to rather than shipped as a second asset. */
-.site-footer__mark {
-  display: block;
-  overflow: hidden;
-  flex: 0 0 auto;
-  width: clamp(2.75rem, 4.6vw, 4.25rem);
-  margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
-  aspect-ratio: 163.92 / 163.54;
-}
-
-.site-footer__mark img {
-  display: block;
-  /* The reset caps images at their container; without lifting it the wordmark
-     shrinks to the box instead of overflowing it, and the crop shows the whole
-     logo rather than the ring. */
-  max-width: none;
-  width: calc(100% * 694.25 / 163.92);
-  height: auto;
-  /* A raster wordmark cannot take currentColor, so it is crushed to a
-     silhouette instead. brightness(0) alone lands it black, with the panel
-     showing through where the mark is transparent; invert(1) after it makes
-     that silhouette white.
-
-     **This is the one thing on the panel that does not follow
-     --accent-contrast**, so it has to be turned over by hand whenever that
-     does — and the failure is silent in the worst way, because a mark left
-     black on a white-inked panel still draws, just as the one element that
-     disagrees with everything around it. tests/theme.test.mjs holds the two
-     together. */
-  filter: brightness(0) invert(1);
-}
-
-/* The mark over the closing line, with the way back up opposite the pair. */
-.site-footer__lead-words {
-  display: block;
-}
-
-.site-footer__lead {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 2rem;
-}
-
-/* Everything functional in one band: three menus and the ways to reach us, all
-   on one row. `auto` tracks rather than equal ones — the lists are the width of
-   their own longest line and the row is packed left, so it reads as one block
-   of small print instead of four columns holding a page apart. */
-.site-footer__columns {
-  display: flex;
-  flex-wrap: wrap;
-  /* The menus left, the address right. Packed left they left the whole right
-     half of the panel empty, which reads as a column that failed to load rather
-     than as space. */
-  justify-content: space-between;
-  gap: clamp(2rem, 5cqi, 3rem) clamp(2.5rem, 6cqi, 5rem);
-}
-
-.site-footer__nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(2rem, 5cqi, 3rem) clamp(2.5rem, 6cqi, 5rem);
-}
-
-/* The three facts and the marks, stacked under one heading rather than each
-   carrying its own — they are one address between them. */
-.site-footer__details,
-.site-footer__detail {
-  display: grid;
-  align-content: start;
-  gap: 0.35rem;
-  margin: 0;
-}
-
-/* The legal line, last of the words. */
-.site-footer__legal {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.65rem 1.5rem;
-  font-size: var(--text-small);
-}
-
-/* --------------------------------- Footer --------------------------------- */
-
+     the lists        from the second rule: Menu, Services, Contact — a
+                      heading over its lines, the heading no louder than them
+     the wordmark     the letters without the ring, from the second rule to
+                      the edge of the page
+     the foot         the year on the first rule, Terms, Privacy and Cookies
+                      on the next three, the way back up at the far end */
 .site-footer {
   position: relative;
-  /* Half the gap, the same as every section pays, so the space above the
-     footer matches the space between any two of them. */
-  padding-top: var(--section-space);
-  padding-bottom: clamp(1.25rem, 2.5vw, 2rem);
+  padding-block: var(--section-space-lg) clamp(1.25rem, 2vw, 2rem);
   background: var(--canvas);
+  color: var(--ink);
 }
 
-/* The h1's size, set exactly as the h1 is: this is the closing line of the page
-   and it closes it at the size the page opened. */
-.site-footer__title {
-  max-width: none;
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading-xl);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading-xl);
-}
-
-/* Set as two lines, so the break falls in the same place at every width. Not
-   optional: without it the spans run together and the block reads
-   `Let's buildsmarter`, which is what happened for one pass here — the rules
-   were deleted with the layout rules that surrounded them. */
-.site-footer__title-line {
-  display: block;
-}
-
-/* A step under the links, which are themselves a step under the paragraph:
-   labels, then what they label. */
-.site-footer__group-title {
-  margin: 0 0 1rem;
-  /* Muted ink, not `--accent-contrast`. These moved off the black block on
-     2026-08-27 and white on white draws nothing at all — the loudest kind of
-     silent failure, since the links under them would still be there. */
-  color: var(--ink-muted);
-  font-size: var(--text-small);
-}
-
-.site-footer__links {
+.container.site-footer__layout {
   display: grid;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.site-footer__link {
-  position: relative;
+/* Each band on the page's own four columns. */
+.site-footer__columns,
+.site-footer__legal {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: start;
   font-size: var(--text-body);
-  letter-spacing: -0.02em;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-body);
 }
 
-/* The rule that wipes in under a footer link.
+/* The first rule left empty above the year, as the reference leaves it. */
+.site-footer__columns > :first-child {
+  grid-column-start: 2;
+}
 
-   Held at the foot of the TEXT, not of the box: these links carry 0.6875rem of
-   padding above and below to make a real tap target, so bottom: 0 would draw
-   the line 11px clear of the words and read as belonging to the row rather
-   than to the link. The offset is that padding, written as the same value.
+.site-footer__group,
+.site-footer__detail {
+  min-width: 0;
+}
 
-   Scaled rather than sized, so the compositor moves it and the layout is never
-   asked to. The origin is what gives it direction: it grows from the left on
-   the way in, and because the resting rule origins right, it retracts to the
-   right on the way out rather than rewinding back the way it came. */
-.site-footer__link::after {
+/* The heading at its lines' size and weight, over a hairline — owner,
+   2026-10-05: "between this section and the titles add a horizontal line
+   0.8 px with 10 margin on top and 10 at bottom". The page's grey, drawn as a
+   box rather than a border: a border under a pixel is snapped to whole device
+   pixels, a box is not. The three headings' lines meet, so it reads as one
+   line from the second rule to the edge of the page. */
+.site-footer__group-title {
+  position: relative;
+  margin: 0 0 10px;
+  padding-bottom: 10px;
+  font-size: inherit;
+  font-weight: var(--weight-body);
+  letter-spacing: inherit;
+  line-height: inherit;
+}
+
+.site-footer__group-title::after {
   position: absolute;
   right: 0;
-  bottom: 0.6875rem;
+  bottom: 0;
   left: 0;
-  height: 1px;
-  background: currentcolor;
+  height: 0.8px;
+  background: var(--line-grid);
   content: "";
-  transform: scaleX(0);
-  transform-origin: right;
 }
 
-/* Slower, and eased at both ends rather than one.
-
-   --ease-standard is cubic-bezier(0.22, 1, 0.36, 1): it leaves at full speed
-   and spends the rest of its time slowing down, which is right for something
-   answering a click but reads as a snap followed by a drift on a line this
-   short. The handover curve starts from nothing, and the rule draws itself at
-   an even rate instead. */
-@media (prefers-reduced-motion: no-preference) {
-  .site-footer__link::after {
-    transition: transform var(--duration-slow) var(--ease-handover);
-  }
-}
-
-/* **The names are not drawn here, only spoken.** An email address, a phone
-   number and a street are each the only thing they could be, and EMAIL / PHONE
-   / ADDRESS over them was three headings for a row that reads itself. The `dt`
-   stays in the markup and stays in the accessibility tree — a screen reader has
-   none of the shape a sighted reader is using — and it comes back on a phone,
-   where the values stack and the shape is gone. */
-.site-footer__detail-full {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.site-footer__detail-label {
-  color: var(--ink-muted);
-  font-size: var(--text-small);
-  letter-spacing: var(--tracking-wide);
-  line-height: 1.3;
-  text-transform: uppercase;
+/* The gutter on the lines, not the column, so the headings' line runs on. */
+.site-footer__links {
+  display: grid;
+  row-gap: 0.3em;
+  margin: 0;
+  padding: 0 var(--column-gap) 0 0;
+  list-style: none;
 }
 
 .site-footer__detail-value {
   margin: 0;
-  font-size: var(--text-body);
-  line-height: 1.35;
 }
 
-/* Three marks in a row. No rule between them any more — a drawn mark is its
-   own unit and does not need dividing from the next one the way two words
-   did. */
 .site-footer__social {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: clamp(0.75rem, 1.5vw, 1.15rem);
+  gap: 0.9rem;
+  margin-top: 0.6em;
+}
+
+.site-footer__link,
+.site-footer__top-link,
+.site-footer__brand {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* Hit area, not appearance: a tap target taller than the line, given back to
+   the layout so nothing moves. */
+.site-footer__link,
+.site-footer__top-link {
+  padding-block: 0.6875rem;
+  margin-block: -0.6875rem;
+}
+
+.site-footer a:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.2em;
+}
+
+@media (hover: hover) {
+  .site-footer__link:hover,
+  .site-footer__top-link:hover {
+    color: var(--accent);
+  }
+}
+
+/* **The wordmark, without the ring** (public/SVG/logo-wordmark.svg: the
+   letters of logo.svg, the viewBox cut to them) — from the second rule to the
+   edge of the page, the line it rises out of being its own box. */
+.site-footer__brand-mask {
+  grid-column: 2 / -1;
+  margin-top: clamp(6rem, 13vw, 14rem);
+  overflow: hidden;
+}
+
+.site-footer__brand {
+  display: block;
+  will-change: transform;
+}
+
+.site-footer__brand img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.site-footer__legal {
+  align-items: baseline;
+  justify-items: start;
+  margin-top: clamp(2rem, 3.5vw, 3.5rem);
+}
+
+/* The way back up: the word, which rolls, and the thin arrow, which does not. */
+.site-footer__top-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+}
+
+/* One line, each on its rule: the year on the first, Terms, Privacy and
+   Cookies on the next three, and the way back up at the far end of the last,
+   sharing its cell with Cookies. Placed by hand, since the two in the last
+   column would otherwise push one another onto a second line. */
+@media (min-width: 40.0625rem) {
+  .site-footer__legal > * {
+    grid-row: 1;
+  }
+
+  .site-footer__copy {
+    grid-column: 1;
+  }
+
+  .site-footer__legal > .site-footer__link:nth-of-type(1) {
+    grid-column: 2;
+  }
+
+  .site-footer__legal > .site-footer__link:nth-of-type(2) {
+    grid-column: 3;
+  }
+
+  .site-footer__legal > .site-footer__link:nth-of-type(3) {
+    grid-column: 4;
+  }
+
+  .site-footer__top-link {
+    grid-column: 4;
+    justify-self: end;
+  }
+}
+
+.site-footer__arrow {
+  width: 0.95em;
+  height: 0.95em;
+  flex: none;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: square;
+  stroke-width: 1.25px;
+}
+
+/* On the path: `vector-effect` is not inherited from the svg. */
+.site-footer__arrow path {
+  vector-effect: non-scaling-stroke;
+}
+
+/* On a phone: Menu and Services side by side, Contact under them; the
+   wordmark the width of the screen; the foot in two columns. */
+@media (max-width: 40rem) {
+  .site-footer__columns {
+    row-gap: 2.5rem;
+  }
+
+  .site-footer__columns > * {
+    grid-column: span 2;
+  }
+
+  .site-footer__columns > :first-child {
+    grid-column: 1 / span 2;
+  }
+
+  .site-footer__detail {
+    grid-column: 1 / -1;
+  }
+
+  .site-footer__brand-mask {
+    grid-column: 1 / -1;
+    margin-top: 4.5rem;
+  }
+
+  .site-footer__legal {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 0.75rem;
+  }
 }
 
 /* Sized off the text beside them rather than set in pixels, so the row keeps
@@ -4455,158 +4404,15 @@ video {
   stroke: none;
 }
 
-/* A rule between one item and the next. Drawn rather than typed as a pipe:
-   the same mark on screen, and nothing for a screen reader to read out
-   between every link.
-
-   Drawn on a pseudo-element rather than as a border, because these items now
-   carry the padding that makes them a real tap target and a border would
-   stretch to the full 39px of it. This is one line tall, whatever the box
-   around it. */
-.site-footer__legal > * + * {
-  position: relative;
-  padding-left: clamp(0.65rem, 1.3cqi, 1.25rem);
-}
-
-.site-footer__legal > * + *::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 1px;
-  height: 1em;
-  background: var(--panel-line);
-  transform: translateY(-50%);
-}
-
-/* Narrow enough that the line no longer fits between the panel's edge and the
-   first bar, so it is allowed to break rather than run under them. */
-/* Narrow panel: nothing is measured against the 41.6/58.4 split any more.
-
-   In the wide layout the field, the contact block and the legal line are each
-   positioned against that split, computed separately. Below the width where it
-   leaves usable room, the contact block and the legal line come back into the
-   flow and the field becomes a shallow band across the foot — the one
-   arrangement that cannot overlap or be clipped.
-
-   Everything here styles a descendant. A container query cannot style its own
-   container, so the panel's own display and padding are not settable from
-   inside this block; the field is kept absolute against the foot instead of
-   reordered into the flow, which needs neither. */
-/* Hit area, not appearance.
-
-   Measured on a phone-width run: the footer links came out 17px tall, the way
-   back up 17px, the product link and the Explore link 18px. WCAG 2.5.8 asks
-   for 24px and the touch convention is 44px; a 17px target is a miss waiting
-   to happen. The padding buys the height and the negative margin gives the
-   space back to the layout, so nothing moves. */
-.site-footer__link,
-.site-footer__top-link,
-.site-footer__legal a,
+/* Hit area, not appearance. Measured on a phone-width run, the product link
+   came out 18px tall; WCAG 2.5.8 asks for 24px and the touch convention is
+   44px. The padding buys the height and the negative margin gives the space
+   back to the layout, so nothing moves. */
 .product__cta {
   padding-block: 0.6875rem;
   margin-block: -0.6875rem;
 }
 
-/* The air between one link and the next, and the only place it is set — the
-   rule that lays these lists out states no gap of its own.
-
-   It was zero, on the reasoning that the links space themselves on their own
-   boxes. They do not: the padding above is cancelled by a negative margin of
-   exactly the same size, by design, so the box contributes nothing and the run
-   was spaced at one line-height flat — 22.66px of step under 17.43px of text,
-   with the em boxes of consecutive lines touching. At 14px that read as a tight
-   list; at the paragraph size it read as one word stacked on another.
-
-   0.75rem takes the step to about 34px, a little under twice the type. It does
-   not close the overlap between the tap targets — those are 45px tall and would
-   need a 22px gap to stand clear of each other — but it halves it. */
-.site-footer__links {
-  gap: 0.75rem;
-}
-
-.site-footer__legal,
-.site-footer__social {
-  align-items: center;
-}
-
-/* The only thing in its row now that the mark has moved up, so it is pushed
-   to the right rather than left to space-between, which has nothing to space
-   a single child against. */
-.site-footer__top-link {
-  position: relative;
-  /* Lifted clear of the bar field. Its row ends exactly where the field
-     begins — the panel reserves 16rem for the bars and they stand 18.18% of
-     its width, which past about 1400 is the taller of the two, so the disc was
-     sitting 3px inside them. Nudged rather than spaced, because the row's
-     height feeds the panel's, and the field hangs off the panel's foot: give
-     the row a margin and the panel grows, the field drops with it, and the
-     gap comes back the same. Offsetting the disc alone moves it into space
-     that is already empty and leaves that chain alone. */
-  bottom: clamp(1.5rem, 3cqi, 2.5rem);
-  display: inline-flex;
-  width: 2.25rem;
-  aspect-ratio: 1;
-  align-items: center;
-  justify-content: center;
-  margin-left: auto;
-  margin-block: 0;
-  padding: 0;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  line-height: 1;
-  transition: opacity var(--duration-fast) var(--ease-standard);
-}
-
-.site-footer__top-link::after {
-  position: absolute;
-  inset: -0.125rem;
-  border-radius: inherit;
-  content: "";
-}
-
-@media (hover: hover) {
-  .site-footer__link:hover::after {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
-
-  /* The way back up fills rather than changes colour: there is no second colour
-     up here that would still read. */
-  .site-footer__top-link:hover {
-    border-color: var(--accent-contrast);
-    background: var(--accent-contrast);
-    color: var(--accent);
-    opacity: 1;
-  }
-}
-
-/* The way back up is on every width and every pointer, phones included —
- * owner's call, 2026-08-12, reversing what was here.
- *
- * Two rules used to take it away: one on a phone-width panel, one on a touch
- * screen of any width, on the argument that the scroll gesture and the
- * browser's own tap-the-clock already get you there. The second half of that
- * does not hold — tapping the clock is an iOS habit, and it is not a gesture on
- * Android or inside the in-app browser most links are opened in. And the panel
- * is the longest thing on the site: on a phone the menus, the contact block and
- * the legal line stack into roughly two screens of footer, which is exactly
- * where a reader is furthest from the top and least able to guess the way back.
- *
- * Nothing is added to the markup for it. The link was always rendered and only
- * hidden, so it comes back where it was written: the right end of the row under
- * the rule, lifted clear of the bar field by its own offset. */
-
-/* One thing does change for touch, and it is the target rather than the mark.
- * The disc is 2.25rem — under the 44px a finger is drawn against — and this
- * pseudo-element already exists to extend the hit area past the border. Taken
- * from 2px to 4px a side it reaches 44 without the disc growing, so the button
- * is the same size it is on a desktop and easier to hit than it looks. */
-@media (hover: none) {
-  .site-footer__top-link::after {
-    inset: -0.25rem;
-  }
-}
 @media (max-width: 64rem), (hover: none) {
   .site-nav {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -4627,28 +4433,23 @@ video {
 
   .services-intro,
   .solutions-intro,
-  .products-intro,
   .process-intro {
     grid-template-columns: minmax(10rem, 0.7fr) minmax(0, 2fr);
   }
 
   .services-intro .section-label,
   .solutions-intro .section-label,
-  .products-intro .section-label,
   .process-intro .section-label {
     grid-column: 1;
   }
 
   .services-title,
   .solutions-title,
-  .products-title,
-  .products-lede,
   .process-title,
   .process-lede {
     grid-column: 2;
   }
 
-  .products-lede,
   .process-lede {
     margin-top: 1.5rem;
   }
@@ -4661,26 +4462,13 @@ video {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .difference-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(2.5rem, 5vw, 3.5rem);
-    margin-top: clamp(2.5rem, 5vw, 4rem);
-  }
+  
 
-  /* Two boxes across, so the paragraphs take a column each and the empty one
-     under the heading goes. */
-  .difference-intro {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(2.5rem, 5vw, 3.5rem);
-  }
+  
 
-  .difference-intro__text:first-child {
-    grid-column: 1;
-  }
+  
 
-  .difference-intro__text:last-child {
-    grid-column: 2;
-  }
+  
 
   /* The list keeps the page; the drawing drops below it and still runs off the
      right edge. */
@@ -4721,7 +4509,7 @@ video {
   }
 
   .service-page .site-header.site-header--mobile-menu-open {
-    background: var(--canvas);
+    background: transparent;
   }
 
   .site-nav {
@@ -4763,26 +4551,14 @@ video {
 
   
 
-  .difference-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 2.5rem;
-    margin-top: 2.5rem;
-  }
+  
 
-  .difference-intro {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.5rem;
-  }
+  
 
-  .difference-intro__text:first-child,
-  .difference-intro__text:last-child {
-    grid-column: 1;
-  }
+  
 
   .services-section,
   .solutions-section,
-  .difference-section,
-  .products-section,
   .case-section,
   .process-section,
   .contact-section {
@@ -4806,14 +4582,12 @@ video {
 
   .services-intro,
   .solutions-intro,
-  .products-intro,
   .process-intro {
     display: block;
   }
 
   .services-title,
   .solutions-title,
-  .products-title,
   .case-title,
   .process-title {
     margin-top: 2rem;
@@ -4823,7 +4597,6 @@ video {
     margin-top: 0;
   }
 
-  .products-lede,
   .process-lede {
     margin-top: 1.25rem;
   }
@@ -4882,423 +4655,260 @@ video {
   .contact-title {
   }
 
-  .site-footer {
-    padding-top: 4rem;
-  }
-
 }
 
 /* ---------------------------------------------------------------------------
-   Products — three names, each over its own drawing in bars.
+   Products — owner, 2026-10-05: "pls redesign this section"; then, of a
+   version still in the old voice, "you have to use our new concept text
+   color etc".
+
+   In the homepage's own hand, then — the sizes, the ink and the marks of the
+   sections above it, nothing of its own:
+
+     the label        "Our / expertise"'s: two lines at the paragraphs' size,
+                      on the first rule, its capitals level with the heading's
+     the heading      the second rule, the headings' size and face; its full
+                      stop the site's red square, as about's "o" is
+     the sentence     under it, at the paragraphs' size, as Fusion's is
+     the products     one to a column from the second rule to the fourth, each
+                      starting on its rule and stopping a seam short of the
+                      next: a picture with Selected Work's three lines under
+                      it, its words, and a link with VIEW ALL's thin arrow
+
+   Black on white throughout; the red is the mark and the hover. The three
+   share their rows (subgrid), so the lines, the words and the links stand
+   level across the row however long each one's words run.
    --------------------------------------------------------------------------- */
-
-/* The section asks about its own width rather than the window's. Its content
-   caps with the container, so past that cap the window keeps growing and the
-   section does not — the same mismatch that broke the footer. */
-.products-section {
-  container-type: inline-size;
-  container-name: products;
-  position: relative;
-  background: var(--canvas);
+.products {
   padding-block: var(--section-space-lg);
+  background: var(--canvas);
 }
 
-/* The words on the left, the products on the right. The left column stays put
-   while the right one is scrolled through, so the heading is still there when
-   you reach the last product. */
-/* Ruled columns. The hairlines run the full height of the section rather than
-   stopping at each product, which is what makes them read as a grid the
-   content is set into instead of as borders on boxes. */
-.products-layout {
+.container.products__layout {
+  --products-size: var(--text-heading-xl);
+
   display: grid;
-  grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
-  align-items: stretch;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
 }
 
-/* The column carries the rule and stretches; the block inside keeps its own
-   height, which is the height the heading is held in place by. Stretching the
-   block itself leaves nothing to pin — it did, and the heading stopped
-   staying put. */
-/* No rule on this edge, so no clearance for one either: the heading starts on
-   the same margin as every other section's does. */
-.products-intro-col {
-  padding-right: clamp(1.5rem, 3vw, 3rem);
-}
-
-.products-intro {
-  display: grid;
-  gap: 1.25rem;
-  align-content: start;
-}
-
-/* Off the eyebrow, so the two do not read as one block. */
-.products-title {
-  max-width: none;
-  padding-top: clamp(1.5rem, 3.5vw, 3rem);
-}
-
-/* The lines are explicit in the content so the break falls in the same place
-   at every width, and every one of them starts on the same margin. */
-.products-title__line {
-  display: block;
-}
-
-.products-lede {
-  padding-top: clamp(1.25rem, 2.5vw, 2rem);
-}
-
-/* One column now: the products are a list you move down, not a row you scan
-   across. */
-/* No gap between products: the rules either side of the facts have to be
-   unbroken from the top of the section to the bottom of it, so the space
-   between products is padding inside them. */
-.products-row {
-  display: grid;
-  gap: 0;
-  margin: 0;
-  padding: 0;
-  border-left: 1px solid var(--line-soft);
-  list-style: none;
-}
-
-/* Facts against a rule on the left, picture and words on the right. The rule
-   between them is the reference's own signature, and it does the dividing that
-   a box or a fill would otherwise have to do. */
-/* The space between products is padding INSIDE the two columns, never on the
-   product itself: padding on the row sits outside the facts column, and the
-   rule it carries would stop dead at every product boundary. */
-.product {
-  display: grid;
-  /* Wide enough that "In development" holds one line. */
-  grid-template-columns: minmax(10rem, 2.2fr) minmax(0, 7fr);
-}
-
-.product__facts,
-.product__main {
-  padding-bottom: clamp(3.5rem, 7vw, 6rem);
-}
-
-/* That padding is the space before the next product, so the last one has no
-   use for it — left on, it makes the section's foot deeper than its head. */
-.product:last-child .product__facts,
-.product:last-child .product__main {
-  padding-bottom: 0;
-}
-
-.product + .product .product__facts,
-.product + .product .product__main {
-  padding-top: clamp(3.5rem, 7vw, 6rem);
-}
-
-/* Level with the top of the picture, not the foot of the block. */
-.product__facts {
-  display: grid;
-  align-content: start;
-  gap: 1.5rem;
-  padding-left: clamp(1.25rem, 2.5vw, 2.5rem);
-  border-right: 1px solid var(--line-soft);
-}
-
-.product-fact {
-  display: grid;
-  gap: 0.15rem;
-  padding-right: clamp(1rem, 2vw, 2rem);
-}
-
-/* Uppercase and letterspaced, the way the reference sets its labels — but at
-   the paragraph size, because this site has three type sizes and no fourth. */
-/* A caption over its value, so it is set a step under the paragraph size rather
-   than level with it — which is what the mobile rule below already does, and
-   what desktop was missing. Colour is the page ink now: --ink-muted is #a09aad
-   and carries enough blue and red to read as lavender rather than grey against
-   this black. Uppercase and the wide tracking keep it a label without needing
-   to be a different colour from what it names. */
-.product-fact__label {
-  margin: 0;
-  color: var(--ink);
-  font-size: var(--text-fine);
-  letter-spacing: var(--tracking-wide);
-  line-height: 1.3;
-  text-transform: uppercase;
-}
-
-.product-fact__value {
-  margin: 0;
-  font-size: var(--text-body);
-  line-height: 1.3;
-}
-
-.product__main {
-  display: grid;
-  gap: 0;
-  padding-left: clamp(1.25rem, 2.5vw, 2.5rem);
-}
-
-/* A photograph, not a screenshot. Fixed ratio so the three sit to the same
-   shape and nothing shifts as they load. */
-.product__image {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 10;
-  background: var(--surface);
-  object-fit: cover;
-}
-
-/* Hard under the picture, as the reference sets it — the picture and the line
-   it carries are one thing. */
-.product__name {
-  margin: 0;
-  padding-top: 1.25rem;
-  font-size: var(--text-heading);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: var(--leading-heading);
-}
-
-.product__copy {
-  max-width: 46ch;
-  margin: 0;
-  padding-top: 0.5rem;
-  /* The page ink. --ink-muted is #a09aad, which has enough blue and red in it
-     to read as lavender against this black rather than as a grey. */
-  color: var(--ink);
-  font-size: var(--text-copy);
+/* The heading's capitals stand 0.205 of its size under its line's top at its
+   leading; the label's stand 0.295em under its own. */
+.products__label {
+  grid-row: 1;
+  grid-column: 1;
+  margin: calc(var(--products-size) * 0.205 - 0.295em) 0 0;
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.265));
+  font-weight: var(--weight-body);
+  letter-spacing: -0.015em;
   line-height: var(--leading-body);
 }
 
-/* The quiet link the industries already use, arrow and all — no box, no fill,
-   nothing to compete with the picture above it. */
+.products__label-line {
+  display: block;
+}
+
+.products__title {
+  grid-row: 1;
+  grid-column: 2 / -1;
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: var(--products-size);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-heading);
+}
+
+/* Each line the mask its words rise out of, open past the box at the foot so
+   descenders are whole at rest. */
+.products__title-line {
+  display: block;
+  clip-path: inset(-0.15em -0.25em -0.3em);
+}
+
+.products__rise {
+  display: block;
+  will-change: transform;
+}
+
+/* An empty inline box, so its foot is the baseline the letters stand on; the
+   full stop inside is out of the flow and does not move it. */
+.products__stop {
+  position: relative;
+  display: inline-block;
+  width: 0.15em;
+  height: 0.15em;
+  margin-left: 0.04em;
+  background: var(--accent);
+  vertical-align: baseline;
+}
+
+.products__lede {
+  grid-row: 2;
+  grid-column: 2 / -1;
+  max-width: 30.85em;
+  margin: calc(var(--products-size) * 0.45) 0 0;
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.265));
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+/* Three columns that are the page's own: the list runs from the second rule
+   to the edge, so each third of it is one of the page's quarters. */
+.products__list {
+  display: grid;
+  grid-row: 3;
+  grid-column: 2 / -1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(4, auto);
+  margin: calc(var(--products-size) * 1.1) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.product {
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  align-content: start;
+  padding-right: calc(var(--column-gap) * 2.5);
+}
+
+/* Selected Work's tall picture, at its proportions. */
+.product__frame {
+  aspect-ratio: 607 / 764;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.product__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Selected Work's lines under a picture, to the pixel. */
+.product__meta {
+  margin-top: max(0.5rem, calc(var(--text-house) * 0.25 - 0.295em));
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
+  letter-spacing: -0.015em;
+  line-height: var(--leading-body);
+}
+
+.product__name {
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+.product__line {
+  margin: 0;
+}
+
+.product__copy {
+  margin: 1.25rem 0 0;
+  font-size: var(--text-body);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-body);
+}
+
+/* VIEW ALL's setting — the word, then the thin arrow — at the arrow links'
+   shared size. */
 .product__cta {
   display: inline-flex;
   align-items: center;
+  align-self: start;
   justify-self: start;
-  gap: 0.55em;
+  gap: 0.7em;
   margin-top: 1.5rem;
+  color: var(--ink);
   font-size: var(--text-cta);
-  letter-spacing: -0.02em;
   line-height: 1;
-  transition: color var(--duration-fast) var(--ease-standard);
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-standard);
 }
 
-@container products (max-width: 58rem) {
-  .products-layout {
+.product__cta:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.35em;
+}
+
+.product__arrow {
+  width: 0.95em;
+  height: 0.95em;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: square;
+  stroke-width: 1.25px;
+}
+
+/* On the path: `vector-effect` is not inherited from the svg. */
+.product__arrow path {
+  vector-effect: non-scaling-stroke;
+}
+
+/* **Under the pointer the name answers** — the site's red, and it rolls
+   (`.roll`), the expertise words' answer; the link under it rolls on its own
+   hover. */
+@media (hover: hover) {
+  .product:hover .product__name {
+    color: var(--accent);
+  }
+
+  .product:hover .product__name .roll__face {
+    transform: rotateX(90deg);
+  }
+
+  .product:hover .product__name .roll__face--next {
+    transform: rotateX(0deg);
+  }
+}
+
+.product:has(:focus-visible) .product__name {
+  color: var(--accent);
+}
+
+/* Narrower than a laptop, a quarter is too thin to read in: the three take
+   the full width, still side by side. */
+@media (max-width: 64rem) {
+  .products__list {
+    grid-column: 1 / -1;
+  }
+}
+
+/* On a phone, one column: the label, the heading and the sentence one under
+   the next, then each product in turn. */
+@media (max-width: 40rem) {
+  .products__label {
+    grid-column: 1 / -1;
+    margin: 0 0 1.25rem;
+  }
+
+  .products__title {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+
+  .products__lede {
+    grid-row: 3;
+    grid-column: 1 / -1;
+    margin-top: 1.25rem;
+  }
+
+  .products__list {
+    grid-row: 4;
     grid-template-columns: minmax(0, 1fr);
-    gap: clamp(2.5rem, 8cqi, 3.5rem);
-  }
-
-  .products-lede {
-    max-width: none;
-  }
-
-  /* The facts go above the picture and the dividing rules go with them:
-     a vertical rule needs two columns to divide. */
-  .products-layout,
-  .products-row {
-    border-left: 0;
-  }
-
-  .products-intro-col {
-    padding-inline: 0;
+    grid-template-rows: none;
+    row-gap: 3.5rem;
+    margin-top: 3rem;
   }
 
   .product {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.25rem;
-    padding-inline: 0;
-  }
-
-  .product__main {
-    padding-left: 0;
-  }
-
-  /* All three facts on one line, spread the width of the card.
-   *
-   * Wrapping meant Year dropped to a second row on a phone and the card grew
-   * a line for one word. Three columns that cannot wrap instead, sized to
-   * their own contents and set against the card's two edges with the middle
-   * one between them — so the row reads as the head of the card rather than
-   * as three words bunched at the left of it.
-   *
-   * The gap is a floor, not the spacing: what is left over after the three
-   * columns is what opens between them, and the gap only decides how close
-   * they may come when there is nothing left over. */
-  .product__facts {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, auto));
-    justify-content: space-between;
-    gap: 0 clamp(0.75rem, 3cqi, 1.75rem);
-    padding-bottom: 0;
-    padding-left: 0;
-    border-right: 0;
-  }
-
-  /* Every label ranged left on the value under it.
-   *
-   * The groups are spread across the card, but each one is still a label over
-   * a value and the two should start on the same line — FIELD over the F of
-   * Automotive, YEAR over the 2 of 2024. Centring the middle group and
-   * ranging the last one right set each label against its column instead of
-   * against its own value, which left both of them adrift over the words they
-   * name. Column three's right edge now moves with its widest line, which is
-   * the price of it and the smaller of the two faults. */
-  .product-fact {
-    text-align: left;
-  }
-
-  /* The gap between the columns does the spacing now. This padding was doing
-     it as well, and three lots of 16px is most of the room Year needed. */
-  .product-fact {
+    grid-row: auto;
+    grid-template-rows: none;
     padding-right: 0;
-  }
-
-  /* Smaller than the thing it names, and smaller than anything else on the
-     page.
-   *
-   * A fourth size, under the three the site otherwise keeps to, and here on
-   * purpose: these three words are the only pure labelling on the card — they
-   * name a value rather than saying anything themselves — and at the value's
-   * size a row of three pairs is six things shouting. Under two thirds of the
-   * value, uppercase and letterspaced, is small enough to read as a caption
-   * and large enough to read at all. */
-  .product-fact__label {
-    font-size: 0.625rem;
-  }
-
-  /* The three lines of the heading block, closer together.
-   *
-   * They were being spaced three times over: the block is a grid with a 20px
-   * gap, the heading carries a padding on top of that, and a rule further up
-   * the sheet adds a margin as well. 76px opened between the eyebrow and the
-   * heading and 60px between the heading and the line under it, which on a
-   * phone reads as three separate things rather than as one block of words.
-   *
-   * The margins go and the paddings come down, leaving the grid's own gap to
-   * do most of it: 40px and 32px, and one mechanism doing the spacing instead
-   * of three. */
-  .products-title {
-    margin-top: 0;
-    padding-top: 1.25rem;
-  }
-
-  .products-lede {
-    margin-top: 0;
-    padding-top: 0.75rem;
-  }
-
-  /* Each product a card of its own.
-   *
-   * The wide page sets these into a ruled grid, and the rules are what divide
-   * one product from the next. Down here there are no columns for a vertical
-   * rule to divide, so the products ran together as one long column of
-   * picture-name-paragraph with nothing but white between them. A card gives
-   * each one an edge instead.
-   *
-   * No fill. The four brand tints belong to the sections that use them to
-   * tell things apart from each other, and three products are not four
-   * different kinds of thing — a hairline and the space inside it are enough
-   * to say where one ends. */
-  .products-row {
-    gap: clamp(1rem, 3cqi, 1.5rem);
-  }
-
-  .product {
-    gap: 1rem;
-    padding: clamp(1.25rem, 4cqi, 1.75rem);
-    border: 1px solid var(--line-soft);
-    border-radius: var(--shape-md);
-    /* Opaque, so a card coming up over another hides it rather than showing
-       through it. On the wide page these sit in a ruled grid with nothing
-       behind them and need no ground of their own. */
-    background: var(--canvas);
-  }
-
-  /* The space between products is the gap between the cards now, not padding
-     inside them — on the wide page that padding is what keeps the rules
-     unbroken, and there are no rules here to keep. */
-  .product__facts,
-  .product__main,
-  .product + .product .product__facts,
-  .product + .product .product__main {
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-}
-
-/* The label above the heading rather than beside it.
- *
- * There is already a rule that says so — `display: block` on this block at
- * 48rem and under — but it is written above `.products-intro` itself, and this
- * section was rebuilt after it, so the plain `display: grid` further down the
- * sheet wins on order. What survived was the tablet's two columns at every
- * width beneath them: at 320 that left the heading 108px to set a 137px line
- * in, and the section pushed the whole page 12px wider than the screen.
- *
- * Restated here, past the rule that was overriding it, and as a container
- * query so it answers to the section rather than the window. */
-@container products (max-width: 48rem) {
-  .products-intro {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  /* The same rule sends the heading and the lede to a second column. With one
-     column left they made an implicit one and squeezed the label into nothing;
-     all three belong in the one column now. */
-  .products-intro .section-label,
-  .products-title,
-  .products-lede {
-    grid-column: 1;
-  }
-}
-
-/* The three cards lie on each other as you scroll.
- *
- * Each one stops a little below where the one before it stopped and the next
- * rides up over it, so a band of every card you have passed stays in view and
- * the deck is countable without numbering it.
- *
- * Plain sticky, and no script at all. Sticky cannot work under ScrollSmoother
- * — the smoother moves the page by transforming its content inside a wrapper
- * that is fixed and never scrolls, so there is no scrolling ancestor to
- * measure against — but the smoother only runs from 48rem up. Below it the
- * browser does this on its own, which is why this is a window query and not a
- * container one: it is asking about the smoother, not about the section.
- *
- * Pinning with ScrollTrigger instead would have measured wrong anyway. The
- * section's arrival puts a lag on the list these cards are in, and a pin
- * inside something that is moving when it is measured rests exactly that far
- * out — which is the bug that took the heading 131px off its mark once
- * already. */
-/* And only on a screen with the height to hold one.
- *
- * A card is about 584px of facts, picture, name, paragraph and link. The
- * lowest-resting of the three sits 64px down, so it wants 648px of screen —
- * which a 667 phone has and a 568 one does not. Under that the deck would
- * cut the foot off the last card, so there is no deck: they go back to being
- * three cards one after another, which is what the width alone already
- * gives them. */
-@media (max-width: 47.99rem) and (min-height: 40rem) {
-  .product {
-    position: sticky;
-    /* Clear of the top, and each card 12px lower than the last. Later cards
-       paint over earlier ones by document order, so no z-index is needed. */
-    top: 2.5rem;
-  }
-
-  .product:nth-child(2) {
-    top: calc(2.5rem + 12px);
-  }
-
-  .product:nth-child(3) {
-    top: calc(2.5rem + 24px);
-  }
-}
-
-/* The picture is the only part of a card with any give, so it takes the
-   ceiling that keeps the whole card inside a phone screen. */
-@media (max-width: 47.99rem) {
-  .product__image {
-    max-height: 28vh;
   }
 }
 

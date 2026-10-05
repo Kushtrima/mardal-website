@@ -80,54 +80,27 @@ test("nothing chooses a theme any more", () => {
   }
 });
 
-/* The footer panel's colours do not turn over with the page: a fixed pair named
-   on the panel, black with white ink since 2026-08-27.
-
-   **What is asserted is that the two things which must agree do agree.**
-   Everything on the panel — the closing line, the link columns, the social
-   marks — reads `--accent-contrast` by inheritance and follows it for free. The
-   wordmark cannot: it is a raster, so it is crushed to a silhouette with a
-   filter, and that filter is a second place the colour is written down.
-
-   The failure this catches is quiet rather than loud. A mark left `brightness(0)`
-   on a white-inked panel still draws — it is simply the one black thing on a
-   panel where everything else is white, which reads as a logo that was forgotten
-   rather than as a bug.
-
-   The mark was briefly not a raster at all: one pass on 2026-08-27 set the name
-   as type at the size of the panel and made that the home link, which retired
-   the filter and this pairing with it. The owner asked for the icon back, so
-   both are load-bearing again. */
+/* The footer is the page's white with the page's ink since the owner's
+   reference of 2026-10-05, and its wordmark — the letters without the ring,
+   a vector drawn in black — needs no filter to agree with it. One that
+   inverted it would draw white on white: nothing at all. */
 test("the footer wordmark is the same colour as the rest of the footer", () => {
-  const panel = rule(".site-footer__panel");
-  const mark = rule(".site-footer__mark img");
-
-  const white = /--accent-contrast:\s*#ffffff/.test(panel);
-  const black = /--accent-contrast:\s*#000000/.test(panel);
-  assert.ok(white || black, "the footer panel names no ink");
-
-  /* invert(1) after brightness(0) is what turns the silhouette white. */
-  assert.equal(
-    /filter:\s*brightness\(0\) invert\(1\)/.test(mark),
-    white,
-    white
-      ? "the footer ink is white and the wordmark is still crushed to black"
-      : "the footer ink is black and the wordmark is being inverted to white",
-  );
+  const footer = rule(".site-footer");
+  assert.match(footer, /background:\s*var\(--canvas\)/);
+  assert.match(footer, /color:\s*var\(--ink\)/);
+  assert.doesNotMatch(rule(".site-footer__brand img"), /filter/);
+  const svg = readFileSync(new URL("public/SVG/logo-wordmark.svg", ROOT), "utf8");
+  assert.match(svg, /\.fil0 \{fill:black\}/);
+  assert.match(svg, /\.fil1 \{fill:black;/);
 });
 
-/* ⚠ Not an assertion — a record, and deliberately not a failure.
-   White on the footer's #a98ad6 is 2.88:1, which meets neither AA threshold
-   (4.5:1 body, 3:1 large). The owner asked for the ink to go white and the slab
-   to stay, and that is his call to make; what is not acceptable is it being
-   forgotten. So the number is computed here from the two values actually in the
-   stylesheet rather than written into a comment that can drift away from them,
-   and it is printed on every run. */
+/* The pair's contrast, computed from the two values actually in the
+   stylesheet rather than written into a comment that can drift from them. */
 test("the footer's contrast is what it is, and it is said out loud", () => {
-  const panel = rule(".site-footer__slab");
-  const slab = panel.match(/--accent:\s*(#[0-9a-f]{6})/i)?.[1];
-  const ink = panel.match(/--accent-contrast:\s*(#[0-9a-f]{6})/i)?.[1];
-  assert.ok(slab && ink, "the footer slab does not name both of its colours");
+  const root = rule(":root");
+  const ground = root.match(/--ink:\s*(#[0-9a-f]{6})/i)?.[1];
+  const ink = root.match(/--canvas:\s*(#[0-9a-f]{6})/i)?.[1];
+  assert.ok(ground && ink, "the footer's two colours are not named on :root");
 
   const channel = (c) =>
     c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
@@ -139,21 +112,10 @@ test("the footer's contrast is what it is, and it is said out loud", () => {
       0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
     );
   };
-  const a = luminance(slab);
+  const a = luminance(ground);
   const b = luminance(ink);
-  const contrast =
-    (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  const contrast = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 
-  console.log(
-    `    footer: ${ink} on ${slab} is ${contrast.toFixed(2)}:1` +
-      (contrast >= 4.5
-        ? " — meets AA"
-        : contrast >= 3
-          ? " — large text only, fails AA for body"
-          : " — FAILS AA at both thresholds"),
-  );
-
-  /* The one thing that would be a mistake rather than a decision: the two
-     colours being the same, or near enough that the panel reads as blank. */
-  assert.ok(contrast > 1.5, "the footer ink has disappeared into its slab");
+  console.log(`    footer: ${ink} on ${ground} is ${contrast.toFixed(2)}:1`);
+  assert.ok(contrast >= 7, "the footer's ink does not meet AAA on its ground");
 });

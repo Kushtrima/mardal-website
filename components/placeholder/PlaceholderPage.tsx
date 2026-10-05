@@ -30,7 +30,16 @@ import {
  * ServicePageEntry alone rather than ServicePageMotion, which would also bring
  * ServiceOfferingsScroll. There is no journey here, and no body at all.
  */
-export function PlaceholderPage({ page }: { page: PlaceholderKey }) {
+export function PlaceholderPage({
+  page,
+  links,
+}: {
+  page: PlaceholderKey;
+  /** Everything the page stands over, as an index under its opening — the
+   *  services' page lists all seven, the products' page all three (owner,
+   *  2026-10-05: "when click inside to have all services and other"). */
+  links?: readonly { readonly label: string; readonly href: string }[];
+}) {
   /* Widened to `Placeholder` on purpose. The record is `as const`, so each
      entry's inferred type is its own literal shape and `pattern` exists only on
      the one that declares it — reading it off the union is an error on the
@@ -192,6 +201,31 @@ export function PlaceholderPage({ page }: { page: PlaceholderKey }) {
             data-service-hero-fade
           />
         </section>
+
+        {links ? (
+          <section className="page-index" aria-label={content.label}>
+            <Container className="page-index__inner">
+              <ul className="page-index__list">
+                {links.map((link) => (
+                  <li className="page-index__item" key={link.href}>
+                    <a className="page-index__link" href={link.href}>
+                      <span className="page-index__text">{link.label}</span>
+                      {/* VIEW ALL's thin arrow; still under the pointer. */}
+                      <svg
+                        className="page-index__arrow"
+                        viewBox="0 0 16 16"
+                        aria-hidden="true"
+                        focusable="false"
+                      >
+                        <path d="M2 14 14 2M4.5 2H14v9.5" />
+                      </svg>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </Container>
+          </section>
+        ) : null}
       </main>
 
       <SiteFooter />

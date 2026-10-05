@@ -1,6 +1,4 @@
 import { AboutIntroSection } from "../components/home/AboutIntroSection";
-import { CardBarsHover } from "../components/home/CardBarsHover";
-import { DifferenceSection } from "../components/home/DifferenceSection";
 import { ExpertiseSection } from "../components/home/ExpertiseSection";
 import { FusionSection } from "../components/home/FusionSection";
 import { HouseHero } from "../components/home/HouseHero";
@@ -12,7 +10,6 @@ import { SectionEnter } from "../components/motion/SectionEnter";
 export default function Home() {
   return (
     <>
-      <CardBarsHover />
       <SectionEnter />
 
       <main id="main-content">
@@ -26,7 +23,6 @@ export default function Home() {
         <AboutIntroSection />
         {/* The owner's comp of 2026-10-05: "Our expertise", under "about". */}
         <ExpertiseSection />
-        <DifferenceSection />
         <ProductsSection />
       </main>
 

@@ -16,6 +16,7 @@ const HOLD = 1.1;
  *  the heading's own half-leading. */
 const SUPPORT_GAP = 46;
 
+
 /**
  * The opening's one movement, scrubbed by the scroll (HouseHero).
  *
@@ -98,7 +99,9 @@ export function HouseHeroMotion() {
         0,
       );
 
-      /* The heading goes down to the foot of the screen with it. */
+      /* The heading goes down to the foot of the screen with it, as one —
+         owner, 2026-10-05: "this text needs to move together as before" (the
+         two lines were tried apart the same evening). */
       timeline.fromTo(
         title,
         { y: 0 },
@@ -136,13 +139,89 @@ export function HouseHeroMotion() {
         0.82,
       );
 
+      /* **"Operating from Kosova" goes down to the bottom right** — owner,
+         2026-10-05: first "i wan this text to be here", the right end of the
+         band; then "by default … not on scroll then after scrollin you can
+         move in other position"; then "i dont want to move up i want to move
+         down at bottom right". It stands at the band's right end on arrival
+         (the stylesheet puts it there) and, as the photograph opens to the
+         whole screen, goes down the right edge to the foot of it, its
+         baseline on the heading's last one, which comes down the left side
+         at the same time — white wherever the photograph is behind it (below).
+         Read from the layout each refresh: offsets, which no transform moves,
+         in the section's own frame, which is the screen's while it is held. */
+      const place = hero.querySelector<HTMLElement>("[data-house-place]");
+      if (place) {
+        const offsetY = (node: HTMLElement) => {
+          let y = 0;
+          let at: HTMLElement | null = node;
+          while (at && at !== hero) {
+            y += at.offsetTop;
+            at = at.offsetParent as HTMLElement | null;
+          }
+          return y;
+        };
+        /* The heading's last baseline, where it comes to rest: 0.205 of its
+           size above its box's foot at its leading; the words' own baseline
+           0.145 of theirs above their foot at theirs. */
+        const drop = () => {
+          const headingFoot = hero.clientHeight - padBottom();
+          const headingSize = parseFloat(getComputedStyle(title).fontSize);
+          const wordsSize = parseFloat(getComputedStyle(place).fontSize);
+          const foot = headingFoot - headingSize * 0.205 + wordsSize * 0.145;
+          return foot - place.offsetHeight - offsetY(place);
+        };
+        /* **Slower than the rest** — owner, 2026-10-05: "only Operation from
+           Kosova maybe slower". Its own trigger over the same held stretch,
+           with a longer catch-up than the opening's: it trails the scroll and
+           glides into its place after the heading has landed, rather than
+           keeping step with it. */
+        gsap.fromTo(
+          place,
+          { y: 0 },
+          {
+            y: () => drop(),
+            ease: "power1.inOut",
+            scrollTrigger: {
+              /* The opening's own stretch, read off its trigger: a trigger
+                 on the held section itself is measured from after the hold,
+                 and would never run while the section is held. */
+              start: () => timeline.scrollTrigger?.start ?? 0,
+              end: () =>
+                timeline.scrollTrigger?.end ?? window.innerHeight * HOLD,
+              scrub: 2.4,
+              invalidateOnRefresh: true,
+            },
+          },
+        );
+      }
+
       /* A moment held at the end before the page moves on. */
       timeline.to({}, { duration: 0.12 });
 
       trigger = timeline.scrollTrigger;
     }, hero);
 
-    /* **The opening keeps pace with a resize.** The pin holds the section at
+    /* **White only over the photograph.** The words and the photograph's
+       edge travel at different paces, so which one is behind the words is
+       asked of where both are painted, every frame, rather than of the
+       scroll: black over the page, white over the picture. */
+    const place = hero.querySelector<HTMLElement>("[data-house-place]");
+    const onPhoto = () => {
+      if (!place) return;
+      const words = place.getBoundingClientRect();
+      const picture = frame.getBoundingClientRect();
+      const middle = words.top + words.height / 2;
+      const over =
+        middle >= picture.top &&
+        middle <= picture.bottom &&
+        words.right >= picture.left &&
+        words.left <= picture.right;
+      place.classList.toggle("is-on-photo", over);
+    };
+    gsap.ticker.add(onPhoto);
+
+        /* **The opening keeps pace with a resize.** The pin holds the section at
        pixel sizes, and ScrollTrigger measures again only 0.2s after the last
        resize event — so while a window was dragged the band and the photograph
        kept their old width and caught up after the drag, behind the heading,
@@ -173,6 +252,7 @@ export function HouseHeroMotion() {
     window.addEventListener("resize", onResize);
 
     return () => {
+      gsap.ticker.remove(onPhoto);
       window.removeEventListener("resize", onResize);
       cancelAnimationFrame(resizeFrame);
       context.revert();

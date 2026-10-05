@@ -547,38 +547,6 @@ export const services = {
   ],
 } as const;
 
-/**
- * The six coloured boxes: the five services the menu names, and the way of
- * working the site claims alongside them.
- *
- * Each carries the id its menu entry links to, so the Services menu lands on
- * the box for that service instead of nowhere.
- */
-export const difference = {
-  id: "difference",
-  titleLines: ["What Makes Us", "Different."],
-  /** Two columns under the heading, set against the second and third box. */
-  intro: [
-    "Five connected services. One team. Our designers, engineers and AI specialists work together across design and branding, websites, apps, automation, CRM and custom software, from strategy to delivery.",
-    "Instead of managing separate teams and disconnected tools, you get one partner that makes everything work together—helping your business move faster, adapt more easily and grow with less complexity.",
-  ],
-  /* The menu's five, in the menu's order. The ids are NOT renamed with the
-     labels: they are the keys `lib/isometric.ts` draws each box from and the
-     anchors this section answers to, and renaming them would move two things
-     that have nothing to do with what the box is called. `web-platforms` is
-     the box now labelled Websites. */
-  items: [
-    /* One line each now. These are authored breaks, and three of the four
-       names stopped having anything to break after the rename — a single
-       word in a two-line array would set the second line empty. */
-    { id: "ux-ui-branding", lines: ["Branding"] },
-    { id: "web-platforms", lines: ["Websites"] },
-    { id: "custom-software", lines: ["Software"] },
-    { id: "crm-solutions", lines: ["CRM", "Solution"] },
-    { id: "ai-automation", lines: ["AI &", "Automation"] },
-  ],
-} as const;
-
 export const solutions = {
   id: "solutions",
   eyebrow: "Who we build for",
@@ -620,10 +588,14 @@ export const solutions = {
 
 export const products = {
   id: "products",
-  eyebrow: "Mardal Products",
+  /** The label, two lines on the first rule as "Our / expertise" is. */
+  labelLines: ["Mardal", "Products"],
   /** Set as explicit lines, so the break falls in the same place at every
-   *  width and the step below it is a decision rather than a wrap. */
-  titleLines: ["We build what", "should exist."],
+   *  width and the step below it is a decision rather than a wrap. The full
+   *  stop is drawn as a square of the site's red, as about's "o" is; the
+   *  character itself stays for a screen reader and for anyone who copies it. */
+  titleLines: ["We build what", "should exist"],
+  titleStop: ".",
   summary:
     "Our products begin with a real need, not a trend. We explore, build, test, and refine each idea into a useful digital experience, then bring that knowledge into every solution and partnership we create.",
   /** Photographs, not screenshots: none of the three has an interface worth
@@ -667,10 +639,6 @@ export const products = {
       year: "2026",
     },
   ],
-  /** All three known, and the years supplied by the owner. Which year it is
-   *  — started, or due — has not been said, so the label stays the neutral
-   *  one it was. */
-  factLabels: { status: "Status", field: "Field", year: "Year" },
   /** The product cards only. `ctaHref` below is read by half the site — every
    *  service hero and CTA block points at it — but this label is read by
    *  `ProductsSection` and nowhere else, which is why the cards could be
@@ -740,6 +708,23 @@ export const footer = {
    * mark that waits for one.
    */
   socialLabel: "Follow",
+  /** The way back up, written now that it is a word and an arrow rather than
+   *  an arrow in a ring. */
+  backToTop: "Back to top",
+  /** The footer's first column — owner's reference of 2026-10-05, a "Menu"
+   *  over the site's pages. Only pages that are there: Services and Products
+   *  are disclosures in the header, not destinations (see `menu`), so their
+   *  own pages are not linked from here; the services have a column of their
+   *  own. */
+  pagesTitle: "Menu",
+  pages: [
+    { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
+    { label: "Clients", href: "/case-studies" },
+    { label: "Blog", href: "/blog" },
+    { label: "Careers", href: "/careers" },
+    { label: "Contact", href: "/contact" },
+  ],
   social: ["instagram", "facebook", "linkedin"],
   /**
    * The three a company site is expected to carry. None of them is written

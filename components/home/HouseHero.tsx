@@ -1,4 +1,4 @@
-import { houseHero } from "../../content/home";
+import { brandPlace, houseHero } from "../../content/home";
 import { Container } from "../layout/Container";
 import { HouseHeroMotion } from "./HouseHeroMotion";
 
@@ -53,6 +53,18 @@ export function HouseHero() {
               decoding="async"
             />
           </div>
+
+          {/* Where Mardal is, standing at the band's right end just above it
+              — owner, 2026-10-05: "i need by default thi text to be move on
+              that position … not on scroll then after scrollin you can move
+              in other position", and "move down at bottom right". Placed by
+              the stylesheet, so it is there on the first paint; the scroll
+              takes it down the right edge to the foot of the opened
+              photograph (HouseHeroMotion). On this page it stands in for the
+              bar's own, which is hidden here. */}
+          <p className="house-hero__place" data-house-place>
+            {brandPlace}
+          </p>
         </div>
 
         <p className="house-hero__support" data-house-support>

@@ -345,14 +345,8 @@ test("the arrow changes colour on hover and never changes place", () => {
   assert.match(rule, /:focus-visible \.pixel-arrow--animated/);
   assert.match(rule, /color:\s*var\(--accent\)/);
 
-  /* **Except on the accent panel, where purple on purple is nothing.** The
-     footer's way back up sits inside `.site-footer__panel`, whose background IS
-     `--accent`: the arrow would go invisible at the moment it was pointed at. */
-  const panel = bare.indexOf(".site-footer__panel :is(a, button):hover");
-  assert.ok(panel > 0, "the footer's arrow disappears into its own panel");
-  assert.match(
-    bare.slice(panel, bare.indexOf("\n}", panel)),
-    /color:\s*var\(--accent-contrast\)/,
-  );
-  assert.ok(panel > lit, "the panel's exception is written before the rule it excepts");
+  /* The accent panel's exception went with the panel (2026-10-05): the
+     footer is black now, and its way back up is a word and a thin arrow that
+     turn the site's red together, which reads on black. */
+  assert.doesNotMatch(bare, /\.site-footer__panel/);
 });

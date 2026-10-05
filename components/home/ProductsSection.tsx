@@ -1,16 +1,20 @@
 import { Container } from "../layout/Container";
-import { PixelArrow } from "../ui/PixelArrow";
 import { RollingLabel } from "../ui/RollingLabel";
-import { ProductsPin } from "./ProductsPin";
+import { ProductsReveal } from "./ProductsReveal";
 import { products } from "../../content/home";
 
 /**
- * The three products: the words on the left, the products down the right.
+ * The three products — redesigned on the owner's word, 2026-10-05: "pls
+ * redesign this section"; then "you have to use our new concept text color
+ * etc", of a version that still spoke the old one.
  *
- * The heading column is held in place while the products are scrolled past it,
- * so it is still there when you reach the last one. Each product leads with a
- * photograph — none of the three has an interface worth showing yet, so the
- * image stands for what it is about rather than claiming to be it.
+ * So it is written in the homepage's own hand: the label on the first rule as
+ * "Our / expertise" is, the heading from the second at the headings' size —
+ * its full stop the site's red square, as about's "o" is — and the sentence
+ * under it at the paragraphs' size. Then the products, one to a column from
+ * the second rule to the fourth, each a picture with its lines under it as
+ * Selected Work's are, black on white; its words, and the link with VIEW
+ * ALL's thin arrow. Under the pointer the name turns red and rolls.
  *
  * It also carries the four ids the header menu and the footer link to —
  * #products and one per product.
@@ -18,90 +22,102 @@ import { products } from "../../content/home";
 export function ProductsSection() {
   return (
     <section
-      className="products-section"
+      className="products"
       /* The page's hairlines run through it — see [data-ruled] in globals.css. */
       data-ruled
       id={products.id}
       aria-labelledby="products-title"
       data-route-section
+      data-products
+      /* Its own entrance, ProductsReveal; the site's section entrance
+         moving the same block at the same moment would fight it. */
+      data-enter-mode="none"
     >
-      <ProductsPin />
+      <ProductsReveal />
 
-      <Container>
-        <div className="products-layout">
-          {/* The column stretches so the rule beside it runs the full height;
-              the block inside it stays its own height so there is something
-              left to hold in place. */}
-          <div className="products-intro-col">
-            <div className="products-intro">
-              <p className="section-label">{products.eyebrow}</p>
-              <h2 className="section-title products-title" id="products-title">
-                {products.titleLines.map((line) => (
-                  <span className="products-title__line" key={line}>
-                    {line}
+      <Container className="products__layout">
+        <p className="products__label" data-products-label>
+          {products.labelLines.map((line) => (
+            <span className="products__label-line" key={line}>
+              {line}
+            </span>
+          ))}
+        </p>
+
+        <h2 className="products__title" id="products-title">
+          {products.titleLines.map((line, index) => (
+            /* What rises: the line is the mask it rises out of. */
+            <span className="products__title-line" key={line}>
+              <span className="products__rise" data-products-line>
+                {line}
+                {index === products.titleLines.length - 1 ? (
+                  /* The full stop, drawn as the red square; the character is
+                     still there for a screen reader. */
+                  <span className="products__stop" data-products-stop>
+                    <span className="visually-hidden">{products.titleStop}</span>
                   </span>
-                ))}
-              </h2>
-              <p className="section-lede products-lede">{products.summary}</p>
-            </div>
-          </div>
+                ) : null}
+              </span>
+            </span>
+          ))}
+        </h2>
 
-          {/* The products carry the section's arrival, not the section: the
-              heading beside them is pinned, and a pin inside something that
-              moves is measured wrong. */}
-          <ul className="products-row" data-enter>
-            {products.items.map((product) => (
-              <li className="product" id={product.id} key={product.id}>
-                {/* The facts sit low against the rule, level with the foot of
-                    the picture, as they do in the reference. */}
-                <div className="product__facts">
-                  <div className="product-fact">
-                    <p className="product-fact__label">
-                      {products.factLabels.status}
-                    </p>
-                    <p className="product-fact__value">{product.status}</p>
-                  </div>
-                  <div className="product-fact">
-                    <p className="product-fact__label">
-                      {products.factLabels.field}
-                    </p>
-                    <p className="product-fact__value">{product.field}</p>
-                  </div>
-                  <div className="product-fact">
-                    <p className="product-fact__label">
-                      {products.factLabels.year}
-                    </p>
-                    <p className="product-fact__value">{product.year}</p>
-                  </div>
-                </div>
+        <p className="products__lede" data-products-summary>
+          {products.summary}
+        </p>
 
-                <div className="product__main">
-                  <img
-                    className="product__image"
-                    src={product.image}
-                    alt={product.imageAlt}
-                    width="1600"
-                    height="1000"
-                    loading="lazy"
-                    decoding="async"
-                  />
+        <ul className="products__list">
+          {products.items.map((product) => (
+            <li className="product" id={product.id} key={product.id} data-product>
+              {/* What opens on arrival: the frame from its foot, the
+                  photograph inside settling to its size. */}
+              <div className="product__frame" data-product-frame>
+                <img
+                  className="product__image"
+                  src={product.image}
+                  alt={product.imageAlt}
+                  width="1600"
+                  height="1000"
+                  loading="lazy"
+                  decoding="async"
+                  data-product-image
+                />
+              </div>
 
-                  <h3 className="product__name">{product.title}</h3>
-                  <p className="product__copy">{product.description}</p>
+              {/* Its lines, as Selected Work sets a piece's: the name, the
+                  field, and where it stands. */}
+              <div className="product__meta" data-product-fade>
+                <h3 className="product__name">
+                  <RollingLabel>{product.title}</RollingLabel>
+                </h3>
+                <p className="product__line">{product.field}</p>
+                <p className="product__line">{`${product.status}, ${product.year}`}</p>
+              </div>
 
-                  <a className="product__cta" data-roll href={products.ctaHref}>
-                    <RollingLabel>{products.cta}</RollingLabel>
-                    <PixelArrow
-                      className="product__arrow"
-                      direction="up-right"
-                      size="small"
-                    />
-                  </a>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+              <p className="product__copy" data-product-fade>
+                {product.description}
+              </p>
+
+              <a
+                className="product__cta"
+                data-roll
+                data-product-fade
+                href={products.ctaHref}
+              >
+                <RollingLabel>{products.cta}</RollingLabel>
+                {/* VIEW ALL's arrow: a hairline, still while the word rolls. */}
+                <svg
+                  className="product__arrow"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M2 14 14 2M4.5 2H14v9.5" />
+                </svg>
+              </a>
+            </li>
+          ))}
+        </ul>
       </Container>
     </section>
   );

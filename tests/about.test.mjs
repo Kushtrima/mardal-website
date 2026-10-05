@@ -1701,39 +1701,6 @@ test("the closing line's measure survives the build", () => {
   assert.match(rule, /font-family:var\(--type-title\)/);
 });
 
-test("every card's pattern is its own tint, thinned", () => {
-  /* Owner: on all five boxes make the pattern a little pale, around 20%
-     transparent. So each mark is its tint's bar with `cc` on the end.
-
-     **Derived here rather than trusted, because it is written out.**
-     `color-mix` was the obvious way to express it and does not survive the
-     build — it compiles to an `@supports` block whose fallback the build makes
-     itself by dropping the percentage, serving the colour at full strength to
-     anything without it. Six hex digits and an alpha pair compile to themselves,
-     and the price is that the mark no longer follows its token automatically.
-     `--tint-butter-bar` has been three different colours in one afternoon, so
-     this is the check that a fourth cannot land without its card following. */
-  const bars = Object.fromEntries(
-    [...CSS.matchAll(/--tint-(\w+)-bar: (#[0-9a-f]{6});/g)].map((m) => [m[1], m[2]]),
-  );
-  assert.equal(Object.keys(bars).length, 5);
-
-  for (const [tint, hex] of Object.entries(bars)) {
-    const card = CSS.indexOf(`--card-tint: var(--tint-${tint});`);
-    assert.ok(card > 0, `${tint} is not on a card`);
-    const rule = CSS.slice(card, CSS.indexOf("}", card));
-    assert.match(
-      rule,
-      new RegExp(`--card-tint-bar: ${hex}cc;`),
-      `${tint}'s mark is not its own bar thinned — the bar is ${hex}`,
-    );
-  }
-
-  /* And the panels are untouched: it was built the other way round first, with
-     the panel derived from the bar, and that was the wrong half. */
-  assert.equal((CSS.match(/--card-tint: var\(--tint-\w+\);/g) ?? []).length, 5);
-});
-
 test("About is out of the placeholder module, and out of its test", () => {
   const placeholderModule = readFileSync(
     new URL("../content/placeholders.ts", import.meta.url),
