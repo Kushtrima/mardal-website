@@ -1,6 +1,7 @@
 import { brandPlace, houseHero } from "../../content/home";
 import { Container } from "../layout/Container";
 import { HouseHeroMotion } from "./HouseHeroMotion";
+import { HouseHeroReveal } from "./HouseHeroReveal";
 
 /**
  * The homepage's opening — the owner's concept of 2026-10-03.
@@ -77,6 +78,7 @@ export function HouseHero() {
       </Container>
 
       <HouseHeroMotion />
+      <HouseHeroReveal />
     </section>
   );
 }

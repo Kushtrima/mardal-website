@@ -1923,14 +1923,25 @@ test("the services' page turns its services on a wheel, each one's content besid
      placeholder's "Working on it." any more. */
   const opening = html.slice(html.indexOf('class="services-hero"'), html.indexOf('class="services-wheel"'));
   assert.ok(html.indexOf('class="services-hero"') > 0 && opening.length > 0, "the services page does not open on its hero");
-  assert.match(opening, /data-ruled="true"/);
+  /* Its five hairlines, its own so they can go with the scroll and fade
+     before the wheel (owner, 2026-10-06)… */
+  assert.equal((opening.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 5);
+  /* …the wheel its own grey five, taking over from those, and the footer the
+     same five on to the foot of the page (a trial, 2026-10-06). */
+  assert.equal((html.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 15);
+  assert.match(html, /<footer class="site-footer" id="contact" data-own-rules="true"/);
+  assert.match(html, /class="services-rules services-rules--grey" aria-hidden="true">/);
   assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);
-  assert.match(opening, /<p class="services-hero__label"><span class="services-hero__mark" aria-hidden="true"><\/span>Service<\/p>/);
+  assert.match(opening, /<p class="services-hero__label" data-services-hero-first="true"><span class="services-hero__mark" aria-hidden="true"><\/span>Service<\/p>/);
   assert.deepEqual(
-    [...opening.matchAll(/<span class="services-hero__title-line">([^<]+)<\/span>/g)].map((m) => m[1]),
+    [...opening.matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/span><\/h1>|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "")),
     ["Mardal is a results-driven", "agency built for ambitious brands", "that refuse to settle", "for average."],
   );
-  assert.match(opening, /<h1 class="services-hero__title" id="services-hero-title">/);
+  /* GSAP's SplitText splits it on arrival (ServicesHeroReveal), so the markup
+     is the plain lines; the full stop is the red (owner, 2026-10-06). */
+  assert.match(opening, /data-services-hero-title="true"/);
+  assert.match(opening, /<span class="services-hero__title-line">for average<span class="services-hero__stop">\.<\/span><\/span>/);
+  assert.match(opening, /<h1 class="services-hero__title" id="services-hero-title" data-services-hero-title="true">/);
   assert.match(opening, /We don’t measure success in deliverables\. We measure it in revenue grown, leads doubled, and brands that became impossible to ignore\./);
   assert.equal((opening.match(/class="services-hero__mark/g) ?? []).length, 4);
   assert.doesNotMatch(html, /Working|service-hero__title|expertise__label/);

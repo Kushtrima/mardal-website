@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SiteFooter } from "../../components/layout/SiteFooter";
 import { HeaderSpace } from "../../components/layout/HeaderSpace";
+import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
 import { ServicesHero } from "../../components/services/ServicesHero";
 import { ServicesWheel } from "../../components/services/ServicesWheel";
 import {
@@ -34,7 +35,10 @@ export default function ServicesPage() {
         <ServicesWheel entries={servicesIndex} actions={servicesIndexActions} />
       </main>
 
-      <SiteFooter />
+      {/* The wheel's grey hairlines run on to the foot of the page (owner,
+          2026-10-06: "the grey vertical lines need to go to the end also in
+          footer"), drawn as the wheel's are so the two meet unseen. */}
+      <SiteFooter rules={<ServicesFooterRules />} />
     </>
   );
 }

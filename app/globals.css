@@ -1174,6 +1174,15 @@ video {
   display: block;
 }
 
+/* It waits hidden until its words are split to come into focus
+   (HouseHeroReveal) — only with script, and not for a reader who asked for
+   less motion. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .house-hero__title {
+    visibility: hidden;
+  }
+}
+
 /* The band: whatever height is left under the heading, to the gutter above the
    foot of the screen. The frame stands in it and grows out of it. */
 .house-hero__slot {
@@ -1433,8 +1442,11 @@ video {
 
 /* On the homepage the bar's "Operating from Kosova" gives way to the
    opening's own (.house-hero__place), which starts at the band's right end
-   and goes down to the foot of the opened photograph on the scroll. */
-:root:has([data-house-hero]) .site-nav__place {
+   and goes down to the foot of the opened photograph on the scroll. Over the
+   services page's opening it is not said at all (owner, 2026-10-06: "remove
+   this text form services hero banner: Operating from Kosova"). */
+:root:has([data-house-hero]) .site-nav__place,
+:root:has([data-services-hero]) .site-nav__place {
   visibility: hidden;
 }
 
@@ -2429,18 +2441,63 @@ video {
   --hero-mark: round(calc(var(--text-body) * 1.6), 2px);
   --hero-mark-arm: round(calc(var(--hero-mark) * 0.31), 1px);
   --hero-mark-gap: 0.85rem;
-  /* **Its hairlines in the red** — owner, 2026-10-06: "make in orange not
-     grey" — the plus marks' own colour, here only. */
-  --line-grid-vertical: var(--accent);
 
+  position: relative;
+  isolation: isolate;
   background: var(--canvas);
 }
 
-/* **And up to the top of the page** — owner, 2026-10-06: "move vertical
-   lines to the top": through the room the bar takes (HeaderSpace) as well as
-   the opening itself. */
-.services-hero[data-ruled]::before {
+/* **The services page's hairlines** (ServicesRules): five lines, each on a
+   whole pixel so all five read alike, where the page's [data-ruled] draws
+   them, in the red. Under everything the opening holds. */
+.services-rules {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+}
+
+.services-rules__line {
+  --rule: 0;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: round(
+    calc(var(--page-gutter) + (100% - var(--page-gutter) * 2 - 0.7px) * var(--rule) / 4),
+    1px
+  );
+  width: 0.7px;
+  background: var(--accent);
+}
+
+.services-rules__line:nth-child(2) {
+  --rule: 1;
+}
+
+.services-rules__line:nth-child(3) {
+  --rule: 2;
+}
+
+.services-rules__line:nth-child(4) {
+  --rule: 3;
+}
+
+.services-rules__line:nth-child(5) {
+  --rule: 4;
+}
+
+/* In the opening, from the top of the page — through the room the bar takes
+   (owner, 2026-10-06: "move vertical lines to the top"). */
+.services-hero .services-rules__line {
   top: calc(-1 * var(--header-space));
+}
+
+/* In the wheel, the page's grey (ServicesWheelRules) — a trial, owner,
+   2026-10-06: "after the vertical disaper i want to aper grey vertical line
+   in service just to try how it looks". */
+.services-rules--grey .services-rules__line {
+  background: var(--line-grid-vertical);
 }
 
 .container.services-hero__inner {
@@ -2536,6 +2593,30 @@ video {
   white-space: nowrap;
 }
 
+
+/* The full stop in the red (owner, 2026-10-06: "in the end the . to be in
+   red"). */
+.services-hero__stop {
+  color: var(--accent);
+}
+
+/* **Where the opening's entrance starts** (ServicesHeroReveal), here rather
+   than in script so nothing is seen in place first: the heading hidden until
+   SplitText has split it into its words, "Service", the note and their
+   pluses not yet there. Only with script — without it they stand — and not
+   for a reader who asked for less motion. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .services-hero__title {
+    visibility: hidden;
+  }
+
+  [data-services-hero-first],
+  [data-services-hero-last] {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
 .services-hero__title-line:first-child {
   padding-left: 25%;
 }
@@ -2598,7 +2679,17 @@ video {
   --wheel-size: clamp(1.375rem, 2vw, 1.875rem);
 
   position: relative;
-  background: var(--canvas);
+  /* Its own grey hairlines under everything it holds (ServicesWheelRules). */
+  isolation: isolate;
+  /* No ground of its own — the page's is the same — so the opening's lines
+     can be seen going down over it on the scroll (ServicesRules). */
+  background: transparent;
+}
+
+/* Nor the space ScrollTrigger holds it in — over `.service-page > .pin-spacer`,
+   which comes later, so it needs the weight. */
+.service-page.service-page--services > .pin-spacer {
+  background: transparent;
 }
 
 .container.services-wheel__inner {
@@ -2900,7 +2991,9 @@ video {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem 2.5rem;
-  margin-top: 3.25rem;
+  /* A step further down again (owner, 2026-10-06: "buttons move little more
+     down"). */
+  margin-top: 4.5rem;
 }
 
 .services-wheel__cta {
@@ -4770,6 +4863,11 @@ video {
   padding-block: var(--section-space-lg) clamp(1.25rem, 2vw, 2rem);
   background: var(--canvas);
   color: var(--ink);
+}
+
+/* Lines its page draws itself (SiteFooter `rules`), under all it holds. */
+.site-footer[data-own-rules] {
+  isolation: isolate;
 }
 
 .container.site-footer__layout {

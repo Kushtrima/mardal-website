@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Container } from "./Container";
 import { FooterReveal } from "./FooterReveal";
 import { SocialIcon } from "./SocialIcon";
@@ -33,15 +34,25 @@ const services = menu.find((group) => group.key === "services");
  * want to leav till the end of the page"). Only the homepage asks for them;
  * every other page's footer stays plain.
  */
-export function SiteFooter({ ruled = false }: { ruled?: boolean } = {}) {
+/**
+ * `rules`: hairlines its page draws itself, to carry its own on to the foot
+ * of the page alike — the services page's, each on a whole pixel (see
+ * ServicesFooterRules), where [data-ruled]'s would not match them.
+ */
+export function SiteFooter({
+  ruled = false,
+  rules,
+}: { ruled?: boolean; rules?: ReactNode } = {}) {
   return (
     <footer
       className="site-footer"
       id={contact.id}
       data-ruled={ruled ? true : undefined}
+      data-own-rules={rules ? true : undefined}
       data-footer
     >
       <FooterReveal />
+      {rules}
 
       <Container className="site-footer__layout">
         <div className="site-footer__columns" data-footer-fade>

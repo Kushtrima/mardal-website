@@ -32,8 +32,11 @@ export const servicesHero = {
     "Mardal is a results-driven",
     "agency built for ambitious brands",
     "that refuse to settle",
-    "for average.",
+    "for average",
   ],
+  /* The heading's full stop, in the red — owner, 2026-10-06: "in the end
+     the . to be in red". */
+  titleStop: ".",
   note: "We don’t measure success in deliverables. We measure it in revenue grown, leads doubled, and brands that became impossible to ignore.",
 } as const;
 
