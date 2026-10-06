@@ -16,9 +16,9 @@ import { RULES_REACH } from "./ServicesRules";
  * over each other (a hairline drawn twice reads darker): the opening's feet
  * stop RULES_REACH of a screen into the wheel, so these start there; and as
  * the wheel is held and the opening goes on up, they reach up after it, to
- * the wheel's top once the opening's feet have gone. On a phone nothing is
- * held, so the two simply meet where they meet. Less motion: the opening's
- * stand still, and these run the whole section.
+ * the wheel's top once the opening's feet have gone — on a phone as on a
+ * desktop, since the wheel is held on both. Less motion: the opening's stand
+ * still, and these run the whole section.
  */
 export function ServicesWheelRules() {
   const ref = useRef<HTMLDivElement>(null);
@@ -32,32 +32,29 @@ export function ServicesWheelRules() {
 
     const lines = [...box.children] as HTMLElement[];
     const reach = () => window.innerHeight * RULES_REACH;
-    const media = gsap.matchMedia();
 
     /* Held: they reach up as the opening's feet go up. */
-    media.add("(min-width: 40.0625rem)", () => {
-      gsap.fromTo(
-        lines,
-        { top: reach },
-        {
-          top: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: () => "+=" + reach(),
-            scrub: true,
-            invalidateOnRefresh: true,
-          },
+    const tween = gsap.fromTo(
+      lines,
+      { top: reach },
+      {
+        top: 0,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => "+=" + reach(),
+          scrub: true,
+          invalidateOnRefresh: true,
         },
-      );
-    });
-    /* A phone: they start where the opening's end, and stay. */
-    media.add("(max-width: 40rem)", () => {
-      gsap.set(lines, { top: reach });
-    });
+      },
+    );
 
-    return () => media.revert();
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+      gsap.set(lines, { clearProps: "top" });
+    };
   }, []);
 
   return (

@@ -1,8 +1,20 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SiteHeader } from "../components/layout/SiteHeader";
 import { RouteTransition } from "../components/motion/RouteTransition";
 import { SmoothScroll } from "../components/motion/SmoothScroll";
+
+/**
+ * The page may use the whole screen, notch and home bar included
+ * (`viewport-fit: cover`); the page's gutters and the bar keep their content
+ * clear of them (`env(safe-area-inset-*)` in globals.css). Owner, 2026-10-06:
+ * the responsive and mobile pass.
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: {

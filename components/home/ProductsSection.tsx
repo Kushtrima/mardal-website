@@ -3,6 +3,9 @@ import { RollingLabel } from "../ui/RollingLabel";
 import { ProductsReveal } from "./ProductsReveal";
 import { products } from "../../content/home";
 
+/** The widths each product's photograph is offered at. */
+const PRODUCT_WIDTHS = [480, 800, 1200, 1600];
+
 /**
  * The three products — redesigned on the owner's word, 2026-10-05: "pls
  * redesign this section"; then "you have to use our new concept text color
@@ -75,6 +78,13 @@ export function ProductsSection() {
                 <img
                   className="product__image"
                   src={product.image}
+                  /* The photograph's own service sends it at the width asked
+                     for, so a phone takes a phone's (sizes: the full column
+                     there, a quarter of the page above it). */
+                  srcSet={PRODUCT_WIDTHS.map(
+                    (width) => `${product.image.replace(/([?&])w=\d+/, `$1w=${width}`)} ${width}w`,
+                  ).join(", ")}
+                  sizes="(max-width: 40rem) 100vw, 25vw"
                   alt={product.imageAlt}
                   width="1600"
                   height="1000"

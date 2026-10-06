@@ -186,7 +186,13 @@ test("server-renders the Mardal homepage", async () => {
      the wordmark and its place. Read from the stylesheet, since the states are
      attributes the server never writes. */
   const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.doesNotMatch(CSS, /\.site-header::before|\.site-header\[data-header="hidden"\]/);
+  /* Except on a phone or a touch screen, where it steps aside going down and
+     comes back on a band going up — the responsive plan the owner approved
+     on 2026-10-06 ("ok continue"). That and only that is inside the mobile
+     menu's query; everywhere else the 2026-10-03 rule stands. */
+  const phoneBar = CSS.match(/\/\* \*\*A phone, or any touch screen: the bar steps aside\*\*[\s\S]*?\n@media \(max-width: 64rem\), \(hover: none\) \{[\s\S]*?\n\}\n/)?.[0] ?? "";
+  assert.match(phoneBar, /\.site-header\[data-header="hidden"\]/, "the phone's bar does not step aside");
+  assert.doesNotMatch(CSS.replace(phoneBar, ""), /\.site-header::before|\.site-header\[data-header="hidden"\]/);
   /* Scrolled, only the wordmark's ring stays (owner, 2026-10-05: "also when
      scroll only icon of the logo to remain") — the letters clipped away to
      its 163.92 of 694.25 units — and the place beside it goes. */
@@ -259,10 +265,11 @@ test("server-renders the Mardal homepage", async () => {
 
   /* **Four words on the red sheet — since 2026-10-05** ("now i want to
      redesin comple the menu the burger menu inside", and after three goes,
-     "somthing different"). Services, Products and About are parents —
-     buttons that open their pages and go nowhere (owner's call, 2026-08-24:
-     disclosures, not destinations) — and Clients is a page. They arrive
-     closed. */
+     "somthing different"). Products and About are parents — buttons that
+     open their pages and go nowhere (owner's call, 2026-08-24: disclosures,
+     not destinations) — and Clients is a page; so is Services since
+     2026-10-06, its wheel of every service ("we need our new pages"). The
+     parents arrive closed. */
   const pages = html.match(/<ul class="mobile-menu__pages">[\s\S]*<\/ul><div class="mobile-menu__foot"/)?.[0];
   assert.ok(pages, "the menu has no entries");
   assert.deepEqual(
@@ -271,7 +278,7 @@ test("server-renders the Mardal homepage", async () => {
   );
   /* About is the company's four pages under the first one's name — owner,
      2026-10-05: "maybe Blog carreers and contact to be under About". */
-  for (const key of ["services", "products", "about"]) {
+  for (const key of ["products", "about"]) {
     assert.match(
       pages,
       new RegExp(`<button class="mobile-menu__page" type="button" aria-expanded="false" aria-controls="mobile-menu-panel-${key}"`),
@@ -281,35 +288,25 @@ test("server-renders the Mardal homepage", async () => {
   }
   assert.deepEqual(
     [...pages.matchAll(/<a href="([^"]+)" class="mobile-menu__page"/g)].map((m) => m[1]),
-    ["/case-studies"],
+    ["/services", "/case-studies"],
   );
   /* No second screen to step into, and nothing to go back from. */
   assert.doesNotMatch(html, /mobile-menu__(index|detail|back|count|rows|num)/);
 
-  /* **The pages behind each parent.** The seven services in their two
-     halves, each list named by its heading, in the owner's order —
-     Development's four, then Creative's three (2026-10-03); the other two
-     parents' lists named by the word itself. */
+  /* **The pages behind each parent**, each list named by the word itself. */
   const lists = Object.fromEntries(
     [...pages.matchAll(/<ul class="mobile-menu__links" (?:aria-labelledby="mobile-menu-group-(\w+)"|aria-label="(\w+)")>([\s\S]*?)<\/ul>/g)].map(
       (m) => [m[1] ?? m[2], [...m[3].matchAll(/class="mobile-menu__link-text">([^<]*)</g)].map((n) => n[1])],
     ),
   );
   assert.deepEqual(lists, {
-    development: ["Websites", "Software", "CRM Solution", "AI &amp; Automation"],
-    /* Branding & Logo is the menu's word only; the page behind it is still
-       Branding, at the same address. */
-    creative: ["Branding &amp; Logo", "UX/UI Design", "Print Design"],
     Products: ["Arvena AI", "Ftesa.co", "Ihrauto"],
     About: ["About", "Blog", "Careers", "Contact"],
   });
-  for (const half of ["development", "creative"]) {
-    assert.match(pages, new RegExp(`<p class="mobile-menu__group-title" id="mobile-menu-group-${half}">`));
-  }
   /* Each page a ruled row: its name, and VIEW ALL's thin arrow (owner,
      2026-10-05: "i don like how sub links shows pls redesign that part"). */
-  assert.equal((pages.match(/<li class="mobile-menu__item">/g) ?? []).length, 14);
-  assert.equal((pages.match(/class="mobile-menu__link-arrow"/g) ?? []).length, 14);
+  assert.equal((pages.match(/<li class="mobile-menu__item">/g) ?? []).length, 7);
+  assert.equal((pages.match(/class="mobile-menu__link-arrow"/g) ?? []).length, 7);
 
   /* And the foot: the way in, then the ways to reach Mardal. */
   assert.match(html, /<div class="mobile-menu__foot"[^>]*>[\s\S]*?class="mobile-menu__cta" data-roll="true" href="\/contact"[\s\S]*?href="mailto:info@mardal\.co"[\s\S]*?href="tel:\+38349210999"/);
@@ -907,7 +904,7 @@ test("server-renders the CRM Solution service page", async () => {
   assert.match(html, /<footer class="site-footer"/);
 });
 
-test("the menu points at the service pages that exist", async () => {
+test("the footer points at the service pages that exist", async () => {
   const html = await (await render()).text();
   assert.match(html, /href="\/services\/ai-automation"/);
   assert.match(html, /href="\/services\/crm-solution"/);
@@ -916,13 +913,15 @@ test("the menu points at the service pages that exist", async () => {
   assert.match(html, /href="\/services\/ux-ui-design"/);
   assert.match(html, /href="\/services\/print-design"/);
 
-  /* Not a list of strings — every href the panel carries is fetched. The old
-     version of this test asserted three literals and would have gone on passing
-     with the route renamed underneath it, which is exactly what happened to
-     `/services/web-platforms-apps`. */
+  /* Not a list of strings — every href the footer's Services column carries
+     is fetched. The old version of this test asserted three literals and would
+     have gone on passing with the route renamed underneath it, which is exactly
+     what happened to `/services/web-platforms-apps`. (It read the menu's panel
+     until Services became a page of its own, 2026-10-06; the footer lists the
+     same seven.) */
   const hrefs = [
-    ...html.matchAll(/class="mobile-menu__link" href="(\/services\/[^"]+)"/g),
-  ].map((m) => m[1]);
+    ...new Set([...html.matchAll(/class="site-footer__link" href="(\/services\/[^"]+)"/g)].map((m) => m[1])),
+  ];
   assert.equal(hrefs.length, 7);
   for (const href of hrefs) {
     assert.equal(
@@ -1940,7 +1939,10 @@ test("the services' page turns its services on a wheel, each one's content besid
   /* GSAP's SplitText splits it on arrival (ServicesHeroReveal), so the markup
      is the plain lines; the full stop is the red (owner, 2026-10-06). */
   assert.match(opening, /data-services-hero-title="true"/);
-  assert.match(opening, /<span class="services-hero__title-line">for average<span class="services-hero__stop">\.<\/span><\/span>/);
+  /* The words are written one by one (a hyphenated one kept whole), so React
+     may set its empty comments between them. */
+  assert.match(opening.replace(/<!-- -->/g, ""), /<span class="services-hero__title-line">for average<span class="services-hero__stop">\.<\/span><\/span>/);
+  assert.match(opening, /<span class="services-hero__whole">results-driven<\/span>/);
   assert.match(opening, /<h1 class="services-hero__title" id="services-hero-title" data-services-hero-title="true">/);
   assert.match(opening, /We don’t measure success in deliverables\. We measure it in revenue grown, leads doubled, and brands that became impossible to ignore\./);
   assert.equal((opening.match(/class="services-hero__mark/g) ?? []).length, 4);

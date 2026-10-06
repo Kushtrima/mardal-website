@@ -250,3 +250,15 @@ test("the run reads the pin lead rather than repeating it", () => {
     "the pin start names a number instead of the declared lead",
   );
 });
+
+test("every width the stylesheet changes at is a step of the page's scale", () => {
+  /* The responsive pass, 2026-10-06: a layout changes at a few widths, the
+     same everywhere (lib/breakpoints.ts). A step's complement — a sixteenth
+     of a rem past it — is the same line seen from the other side. */
+  const SCALE = [24, 30, 40, 48, 64, 75];
+  const allowed = new Set(SCALE.flatMap((step) => [step, step + 0.0625, step - 0.0625]));
+  const widths = [...code(CSS).matchAll(/@media[^{]*?\((?:max|min)-width:\s*([\d.]+)rem\)/g)].map((m) => Number(m[1]));
+  assert.ok(widths.length > 20, "the stylesheet's widths were not found");
+  const strays = [...new Set(widths.filter((width) => !allowed.has(width)))];
+  assert.deepEqual(strays, [], `widths off the scale: ${strays.map((w) => w + "rem").join(", ")}`);
+});

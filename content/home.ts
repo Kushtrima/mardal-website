@@ -168,9 +168,12 @@ export const menu = [
     eyebrow: "Mardal Services",
     description: "Build, connect, and automate the systems behind your growth.",
     href: "/services",
-    /* **The word opens the panel and goes nowhere.** Owner's call, 2026-08-24,
-       for Services, Products and Company alike: they are disclosures, not
-       destinations.
+    /* **The word goes to the services' page** — owner, 2026-10-06: "when i
+       click services dosen open new page but opens sub service? we need our
+       new pages". It was a disclosure (owner's call, 2026-08-24, for Services,
+       Products and Company alike: disclosures, not destinations) while
+       /services was a placeholder; it is the wheel of every service now, so
+       the word is a page, as Clients is. Products is still the other way.
 
        A separate field rather than blanking `href`, because the address is
        still true — `/services` is a real route and the page behind it is real,
@@ -181,7 +184,7 @@ export const menu = [
        Clients is the one entry that stays both, and carries `false` rather than
        nothing so the field is a decision on every entry instead of an
        exception someone has to notice is absent. */
-    panelOnly: true,
+    panelOnly: false,
     /* The one entry split into groups, and the panel shows them as such: a
        heading over each half. Only the header reads `groups`.
 
@@ -189,9 +192,6 @@ export const menu = [
        list without caring about the split — the footer's column, the phone
        sheet's "is this section current" check, the contact letter's topics —
        sees the same seven in the same order.
-
-       /services is a placeholder, and since the word above these does not link
-       to it, nothing in the header or the footer reaches it.
 
        The homepage's difference boxes (`difference` below) still name the five
        services from before the split, in the old order. Each box's drawing is

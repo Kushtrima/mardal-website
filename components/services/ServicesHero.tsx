@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Container } from "../layout/Container";
 import { ServicesHeroReveal } from "./ServicesHeroReveal";
 import { ServicesRules } from "./ServicesRules";
@@ -43,7 +44,17 @@ export function ServicesHero() {
         >
           {servicesHero.titleLines.map((line, index) => (
             <span className="services-hero__title-line" key={line}>
-              {line}
+              {/* A hyphenated word kept whole where a phone wraps the line. */}
+              {line.split(" ").map((word, wordIndex) => (
+                <Fragment key={`${word}-${wordIndex}`}>
+                  {wordIndex > 0 ? " " : null}
+                  {word.includes("-") ? (
+                    <span className="services-hero__whole">{word}</span>
+                  ) : (
+                    word
+                  )}
+                </Fragment>
+              ))}
               {index === servicesHero.titleLines.length - 1 ? (
                 <span className="services-hero__stop">{servicesHero.titleStop}</span>
               ) : null}

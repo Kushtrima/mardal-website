@@ -37,3 +37,29 @@
  * copy honest.
  */
 export const MOBILE_MENU = "(max-width: 64rem), (hover: none)";
+
+/**
+ * **The page's widths** — the responsive pass, owner, 2026-10-06. Every
+ * `@media` width in `globals.css` is one of these steps (or the step's own
+ * complement, one sixteenth of a rem past it — e.g. `min-width: 40.0625rem`
+ * for "wider than a phone"), so a layout changes at the same few places
+ * everywhere rather than at whichever number one section happened to pick.
+ * They were already most of what the stylesheet used; four strays (23, 52
+ * and 56rem) were moved onto them. `tests/breakpoints.test.mjs` fails on a
+ * width that is not.
+ *
+ *   tiny    24rem   384px   the smallest phones (360, the iPhone SE's 375)
+ *   small   30rem   480px   phones held upright
+ *   phone   40rem   640px   phones on their side, the smallest tablets
+ *   tablet  48rem   768px   tablets held upright
+ *   laptop  64rem  1024px   tablets on their side; the mobile menu's line
+ *   wide    75rem  1200px   room for the widest desktop arrangements
+ */
+export const BREAKPOINTS = {
+  tiny: 24,
+  small: 30,
+  phone: 40,
+  tablet: 48,
+  laptop: 64,
+  wide: 75,
+} as const;

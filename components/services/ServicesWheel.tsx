@@ -80,7 +80,14 @@ export function ServicesWheel({
     const count = items.length;
     if (count < 2) return;
 
+    /* The wheel turns on a phone too, laid out for it by the stylesheet —
+       owner, 2026-10-06, of the phone: "yes try to adapt same effect as in
+       desktop". Rebuilt across the phone's line, where the names' size and
+       the stage change. */
     const wide = window.matchMedia("(min-width: 40.0625rem)");
+    /* A phone's address bar showing and hiding must not re-measure the held
+       section mid-turn. */
+    ScrollTrigger.config({ ignoreMobileResize: true });
     let trigger: ScrollTrigger | undefined;
     let active = -1;
     /* **Nothing is chosen before the section is reached** — owner,
@@ -175,7 +182,6 @@ export function ServicesWheel({
       trigger?.kill();
       trigger = undefined;
       lines.forEach((line) => (line.style.transform = ""));
-      if (!wide.matches) return;
 
       place(0);
       trigger = ScrollTrigger.create({

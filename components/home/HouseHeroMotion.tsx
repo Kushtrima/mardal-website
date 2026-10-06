@@ -164,10 +164,30 @@ export function HouseHeroMotion() {
         /* The heading's last baseline, where it comes to rest: 0.205 of its
            size above its box's foot at its leading; the words' own baseline
            0.145 of theirs above their foot at theirs. */
+        /* **Unless the heading's last line has no room beside it** — the
+           responsive pass, 2026-10-06: on a phone "& TECHNOLOGY" runs the
+           width of the page, and the words landed on it. There they stop on
+           a line of their own over the sentence, at the same right edge. */
+        const roomBeside = () => {
+          /* Looked up each time: the heading's entrance (focusWords) puts
+             its text back new once it is in, so a line found earlier is no
+             longer on the page. */
+          const lastLine = title.querySelector<HTMLElement>(
+            ".house-hero__title-line:last-child",
+          );
+          if (!lastLine) return true;
+          const words = document.createRange();
+          words.selectNodeContents(lastLine);
+          return words.getBoundingClientRect().right + 16 < place.getBoundingClientRect().left;
+        };
         const drop = () => {
           const headingFoot = hero.clientHeight - padBottom();
           const headingSize = parseFloat(getComputedStyle(title).fontSize);
           const wordsSize = parseFloat(getComputedStyle(place).fontSize);
+          if (!roomBeside()) {
+            const sentenceTop = titleEnd() - SUPPORT_GAP - support.offsetHeight;
+            return sentenceTop - wordsSize * 0.6 - place.offsetHeight - offsetY(place);
+          }
           const foot = headingFoot - headingSize * 0.205 + wordsSize * 0.145;
           return foot - place.offsetHeight - offsetY(place);
         };

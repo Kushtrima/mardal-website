@@ -86,7 +86,9 @@ const ENTRIES: readonly MenuEntry[] = menu.map((item): MenuEntry => {
     };
   }
   if (item.panelOnly) {
-    const halves = "groups" in item ? item.groups : null;
+    /* Headed halves where an entry has them — Services did, until it became a
+       page of its own (2026-10-06); none does now. */
+    const halves = (item as { readonly groups?: readonly MenuGroup[] }).groups ?? null;
     return {
       kind: "parent",
       key: item.key,
@@ -301,6 +303,24 @@ export function SiteHeader() {
       window.removeEventListener("scroll", onScroll);
     };
   }, [barOpen, hoverOpen]);
+
+  /* **No ring after a press** — owner, 2026-10-06: "why sometines we have
+     that outline red in menu". The ring is for the keyboard, but a phone can
+     still draw it round Menu after a tap, where focus is handed to it. So the
+     header keeps how it was last used: a press hides the ring, a key brings
+     it back. */
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    const pressed = () => header.setAttribute("data-pressed", "");
+    const keyed = () => header.removeAttribute("data-pressed");
+    document.addEventListener("pointerdown", pressed, true);
+    document.addEventListener("keydown", keyed, true);
+    return () => {
+      document.removeEventListener("pointerdown", pressed, true);
+      document.removeEventListener("keydown", keyed, true);
+    };
+  }, []);
 
   /**
    * While it is open the page underneath holds still: the body is locked, and
@@ -588,9 +608,12 @@ export function SiteHeader() {
                       }}
                       data-roll
                     >
-                      {/* The plus's place, empty, so all four words start on
-                          one line. */}
-                      <span className="mobile-menu__slot" aria-hidden="true" />
+                      {/* The plus in front of every word, a page's too —
+                          owner, 2026-10-06: "not all pages ave + we need to
+                          have all". */}
+                      <span className="mobile-menu__slot" aria-hidden="true">
+                        <span className="mobile-menu__plus" />
+                      </span>
                       {word}
                     </Link>
                   </li>

@@ -95,6 +95,9 @@
   /* The same lift, harder, for the two card hovers. */
   --surface-raised-strong: rgb(8 8 10 / 8%);
   --ink: #08080a;
+  /* The page's black as the root has it — for the bar, which turns its own
+     --ink white over a photograph and needs the black back on its band. */
+  --bar-ink: var(--ink);
   /* Long-form reading ink, one step below --ink. Full --ink on a pure black
      ground haloes: the bloom around each stroke is bearable for a headline and
      tiring across nine hundred words, which is why every publication that is
@@ -491,7 +494,12 @@
   /* 16px on a phone, opening to 40px by about a 1000px window and staying
      there. A flat 40 would cost a 390 screen 48px of content, which is the
      room the product facts need to hold one line. */
-  --page-gutter: clamp(1rem, 4vw, 2.5rem);
+  /* Clear of a phone's notch, turned on its side (viewport-fit: cover). */
+  --page-gutter: max(
+    clamp(1rem, 4vw, 2.5rem),
+    env(safe-area-inset-left, 0px),
+    env(safe-area-inset-right, 0px)
+  );
 
   /* **The page's column gap**, named for the page rather than for a section:
      the Why Mardal boxes and the industries roll shared it until they left the
@@ -1433,6 +1441,35 @@ video {
   filter: brightness(0) invert(1);
 }
 
+/* **A phone, or any touch screen: the bar steps aside** — the responsive
+   pass, owner, 2026-10-06. Text under a bar that stays reads badly at a
+   phone's width, so going down the page it goes up out of the way, and
+   coming back up it returns on a band of the page's ground, in the page's
+   black even over a photograph. At the top of the page it is as it was.
+   The query is the mobile menu's (lib/breakpoints.ts), so both change
+   together. */
+@media (max-width: 64rem), (hover: none) {
+  .site-header {
+    transition:
+      transform var(--duration-base) var(--ease-standard),
+      background-color var(--duration-base) var(--ease-standard);
+  }
+
+  .site-header[data-header="hidden"]:not(.site-header--mobile-menu-open) {
+    transform: translateY(-100%);
+  }
+
+  .site-header[data-header="shown"]:not(.site-header--mobile-menu-open) {
+    --ink: var(--bar-ink);
+
+    background: var(--canvas);
+  }
+
+  .site-header[data-header="shown"]:not(.site-header--mobile-menu-open) .brand-logo {
+    filter: none;
+  }
+}
+
 .brand-logo {
   clip-path: inset(0 0 0 0);
   transition:
@@ -1930,8 +1967,9 @@ video {
    "i want + to be on fron of the pages not in the end also in the midle",
    then "Make + same as text menu": the Menu button's own plus, at its size —
    whole pixels, 2px strokes, each stroke's middle left open — and, like it,
-   a plus whether its pages are open or not. Every word has the place,
-   Clients' empty, so the four start on one line; centred on the word's line,
+   a plus whether its pages are open or not. Every word has one — the
+   pages' too (owner, 2026-10-06: "we need to have all") — so the four start
+   on one line; centred on the word's line,
    which at this leading is the middle of its capitals too. */
 /* Its top on the top of the capitals — owner, 2026-10-05: "move plus in top
    of the text in same horisontal line". They stand 0.235 of the word's size
@@ -2255,6 +2293,12 @@ video {
   outline-offset: 0.2em;
 }
 
+/* After a press, no ring anywhere in the header — a key brings it back
+   (SiteHeader's data-pressed). */
+.site-header[data-pressed] :focus-visible {
+  outline: none;
+}
+
 /* In hand, black: the page you are on, the parent whose pages it is, and the
    parent that is open. */
 .mobile-menu__page[aria-current="page"],
@@ -2487,6 +2531,14 @@ video {
   --rule: 4;
 }
 
+/* Two columns on a phone, as [data-ruled]'s: the quarter rules go. */
+@media (max-width: 40rem) {
+  .services-rules__line:nth-child(2),
+  .services-rules__line:nth-child(4) {
+    display: none;
+  }
+}
+
 /* In the opening, from the top of the page — through the room the bar takes
    (owner, 2026-10-06: "move vertical lines to the top"). */
 .services-hero .services-rules__line {
@@ -2621,9 +2673,13 @@ video {
   padding-left: 25%;
 }
 
-/* A phone: one column — the label, the heading at the big header's size
-   and free to wrap, the note — and only the two marks that stand beside
-   words. */
+/* **A phone: the desktop's arrangement on two columns** — the responsive
+   pass, owner, 2026-10-06 ("make the same design aprropx. as desktop in
+   mobile"). One column of content; the plus marks on the middle rule, top
+   and foot, as the desktop's stand on its second and fourth; "Service" and
+   the note beside the first; and the heading at the big header's size, its
+   first line set in to the middle rule as the desktop's is to the second,
+   the rest free to wrap — but never at a word's own hyphen. */
 @media (max-width: 40rem) {
   .container.services-hero__inner {
     grid-template-columns: minmax(0, 1fr);
@@ -2632,13 +2688,16 @@ video {
 
   .services-hero__label,
   .services-hero__note,
-  .services-hero__title {
+  .services-hero__title,
+  .services-hero__mark--top,
+  .services-hero__mark--foot {
     grid-column: 1;
   }
 
   .services-hero__mark--top,
   .services-hero__mark--foot {
-    display: none;
+    justify-self: start;
+    margin-left: calc(50% - var(--hero-mark) / 2);
   }
 
   .services-hero__title {
@@ -2649,9 +2708,29 @@ video {
     white-space: normal;
   }
 
+  /* Spread from edge to edge — owner, 2026-10-06, of the phone: "move
+     Mardal to the right also this to the right end: results-driven": "Mardal"
+     from the middle rule and "is" to the right edge, then "a" at the left and
+     "results-driven" at the right end — the arrangement the words already
+     came in on, so they no longer move once they are in. */
   .services-hero__title-line:first-child {
     padding-left: 0;
+    text-align: justify;
+    text-align-last: justify;
+    text-indent: 50%;
   }
+
+  /* Not inside the words: while they come in, each is a box of its own
+     (focusWords' SplitText) and would set its own letters in by half its
+     width — which is how "results-driven" ran off the screen. */
+  .services-hero__title-line * {
+    text-indent: 0;
+  }
+}
+
+/* A hyphenated word stays whole when the line wraps ("results-driven"). */
+.services-hero__whole {
+  white-space: nowrap;
 }
 
 /* ── The services' wheel ──
@@ -2875,19 +2954,18 @@ video {
 }
 
 /* Beside the wheel, no heading: the name is on the wheel, in the red (owner,
-   2026-10-06: "delete title for each … only paragraf and other text"). Kept
-   for a screen reader, as `.visually-hidden` is. */
-@media (min-width: 40.0625rem) {
-  .services-wheel__title {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
+   2026-10-06: "delete title for each … only paragraf and other text") — on a
+   phone too, now the wheel turns there. Kept for a screen reader, as
+   `.visually-hidden` is. */
+.services-wheel__title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .services-wheel__summary {
@@ -3028,33 +3106,72 @@ video {
   }
 }
 
-/* **A phone: one under the next.** No wheel and nothing held — each service
-   its name, its sentence, its chapters and the way into its page. */
+/* **A phone: the same wheel, the wheel over its content** — owner,
+   2026-10-06: "yes try to adapt same effect as in desktop". Held as on a
+   desktop and turned by the scroll the same way (ServicesWheel); only the
+   arrangement changes, the page column being one: the wheel in the top part
+   of the screen, the plus on the first rule at its middle, and the service's
+   content under it — set a step smaller, so a service's sentence, list and
+   two ways in stand on one screen. */
 @media (max-width: 40rem) {
+  .services-wheel {
+    --wheel-size: 1.125rem;
+  }
+
   .container.services-wheel__inner {
-    display: block;
-    height: auto;
-    padding-block: 2rem var(--section-space);
+    grid-template-columns: minmax(0, 1fr);
+    /* The content its own height at the foot; the wheel all that is left
+       above it (owner, 2026-10-06: "make the on scroll more visible at
+       bottom"). */
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: stretch;
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
   }
 
   .services-wheel__stage {
-    display: none;
+    grid-column: 1;
+    /* Fading in under the bar's room at the top, and away above the content
+       at the foot. */
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 14%,
+      var(--ink) 34%,
+      var(--ink) 74%,
+      transparent 100%
+    );
+    /* Reaching on down to the content's top, so the wheel — its plus and
+       its turning — stands lower on the screen (owner, 2026-10-06: "so
+       effect to go more down", then "move little more up"); its fade is
+       near the content's edge. Its height follows from its area, less this
+       margin, rather than being the row's. */
+    height: auto;
+    margin-bottom: -2.5rem;
   }
 
   .services-wheel__panels {
-    display: grid;
-    row-gap: 3.5rem;
+    grid-row: 2;
+    grid-column: 1;
   }
 
+  /* At the foot of the screen — owner, 2026-10-06: "then move this section
+     to the bottom". */
   .services-wheel__panel {
-    grid-area: auto;
-    opacity: 1;
-    transform: none;
-    visibility: visible;
+    align-self: end;
+  }
+
+  .services-wheel__summary {
+    font-size: var(--text-body);
+    line-height: 1.35;
   }
 
   .services-wheel__chapters {
-    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem var(--column-gap);
+    margin-top: 1.25rem;
+  }
+
+  .services-wheel__actions {
+    margin-top: 1.75rem;
   }
 }
 
@@ -3137,6 +3254,15 @@ video {
     0 0 / calc((100% - 0.7px) / 4) 100% repeat-x;
   content: "";
   pointer-events: none;
+}
+
+/* **Two columns on a phone** — the responsive pass, 2026-10-06. Five lines
+   in a phone's width stood a finger apart and ran through every line of
+   text; its content sits in two columns, so the rules mark two. */
+@media (max-width: 40rem) {
+  [data-ruled]::before {
+    background-size: calc((100% - 0.7px) / 2) 100%;
+  }
 }
 
 .container.fusion-container {
@@ -3616,11 +3742,12 @@ video {
 }
 
 /* His lines, one to a line, where the column holds them (see aboutIntroLines
-   in content/home.ts) — from 56rem: below about 850px the paragraph's size
+   in content/home.ts) — from the laptop step, 64rem, of the page's scale
+   (lib/breakpoints.ts; it was 56rem): below about 850px the paragraph's size
    has reached its floor while the column keeps narrowing, and his longest
    line no longer fits (measured: it broke in two at 768). Below that the
    paragraph simply wraps. */
-@media (min-width: 56rem) {
+@media (min-width: 64rem) {
   .about-intro__copy-line {
     display: block;
   }
@@ -3989,6 +4116,11 @@ video {
   .expertise__list {
     grid-row: 2;
     grid-column: 1 / -1;
+  }
+
+  /* Its foot, at the right, as on a desktop: the list has taken row 2. */
+  .expertise__all {
+    grid-row: 3;
   }
 
   .expertise__cross {
@@ -9901,8 +10033,10 @@ video {
 
 /* One column below the breakpoint. Three cells across a phone gives each title
    two words to a line, and the middle link ends up wedged between two ragged
-   columns. Stacked, the order is the one the row reads in: back, out, on. */
-@media (max-width: 52rem) {
+   columns. Stacked, the order is the one the row reads in: back, out, on.
+   Below the laptop step of the page's scale (lib/breakpoints.ts; it was
+   52rem). */
+@media (max-width: 64rem) {
   .blog-more__row {
     grid-template-columns: minmax(0, 1fr);
     gap: clamp(1.1rem, 4vh, 1.6rem);
@@ -10854,8 +10988,9 @@ video {
    each service replaces the previous one inside a single pinned viewport. */
 
 /* Very narrow phones get a little more clear space between the artwork and
-   the bottom row without changing the content order. */
-@media (max-width: 23rem) {
+   the bottom row without changing the content order. The smallest step of
+   the page's scale (lib/breakpoints.ts; it was 23rem). */
+@media (max-width: 24rem) {
   .service-hero__pattern {
     right: 0;
     width: 88vw;
@@ -10871,5 +11006,43 @@ video {
 
   .service-hero__cta {
     font-size: 18px;
+  }
+}
+
+/* ── Room for a finger ──
+
+   The responsive pass, owner, 2026-10-06. On a touch screen everything
+   pressable is at least 44px tall — Apple's and Google's guidance — where a
+   word and its arrow were 16 to 26. The press area grows; the layout does
+   not: padding adds the height and the same negative margin takes it back,
+   so nothing on the page moves. `scripts/responsive-check.mjs` measures it. */
+@media (pointer: coarse) {
+  .brand,
+  .selected-work__all,
+  .expertise__all,
+  .services-wheel__cta,
+  .service-cta__link,
+  .service-hero__cta,
+  .service-journey__skip,
+  .service-journey__next,
+  .service-journey__nav-link,
+  .services-wheel__name,
+  .letter__send {
+    padding-block: 14px;
+    margin-block: -14px;
+  }
+
+  /* The footer's links already reach past their line (0.6875rem each way,
+     above) — a pixel short of the height; and a short word is short of the
+     width. */
+  .site-footer__link,
+  .site-footer__top-link {
+    padding: 0.75rem 6px;
+    margin: -0.75rem -6px;
+  }
+
+  /* The letter's blanks: a finger's height, the bar a little deeper. */
+  .letter__blank {
+    height: max(1.6em, 44px);
   }
 }
