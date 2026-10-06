@@ -1922,12 +1922,16 @@ test("the services' page turns its services on a wheel, each one's content besid
      placeholder's "Working on it." any more. */
   const opening = html.slice(html.indexOf('class="services-hero"'), html.indexOf('class="services-wheel"'));
   assert.ok(html.indexOf('class="services-hero"') > 0 && opening.length > 0, "the services page does not open on its hero");
-  /* Its five hairlines, its own so they can go with the scroll and fade
-     before the wheel (owner, 2026-10-06)… */
-  assert.equal((opening.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 5);
-  /* …the wheel its own grey five, taking over from those, and the footer the
-     same five on to the foot of the page (a trial, 2026-10-06). */
-  assert.equal((html.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 15);
+  /* Its five hairlines, in the page itself before the opening, from its top
+     to the wheel's foot in one piece (owner, 2026-10-06, on a phone: "i can
+     see a spacebetween the vertical line")… */
+  const main = html.slice(html.indexOf('<main class="service-page service-page--services"'), html.indexOf('class="services-hero"'));
+  assert.match(main, /<div class="services-rules" aria-hidden="true">/);
+  assert.equal((main.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 5);
+  assert.equal((opening.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 0);
+  /* …and the footer the same five on to the foot of the page (a trial,
+     2026-10-06): no other set. */
+  assert.equal((html.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 10);
   assert.match(html, /<footer class="site-footer" id="contact" data-own-rules="true"/);
   assert.match(html, /class="services-rules services-rules--grey" aria-hidden="true">/);
   assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);

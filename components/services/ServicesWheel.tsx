@@ -6,7 +6,6 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Container } from "../layout/Container";
 import { RollingLabel } from "../ui/RollingLabel";
-import { ServicesWheelRules } from "./ServicesWheelRules";
 import type { ServiceIndexEntry } from "../../content/services-index";
 
 /**
@@ -224,9 +223,6 @@ export function ServicesWheel({
       aria-label="Services"
       data-services-wheel
     >
-      {/* Grey hairlines, in as the opening's orange ones go — a trial. */}
-      <ServicesWheelRules />
-
       <Container className="services-wheel__inner">
         <div className="services-wheel__stage">
           {/* The mark at the middle: the Menu's plus, in the red. */}

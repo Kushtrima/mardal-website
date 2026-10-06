@@ -3,6 +3,7 @@ import { SiteFooter } from "../../components/layout/SiteFooter";
 import { HeaderSpace } from "../../components/layout/HeaderSpace";
 import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
 import { ServicesHero } from "../../components/services/ServicesHero";
+import { ServicesRules } from "../../components/services/ServicesRules";
 import { ServicesWheel } from "../../components/services/ServicesWheel";
 import {
   servicesIndex,
@@ -30,14 +31,17 @@ export default function ServicesPage() {
         id="main-content"
         data-service-page
       >
+        {/* The page's five hairlines, from its top to the wheel's foot, in
+            one piece (ServicesRules). */}
+        <ServicesRules />
         <HeaderSpace />
         <ServicesHero />
         <ServicesWheel entries={servicesIndex} actions={servicesIndexActions} />
       </main>
 
-      {/* The wheel's grey hairlines run on to the foot of the page (owner,
+      {/* The grey hairlines run on to the foot of the page (owner,
           2026-10-06: "the grey vertical lines need to go to the end also in
-          footer"), drawn as the wheel's are so the two meet unseen. */}
+          footer"), drawn as the page's are so the two meet unseen. */}
       <SiteFooter rules={<ServicesFooterRules />} />
     </>
   );

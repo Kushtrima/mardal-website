@@ -1,7 +1,6 @@
 import { Fragment } from "react";
 import { Container } from "../layout/Container";
 import { ServicesHeroReveal } from "./ServicesHeroReveal";
-import { ServicesRules } from "./ServicesRules";
 import { servicesHero } from "../../content/services-index";
 
 /**
@@ -21,9 +20,6 @@ export function ServicesHero() {
       /* The bar says no "Operating from Kosova" over it (the stylesheet). */
       data-services-hero
     >
-      {/* The page's five hairlines, from the top of the page, gone one by one
-          before the wheel (ServicesRules). */}
-      <ServicesRules />
       <ServicesHeroReveal />
 
       <Container className="services-hero__inner">

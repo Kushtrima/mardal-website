@@ -2488,12 +2488,18 @@ video {
 
   position: relative;
   isolation: isolate;
-  background: var(--canvas);
 }
 
 /* **The services page's hairlines** (ServicesRules): five lines, each on a
    whole pixel so all five read alike, where the page's [data-ruled] draws
-   them, in the red. Under everything the opening holds. */
+   them, in the red. In the page itself, from its top to the wheel's foot in
+   one piece, under everything the opening and the wheel hold — neither has
+   a ground of its own, so they show through both. */
+.service-page.service-page--services {
+  position: relative;
+  isolation: isolate;
+}
+
 .services-rules {
   position: absolute;
   z-index: -1;
@@ -2539,15 +2545,9 @@ video {
   }
 }
 
-/* In the opening, from the top of the page — through the room the bar takes
-   (owner, 2026-10-06: "move vertical lines to the top"). */
-.services-hero .services-rules__line {
-  top: calc(-1 * var(--header-space));
-}
-
-/* In the wheel, the page's grey (ServicesWheelRules) — a trial, owner,
-   2026-10-06: "after the vertical disaper i want to aper grey vertical line
-   in service just to try how it looks". */
+/* In the footer, the page's grey (ServicesFooterRules) — the grey the
+   page's turn to, owner, 2026-10-06: "after the vertical disaper i want to
+   aper grey vertical line in service just to try how it looks". */
 .services-rules--grey .services-rules__line {
   background: var(--line-grid-vertical);
 }
@@ -2758,10 +2758,10 @@ video {
   --wheel-size: clamp(1.375rem, 2vw, 1.875rem);
 
   position: relative;
-  /* Its own grey hairlines under everything it holds (ServicesWheelRules). */
+  /* Its own stacking, over the page's lines (ServicesRules). */
   isolation: isolate;
-  /* No ground of its own — the page's is the same — so the opening's lines
-     can be seen going down over it on the scroll (ServicesRules). */
+  /* No ground of its own — the page's is the same — so the page's lines
+     show through it (ServicesRules). */
   background: transparent;
 }
 
@@ -3125,7 +3125,10 @@ video {
        bottom"). */
     grid-template-rows: minmax(0, 1fr) auto;
     align-items: stretch;
-    padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
+    /* The content on the foot of the screen, 20px lower than it was —
+       owner, 2026-10-06: "move this section 20 px downw" — and still clear
+       of an iPhone's home bar. */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .services-wheel__stage {
@@ -3144,9 +3147,10 @@ video {
        its turning — stands lower on the screen (owner, 2026-10-06: "so
        effect to go more down", then "move little more up"); its fade is
        near the content's edge. Its height follows from its area, less this
-       margin, rather than being the row's. */
+       margin, rather than being the row's. Half what it was since the
+       content went 20px lower, so the wheel stays where it stood. */
     height: auto;
-    margin-bottom: -2.5rem;
+    margin-bottom: -1.25rem;
   }
 
   .services-wheel__panels {
