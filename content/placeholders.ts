@@ -30,7 +30,8 @@
  * and went the other way on 2026-08-25, when the owner asked for it written.
  * About was the third, on 2026-08-26, and took the count to ten; Contact was
  * the fourth, on 2026-09-13, and takes it to nine. All four left the same way,
- * by deleting an entry here and writing a route.
+ * by deleting an entry here and writing a route — and so did Services, on
+ * 2026-10-06, when its opening became "Our expertise" (owner).
  * `PlaceholderKey` is derived from these keys, so removing one makes the
  * compiler find every reference to it.
  */
@@ -116,18 +117,6 @@ export const placeholders = {
     support: "Workshop operations, from booking to invoice.",
     cta: "See the products",
     ctaHref: "/#products",
-  },
-  services: {
-    label: "Services",
-    title: "Services",
-    description: "The seven services Mardal offers, in one place.",
-    support: "The seven ways we work, gathered in one place.",
-    /* Five of the seven service pages are written — the most finished part of
-       this site — so the way out of the index that has not been written is
-       into them. Seven since 2026-10-03, when the menu split into Development
-       and Creative and UX/UI Design and Print Design joined it, both below. */
-    cta: "See a service page",
-    ctaHref: "/services/ai-automation",
   },
   /* The two services added with the Development / Creative split, 2026-10-03.
      Both are Creative, so the way out is the Creative page that is written. */

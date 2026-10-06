@@ -6,6 +6,7 @@
  * components: it is data only.
  */
 
+
 /**
  * The seven sectors, written once.
  *
@@ -485,24 +486,40 @@ export const aboutIntro = {
  * "Our expertise" — the owner's comp of 2026-10-05, under "about": two words,
  * each behind a red cross, and under the pointer each opens its services.
  *
- * Creative's four are his, word for word, from the comp he sent with it.
- * Development's are the menu's own Development half (`serviceGroups`) — the
- * same four services under the same name, so the two never disagree; he gave
- * no list for it.
+ * Each row's five are his, word for word — owner, 2026-10-06, a list for
+ * each of the three (his numbering, and the notes between the lists on what
+ * he left out and why, are not part of it).
  */
 export const expertise = {
   id: "expertise",
   labelLines: ["Our", "expertise"],
+  /* Bottom right — owner, 2026-10-06: "on the rigt bottom of this section add
+     button VIEW ALL". Selected Work's own, to every service. */
+  viewAll: { label: "VIEW ALL", href: "/services" },
   groups: [
     {
       key: "creative",
       title: "Creative",
-      items: ["Branding", "UX / UI", "Web design", "Social Media"],
+      items: ["Branding", "UX/UI Design", "Web Design", "Product Design", "Social Media Design"],
     },
     {
       key: "development",
       title: "Development",
-      items: serviceGroups[0].items.map((item) => item.label),
+      items: ["Websites", "Web Platforms", "Mobile Apps", "Custom Software", "CRM Solutions"],
+    },
+    /* A third row, under Development — owner, 2026-10-06: "add another one
+       under development at Artificial Intelegence", then "change ai to this:
+       AI + Automation" — a typed plus ("make it a normal +"). */
+    {
+      key: "ai",
+      title: "AI + Automation",
+      items: [
+        "AI Assistants",
+        "AI Integrations",
+        "Workflow Automation",
+        "Sales & CRM Automation",
+        "Customer Service Automation",
+      ],
     },
   ],
 } as const;

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Container } from "../layout/Container";
 import { expertise } from "../../content/home";
 import { ExpertiseReveal } from "./ExpertiseReveal";
@@ -6,13 +7,17 @@ import { RollingLabel } from "../ui/RollingLabel";
 /**
  * "Our expertise" — the owner's comp of 2026-10-05, under "about".
  *
- * The label on the first rule; then two rows, each a red cross standing just
- * before its word, the word on the third rule. Under the pointer a row opens
+ * The label on the first rule; then three rows (Artificial Intelligence added
+ * on 2026-10-06), each a red cross on the second rule with its word straight
+ * after it. Under the pointer a row opens
  * the services under its word — his second comp, Creative's four — and the
  * next row gives way. The word is a button as well, so a tap or the keyboard
  * opens it where there is no pointer to hover (ExpertiseReveal keeps its
  * `aria-expanded`).
  */
+/* Every service of all three rows — see `.expertise__sizer`. */
+const allServices = expertise.groups.flatMap((group) => group.items);
+
 export function ExpertiseSection() {
   return (
     <section
@@ -86,12 +91,34 @@ export function ExpertiseSection() {
                         <span className="expertise__sub-word">{item}</span>
                       </li>
                     ))}
+                    {/* Unseen and of no height: every row's services, so
+                        each list is as wide as the widest of all three and
+                        the three start from one line. */}
+                    <li className="expertise__sizer" aria-hidden="true">
+                      {allServices.map((item) => (
+                        <span key={item}>{item}</span>
+                      ))}
+                    </li>
                   </ul>
                 </div>
               </div>
             </li>
           ))}
         </ul>
+
+        {/* Selected Work's VIEW ALL, at the section's bottom right: its word
+            rolls under the pointer, its thin arrow stays still. */}
+        <Link className="expertise__all" href={expertise.viewAll.href} data-roll>
+          <RollingLabel>{expertise.viewAll.label}</RollingLabel>
+          <svg
+            className="expertise__all-arrow"
+            viewBox="0 0 16 16"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M2 14 14 2M4.5 2H14v9.5" />
+          </svg>
+        </Link>
       </Container>
     </section>
   );

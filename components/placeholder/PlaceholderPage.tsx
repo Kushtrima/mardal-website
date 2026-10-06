@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Container } from "../layout/Container";
 import { SiteFooter } from "../layout/SiteFooter";
 import { HeaderSpace } from "../layout/HeaderSpace";
@@ -33,8 +34,12 @@ import {
 export function PlaceholderPage({
   page,
   links,
+  children,
 }: {
   page: PlaceholderKey;
+  /** What stands under the opening instead of an index — the services'
+   *  wheel (owner, 2026-10-06). */
+  children?: ReactNode;
   /** Everything the page stands over, as an index under its opening — the
    *  services' page lists all seven, the products' page all three (owner,
    *  2026-10-05: "when click inside to have all services and other"). */
@@ -201,6 +206,8 @@ export function PlaceholderPage({
             data-service-hero-fade
           />
         </section>
+
+        {children}
 
         {links ? (
           <section className="page-index" aria-label={content.label}>

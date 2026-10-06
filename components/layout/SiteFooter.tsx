@@ -29,8 +29,9 @@ const services = menu.find((group) => group.key === "services");
  */
 /**
  * `ruled`: the homepage's hairlines run on through the footer to the foot of
- * the page (owner, 2026-10-05: "all the way down"). Only the homepage asks for
- * them; every other page's footer stays plain.
+ * the page (owner, 2026-10-05: "all the way down", and again 2026-10-06: "i
+ * want to leav till the end of the page"). Only the homepage asks for them;
+ * every other page's footer stays plain.
  */
 export function SiteFooter({ ruled = false }: { ruled?: boolean } = {}) {
   return (

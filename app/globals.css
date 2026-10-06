@@ -126,10 +126,10 @@
      Solid, not a tint of the ink, so a rule reads the same grey wherever it
      runs. */
   --line-grid: #8c8c8c;
-  /* The page's vertical rules, white since 2026-10-05: there, on the grid,
-     and not seen (owner: "in white i dont want to be seeen"). `--line-grid`
-     still draws the services' rules under "Our expertise". */
-  --line-grid-vertical: #ffffff;
+  /* The page's vertical rules: white for a day (owner, 2026-10-05: "in white
+     i dont want to be seeen"), then back in the grey they were — owner,
+     2026-10-06: "in darkk greay as it was before" — standing still. */
+  --line-grid-vertical: var(--line-grid);
   /* **The accent is the red** — owner, 2026-10-03: "the red is not globally we
      need to put globall instead of the pink". It was a purple (#8362b8, with a
      #6f4fa7 cut for small type and focus); every hover, mark, link and button
@@ -2417,6 +2417,554 @@ video {
   }
 }
 
+/* ── The services page's opening ──
+
+   The owner's comp of 2026-10-06 ("this is what we need"), on the page's four
+   columns and their hairlines (ServicesHero): a red plus where the comp marks
+   a rule — top and foot, on the second and the fourth — "Service" beside the
+   first, the note beside the last, and the heading between them, a screen
+   tall less the bar. */
+.services-hero {
+  /* The Menu's plus at the services wheel's mark size, centred on its rule. */
+  --hero-mark: round(calc(var(--text-body) * 1.6), 2px);
+  --hero-mark-arm: round(calc(var(--hero-mark) * 0.31), 1px);
+  --hero-mark-gap: 0.85rem;
+  /* **Its hairlines in the red** — owner, 2026-10-06: "make in orange not
+     grey" — the plus marks' own colour, here only. */
+  --line-grid-vertical: var(--accent);
+
+  background: var(--canvas);
+}
+
+/* **And up to the top of the page** — owner, 2026-10-06: "move vertical
+   lines to the top": through the room the bar takes (HeaderSpace) as well as
+   the opening itself. */
+.services-hero[data-ruled]::before {
+  top: calc(-1 * var(--header-space));
+}
+
+.container.services-hero__inner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: auto 1fr auto;
+  min-height: calc(100svh - var(--header-space));
+  padding-block: clamp(3rem, 12svh, 9rem) clamp(2.5rem, 8svh, 6rem);
+  /* The heading is sized to the column's width (below). */
+  container-type: inline-size;
+}
+
+/* Whole pixels, 2px strokes, each stroke's middle left open — one box, two
+   bars drawn on it. Its middle on its rule; beside text, on the middle of
+   that text's first line. */
+.services-hero__mark {
+  flex: none;
+  width: var(--hero-mark);
+  height: var(--hero-mark);
+  margin-left: calc(var(--hero-mark) / -2);
+  margin-top: calc((1lh - var(--hero-mark)) / 2);
+  color: var(--accent);
+  background:
+    linear-gradient(
+        to right,
+        currentcolor var(--hero-mark-arm),
+        transparent 0 calc(100% - var(--hero-mark-arm)),
+        currentcolor 0
+      )
+      center / 100% 2px no-repeat,
+    linear-gradient(
+        to bottom,
+        currentcolor var(--hero-mark-arm),
+        transparent 0 calc(100% - var(--hero-mark-arm)),
+        currentcolor 0
+      )
+      center / 2px 100% no-repeat;
+}
+
+.services-hero__label,
+.services-hero__note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--hero-mark-gap);
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+.services-hero__label {
+  grid-row: 1;
+  grid-column: 2;
+}
+
+.services-hero__mark--top {
+  grid-row: 1;
+  grid-column: 4;
+  /* Level with the label's: its line's middle. */
+  margin-top: calc((var(--text-body) * 1.3 - var(--hero-mark)) / 2);
+}
+
+.services-hero__mark--foot {
+  grid-row: 3;
+  grid-column: 2;
+  margin-top: calc((var(--text-body) * 1.3 - var(--hero-mark)) / 2);
+}
+
+.services-hero__note {
+  grid-row: 3;
+  grid-column: 4;
+}
+
+/* **The heading runs the column's width**, as the comp's does: its first
+   line, set in to the second rule, ends on the last, and its second — the
+   longest from the first rule — just short of it. Sized to the column rather
+   than set: "Mardal is a results-driven" is 11.0 of its own size wide in this
+   face and tracking (measured), and has three quarters of the column, so a
+   size of 75cqw / 11.05 fits it at any width. */
+.services-hero__title {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  align-self: center;
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: calc(75cqw / 11.05);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+}
+
+.services-hero__title-line {
+  display: block;
+  white-space: nowrap;
+}
+
+.services-hero__title-line:first-child {
+  padding-left: 25%;
+}
+
+/* A phone: one column — the label, the heading at the big header's size
+   and free to wrap, the note — and only the two marks that stand beside
+   words. */
+@media (max-width: 40rem) {
+  .container.services-hero__inner {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2.5rem;
+  }
+
+  .services-hero__label,
+  .services-hero__note,
+  .services-hero__title {
+    grid-column: 1;
+  }
+
+  .services-hero__mark--top,
+  .services-hero__mark--foot {
+    display: none;
+  }
+
+  .services-hero__title {
+    font-size: var(--text-heading-xl);
+  }
+
+  .services-hero__title-line {
+    white-space: normal;
+  }
+
+  .services-hero__title-line:first-child {
+    padding-left: 0;
+  }
+}
+
+/* ── The services' wheel ──
+
+   Owner, 2026-10-06, from a reference — a Framer page of names on a curve:
+   "when we enter in services the services to be on the left and as i scroll
+   into services on the right side to apear all the content for that service
+   … and instead of that arrow to be our +". ServicesWheel holds the section
+   and turns the list as the page is scrolled through it, settling on each
+   service; this lays it out. The names down the left, the one at the middle
+   pushed out on a bell curve (ServicesWheel), every one black, at one size
+   and one line apart, the group in hand underlined in the red; the mark —
+   the Menu's plus, in the red, on the first rule at the middle of the
+   screen. On the right, from the third rule, the content of the service at
+   the mark: its sentence, its chapters with their services, the way into
+   its page. */
+.services-wheel {
+  /* Much smaller since 2026-10-06 ("the text of services on the left to be
+     much smaller only the main service to be littlle bigger"), smaller again
+     the same day ("the other subservices smaller"), then a step up ("make all
+     text both title and sub little bgger"). **One size for every line** —
+     owner, 2026-10-06: "i want all the text to be in same px even the
+     titles … the main text not to be bigger to sty the same"), a step up
+     again ("make text bigger"). */
+  --wheel-size: clamp(1.375rem, 2vw, 1.875rem);
+
+  position: relative;
+  background: var(--canvas);
+}
+
+.container.services-wheel__inner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  height: 100svh;
+}
+
+.services-wheel__stage {
+  position: relative;
+  grid-row: 1;
+  grid-column: 1 / span 2;
+  height: 100%;
+  overflow: hidden;
+  /* The wheel fades out towards the top and the foot of the screen, as a
+     drum turning away does — and stays clear of the bar over it. */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 11%,
+    var(--ink) 30%,
+    var(--ink) 76%,
+    transparent 100%
+  );
+}
+
+/* The mark: the Menu button's plus at half as big again, in the red, its
+   middle on the middle of the screen. */
+.services-wheel__mark {
+  --plus-size: round(calc(var(--text-body) * 1.6), 2px);
+  --plus-arm: round(calc(var(--plus-size) * 0.31), 1px);
+
+  position: absolute;
+  top: calc(50% - var(--plus-size) / 2);
+  left: 0;
+  width: var(--plus-size);
+  height: var(--plus-size);
+  color: var(--accent);
+}
+
+.services-wheel__mark::before,
+.services-wheel__mark::after {
+  position: absolute;
+  content: "";
+}
+
+.services-wheel__mark::before {
+  top: calc(50% - 1px);
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    currentcolor var(--plus-arm),
+    transparent 0 calc(100% - var(--plus-arm)),
+    currentcolor 0
+  );
+}
+
+.services-wheel__mark::after {
+  top: 0;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    currentcolor var(--plus-arm),
+    transparent 0 calc(100% - var(--plus-arm)),
+    currentcolor 0
+  );
+}
+
+/* Every name on the middle line; ServicesWheel moves each to its place. */
+.services-wheel__list {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  font-family: var(--type-display);
+  font-size: var(--wheel-size);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  list-style: none;
+}
+
+.services-wheel__item,
+.services-wheel__group {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-top: -0.5em;
+  transform-origin: 0 50%;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/* **A group's name is the title over its services**, at the services' own
+   size and in black. While one of its services is at the mark it is
+   underlined in the red, and nothing else changes — owner, 2026-10-06: "only
+   when you enter in one section zoen that title for examle Creative you add
+   our red as underline nothing else"), a hairline since ("thinneer maybe 1
+   px"). */
+.services-wheel__group {
+  color: var(--ink);
+  text-decoration: underline 1px transparent;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--duration-base) var(--ease-standard);
+}
+
+.services-wheel__group.is-current {
+  text-decoration-color: var(--accent);
+}
+
+.services-wheel__name {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  /* All black (owner, 2026-10-06: "also all the text in balck"). */
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* The service at the plus, in the red (owner, 2026-10-06: "when a service is
+   selct to be in red"). */
+.services-wheel__item.is-active .services-wheel__name {
+  color: var(--accent);
+}
+
+.services-wheel__name:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.1em;
+}
+
+/* The panels stand in one cell; only the service at the mark is shown. */
+.services-wheel__panels {
+  display: grid;
+  grid-row: 1;
+  grid-column: 3 / -1;
+}
+
+.services-wheel__panel {
+  grid-area: 1 / 1;
+  /* Each on the middle of the screen at its own height, not at the top of
+     the tallest one's. */
+  align-self: center;
+  min-width: 0;
+  opacity: 0;
+  transform: translateY(1rem);
+  visibility: hidden;
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-handover) var(--ease-standard),
+    visibility 0s linear var(--duration-base);
+}
+
+/* The service is chosen first and its content follows a beat later (owner,
+   2026-10-06: "first to be selc the service then to aper the right text"). */
+.services-wheel__panel[data-active] {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition:
+    opacity var(--duration-base) var(--ease-standard) 220ms,
+    transform var(--duration-handover) var(--ease-standard) 220ms,
+    visibility 0s;
+}
+
+/* The service's name over its content — seen only on a phone, where there
+   is no wheel beside it (below). */
+.services-wheel__title {
+  margin: 0 0 1.25rem;
+  font-family: var(--type-display);
+  font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.02em;
+  line-height: var(--leading-heading);
+}
+
+/* Beside the wheel, no heading: the name is on the wheel, in the red (owner,
+   2026-10-06: "delete title for each … only paragraf and other text"). Kept
+   for a screen reader, as `.visually-hidden` is. */
+@media (min-width: 40.0625rem) {
+  .services-wheel__title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+.services-wheel__summary {
+  margin: 0;
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.265));
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+.services-wheel__chapters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 1.75rem var(--column-gap);
+  margin-top: 2rem;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+/* One list without a heading takes the column whole. */
+.services-wheel__chapters--one {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.services-wheel__chapter-title {
+  margin: 0 0 0.5rem;
+  font-size: inherit;
+  font-weight: var(--weight-medium);
+}
+
+.services-wheel__items {
+  display: grid;
+  row-gap: 0.15em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* **Our plus in front of each, where a bullet would be** — owner,
+   2026-10-06: "for each add a little plus our plus it need to be litlle up
+   not in the meadle". The Menu's plus, small and in the red — whole pixels,
+   2px strokes, each stroke's middle left open — its top on the top of the
+   capitals rather than on the middle of the line. */
+.services-wheel__items li {
+  --item-plus: 10px;
+  --item-plus-arm: 3px;
+  /* Where the capitals start under the line's top at this leading (Geist,
+     1.3; measured 0.311em). */
+  --item-plus-drop: round(0.31em, 1px);
+
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55em;
+}
+
+.services-wheel__items li::before {
+  flex: none;
+  width: var(--item-plus);
+  height: var(--item-plus);
+  margin-top: var(--item-plus-drop);
+  color: var(--accent);
+  content: "";
+  background:
+    linear-gradient(
+        to right,
+        currentcolor var(--item-plus-arm),
+        transparent 0 calc(100% - var(--item-plus-arm)),
+        currentcolor 0
+      )
+      center / 100% 2px no-repeat,
+    linear-gradient(
+        to bottom,
+        currentcolor var(--item-plus-arm),
+        transparent 0 calc(100% - var(--item-plus-arm)),
+        currentcolor 0
+      )
+      center / 2px 100% no-repeat;
+}
+
+/* A list alone — what a service includes — runs in two columns, down the
+   first and on into the second, as even as its count allows (eight: four and
+   four; nine: five and four). */
+.services-wheel__chapters--one .services-wheel__items {
+  display: block;
+  columns: 2;
+  column-gap: var(--column-gap);
+}
+
+.services-wheel__chapters--one .services-wheel__items li {
+  break-inside: avoid;
+}
+
+.services-wheel__chapters--one .services-wheel__items li:not(:last-child) {
+  margin-bottom: 0.15em;
+}
+
+/* Two ways in, side by side, a step further down than the content above
+   them (owner, 2026-10-06: "the button on the right need to be little more
+   down move"). */
+.services-wheel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2.5rem;
+  margin-top: 3.25rem;
+}
+
+.services-wheel__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  color: var(--ink);
+  font-size: var(--text-cta);
+  line-height: 1;
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+.services-wheel__arrow {
+  width: 0.95em;
+  height: 0.95em;
+  flex: none;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: square;
+  stroke-width: 1.25px;
+}
+
+/* On the path: `vector-effect` is not inherited from the svg. */
+.services-wheel__arrow path {
+  vector-effect: non-scaling-stroke;
+}
+
+@media (hover: hover) {
+  .services-wheel__cta:hover {
+    color: var(--accent);
+  }
+}
+
+/* **A phone: one under the next.** No wheel and nothing held — each service
+   its name, its sentence, its chapters and the way into its page. */
+@media (max-width: 40rem) {
+  .container.services-wheel__inner {
+    display: block;
+    height: auto;
+    padding-block: 2rem var(--section-space);
+  }
+
+  .services-wheel__stage {
+    display: none;
+  }
+
+  .services-wheel__panels {
+    display: grid;
+    row-gap: 3.5rem;
+  }
+
+  .services-wheel__panel {
+    grid-area: auto;
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+  }
+
+  .services-wheel__chapters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* -------------------------- Under the opening -------------------------- */
 
 /* The opening pays nothing: its photograph runs to the section's own edge, so
@@ -2479,13 +3027,10 @@ video {
   isolation: isolate;
 }
 
-/* **Drawn in white since 2026-10-05** — owner: the lines off the whole site
-   ("remove the vertical lines … but you need to leave it here … to make text
-   fit in those"), then "revrse back the vertical lines but in white i dont
-   want to be seeen". So they are there again, on the page's white where no
-   one sees them, and the grid they mark still sets every section's type and
-   pictures. Their colour is `--line-grid-vertical`; the grey back in it shows
-   them again. */
+/* **Grey again, and there all the time** — owner, 2026-10-06: "in darkk
+   greay as it was before", then, of a version drawn down with the scroll, "i
+   want the lines to be there all the time no reveal". (They were white,
+   there and unseen, from 2026-10-05.) */
 [data-ruled]::before {
   position: absolute;
   z-index: -1;
@@ -2499,13 +3044,6 @@ video {
     0 0 / calc((100% - 0.7px) / 4) 100% repeat-x;
   content: "";
   pointer-events: none;
-}
-
-/* In this section they are drawn down as it arrives: FusionReveal turns
-   --fusion-rules from 0 to 1. Unset — no script — they are whole. Below it
-   they simply stand. */
-.fusion-section::before {
-  clip-path: inset(0 0 calc((1 - var(--fusion-rules, 1)) * 100%) 0);
 }
 
 .container.fusion-container {
@@ -2601,9 +3139,12 @@ video {
    left to fold, and both were drawn from the mark's centre outward — a corner,
    not a plus (measured: both at 424,649 in a 194px mark at 326,551). With no
    transform of their own the reveal's scale has nothing to swallow. */
+/* **The Menu button's plus** — owner, 2026-10-06: "use our Menu +
+   everywhere in home page where we have +". Each stroke keeps its two ends
+   and leaves its middle open, in the Menu mark's proportion: a reach of 31%
+   from either end, so the four arms stand apart round an open centre. */
 .fusion-plus__stroke {
   position: absolute;
-  background: currentcolor;
 }
 
 .fusion-plus__stroke--across {
@@ -2611,6 +3152,12 @@ video {
   left: 0;
   width: 100%;
   height: var(--fusion-plus-arm);
+  background: linear-gradient(
+    to right,
+    currentcolor 31%,
+    transparent 0 69%,
+    currentcolor 0
+  );
 }
 
 .fusion-plus__stroke--up {
@@ -2618,6 +3165,12 @@ video {
   left: calc(50% - var(--fusion-plus-arm) / 2);
   width: var(--fusion-plus-arm);
   height: 100%;
+  background: linear-gradient(
+    to bottom,
+    currentcolor 31%,
+    transparent 0 69%,
+    currentcolor 0
+  );
 }
 
 /* The sentence, at a quarter of the heading as in the comp (never under the
@@ -2735,7 +3288,8 @@ video {
   will-change: transform;
 }
 
-.selected-work__all {
+.selected-work__all,
+.expertise__all {
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -2751,7 +3305,8 @@ video {
    not of whichever face is set — exactly the capitals' height, as in the comp
    (the path spans three quarters of a 0.95em box: 0.71em, Geist's capitals),
    and the same thin stroke at any size. */
-.selected-work__all-arrow {
+.selected-work__all-arrow,
+.expertise__all-arrow {
   width: 0.95em;
   height: 0.95em;
   fill: none;
@@ -2761,19 +3316,22 @@ video {
 }
 
 /* On the path: `vector-effect` is not inherited from the svg. */
-.selected-work__all-arrow path {
+.selected-work__all-arrow path,
+.expertise__all-arrow path {
   vector-effect: non-scaling-stroke;
 }
 
 /* VIEW ALL goes somewhere, so it answers the pointer: the site's red, and its
    word rolls (`.roll`, shared with the bar's Menu); the arrow does not move. */
 @media (hover: hover) {
-  .selected-work__all:hover {
+  .selected-work__all:hover,
+  .expertise__all:hover {
     color: var(--accent);
   }
 }
 
-.selected-work__all:focus-visible {
+.selected-work__all:focus-visible,
+.expertise__all:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 0.35em;
 }
@@ -2996,10 +3554,13 @@ video {
 
      the label     the paragraph size (the about paragraph's), two lines, on the
                    first rule, its capitals level with the first word's
-     the cross     1.93W square, a 2px stroke, centred on the middle of its
-                   word's capitals, 0.46W before the word
-     the word      on the third rule (his sits in the second column; on this
-                   grid the words stand on a rule and the cross comes to them)
+     the cross     1.35W square (1.93W until 2026-10-06: "make + little
+                   small"), the Menu plus's split strokes, centred on the
+                   middle of its word's capitals, on the second rule ("move
+                   those to the left to the vertical line")
+     the word      straight after its cross (2026-10-06: "move also the
+                   text"); three rows since the same day — Creative,
+                   Development, Artificial Intelligence
      the rows      2.73W apart, cross top to cross top
      the services  the label's size, 2.2 to a line, under the word
 
@@ -3018,12 +3579,12 @@ video {
 }
 
 /* Level with the first word's capitals: the word's capitals stand 0.205W
-   under its line's top, which is 0.405W under the row's (see .expertise__title);
+   under its line's top, which is 0.115W under the row's (see .expertise__title);
    the label's own stand 0.295em under its line's top. */
 .expertise__label {
   grid-row: 1;
   grid-column: 1;
-  margin: calc(var(--expertise-size) * 0.61 - 0.295em) 0 0;
+  margin: calc(var(--expertise-size) * 0.32 - 0.295em) 0 0;
   font-size: max(var(--text-copy), calc(var(--text-house) * 0.265));
   font-weight: var(--weight-body);
   letter-spacing: -0.015em;
@@ -3032,6 +3593,15 @@ video {
 
 .expertise__label-line {
   display: block;
+}
+
+/* VIEW ALL at the section's bottom right, ending on the last rule (owner,
+   2026-10-06: "on the rigt bottom of this section add button VIEW ALL"). */
+.expertise__all {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  justify-self: end;
+  margin-top: var(--section-space);
 }
 
 .expertise__list {
@@ -3047,26 +3617,28 @@ video {
 /* Each row on the list's three columns: the cross in the first, standing at
    its right end just before the third rule; the word and its services from
    the third rule on. */
+/* The cross on the second rule and its word straight after it — owner,
+   2026-10-06: the crosses "to the left to the vertical line", then "move
+   also the text". */
 .expertise__row {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  align-items: start;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.3em;
   font-size: var(--expertise-size);
 }
 
 .expertise__cross {
   position: relative;
-  grid-column: 1;
-  justify-self: end;
-  width: 1.93em;
-  height: 1.93em;
-  margin-right: 0.46em;
+  flex: none;
+  width: 1.35em;
+  height: 1.35em;
   color: var(--accent);
 }
 
+/* The Menu button's plus too — each stroke's middle left open, a reach of
+   31% from either end (owner, 2026-10-06: "use our Menu + everywhere"). */
 .expertise__stroke {
   position: absolute;
-  background: currentcolor;
 }
 
 .expertise__stroke--up {
@@ -3074,6 +3646,12 @@ video {
   left: calc(50% - 1px);
   width: 2px;
   height: 100%;
+  background: linear-gradient(
+    to bottom,
+    currentcolor 31%,
+    transparent 0 69%,
+    currentcolor 0
+  );
 }
 
 .expertise__stroke--across {
@@ -3081,18 +3659,24 @@ video {
   left: 0;
   width: 100%;
   height: 2px;
+  background: linear-gradient(
+    to right,
+    currentcolor 31%,
+    transparent 0 69%,
+    currentcolor 0
+  );
 }
 
 .expertise__body {
-  grid-column: 2 / -1;
+  flex: 1 1 auto;
   min-width: 0;
 }
 
 /* The cross is centred on the middle of the word's capitals, 0.56W under the
    top of its line at this leading; the line is set that far below the row's
-   top less half the cross, 0.965W: 0.405W. */
+   top less half the cross, 0.675W: 0.115W. */
 .expertise__title {
-  margin: 0.405em 0 0;
+  margin: 0.115em 0 0;
   font-family: var(--type-display);
   font-size: 1em;
   font-weight: var(--weight-body);
@@ -3175,31 +3759,73 @@ video {
   content: "";
 }
 
-/* **Each service opens as a ruled line** — owner, 2026-10-05: not the plain
-   fade ("i dont like the opening"), and not colour either ("i dont like
-   colorfull make something else"). So the page's own grey hairline, the one
-   its columns are ruled with, is drawn under each service from the left, one
-   after the next, and each word rises out of its own line to stand on it —
-   the headings' motion, in the services' size. The open list reads as a
-   ruled index across the two columns; closing, the words drop away and the
-   rules are wiped off to the right. */
+/* **On the right, and smaller** — owner, 2026-10-06: "on hover i need the
+   text to apear smaller and on the right". Wider than a phone, a row's
+   services stand to its right from the fourth rule, at the paragraph size —
+   Menu's — their first capitals level with the word's (those stand 0.32 of
+   the word's size under the row's top; these 0.445em under the panel's).
+   The row no longer opens downward, so the rows under it stay where they
+   are. A phone keeps them under the word, opening as before.
+
+   Against the last rule since 2026-10-06 — owner: "the text that apears i
+   want to move to the right next to vertical line", then "alind on the left
+   as it was only move to the rigth". From the fourth rule they stood against
+   the end of the longest word; now the list keeps its left edge, and its
+   longest line ends on the page's last rule.
+
+   From 75rem only: with his five a row since the same day, the widest
+   ("Customer Service Automation") reaches back into "AI + Automation" below
+   about 1100px and is tight to it to 1200px (measured) — narrower, a row
+   opens under its word, as on a phone. */
+@media (min-width: 75rem) {
+  .expertise__row {
+    position: relative;
+  }
+
+  .expertise__panel {
+    position: absolute;
+    top: calc(var(--expertise-size) * 0.32 - 0.445em);
+    right: 0;
+    display: block;
+    font-size: var(--text-body);
+    transition: visibility 0s linear var(--duration-handover);
+  }
+
+  .expertise__subs::before {
+    display: none;
+  }
+
+  .expertise__panel .expertise__sub {
+    padding-block: 0.15em;
+  }
+}
+
+/* **The three lists start from one line** — owner, 2026-10-06: "i want to
+   aper all from same vertical line noot some more to the right some more to
+   the left". Each list carries every row's services, unseen and of no
+   height, and takes its width from the widest of them; set against the last
+   rule, all three then share their left edge. */
+.expertise__sizer {
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.expertise__sizer span {
+  display: block;
+  white-space: nowrap;
+}
+
+/* **Each service rises into its place** as the row opens — owner, 2026-10-05:
+   not the plain fade ("i dont like the opening"), and not colour ("i dont
+   like colorfull make something else"). The grey hairline that was drawn
+   under each one came off on 2026-10-06 ("on hover remove those horisontal
+   line in sub section"); the words still rise out of their own lines, one
+   after the next. */
 .expertise__sub {
   position: relative;
   padding-block: 0.5em 0.55em;
   overflow: hidden;
-}
-
-.expertise__sub::after {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 1px;
-  background: var(--line-grid);
-  content: "";
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform var(--duration-handover) var(--ease-handover);
 }
 
 .expertise__sub-word {
@@ -3220,11 +3846,6 @@ video {
   transform: none;
 }
 
-.expertise__row:has([aria-expanded="true"]) .expertise__sub::after {
-  transform: scaleX(1);
-  transform-origin: left;
-}
-
 @media (hover: hover) {
   .expertise__row:hover .expertise__panel {
     grid-template-rows: 1fr;
@@ -3237,37 +3858,19 @@ video {
   .expertise__row:hover .expertise__sub-word {
     transform: none;
   }
-
-  .expertise__row:hover .expertise__sub::after {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
 }
 
-/* One after the next as the panel opens: each rule 90ms behind the last, each
-   word 120ms behind its own rule. */
+/* One after the next as the panel opens, 90ms apart. */
 .expertise__sub-word {
   transition-delay: 120ms;
-}
-
-.expertise__sub:nth-child(2)::after {
-  transition-delay: 90ms;
 }
 
 .expertise__sub:nth-child(2) .expertise__sub-word {
   transition-delay: 210ms;
 }
 
-.expertise__sub:nth-child(3)::after {
-  transition-delay: 180ms;
-}
-
 .expertise__sub:nth-child(3) .expertise__sub-word {
   transition-delay: 300ms;
-}
-
-.expertise__sub:nth-child(4)::after {
-  transition-delay: 270ms;
 }
 
 .expertise__sub:nth-child(4) .expertise__sub-word {
@@ -3276,7 +3879,6 @@ video {
 
 @media (prefers-reduced-motion: reduce) {
   .expertise__panel,
-  .expertise__sub::after,
   .expertise__sub-word {
     transition: none;
   }
@@ -3296,13 +3898,9 @@ video {
     grid-column: 1 / -1;
   }
 
-  .expertise__row {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
   .expertise__cross {
-    width: min(1.93em, (100vw - var(--page-gutter) * 2) / 4 - 0.46em);
-    height: min(1.93em, (100vw - var(--page-gutter) * 2) / 4 - 0.46em);
+    width: min(1.35em, (100vw - var(--page-gutter) * 2) / 4 - 0.46em);
+    height: min(1.35em, (100vw - var(--page-gutter) * 2) / 4 - 0.46em);
   }
 }
 
@@ -4201,33 +4799,19 @@ video {
   min-width: 0;
 }
 
-/* The heading at its lines' size and weight, over a hairline — owner,
-   2026-10-05: "between this section and the titles add a horizontal line
-   0.8 px with 10 margin on top and 10 at bottom". The page's grey, drawn as a
-   box rather than a border: a border under a pixel is snapped to whole device
-   pixels, a box is not. The three headings' lines meet, so it reads as one
-   line from the second rule to the edge of the page. */
+/* The heading at its lines' size and weight, a little more air under it than
+   between them. (A hairline stood under the three headings from 2026-10-05
+   until the owner took it off the next day: "only remove the horisontal line
+   between the menu service contact and the links".) */
 .site-footer__group-title {
-  position: relative;
-  margin: 0 0 10px;
-  padding-bottom: 10px;
+  margin: 0 0 0.75em;
   font-size: inherit;
   font-weight: var(--weight-body);
   letter-spacing: inherit;
   line-height: inherit;
 }
 
-.site-footer__group-title::after {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 0.8px;
-  background: var(--line-grid);
-  content: "";
-}
-
-/* The gutter on the lines, not the column, so the headings' line runs on. */
+/* The gutter on the lines, not the column. */
 .site-footer__links {
   display: grid;
   row-gap: 0.3em;

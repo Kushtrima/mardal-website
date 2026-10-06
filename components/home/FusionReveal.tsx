@@ -27,8 +27,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
  *   - **One block at a time, as each comes into view.** The composition is
  *     taller than a laptop screen, and a single timeline started at its top
  *     finished "Artificial Intelligence" and the sentence below the fold.
- *   - **The rules first**, drawn down the section, slowly — the grid is laid
- *     before anything is set on it.
+ *   - **The rules** are not drawn any more: since 2026-10-06 they simply
+ *     stand, from here to the foot of the page ("no reveal").
  *   - **Each heading line rises out of its own mask**, one after the next, on a
  *     long expo ease: the motion the big menu's words already make. Never two
  *     halves at once; never sideways.
@@ -52,8 +52,8 @@ const START = "top 85%";
  *  second. */
 const RISE = { duration: 1.4, ease: "expo.out", stagger: 0.12 };
 
-/** The mark and the rules: drawn, so eased at both ends — they start and come
- *  to rest without a jolt. */
+/** The mark: drawn, so eased at both ends — it starts and comes to rest
+ *  without a jolt. */
 const DRAW = "power3.inOut";
 
 export function FusionReveal() {
@@ -86,20 +86,10 @@ export function FusionReveal() {
     });
 
     const context = gsap.context(() => {
-      gsap.set(section, { "--fusion-rules": 0 });
       gsap.set(up, { scaleY: 0, transformOrigin: "50% 100%" });
       gsap.set(across, { scaleX: 0, transformOrigin: "50% 50%" });
       gsap.set([...leftLines, ...rightLines], hidden);
       gsap.set(copy, { opacity: 0, y: still ? 0 : 24 });
-
-      /* The rules, top to bottom, as the section arrives. A custom property
-         the stylesheet's clip reads, since a tween cannot reach `::before`. */
-      gsap.to(section, {
-        "--fusion-rules": 1,
-        duration: 1.8,
-        ease: DRAW,
-        scrollTrigger: once(section),
-      });
 
       /* Human Creativity. */
       gsap.to(leftLines, {

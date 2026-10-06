@@ -26,7 +26,9 @@ export default function Home() {
         <ProductsSection />
       </main>
 
-      {/* The hairlines run on through the footer, on this page only. */}
+      {/* The hairlines run on through the footer to the foot of the page, on
+          this page only (owner, 2026-10-06: "i want to leav till the end of
+          the page"). */}
       <SiteFooter ruled />
     </>
   );

@@ -191,6 +191,14 @@ export function HouseHeroMotion() {
                 timeline.scrollTrigger?.end ?? window.innerHeight * HOLD,
               scrub: 2.4,
               invalidateOnRefresh: true,
+              /* **Slow going down, home with the heading going up** — owner,
+                 2026-10-06: "i want this to come to the original place same
+                 with big text". Scrolling back, its catch-up is skipped, so
+                 it returns in step with the heading instead of arriving after
+                 it. */
+              onUpdate: (self) => {
+                if (self.direction < 0) self.getTween()?.progress(1);
+              },
             },
           },
         );

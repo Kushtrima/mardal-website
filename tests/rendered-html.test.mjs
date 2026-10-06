@@ -1581,7 +1581,9 @@ test("the fusion reveal draws the rules and the mark, and raises the lines", () 
      into view rather than one timeline for a composition taller than the
      screen; nothing overshoots, and the mark neither rises nor grows. */
   assert.doesNotMatch(code, /back\.out|scale: 0\.72|y: still \? 0 : 90/);
-  for (const block of ["once(section)", "once(left)", "once(right)", 'once(copy, "top 92%")']) {
+  /* (The section's own trigger drew its rules until 2026-10-06; they simply
+     stand now.) */
+  for (const block of ["once(left)", "once(right)", 'once(copy, "top 92%")']) {
     assert.ok(code.includes(block), `${block} has no trigger of its own`);
   }
 
@@ -1599,10 +1601,12 @@ test("the fusion reveal draws the rules and the mark, and raises the lines", () 
   assert.match(code, /scaleX: 0, transformOrigin: "50% 50%"/);
   assert.match(code, /const DRAW = "power3\.inOut";/);
 
-  /* **The rules are drawn first**, down the section, through a custom property
-     the stylesheet's clip reads — whole when the script never runs. */
-  assert.match(rule(".fusion-section::before {"), /clip-path:\s*inset\(0 0 calc\(\(1 - var\(--fusion-rules, 1\)\) \* 100%\) 0\)/);
-  assert.match(code, /"--fusion-rules": 1/);
+  /* **The rules simply stand** — owner, 2026-10-06: "i want the lines to be
+     there all the time no reveal". Nothing draws them: no clip on them, and
+     this section no longer animates its own. */
+  assert.doesNotMatch(code, /--fusion-rules/);
+  assert.doesNotMatch(rule("[data-ruled]::before {"), /clip-path/);
+  assert.doesNotMatch(bare, /--rule-draw/);
 
   /* **And nothing is hidden in CSS.** The start states are written by the
      script, so a page with it blocked shows the section whole. */
@@ -1738,16 +1742,30 @@ test("Our expertise stands under about, and each word opens its services", async
   assert.match(section, /<span class="expertise__label-line">Our<\/span><span class="expertise__label-line">expertise<\/span>/);
   /* Each word rolls under the pointer (RollingLabel), so it is written twice;
      the first face is the one read. */
-  const words = [...section.matchAll(/data-expertise-word="true"><span class="roll"><span class="roll__face">([^<]+)</g)].map((m) => m[1]);
-  assert.deepEqual(words, ["Creative", "Development"]);
-  assert.equal((section.match(/class="expertise__row" data-expertise-row="true" data-roll="true"/g) ?? []).length, 2);
+  const words = [...section.matchAll(/data-expertise-word="true"><span class="roll"><span class="roll__face">([\s\S]*?)<\/span><span class="roll__face roll__face--next"/g)].map((m) =>
+    m[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim(),
+  );
+  /* A third row since 2026-10-06 — owner: "add another one under development
+     at Artificial Intelegence", then "change ai to this: AI + Automation",
+     with a typed plus ("make it a normal +"). */
+  assert.deepEqual(words, ["Creative", "Development", "AI + Automation"]);
+  assert.doesNotMatch(section, /expertise__plus/);
+  assert.equal((section.match(/class="expertise__row" data-expertise-row="true" data-roll="true"/g) ?? []).length, 3);
   const subs = (key) =>
     [...(section.match(new RegExp(`id="expertise-${key}"[\\s\\S]*?</ul>`))?.[0] ?? "").matchAll(/<li class="expertise__sub"><span class="expertise__sub-word">([^<]+)<\/span><\/li>/g)].map((m) => m[1]);
-  assert.deepEqual(subs("creative"), ["Branding", "UX / UI", "Web design", "Social Media"]);
-  assert.deepEqual(subs("development"), ["Websites", "Software", "CRM Solution", "AI &amp; Automation"]);
+  /* His five a row (owner, 2026-10-06). */
+  assert.deepEqual(subs("creative"), ["Branding", "UX/UI Design", "Web Design", "Product Design", "Social Media Design"]);
+  assert.deepEqual(subs("development"), ["Websites", "Web Platforms", "Mobile Apps", "Custom Software", "CRM Solutions"]);
+  assert.deepEqual(subs("ai"), ["AI Assistants", "AI Integrations", "Workflow Automation", "Sales &amp; CRM Automation", "Customer Service Automation"]);
+
+  /* VIEW ALL at its bottom right, to every service (owner, 2026-10-06). */
+  const all = section.match(/<a[^>]*class="expertise__all"[^>]*>[\s\S]*?<\/a>/)?.[0] ?? "";
+  assert.match(all, /href="\/services"/);
+  assert.match(all, /data-roll="true"/);
+  assert.match(all, /<span class="roll__face">VIEW ALL<\/span>/);
 
   /* Each word is a button that names the panel it opens, closed to start. */
-  assert.equal((section.match(/<button class="expertise__toggle" type="button" aria-expanded="false" aria-controls="expertise-(creative|development)"/g) ?? []).length, 2);
+  assert.equal((section.match(/<button class="expertise__toggle" type="button" aria-expanded="false" aria-controls="expertise-(creative|development|ai)"/g) ?? []).length, 3);
 
   /* It opens under the pointer, or once pressed — and the cross is the
      site's red, drawn, never typed. */
@@ -1791,9 +1809,10 @@ test("every word-and-arrow button rolls its word and keeps its arrow still", asy
 
 test("the hairlines run from Fusion to the foot of the homepage, and nowhere else", async () => {
   /* Owner, 2026-10-05: "i want thos vertical line to stretc to the end of
-     website all the way down". Every homepage section from Fusion on, and the
-     footer, draws them; the opening above Fusion does not, and the footer on
-     any other page stays plain. */
+     website all the way down" — and, after a moment without them in the
+     footer, 2026-10-06: "i want to leav till the end of the page". Every
+     homepage section from Fusion on, and the footer, draws them; the opening
+     above Fusion does not, and the footer on any other page stays plain. */
   const html = await (await render("/")).text();
   const page = html.slice(html.indexOf("<main"), html.indexOf("</footer>") + 9);
   for (const name of [
@@ -1847,7 +1866,9 @@ test("Fusion has its four ruled columns, every block on a rule", () => {
      line"). Since 2026-10-05 they run from this section to the foot of the
      page ("all the way down"): every section that carries `data-ruled` draws
      its own length, under its content. */
-  const rules = bare.indexOf("[data-ruled]::before {");
+  /* The shared rule itself, at the start of its line — not a section's own
+     adjustment of it (the services page's opening runs its rules to the top). */
+  const rules = bare.indexOf("\n[data-ruled]::before {");
   assert.ok(rules > 0, "the section draws no rules");
   const ruled = bare.slice(rules, bare.indexOf("\n}", rules));
   assert.match(ruled, /inset-inline:\s*var\(--page-gutter\)/);
@@ -1855,10 +1876,10 @@ test("Fusion has its four ruled columns, every block on a rule", () => {
   assert.match(ruled, /calc\(\(100% - 0\.7px\) \/ 4\) 100% repeat-x/);
   assert.match(bare, /--line-grid:\s*#8c8c8c;/);
   assert.match(ruled, /z-index:\s*-1/);
-  /* Drawn in white since 2026-10-05 — there, and not seen ("revrse back the
-     vertical lines but in white i dont want to be seeen"). */
+  /* White for a day (2026-10-05), then the page's grey again — owner,
+     2026-10-06: "in darkk greay as it was before". */
   assert.doesNotMatch(ruled, /display:\s*none/);
-  assert.match(bare, /--line-grid-vertical:\s*#ffffff;/);
+  assert.match(bare, /--line-grid-vertical:\s*var\(--line-grid\);/);
   assert.match(bare, /\[data-ruled\] \{\s*position:\s*relative;\s*isolation:\s*isolate;/);
 
   assert.match(container, /position:\s*relative/);
@@ -1888,3 +1909,98 @@ test("Fusion has its four ruled columns, every block on a rule", () => {
   }
 });
 
+
+test("the services' page turns its services on a wheel, each one's content beside it", async () => {
+  /* Owner, 2026-10-06, from a reference of names on a curve: "when we enter in
+     services the services to be on the left and as i scroll into services on
+     the right side to apear all the content for that service … and instead of
+     that arrow to be our +". */
+  const html = await (await render("/services")).text();
+  /* **Its opening is the owner's comp** (2026-10-06: "this is what we
+     need"): "Service" beside a plus, the heading in his four lines as the
+     page's one h1, and the note beside the last plus — his words, word for
+     word — on the page's hairlines, and the wheel straight under it. Not the
+     placeholder's "Working on it." any more. */
+  const opening = html.slice(html.indexOf('class="services-hero"'), html.indexOf('class="services-wheel"'));
+  assert.ok(html.indexOf('class="services-hero"') > 0 && opening.length > 0, "the services page does not open on its hero");
+  assert.match(opening, /data-ruled="true"/);
+  assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);
+  assert.match(opening, /<p class="services-hero__label"><span class="services-hero__mark" aria-hidden="true"><\/span>Service<\/p>/);
+  assert.deepEqual(
+    [...opening.matchAll(/<span class="services-hero__title-line">([^<]+)<\/span>/g)].map((m) => m[1]),
+    ["Mardal is a results-driven", "agency built for ambitious brands", "that refuse to settle", "for average."],
+  );
+  assert.match(opening, /<h1 class="services-hero__title" id="services-hero-title">/);
+  assert.match(opening, /We don’t measure success in deliverables\. We measure it in revenue grown, leads doubled, and brands that became impossible to ignore\./);
+  assert.equal((opening.match(/class="services-hero__mark/g) ?? []).length, 4);
+  assert.doesNotMatch(html, /Working|service-hero__title|expertise__label/);
+  const wheel = html.match(/<section class="services-wheel"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(wheel, "the services' page has no wheel");
+  /* **His list, word for word** (owner, 2026-10-06, renewed the same day):
+     nineteen services in three groups, each group's name in the line above
+     its first. */
+  assert.deepEqual(
+    [...wheel.matchAll(/<li class="services-wheel__group" aria-hidden="true" data-wheel-line="true">([^<]+)</g)].map((m) => m[1]),
+    ["Creative", "Development", "AI + Automation"],
+  );
+  assert.deepEqual(
+    [...wheel.matchAll(/<button class="services-wheel__name" type="button">([^<]+)</g)].map((m) => m[1]),
+    [
+      "Branding", "Visual Identity", "UX/UI Design", "Web Design", "Product Design", "Print Design", "Social Media Design",
+      "Websites", "Web Platforms", "Mobile Apps", "Custom Software", "CRM Solutions", "E-commerce", "API &amp; Integrations",
+      "AI Assistants", "AI Integrations", "Workflow Automation", "Sales &amp; CRM Automation", "Customer Service Automation",
+    ],
+  );
+  /* **Nothing is chosen before the section is reached** (owner, 2026-10-06:
+     "whn enter the section first to be selc the service then to aper the
+     right text not before"): no service, panel or group is lit as served. */
+  assert.doesNotMatch(wheel, /data-active|is-active|is-current/);
+  assert.match(wheel, /<span class="services-wheel__mark" aria-hidden="true"><\/span>/);
+  /* **Every service says what he wrote** (owner, 2026-10-06): his
+     paragraph and what it includes, and no heading over them — his title
+     lines and the group's name came off ("delete title for each and for
+     example Creative only paragraf and other text"), and the word "Includes"
+     ("delete text Include in all"). The name stays as the
+     panel's heading for a phone and a screen reader; the stylesheet hides it
+     beside the wheel. */
+  const creative = [
+    ["Branding", "We help define what your brand stands for", "Brand strategy"],
+    ["Visual Identity", "We turn your brand strategy into a distinct visual language", "Templates &amp; applications"],
+    ["UX/UI Design", "We combine user experience thinking with strong interface design", "Usability improvements"],
+    ["Web Design", "We design websites around your brand, your audience", "Developer-ready designs"],
+    ["Product Design", "We help shape digital products from early concepts", "Product discovery"],
+    ["Print Design", "We design print materials that extend your visual identity", "Corporate materials"],
+    ["Social Media Design", "We design visual systems and campaign assets", "Social media guidelines"],
+    ["Websites", "We design and develop modern, responsive websites", "SEO-ready structure"],
+    ["Web Platforms", "We build custom web platforms for businesses", "User accounts &amp; permissions"],
+    ["Mobile Apps", "We create mobile applications that give users", "App maintenance &amp; updates"],
+    ["Custom Software", "We develop software around the way your business actually operates", "Maintenance &amp; ongoing development"],
+    ["CRM Solutions", "We help businesses bring customer information", "Training &amp; support"],
+    ["E-commerce", "We build e-commerce experiences that connect", "Analytics &amp; reporting"],
+    ["API &amp; Integrations", "We connect your applications, platforms, and business systems", "Integration maintenance"],
+    ["AI Assistants", "We build AI assistants that help customers and teams find information", "CRM and business system connections"],
+    ["AI Integrations", "We integrate AI into the tools and systems your business already uses", "Custom AI features"],
+    ["Workflow Automation", "We automate repetitive business processes so information, tasks", "System-to-system workflows"],
+    ["Sales &amp; CRM Automation", "We connect your sales processes with automation and AI", "Reporting workflows"],
+    ["Customer Service Automation", "We automate repetitive customer service processes", "Feedback collection"],
+  ];
+  for (const [name, paragraph, item] of creative) {
+    const panel = wheel.match(new RegExp(`<h2 class="services-wheel__title">${name}</h2>[\\s\\S]*?</article>`))?.[0] ?? "";
+    assert.ok(panel, `${name} has no panel`);
+    assert.ok(panel.includes(`<p class="services-wheel__summary">${paragraph}`), `${name} has not got his paragraph`);
+    assert.ok(panel.includes(`<li>${item}</li>`), `${name} is missing ${item}`);
+  }
+  assert.doesNotMatch(wheel, /services-wheel__panel-group|Build a clear foundation for your brand|>Includes</);
+  /* **Two ways in under every service** (owner, 2026-10-06: "write to us and
+     other Book a meeting so two buttons"). */
+  const panels = [...wheel.matchAll(/<article class="services-wheel__panel"[\s\S]*?<\/article>/g)].map((m) => m[0]);
+  assert.equal(panels.length, 19);
+  for (const panel of panels) {
+    assert.deepEqual(
+      [...panel.matchAll(/class="services-wheel__cta" href="([^"]+)"[\s\S]*?roll__face">([^<]+)</g)].map((m) => [m[1], m[2]]),
+      [["/contact", "Write to us"], ["mailto:info@mardal.co?subject=Book%20a%20meeting", "Book a meeting"]],
+    );
+  }
+  /* No index list under it any more. */
+  assert.doesNotMatch(html, /class="page-index"/);
+});

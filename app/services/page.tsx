@@ -1,18 +1,40 @@
 import type { Metadata } from "next";
-import { PlaceholderPage } from "../../components/placeholder/PlaceholderPage";
-import { placeholders } from "../../content/placeholders";
-import { menu } from "../../content/home";
+import { SiteFooter } from "../../components/layout/SiteFooter";
+import { HeaderSpace } from "../../components/layout/HeaderSpace";
+import { ServicesHero } from "../../components/services/ServicesHero";
+import { ServicesWheel } from "../../components/services/ServicesWheel";
+import {
+  servicesIndex,
+  servicesIndexActions,
+  servicesPage,
+} from "../../content/services-index";
 
 export const metadata: Metadata = {
-  title: placeholders["services"].title,
-  description: placeholders["services"].description,
+  title: servicesPage.title,
+  description: servicesPage.description,
 };
 
-/** An address the menu points at: its opening, still unwritten, and under it
- *  an index of every service (owner, 2026-10-05: "when click inside to have all
- *  services and other"). The page is PlaceholderPage; its words are in
- *  content/placeholders.ts, and the list is the menu's own. */
+/**
+ * The services: the owner's opening (ServicesHero — his comp of 2026-10-06,
+ * "this is what we need") and under it every service on a wheel, each one's
+ * content beside it as the page is scrolled (ServicesWheel). No longer an
+ * unwritten page: its opening is written, so it stopped calling
+ * PlaceholderPage, as Careers and the others did.
+ */
 export default function ServicesPage() {
-  const entry = menu.find((item) => item.key === "services");
-  return <PlaceholderPage page="services" links={entry?.items ?? []} />;
+  return (
+    <>
+      <main
+        className="service-page service-page--services"
+        id="main-content"
+        data-service-page
+      >
+        <HeaderSpace />
+        <ServicesHero />
+        <ServicesWheel entries={servicesIndex} actions={servicesIndexActions} />
+      </main>
+
+      <SiteFooter />
+    </>
+  );
 }
