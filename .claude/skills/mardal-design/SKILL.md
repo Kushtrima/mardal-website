@@ -1,6 +1,6 @@
 ---
 name: mardal-design
-description: Design and build UI for the Mardal website. Use for any visual, layout, typography, colour, motion or section work on this site — and read it before proposing a design, not after. Covers the token system, the house rules, how the owner reviews work, and the mistakes that have already been made here.
+description: Design and build UI for the Mardal website. Use for any visual, layout, typography, colour, motion or section work on this site — and read it before proposing a design, not after. Covers the token system, the house rules, the responsive and mobile concept every page follows (new pages too), how the owner reviews work, and the mistakes that have already been made here.
 ---
 
 # Designing for Mardal
@@ -146,3 +146,89 @@ the markup, so every class name appears twice — take the first N matches.
   inline-size` on the parent. Used by the coloured boxes.
 - Both headers use `text-wrap` set in the content as explicit line spans, not
   automatic wrapping, so the break falls in the same place at every width.
+
+## Responsive and mobile — every page, new ones too
+
+Owner, 2026-10-06: "save this responsivenes and mobile concept hot it should
+look also the future pages globally". Built and approved in the responsive
+pass of 2026-10-06 (the homepage and /services are the worked examples).
+Every new page and section follows it from the start, not as a later pass.
+
+**The idea: the phone is the desktop design, adapted, not a simpler site.**
+Owner, of the phone wheel: "yes try to adapt same effect as in desktop". Keep
+the same layout ideas, the same marks and the same motion; change only the
+arrangement and the sizes so they fit. Never swap a designed section for a
+plain stack of blocks on a phone. If the owner draws phone comps (390px
+wide), build exactly to them.
+
+**Widths.** Only the six steps in `lib/breakpoints.ts` — 24, 30, 40, 48,
+64, 75rem — or a step's complement 1/16rem past it (`min-width:
+40.0625rem`). `tests/breakpoints.test.mjs` fails on any other width. Phones
+are ≤ 40rem. The stylesheet is desktop-first: add phone rules in a
+`@media (max-width: 40rem)` block after the desktop rule, never rewrite it
+mobile-first. Inside a component, prefer a container query
+(`container-type: inline-size`, `cqw`) so it fits the room it is given.
+
+**Touch is asked of the pointer, not the width.** The mobile menu, the phone
+bar and ScrollSmoother switch on `MOBILE_MENU` = `(max-width: 64rem),
+(hover: none)` — use the constant, never a new copy. Every hover effect needs
+a tap equivalent.
+
+**The grid.** Desktop four columns, five hairlines; a phone two columns,
+three hairlines (`[data-ruled]` does it). Content sits between the lines on a
+phone as it does on a desktop, never cut through by one.
+
+**Type.** Still the three sizes; the clamps shrink them. Headings stay explicit
+line spans; on a phone keep the desktop's set (first line indented, a line
+justified to the column) rather than letting it wrap freely. Never break a
+hyphenated word across lines — wrap it whole (`.services-hero__whole`).
+
+**The bar on a phone and tablet** slides away on scrolling down and comes
+back on a canvas band when scrolling up, so it never sits over text. Desktop
+keeps the bar without a ground.
+
+**The menu.** Every top word has the red plus in front, a page's as well as
+a parent's. A word that is a page goes straight to its page. No focus ring
+after a tap — the header's `data-pressed` hides it, and a key brings it back.
+
+**Screens and edges.**
+- `viewport-fit=cover`; side gutters clear of the notch (`--page-gutter`), and
+  anything at the foot of the screen clear of the home bar with
+  `env(safe-area-inset-bottom)`.
+- Full-screen sections use `svh`. A phone's address bar hides as it scrolls,
+  so the screen grows past `100svh`: anything that must reach the foot of the
+  screen — the hairlines above all — lives in the page, not in a held
+  section, so it carries on past the section's foot.
+- Never join two pieces of one drawing across a held (pinned) section. The
+  page moves on its own on a phone and anything moved by script follows a
+  frame or more late, so the join opens while it scrolls (the gap in the
+  services lines, 2026-10-06). One piece, in the page.
+
+**Fingers.** Everything pressable is at least 44px on a touch screen. The
+press area grows, not the layout: padding plus the same negative margin, in
+the `(pointer: coarse)` block ("Room for a finger"). Add a new link class
+there. Form fields are 16px or more, or Safari zooms in on them.
+
+**Images.** Every image gets `srcSet` widths and `sizes`, so a phone loads a
+phone-sized file, and a set aspect ratio, so nothing jumps while it loads.
+
+**Motion.** The same effects, set per size (`gsap.matchMedia()`, or a
+`window.matchMedia` the component rebuilds on); lighter
+where a phone needs it, never dropped for being on a phone. ScrollSmoother is
+off on touch; `ScrollTrigger.config({ ignoreMobileResize: true })` wherever a
+section is held, so the address bar does not re-measure it mid-scroll.
+Reduced motion stays respected everywhere.
+
+**Checks before showing him.**
+- `npm run check:responsive` (dev server on :3001): every page at 360, 390,
+  430, 768, 1024, 1280 and 1440 — sideways scroll, spill past the edge,
+  small targets, small text, zooming fields, heavy images. 0 failing, or it
+  is not done. Add a new page's route to `ALL_ROUTES` in
+  `scripts/responsive-check.mjs`.
+- Speed on a phone (Lighthouse mobile): main content within 2.5s, nothing
+  jumping (CLS 0.1 or less), a tap answered within 0.2s.
+- Accessibility: text at 200%, a phone on its side, the keyboard all the way
+  through.
+- The owner checks on his real iPhone (and iPad) in Safari — the emulator
+  misses Safari's own behaviour. Phone screenshots of the real page, at the
+  scroll position in question, before saying it works.
