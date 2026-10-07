@@ -53,7 +53,7 @@ Learned the hard way, each from a rejection:
 ## Never invent facts
 
 Mardal has no public clients, no logos, no testimonials, no published numbers,
-and its three products are unfinished. The owner has not published a city, a
+and its two products are unfinished. The owner has not published a city, a
 team size or a legal entity.
 
 Write `[City]`, `[X] hours`, `[founder name]`. Never fill a bracket with a

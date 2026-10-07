@@ -86,14 +86,6 @@ const getInTouch = {
  * added where it is needed rather than stored ten times.
  */
 export const placeholders = {
-  products: {
-    label: "Products",
-    title: "Products",
-    description: "The products Mardal is building.",
-    support: "The products we are building for ourselves.",
-    cta: "See the products",
-    ctaHref: "/#products",
-  },
   "products/arvena-ai": {
     label: "Arvena AI",
     title: "Arvena AI",
@@ -107,14 +99,6 @@ export const placeholders = {
     title: "Ftesa.co",
     description: "Digital invitations, personal to every guest.",
     support: "Digital invitations, personal to every guest.",
-    cta: "See the products",
-    ctaHref: "/#products",
-  },
-  "products/ihrauto": {
-    label: "Ihrauto",
-    title: "Ihrauto",
-    description: "Workshop operations, from booking to invoice.",
-    support: "Workshop operations, from booking to invoice.",
     cta: "See the products",
     ctaHref: "/#products",
   },

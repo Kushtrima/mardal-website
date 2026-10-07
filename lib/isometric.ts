@@ -214,15 +214,6 @@ const scenes = {
     block(0.5, 0.55, 0.8, 1.6, 1.1, 0.1),
     block(1, 1.1, 1.6, 1.6, 1.1, 0.1),
   ],
-  /** A run along one rail, from first call to final invoice. Kept low and
-      blocky so it reads as stages, not as the hero's bars. */
-  ihrauto: [
-    block(0, 0.9, 0, 3.4, 0.55, 0.1),
-    block(0.05, 0.6, 0.1, 0.72, 0.95, 0.5),
-    block(0.9, 0.6, 0.1, 0.72, 0.95, 0.72),
-    block(1.75, 0.6, 0.1, 0.72, 0.95, 0.94),
-    block(2.6, 0.6, 0.1, 0.72, 0.95, 1.16),
-  ],
   /** One block, used as the marker above each sector in the industries strip.
       It is a mark rather than a drawing, so it stays a single cube. */
   "sector-mark": [block(0, 0, 0, 1, 1, 1)],
@@ -248,7 +239,6 @@ export const isoSceneLabels: Record<IsoSceneName, string> = {
   "web-platforms": "Animated isometric tiled surface",
   "arvena-ai": "Animated isometric core resting on a base",
   ftesa: "Animated isometric cards fanned out",
-  ihrauto: "Animated isometric run of blocks along a rail",
   "sector-mark": "Isometric cube",
   "case-study": "Animated isometric layered platform",
 };

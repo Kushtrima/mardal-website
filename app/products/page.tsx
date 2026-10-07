@@ -1,18 +1,45 @@
 import type { Metadata } from "next";
-import { PlaceholderPage } from "../../components/placeholder/PlaceholderPage";
-import { placeholders } from "../../content/placeholders";
-import { menu } from "../../content/home";
+import { SiteFooter } from "../../components/layout/SiteFooter";
+import { HeaderSpace } from "../../components/layout/HeaderSpace";
+import { ProductsSection } from "../../components/home/ProductsSection";
+import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
+import { ServicesHero } from "../../components/services/ServicesHero";
+import { ServicesRules } from "../../components/services/ServicesRules";
+import { productsHero, productsPage } from "../../content/products-index";
 
 export const metadata: Metadata = {
-  title: placeholders["products"].title,
-  description: placeholders["products"].description,
+  title: productsPage.title,
+  description: productsPage.description,
 };
 
-/** An address the menu points at: its opening, still unwritten, and under it
- *  an index of every product (owner, 2026-10-05: "when click inside to have all
- *  services and other"). The page is PlaceholderPage; its words are in
- *  content/placeholders.ts, and the list is the menu's own. */
+/**
+ * The products: the services page's opening, in the products' own words
+ * (owner, 2026-10-07: "Recreate Product page, make same hero banner but with
+ * different text … then we will contiinue to work on body of this page"), on
+ * the same hairlines. No longer an unwritten page, so it stopped calling
+ * PlaceholderPage. Under it the homepage's products section in this page's
+ * words, each product going to its own page (ProductsSection `page`).
+ */
 export default function ProductsPage() {
-  const entry = menu.find((item) => item.key === "products");
-  return <PlaceholderPage page="products" links={entry?.items ?? []} />;
+  return (
+    <>
+      <main
+        className="service-page service-page--products"
+        id="main-content"
+        data-service-page
+      >
+        {/* The page's five hairlines, from its top to its foot in one piece
+            (ServicesRules). */}
+        <ServicesRules />
+        <HeaderSpace />
+        <ServicesHero hero={productsHero} name="products" />
+        {/* What they are, then the two, each to its own page — owner,
+            2026-10-07. */}
+        <ProductsSection page />
+      </main>
+
+      {/* The grey hairlines on to the foot of the page, as the services'. */}
+      <SiteFooter rules={<ServicesFooterRules />} />
+    </>
+  );
 }

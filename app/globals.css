@@ -519,7 +519,14 @@
   /* The homepage's sections pay more — owner, 2026-10-05: "add more margin
      betwen the section beacuase they are to close to each other". 0.7 of the
      gap a side: 350px between two of them from about 1280 up, 210 on a
-     phone, where it was 250 and 150. The other pages keep --section-space. */
+     phone, where it was 250 and 150.
+
+     **And every page's since 2026-10-07** — owner, of the products page:
+     "add sapce margin between sections they are to close … same as in home
+     page … make that space globally". Each page's sections pay it either
+     side (the first under the bar keeps its own top), so two sections, and
+     the last and the footer, stand the homepage's distance apart. Under an
+     opening the section pays it and the opening --section-space. */
   --section-space-lg: calc(var(--section-gap) * 0.7);
 
   /* Shape and effects */
@@ -2495,7 +2502,7 @@ video {
    them, in the red. In the page itself, from its top to the wheel's foot in
    one piece, under everything the opening and the wheel hold — neither has
    a ground of its own, so they show through both. */
-.service-page.service-page--services {
+.service-page:is(.service-page--services, .service-page--products) {
   position: relative;
   isolation: isolate;
 }
@@ -2627,14 +2634,15 @@ video {
    longest from the first rule — just short of it. Sized to the column rather
    than set: "Mardal is a results-driven" is 11.0 of its own size wide in this
    face and tracking (measured), and has three quarters of the column, so a
-   size of 75cqw / 11.05 fits it at any width. */
+   size of 75cqw / 11.05 fits it at any width. Another page's opening sets
+   its own `--hero-fit`, its first line's width. */
 .services-hero__title {
   grid-row: 2;
   grid-column: 1 / -1;
   align-self: center;
   margin: 0;
   font-family: var(--type-display);
-  font-size: calc(75cqw / 11.05);
+  font-size: calc(75cqw / var(--hero-fit, 11.05));
   font-weight: var(--weight-body);
   letter-spacing: -0.02em;
   line-height: 1.18;
@@ -2643,6 +2651,18 @@ video {
 .services-hero__title-line {
   display: block;
   white-space: nowrap;
+}
+
+/* The products' first line, "Mardal also builds its own", is 11.28 of its
+   size wide (measured), a hair wider than the services': at this its
+   heading is 3% smaller than theirs and its first two lines end a few
+   pixels short of the last rule, as theirs do. */
+.services-hero--products {
+  --hero-fit: 11.38;
+
+  /* What the other pages' openings pay at their foot (.service-hero), so the
+     products stand the homepage's distance under it. */
+  margin-bottom: var(--section-space);
 }
 
 
@@ -5669,9 +5689,10 @@ video {
 
 /* **Under the pointer the name answers** — the site's red, and it rolls
    (`.roll`), the expertise words' answer; the link under it rolls on its own
-   hover. */
+   hover. Not on the products page — owner, 2026-10-07: "i dont want titles
+   to turn in red to have effect onnly buttons"; there only the link answers. */
 @media (hover: hover) {
-  .product:hover .product__name {
+  .products:not(.products--page) .product:hover .product__name {
     color: var(--accent);
   }
 
@@ -5684,8 +5705,145 @@ video {
   }
 }
 
-.product:has(:focus-visible) .product__name {
+.products:not(.products--page) .product:has(:focus-visible) .product__name {
   color: var(--accent);
+}
+
+/* **On the products page** (ProductsSection `page`, owner, 2026-10-07: "put
+   those two products in this page below") — no ground, so the page's
+   hairlines run through it (ServicesRules); its own label, heading and
+   paragraph.
+
+   **Each product a band of its own** — owner, 2026-10-07, "lets try your
+   version": one under the other, the name at the heading's size over a
+   picture three quarters wide, the words in the quarter beside it, standing
+   on the picture's foot; the second mirrored, its words in the first quarter.
+   Each piece starts on its rule and stops a seam short of the next. Where it
+   stands is on the site's redaction bar. Half and half on a tablet, where a
+   quarter is too thin to read in; on a phone the name, the picture and the
+   words one under the next. */
+.products--page {
+  background: transparent;
+}
+
+.products--page .product__name {
+  margin: 0 0 calc(var(--products-size) * 0.25);
+  font-family: var(--type-display);
+  font-size: var(--products-size);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-heading);
+}
+
+.products--page .product__frame {
+  aspect-ratio: 16 / 10;
+}
+
+.products--page .product__copy {
+  max-width: 32em;
+}
+
+.product__status {
+  margin: 0;
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
+  letter-spacing: -0.015em;
+  line-height: var(--leading-body);
+}
+
+/* The menu's redaction bar: the red, the ink that stands on it. */
+.product__bar {
+  padding: 0.08em 0.35em;
+  background: var(--tint-red);
+  color: var(--ink-on-tint);
+  box-decoration-break: clone;
+}
+
+@media (min-width: 40.0625rem) {
+  .products--page .products__list {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: none;
+    /* Two sections' distance apart, the homepage's (owner, 2026-10-07). */
+    row-gap: calc(var(--section-space-lg) * 2);
+  }
+
+  /* The name, then the picture beside the words; the empty row over the
+     words takes what the picture leaves, so they stand on its foot. */
+  .products--page .product {
+    --seam: calc(var(--column-gap) * 2.5);
+
+    grid-row: auto;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+    padding-right: 0;
+  }
+
+  .products--page .product__name {
+    grid-row: 1;
+    grid-column: 1 / 4;
+  }
+
+  .products--page .product__frame {
+    grid-row: 2 / -1;
+    grid-column: 1 / 4;
+    margin-right: var(--seam);
+  }
+
+  .products--page :is(.product__status, .product__copy, .product__cta) {
+    grid-column: 4;
+  }
+
+  .products--page :is(.product__status, .product__copy) {
+    padding-right: var(--seam);
+  }
+
+  .products--page .product__status {
+    grid-row: 3;
+  }
+
+  .products--page .product__copy {
+    grid-row: 4;
+  }
+
+  .products--page .product__cta {
+    grid-row: 5;
+  }
+
+  .products--page .product:nth-child(even) :is(.product__name, .product__frame) {
+    grid-column: 2 / -1;
+  }
+
+  .products--page .product:nth-child(even) :is(.product__status, .product__copy, .product__cta) {
+    grid-column: 1;
+  }
+}
+
+@media (min-width: 40.0625rem) and (max-width: 64rem) {
+  .products--page .product :is(.product__name, .product__frame) {
+    grid-column: 1 / 3;
+  }
+
+  .products--page .product :is(.product__status, .product__copy, .product__cta) {
+    grid-column: 3 / -1;
+  }
+
+  .products--page .product:nth-child(even) :is(.product__name, .product__frame) {
+    grid-column: 3 / -1;
+  }
+
+  .products--page .product:nth-child(even) :is(.product__status, .product__copy, .product__cta) {
+    grid-column: 1 / 3;
+  }
+}
+
+@media (max-width: 40rem) {
+  .products--page .products__list {
+    row-gap: calc(var(--section-space-lg) * 2);
+  }
+
+  .products--page .product__status {
+    margin-top: 1rem;
+  }
 }
 
 /* Narrower than a laptop, a quarter is too thin to read in: the three take
@@ -6019,7 +6177,7 @@ video {
    decodes, which is what makes `loading="lazy"` safe and keeps every trigger
    below it still. */
 .about-plate {
-  padding-block: clamp(4rem, 12vh, 9rem) clamp(5rem, 14vh, 11rem);
+  padding-block: var(--section-space-lg);
 }
 
 /* The frame the picture is held in and resolves into. `MediaReveal` pins it and
@@ -6073,7 +6231,7 @@ video {
    characters a line everywhere from 600 up, and the split at 1024/1025 crosses
    at 70 against 67, so there is no step in the measure at the breakpoint. */
 .about-prose {
-  padding-block: 0 clamp(5rem, 14vh, 11rem);
+  padding-block: var(--section-space-lg);
 }
 
 .about-prose__inner {
@@ -6193,7 +6351,7 @@ video {
    the run is pinned the viewport is `position: fixed`, which escapes this clip
    and contributes no scrollable overflow of its own either way. */
 .about-journey {
-  padding-block: 0 clamp(5rem, 14vh, 11rem);
+  padding-block: var(--section-space-lg);
   overflow-x: clip;
   overflow-y: visible;
 }
@@ -6335,7 +6493,7 @@ video {
    Below about 600px the column is the narrower of the two and the sentence takes
    the lines it needs. */
 .about-statement {
-  padding-block: 0 clamp(5rem, 14vh, 11rem);
+  padding-block: var(--section-space-lg);
 }
 
 .about-statement__line {
@@ -6388,7 +6546,7 @@ video {
    `break-inside: avoid` because multi-column will otherwise split a name
    between the columns, and a name is not a paragraph. */
 .about-clients {
-  padding-block: 0 clamp(5rem, 14vh, 11rem);
+  padding-block: var(--section-space-lg);
 }
 
 /* **The rule above it.** Owner: a black horizontal line on top.
@@ -6523,7 +6681,7 @@ video {
    tops at 0, 163 and 408 and feet at 606, 534 and 791 — six numbers, no two the
    same, which is the whole of what "not aligned" asks for. */
 .about-rooms {
-  padding-block: 0 clamp(5rem, 14vh, 11rem);
+  padding-block: var(--section-space-lg);
 }
 
 .about-rooms__inner {
@@ -6625,7 +6783,7 @@ video {
 /* --------------------------------- Blog ---------------------------------- */
 
 .blog-index {
-  padding-block: 0 clamp(4rem, 12vh, 9rem);
+  padding-block: var(--section-space-lg);
   color: var(--service-ink);
   background: var(--service-surface);
 }
@@ -7202,7 +7360,7 @@ video {
   /* The same ground and foot as the site's other two indexes, the Blog and
      Clients. A reader arriving at any of the three should not be able to tell
      they were built weeks apart. */
-  padding-block: 0 clamp(4rem, 12vh, 9rem);
+  padding-block: var(--section-space-lg);
   color: var(--service-ink);
   background: var(--service-surface);
 }
@@ -7328,7 +7486,7 @@ video {
    a hero would state the role's name across the top and the rail would state it
    again a screen lower. */
 .role-page {
-  padding-block: clamp(3rem, 9vh, 6.5rem) clamp(4rem, 12vh, 9rem);
+  padding-block: clamp(3rem, 9vh, 6.5rem) var(--section-space-lg);
   color: var(--service-ink);
   background: var(--service-surface);
 }
@@ -7729,7 +7887,7 @@ video {
    across rather than a second column beside the heading. The step is a long
    one, on the owner's word: more distance between the two. */
 .contact {
-  padding-block: clamp(2.5rem, 8vh, 6rem) clamp(4rem, 12vh, 9rem);
+  padding-block: clamp(2.5rem, 8vh, 6rem) var(--section-space-lg);
   color: var(--ink);
   background: var(--canvas);
 }
@@ -8106,7 +8264,7 @@ video {
    site's only two indexes and a reader arriving at either should not be able to
    tell they were built a month apart. */
 .clients-index {
-  padding-block: 0 clamp(4rem, 12vh, 9rem);
+  padding-block: var(--section-space-lg);
   color: var(--service-ink);
   background: var(--service-surface);
 }
@@ -9249,7 +9407,7 @@ video {
 }
 
 .story {
-  padding-block: 0 clamp(4rem, 12vh, 9rem);
+  padding-block: var(--section-space-lg);
   color: var(--service-ink);
   background: var(--service-surface);
 }
@@ -9731,7 +9889,7 @@ video {
 /* ----------------------------- Blog: one piece ---------------------------- */
 
 .blog-article {
-  padding-block: clamp(2.5rem, 7vh, 4.5rem) clamp(4rem, 12vh, 8rem);
+  padding-block: clamp(2.5rem, 7vh, 4.5rem) var(--section-space-lg);
   color: var(--service-ink);
   background: var(--service-surface);
 }
@@ -10299,7 +10457,7 @@ video {
 }
 
 .service-cta {
-  padding-block: 60px;
+  padding-block: var(--section-space-lg);
   color: var(--service-ink);
   background: var(--service-surface);
 }
@@ -10934,7 +11092,7 @@ video {
      that has stopped being one, and 20ch of it is a paragraph. Neither number
      has ever had anything to do with motion either. */
   .service-cta {
-    padding-block: clamp(5rem, 20vw, 7rem);
+    padding-block: var(--section-space-lg);
     background: var(--service-surface);
   }
 

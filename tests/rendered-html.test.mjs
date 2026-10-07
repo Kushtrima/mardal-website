@@ -32,7 +32,6 @@ const menuAnchors = [
   "products",
   "arvena-ai",
   "ftesa",
-  "ihrauto",
 ];
 
 test("server-renders the Mardal homepage", async () => {
@@ -80,15 +79,15 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /class="industries-section"|industries-explore|industries-key/);
   assert.equal(
     (html.match(/class="[^"]*product__arrow[^"]*"/g) ?? []).length,
-    3,
+    2,
   );
   assert.doesNotMatch(html, /button--flat|shape-flat/);
   /* Each product's lines under its picture, as Selected Work sets a piece's —
-     the field, then where it stands and its year; no term labels, since the
+     where it stands and its year; no term labels, since the
      owner's "use our new concept" (2026-10-05). The years are the owner's. */
   assert.doesNotMatch(html, /product-fact/);
-  assert.equal((html.match(/<p class="product__line">/g) ?? []).length, 6);
-  for (const year of ["2025", "2024", "2026"]) {
+  assert.equal((html.match(/<p class="product__line">/g) ?? []).length, 2);
+  for (const year of ["2025", "2026"]) {
     assert.match(
       html,
       new RegExp(`<p class="product__line">In development, ${year}</p>`),
@@ -99,9 +98,12 @@ test("server-renders the Mardal homepage", async () => {
      screen reader. */
   assert.match(html, /should exist<span class="products__stop" data-products-stop="true"><span class="visually-hidden">\.<\/span><\/span>/);
   assert.doesNotMatch(html, /\[Year\]/);
-  assert.match(html, /Mental health/);
-  assert.match(html, /Automotive/);
-  assert.match(html, /Events/);
+  /* No field under the name (owner, 2026-10-07: "delete under name the
+     section like Mental Health and Evends"). */
+  assert.doesNotMatch(html, /<p class="product__line">(Mental health|Events)<\/p>/);
+  /* **Ihrauto is gone** — owner, 2026-10-07: "remove this product from
+     homepage and eeryhwere IHR AUTO". Two products now. */
+  assert.doesNotMatch(html, /Ihrauto|ihrauto|Automotive/i);
   /* `cases-record` was the case-study section's class, and it stays gone: six
      designs of it were tried on 2026-07-28 and none of them was wanted, so the
      component, the content, the styles and the stock photography all went.
@@ -116,15 +118,15 @@ test("server-renders the Mardal homepage", async () => {
   // No drawn mark of any kind, and no panel: each product leads with a
   // photograph instead.
   assert.doesNotMatch(html, /product-mark|product-card|product__panel/);
-  assert.equal((html.match(/class="product__name"/g) ?? []).length, 3);
-  assert.equal((html.match(/class="product__image"/g) ?? []).length, 3);
-  // Three different photographs, each with alt text, each sized so the page
+  assert.equal((html.match(/class="product__name"/g) ?? []).length, 2);
+  assert.equal((html.match(/class="product__image"/g) ?? []).length, 2);
+  // Two different photographs, each with alt text, each sized so the page
   // does not shift as they load.
   const productImages = [
     ...html.matchAll(/<img class="product__image"[^>]*src="([^"]+)"[^>]*>/g),
   ];
-  assert.equal(productImages.length, 3);
-  assert.equal(new Set(productImages.map((image) => image[1])).size, 3);
+  assert.equal(productImages.length, 2);
+  assert.equal(new Set(productImages.map((image) => image[1])).size, 2);
   for (const image of productImages) {
     assert.match(image[0], /alt="[^"]+"/);
     assert.match(image[0], /width="1600" height="1000"/);
@@ -300,13 +302,13 @@ test("server-renders the Mardal homepage", async () => {
     ),
   );
   assert.deepEqual(lists, {
-    Products: ["Arvena AI", "Ftesa.co", "Ihrauto"],
+    Products: ["Arvena AI", "Ftesa.co"],
     About: ["About", "Blog", "Careers", "Contact"],
   });
   /* Each page a ruled row: its name, and VIEW ALL's thin arrow (owner,
      2026-10-05: "i don like how sub links shows pls redesign that part"). */
-  assert.equal((pages.match(/<li class="mobile-menu__item">/g) ?? []).length, 7);
-  assert.equal((pages.match(/class="mobile-menu__link-arrow"/g) ?? []).length, 7);
+  assert.equal((pages.match(/<li class="mobile-menu__item">/g) ?? []).length, 6);
+  assert.equal((pages.match(/class="mobile-menu__link-arrow"/g) ?? []).length, 6);
 
   /* And the foot: the way in, then the ways to reach Mardal. */
   assert.match(html, /<div class="mobile-menu__foot"[^>]*>[\s\S]*?class="mobile-menu__cta" data-roll="true" href="\/contact"[\s\S]*?href="mailto:info@mardal\.co"[\s\S]*?href="tel:\+38349210999"/);
@@ -2020,4 +2022,33 @@ test("the services' page turns its services on a wheel, each one's content besid
   }
   /* No index list under it any more. */
   assert.doesNotMatch(html, /class="page-index"/);
+});
+
+test("the products' page opens as the services' does, in its own words", async () => {
+  /* Owner, 2026-10-07: "Recreate Product page, make same hero banner but with
+     different text adapt a text that explakin product pages". */
+  const response = await render("/products");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /<title>Products — Mardal<\/title>/i);
+  assert.doesNotMatch(html, /Working|service-hero__title|class="page-index"/);
+  assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);
+
+  const opening = html.slice(html.indexOf('class="services-hero services-hero--products"'), html.indexOf("</section>"));
+  assert.ok(opening.length > 0, "the products' page does not open on the hero");
+  assert.match(opening, /aria-labelledby="products-hero-title" data-services-hero="true"/);
+  assert.match(opening, /<p class="services-hero__label" data-services-hero-first="true"><span class="services-hero__mark" aria-hidden="true"><\/span>Products<\/p>/);
+  assert.deepEqual(
+    [...opening.replace(/<!-- -->/g, "").matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "")),
+    ["Mardal also builds its own", "products to test its thinking before", "it goes into the work", "for clients."],
+  );
+  assert.match(opening, /<h1 class="services-hero__title" id="products-hero-title" data-services-hero-title="true">/);
+  assert.match(opening, /<span class="services-hero__stop">\.<\/span>/);
+  assert.match(opening, /Each one starts from a real need, not a trend\. We explore, build, test and refine it, then bring what we learn into every project we take on\./);
+  assert.equal((opening.match(/class="services-hero__mark/g) ?? []).length, 4);
+
+  /* On the same hairlines: the page's five, from its top, and the footer's. */
+  const main = html.slice(html.indexOf('<main class="service-page service-page--products"'), html.indexOf('class="services-hero'));
+  assert.equal((main.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 5);
+  assert.equal((html.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 10);
 });

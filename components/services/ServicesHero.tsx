@@ -1,7 +1,15 @@
 import { Fragment } from "react";
 import { Container } from "../layout/Container";
 import { ServicesHeroReveal } from "./ServicesHeroReveal";
-import { servicesHero } from "../../content/services-index";
+
+/** What an opening says: its label, the heading's lines, its full stop and
+ *  the note. */
+export type PageHeroContent = {
+  readonly label: string;
+  readonly titleLines: readonly string[];
+  readonly titleStop: string;
+  readonly note: string;
+};
 
 /**
  * **The services page's opening** — the owner's comp of 2026-10-06 ("this is
@@ -11,12 +19,23 @@ import { servicesHero } from "../../content/services-index";
  * the note beside the second — and between them the heading, its first line
  * set in to the second rule, the longest of the four running the column's
  * whole width (the stylesheet sizes it to).
+ *
+ * **And the products page's, in its own words** — owner, 2026-10-07: "make
+ * same hero banner but with different text". `name` is the page's, for the
+ * heading's id and, where it is not the services', a class of its own the
+ * stylesheet sizes its heading by.
  */
-export function ServicesHero() {
+export function ServicesHero({
+  hero,
+  name,
+}: {
+  hero: PageHeroContent;
+  name: "services" | "products";
+}) {
   return (
     <section
-      className="services-hero"
-      aria-labelledby="services-hero-title"
+      className={name === "services" ? "services-hero" : `services-hero services-hero--${name}`}
+      aria-labelledby={`${name}-hero-title`}
       /* The bar says no "Operating from Kosova" over it (the stylesheet). */
       data-services-hero
     >
@@ -25,7 +44,7 @@ export function ServicesHero() {
       <Container className="services-hero__inner">
         <p className="services-hero__label" data-services-hero-first>
           <span className="services-hero__mark" aria-hidden="true" />
-          {servicesHero.label}
+          {hero.label}
         </p>
         <span
           className="services-hero__mark services-hero__mark--top"
@@ -35,10 +54,10 @@ export function ServicesHero() {
 
         <h1
           className="services-hero__title"
-          id="services-hero-title"
+          id={`${name}-hero-title`}
           data-services-hero-title
         >
-          {servicesHero.titleLines.map((line, index) => (
+          {hero.titleLines.map((line, index) => (
             <span className="services-hero__title-line" key={line}>
               {/* A hyphenated word kept whole where a phone wraps the line. */}
               {line.split(" ").map((word, wordIndex) => (
@@ -51,8 +70,8 @@ export function ServicesHero() {
                   )}
                 </Fragment>
               ))}
-              {index === servicesHero.titleLines.length - 1 ? (
-                <span className="services-hero__stop">{servicesHero.titleStop}</span>
+              {index === hero.titleLines.length - 1 ? (
+                <span className="services-hero__stop">{hero.titleStop}</span>
               ) : null}
             </span>
           ))}
@@ -65,7 +84,7 @@ export function ServicesHero() {
         />
         <p className="services-hero__note" data-services-hero-last>
           <span className="services-hero__mark" aria-hidden="true" />
-          <span>{servicesHero.note}</span>
+          <span>{hero.note}</span>
         </p>
       </Container>
     </section>

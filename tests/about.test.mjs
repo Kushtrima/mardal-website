@@ -1115,14 +1115,14 @@ test("the venture note is his, whole, and claims nothing measured", async () => 
   }
 
   /* **The strongest thing it says is "often".** No product is named, no count of
-     them is given, no outcome is measured. This company does have three products
+     them is given, no outcome is measured. This company does have two products
      and they are named on the homepage; pulling them in here would be a
      connection nobody asked me to draw. */
   assert.match(html, /often translating directly into value/);
   const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
   const prose = main.replace(/<[^>]*>/g, " ");
   assert.doesNotMatch(prose, /\b\d+\s*(products|ventures|startups|tools)\b/i);
-  for (const product of ["Arvena", "Ftesa", "Ihrauto"]) {
+  for (const product of ["Arvena", "Ftesa"]) {
     assert.doesNotMatch(prose, new RegExp(product, "i"));
   }
 });

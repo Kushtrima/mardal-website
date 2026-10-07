@@ -6,6 +6,7 @@ import { ServicesHero } from "../../components/services/ServicesHero";
 import { ServicesRules } from "../../components/services/ServicesRules";
 import { ServicesWheel } from "../../components/services/ServicesWheel";
 import {
+  servicesHero,
   servicesIndex,
   servicesIndexActions,
   servicesPage,
@@ -35,7 +36,7 @@ export default function ServicesPage() {
             one piece (ServicesRules). */}
         <ServicesRules />
         <HeaderSpace />
-        <ServicesHero />
+        <ServicesHero hero={servicesHero} name="services" />
         <ServicesWheel entries={servicesIndex} actions={servicesIndexActions} />
       </main>
 

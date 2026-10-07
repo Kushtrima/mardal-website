@@ -63,8 +63,11 @@ export function ProductsReveal() {
         head.to(stop, { scaleY: 1, duration: 0.9, ease: "power3.inOut" }, 0.75);
       }
 
-      /* One column on a phone: each comes in as it is reached, no beat. */
-      const single = window.matchMedia("(max-width: 40rem)").matches;
+      /* One column on a phone, and one band under the next on the products
+         page: each comes in as it is reached, no beat. */
+      const single =
+        section.classList.contains("products--page") ||
+        window.matchMedia("(max-width: 40rem)").matches;
 
       rows.forEach((row, index) => {
         const frame = row.querySelector<HTMLElement>("[data-product-frame]");

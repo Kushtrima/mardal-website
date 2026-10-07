@@ -65,13 +65,6 @@ const literal = (value) =>
 /** Route, the name it is given, what it says it will hold, and the way out. */
 const pages = [
   {
-    path: "/products",
-    label: "Products",
-    support: "The products we are building for ourselves.",
-    cta: "See the products",
-    ctaHref: "/#products",
-  },
-  {
     path: "/products/arvena-ai",
     label: "Arvena AI",
     support: "Applied AI for mental-health support.",
@@ -82,13 +75,6 @@ const pages = [
     path: "/products/ftesa",
     label: "Ftesa.co",
     support: "Digital invitations, personal to every guest.",
-    cta: "See the products",
-    ctaHref: "/#products",
-  },
-  {
-    path: "/products/ihrauto",
-    label: "Ihrauto",
-    support: "Workshop operations, from booking to invoice.",
     cta: "See the products",
     ctaHref: "/#products",
   },
@@ -145,7 +131,7 @@ const pages = [
  *  a test that imports the module the page reads asserts only that a file
  *  equals itself — and the cost of that is a table that goes quietly out of
  *  date, which it did the day this line was written. */
-const PLACEHOLDER_PAGES = 10;
+const PLACEHOLDER_PAGES = 8;
 
 test("every unwritten page is a page", async () => {
   assert.equal(

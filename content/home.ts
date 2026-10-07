@@ -215,7 +215,6 @@ export const menu = [
     items: [
       { label: "Arvena AI", href: "/products/arvena-ai" },
       { label: "Ftesa.co", href: "/products/ftesa" },
-      { label: "Ihrauto", href: "/products/ihrauto" },
     ],
   },
   /* The only entry in the bar that is both a page and a list. `href` is a route
@@ -615,44 +614,35 @@ export const products = {
   titleStop: ".",
   summary:
     "Our products begin with a real need, not a trend. We explore, build, test, and refine each idea into a useful digital experience, then bring that knowledge into every solution and partnership we create.",
-  /** Photographs, not screenshots: none of the three has an interface worth
-   *  showing yet, so each image stands for what the product is about rather
+  /** Photographs, not screenshots: neither has an interface worth showing
+   *  yet, so each image stands for what the product is about rather
    *  than claiming to be the product. */
   items: [
     {
       id: "arvena-ai",
       title: "Arvena AI",
+      /** Its own page — where the products page sends it (owner,
+       *  2026-10-07: "each of product when click needs to have its one
+       *  page"). */
+      href: "/products/arvena-ai",
       status: "In development",
       description:
         "Applied AI for mental-health support, built around safety and consent. The hard part was never the conversation — it is knowing what not to say, when to step back, and how to hand someone on to real help.",
       image:
         "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A footbridge running into woodland.",
-      field: "Mental health",
       year: "2025",
-    },
-    {
-      id: "ihrauto",
-      title: "Ihrauto",
-      status: "In development",
-      description:
-        "Workshop operations, from first call to final invoice. One record follows the car through booking, parts, labour and payment, so the same details are not typed again at every stage.",
-      image:
-        "https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?auto=format&fit=crop&w=1600&q=70",
-      imageAlt: "A workshop wall hung with tools.",
-      field: "Automotive",
-      year: "2024",
     },
     {
       id: "ftesa",
       title: "Ftesa.co",
+      href: "/products/ftesa",
       status: "In development",
       description:
         "Self-service digital invitations, personalised for every guest. Everyone invited gets their own invitation and their own link, and the replies come back to one place instead of scattered across a dozen chats.",
       image:
         "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1600&q=70",
       imageAlt: "A long table laid for guests.",
-      field: "Events",
       year: "2026",
     },
   ],

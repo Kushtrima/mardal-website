@@ -2,6 +2,19 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /**
+   * **This folder is the project, whatever lies above it.** A stray
+   * package-lock.json in the home folder made `next dev` take the whole home
+   * folder as its root: it watched far more than it should, macOS refused it
+   * the Desktop ("reading dir /Users/kushtrim/Desktop — Operation not
+   * permitted", 2026-10-07), the server died, and in between it went on
+   * serving stylesheets edits had already changed. Started from here, as
+   * `npm run dev` always is.
+   */
+  turbopack: {
+    root: process.cwd(),
+  },
+
+  /**
    * The one route this site has ever moved.
    *
    * `/services/web-platforms-apps` became `/services/website-apps` on

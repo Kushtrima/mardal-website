@@ -99,7 +99,7 @@ Surviving positions from the shipped copy that the thesis does not contradict:
   (`content/ai-automation.ts:14-19`).
 - **CRM is a whole-business record system, not a sales tool**
   (`content/crm-solutions.ts:123`).
-- **The three in-house products are R&D that feeds client work**, not a revenue
+- **The two in-house products are R&D that feeds client work**, not a revenue
   line: "Products are / how we test / our thinking" (`content/home.ts:243-245`).
   Whether any is intended to be sold is undecided.
 
@@ -182,8 +182,10 @@ Software 9, **Websites 0**, **Branding 0**. The count was
   unsupported answers. MLOps is offered but deliberately glossed in plain
   English.
 
-**Three in-house products, all "In development":** Arvena AI (mental health,
-2025), Ihrauto (automotive, 2024), Ftesa.co (events, 2026). The Year field's
+**Two in-house products, both "In development":** Arvena AI (mental health,
+2025) and Ftesa.co (events, 2026). Ihrauto (automotive, 2024) was removed from
+the site on 2026-10-07, on the owner's word: "remove this product from homepage
+and eeryhwere". The Year field's
 meaning — started or due — is explicitly undefined and must not be restated as a
 founding or launch date. Whether these are commercial or purely method proof is
 undecided; product IP ownership relative to the company is unrecorded.
@@ -252,7 +254,7 @@ menu), "Let's build" (service heroes), "Get in touch" (service CTA blocks),
 "Explore more" (product cards), "Explore" (industries). The product cards said
 "Get in touch" until the owner changed them on 2026-08-09; their link is still
 `mailto:info@mardal.co`, so "Explore more" opens an email client rather than
-going anywhere — none of the three products has a page to go to.
+going anywhere — neither product has a page to go to.
 
 **Spelling convention is unchosen** — shipped copy mixes British and American
 ("fulfilment", "labour" alongside "organize", "analyze", "personalize"). Pick
@@ -286,7 +288,7 @@ for public naming has not been separately recorded.
   Mardal in 2018, which is *not* a founding date.
 - Every scenario on every service page is an unattributed hypothetical, labelled
   "example" in the data. None is a client story.
-- No product has an interface worth showing. The three product images are stock
+- No product has an interface worth showing. The two product images are stock
   photographs used as declared stand-ins, hot-linked from `images.unsplash.com`
    — the site's only external runtime dependency.
 - The navigation promises an "ArvenaAI" case study pointing at a non-existent
@@ -346,7 +348,7 @@ Explicitly undecided. Do not resolve these by inference.
   confirmed registered in Kosovo; the specifics are not recorded.
 - **Whether the 2025 marketing-agency identity is retired or still trades.**
 - **Industries: seven or five.** Two owner sources disagree.
-- **Whether the three products are commercial or purely method proof**, which is
+- **Whether the two products are commercial or purely method proof**, which is
   closest to shipping, and whether their IP sits with the company.
 - **Commercial model beyond phase one** — "fixed price for phase one" is now
   committed; whether ongoing involvement is retained, paid, or included is not.
