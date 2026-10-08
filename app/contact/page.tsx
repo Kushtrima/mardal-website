@@ -6,6 +6,7 @@ import { ServicePageEntry } from "../../components/services/ServicePageEntry";
 import { LetterForm } from "../../components/contact/LetterForm";
 import { contactPage } from "../../content/contact";
 import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
+import { ServicesRules } from "../../components/services/ServicesRules";
 
 export const metadata: Metadata = {
   title: contactPage.title,
@@ -42,9 +43,10 @@ export default function ContactPage() {
         id="main-content"
         data-service-page
       >
-        {/* The page's five lines, grey, from its top to its foot — owner,
-            2026-10-08: "add the vertical lines to the rest of the pages". */}
-        <ServicesFooterRules />
+        {/* The page's five lines in the red, turning grey as the page is
+            scrolled, as the services', the clients' and About's — owner,
+            2026-10-08: "add our red vertical lines". */}
+        <ServicesRules />
         <HeaderSpace />
 
         <section

@@ -512,12 +512,18 @@ test("the history's heading is on the display face", () => {
      headings and card titles that are h2 and below. Corrected there. What it
      marks is editorial rather than hierarchical: the sans is for what a reader
      moves through, this is for what they stop at. */
+  /* **On the page's lines, in the site's face — owner, 2026-10-08**: "change
+     the font because title are in other font, also put everything beside
+     the verticla lines". */
   const at = CSS.indexOf(".about-prose__title {");
   assert.ok(at > 0, "the history has no heading rule");
   const rule = CSS.slice(at, CSS.indexOf("}", at));
 
-  assert.match(rule, /font-family:\s*var\(--type-title\)/);
-  assert.doesNotMatch(rule, /var\(--type-display\)/);
+  assert.match(rule, /font-family:\s*var\(--type-display\)/);
+  assert.doesNotMatch(rule, /var\(--type-title\)/);
+  assert.match(rule, /grid-column:\s*1 \/ span 2/);
+  const copy = CSS.indexOf(".about-prose__copy {");
+  assert.match(CSS.slice(copy, CSS.indexOf("}", copy)), /grid-column:\s*3 \/ -1/);
 
   /* **Bounded by fitting on one line**, because turning a three-word heading is
      a decision about the copy. Measured with the real face at eleven widths: it
@@ -627,9 +633,16 @@ test("each room keeps its own proportions, and none of them lines up", () => {
     assert.ok(rule > 0, `${name} has no placement`);
     assert.match(CSS.slice(rule, CSS.indexOf("}", rule)), expected);
   };
-  placement("glass", /grid-column:\s*1 \/ span 4/);
-  placement("window", /grid-column:\s*8 \/ span 5/);
-  placement("timber", /grid-column:\s*5 \/ span 3/);
+  /* **On the page's lines, in the site's face — owner, 2026-10-08**: "change
+     the font because title are in other font, also put everything beside
+     the verticla lines". */
+  /* Each from a line, on the page's four columns: the tall one from the
+     first, the smallest from the second and lower ("the smaller image … to
+     move down and move to the left veritcal"), the wide one from the middle
+     line to the edge. */
+  placement("glass", /grid-column:\s*1 \/ span 1/);
+  placement("window", /grid-column:\s*3 \/ span 2/);
+  placement("timber", /grid-column:\s*2 \/ span 1/);
 
   /* **Nothing shares an edge, and the offsets are what make that true.** The
      first version ended its two columns level to within a dozen pixels, and
@@ -642,7 +655,13 @@ test("each room keeps its own proportions, and none of them lines up", () => {
      third of what was intended, and the wide one and the lower upright
      overlapped by 252px at 1920. */
   placement("window", /margin-top:\s*12cqw/);
-  placement("timber", /margin-top:\s*30cqw/);
+  /* The smallest meets the wide one corner to corner: its top where that
+     one ends (its 12cqw drop plus its height, half the block at 3:2), and
+     the whole second column, so its right edge is the middle line where
+     that one starts. */
+  placement("timber", /margin-top:\s*calc\(12cqw \+ 50cqw \* 2 \/ 3\)/);
+  const timber = CSS.indexOf(".about-rooms__frame--timber {");
+  assert.doesNotMatch(CSS.slice(timber, CSS.indexOf("}", timber)), /margin-right/);
   const inner = CSS.indexOf(".about-rooms__inner {");
   assert.match(CSS.slice(inner, CSS.indexOf("}", inner)), /container-type:\s*inline-size/);
 
@@ -677,7 +696,7 @@ test("each room keeps its own proportions, and none of them lines up", () => {
      1197px tall at a 1440 window with white on three sides of every picture;
      adjacent column runs and smaller drops bring it to 789, a third shorter,
      with the six edges still all at different heights. */
-  assert.equal(spans[spans.length - 1].end, 13);
+  assert.equal(spans[spans.length - 1].end, 5);
 
   /* Stacked below the split. Six of twelve is 340px at a 768 window and the
      arrangement stops being a composition and becomes three small pictures. */
@@ -1503,7 +1522,13 @@ test("the client list is a label beside two columns", () => {
      It was 6 / -1, which is where this page puts prose beside a heading. That is
      0.427 of the window: a reading column, not the reference's right-hand
      quarter. */
-  assert.match(list, /grid-column:\s*9 \/ -1/);
+  /* **On the page's lines, in the site's face — owner, 2026-10-08**: "change
+     the font because title are in other font, also put everything beside
+     the verticla lines". */
+  /* From the middle line, the second column from the fourth (it was 9 / -1
+     of twelve, off the reference). */
+  assert.match(list, /grid-column:\s*3 \/ -1/);
+  assert.match(list, /column-gap:\s*0/);
   assert.match(list, /columns:\s*2/);
   assert.match(list, /list-style:\s*none/);
 
@@ -1526,7 +1551,7 @@ test("the client list is a label beside two columns", () => {
   const head = CSS.indexOf(".about-clients__title {");
   assert.ok(head > 0, "the client label has no rule");
   const title = CSS.slice(head, CSS.indexOf("}", head));
-  assert.match(title, /grid-column:\s*1 \/ span 4/);
+  assert.match(title, /grid-column:\s*1 \/ span 2/);
 
   /* **The normal face, at reading size.** Owner: the title in the normal font
      and smaller. It was `--type-title` at up to 64px — this page's treatment for
@@ -1580,31 +1605,16 @@ test("the closing line is set on the display face, and balanced", () => {
   assert.ok(at > 0, "the closing line has no rule");
   const rule = CSS.slice(at, CSS.indexOf("}", at));
 
-  /* Owner: in our title font. That is `--type-title`, the face the hero and the
-     history heading carry — not `--type-display`, which is the sans. */
-  assert.match(rule, /font-family:\s*var\(--type-title\)/);
-  assert.doesNotMatch(rule, /var\(--type-display\)/);
+  /* **On the page's lines, in the site's face — owner, 2026-10-08**: "change
+     the font because title are in other font, also put everything beside
+     the verticla lines". */
+  /* The display face, as the opening's heading (it was the title face), and
+     from the second line to the edge (it was centred under a 21em measure). */
+  assert.match(rule, /font-family:\s*var\(--type-display\)/);
+  assert.doesNotMatch(rule, /var\(--type-title\)/);
+  assert.match(rule, /text-align:\s*left/);
+  assert.match(rule, /margin:\s*0 0 0 25%/);
 
-  /* Owner: in the middle. */
-  assert.match(rule, /text-align:\s*center/);
-  assert.match(rule, /margin:\s*0 auto/);
-
-  /* **21em, and the unit is the point.** A measure in `em` is a measure in
-     characters, so the sentence is the same four lines at every size rather
-     than re-breaking as the clamp grows. Measured in the real face at this
-     tracking: the whole sentence is 77.1em, four even lines want 19.3em each,
-     and greedy wrapping at 21em gives 20.2 / 19.6 / 18.5 / 18.2.
-
-     Asserted as `em` explicitly. The obvious "tidy-up" here is a round pixel
-     number or a `ch`, and both of them break the line count loose from the
-     size — 21ch is a third of the width, and 21em at the small end of the clamp
-     is not the same column as 21em at the large end unless it is written in the
-     unit that follows it. */
-  assert.match(rule, /max-width:\s*21em/);
-
-  /* Bounded so the measure never has to give way to the page's column: 21em at
-     3.4vw is 857px inside a 1120px column at 1200 and 1028 inside 1360 at 1440,
-     and the cap stops it growing before the column does. */
   assert.match(rule, /font-size:\s*clamp\(1\.5rem, 3\.4vw, 3\.5rem\)/);
 
   /* A refinement, not the thing holding the shape — the sentence is four lines
@@ -1632,10 +1642,10 @@ test("the closing line's measure survives the build", () => {
   assert.ok(at > 0, "the closing line's rule is not in the built stylesheet");
   const rule = built.slice(at, built.indexOf("}", at));
 
-  assert.match(rule, /max-width:21em/);
+  assert.match(rule, /margin:0 0 0 25%/);
   assert.match(rule, /text-wrap:balance/);
-  assert.match(rule, /text-align:center/);
-  assert.match(rule, /font-family:var\(--type-title\)/);
+  assert.match(rule, /text-align:left/);
+  assert.match(rule, /font-family:var\(--type-display\)/);
 });
 
 test("About is out of the placeholder module, and out of its test", () => {

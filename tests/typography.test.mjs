@@ -75,7 +75,9 @@ test("the file parses into rules at all", () => {
   /* If the walker above ever returns nothing the two tests below pass in
      silence, which is the one way this file could lie. */
   assert.ok(ALL.length > 400, `only ${ALL.length} rules parsed`);
-  assert.ok(titleFace.length > 15, `only ${titleFace.length} in the display face`);
+  /* A floor for the walker, not a count to hold: About's three headings left
+     the title face on 2026-10-08 ("title are in other font"). */
+  assert.ok(titleFace.length > 10, `only ${titleFace.length} in the display face`);
 });
 
 test("the display face is fitted by one token, everywhere", () => {

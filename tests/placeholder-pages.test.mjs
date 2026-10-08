@@ -102,27 +102,6 @@ const pages = [
     cta: "Why Mardal",
     ctaHref: "/#about",
   },
-  {
-    path: "/privacy",
-    label: "Privacy",
-    support: "How personal data is handled here.",
-    cta: "Get in touch",
-    ctaHref: "mailto:info@mardal.co",
-  },
-  {
-    path: "/terms",
-    label: "Terms",
-    support: "The terms this site is used under.",
-    cta: "Get in touch",
-    ctaHref: "mailto:info@mardal.co",
-  },
-  {
-    path: "/cookies",
-    label: "Cookies",
-    support: "What this site stores, and why.",
-    cta: "Get in touch",
-    ctaHref: "mailto:info@mardal.co",
-  },
 ];
 
 /** Every key in `content/placeholders.ts` has a row above.
@@ -131,7 +110,8 @@ const pages = [
  *  a test that imports the module the page reads asserts only that a file
  *  equals itself — and the cost of that is a table that goes quietly out of
  *  date, which it did the day this line was written. */
-const PLACEHOLDER_PAGES = 8;
+/* Privacy, Terms and Cookies were written on 2026-10-08 (content/legal.ts). */
+const PLACEHOLDER_PAGES = 5;
 
 test("every unwritten page is a page", async () => {
   assert.equal(

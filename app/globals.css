@@ -140,12 +140,17 @@
      deeper one carries small type and the focus ring, where it reads 5.41:1 on
      the white page against the bright red's 3.67. The footer's slab names its
      own. */
+  /* **One red, everywhere — owner, 2026-10-08**: "check every red in
+     website if is this red so to make this kind of red globally". The
+     deeper shade (#cc2900) carried small type, hovers and the focus ring;
+     every one of them is the site's red now. The focus ring still reads
+     3.3:1 on the white page, enough for an outline. */
   --accent: var(--tint-red);
-  --accent-soft: var(--tint-red-bar);
-  --accent-strong: var(--tint-red-bar);
+  --accent-soft: var(--tint-red);
+  --accent-strong: var(--tint-red);
   /* The ink that stands on an --accent fill: white on the red. */
   --accent-contrast: #ffffff;
-  --focus: var(--tint-red-bar);
+  --focus: var(--tint-red);
   /* The canvas at partial strength, for a veil or a fade over artwork.
      --art-surface is the fill a card drawing sits at before it takes a tint. */
   --canvas-veil: color-mix(in srgb, var(--canvas) 4%, transparent);
@@ -172,7 +177,9 @@
   /* What stands on the photograph in the homepage's opening — the heading,
      the sentence, and the bar while it is over it. */
   --ink-on-photo: #ffffff;
-  --tint-red-bar: #cc2900;
+  /* The red's bar shade is the red itself since 2026-10-08 (it was #cc2900,
+     a fifth darker): one red on the site. */
+  --tint-red-bar: var(--tint-red);
   /* **The owner's yellow, and a bar derived from it.** 2026-08-26, pointing at
      the Websites box: this background, and the pattern the same yellow slightly
      darker.
@@ -558,7 +565,7 @@
   --radius-full: 999px;
   --radius-circle: 50%;
   --shadow-soft: 0 1rem 3rem rgb(21 21 21 / 8%);
-  --shadow-accent: 0 0.75rem 2rem rgb(204 41 0 / 22%);
+  --shadow-accent: 0 0.75rem 2rem rgb(255 51 0 / 22%);
   /* The mega menu's left edge, and only its left edge. The panel is white on a
      white page, so the seam where it begins is the one thing telling you there
      are two surfaces — a shadow all the way round would draw a box, which the
@@ -1598,7 +1605,8 @@ video {
 /* Whole pixels throughout: an even box and a 2px stroke put every stroke on
    the pixel grid, so the short arms stay square-ended rather than soft. */
 .mobile-menu-toggle__plus,
-.clients-filters__plus {
+.clients-filters__plus,
+.consent__mark {
   --plus-arm: round(calc(round(0.98em, 2px) * 0.31), 1px);
   position: relative;
   display: block;
@@ -1610,14 +1618,17 @@ video {
 .mobile-menu-toggle__plus::before,
 .mobile-menu-toggle__plus::after,
 .clients-filters__plus::before,
-.clients-filters__plus::after {
+.clients-filters__plus::after,
+.consent__mark::before,
+.consent__mark::after {
   position: absolute;
   content: "";
 }
 
 /* The two level arms: one bar with its middle left open… */
 .mobile-menu-toggle__plus::before,
-.clients-filters__plus::before {
+.clients-filters__plus::before,
+.consent__mark::before {
   top: 50%;
   left: 0;
   width: 100%;
@@ -1634,7 +1645,8 @@ video {
 /* …and the two upright ones, drawn upright rather than turned, so they sit on
    the grid as sharply as the level pair. */
 .mobile-menu-toggle__plus::after,
-.clients-filters__plus::after {
+.clients-filters__plus::after,
+.consent__mark::after {
   top: 0;
   left: 50%;
   width: 2px;
@@ -6297,10 +6309,16 @@ main:has(> .services-rules) > .pin-spacer {
   padding-block: var(--section-space-lg);
 }
 
+/* **On the page's lines, in the site's face — owner, 2026-10-08**: "change
+   the font because title are in other font, also put everything beside the
+   verticla lines". About's blocks stand on the page's four columns, where its
+   five lines are, with no gap between the columns: a heading from the first
+   line, the words beside it from the middle one. The headings are in the
+   display face, as the opening's is (they were in the title face). */
 .about-prose__inner {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: clamp(1rem, 1.35vw, 1.4rem);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(1rem, 1.35vw, 1.4rem) 0;
 }
 
 /* **The display face, and set to be stopped at.** Owner: this in the other font,
@@ -6322,11 +6340,12 @@ main:has(> .services-rules) > .pin-spacer {
    top of its box either way — but a heading whose box is four lines tall is a
    thing that reads as wrong the first time someone inspects it. */
 .about-prose__title {
-  grid-column: 1 / span 4;
+  grid-column: 1 / span 2;
   align-self: start;
   max-width: none;
   margin: 0;
-  font-family: var(--type-title);
+  padding-right: clamp(1.5rem, 3vw, 2.75rem);
+  font-family: var(--type-display);
   font-size: clamp(2.25rem, 4vw, 4rem);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-display);
@@ -6335,7 +6354,7 @@ main:has(> .services-rules) > .pin-spacer {
 
 .about-prose__copy {
   display: grid;
-  grid-column: 6 / -1;
+  grid-column: 3 / -1;
   gap: 1.25em;
 }
 
@@ -6427,17 +6446,18 @@ main:has(> .services-rules) > .pin-spacer {
 
 .about-journey__layout {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: start;
-  gap: clamp(1rem, 1.35vw, 1.4rem);
+  gap: clamp(1rem, 1.35vw, 1.4rem) 0;
 }
 
 .about-journey__title {
-  grid-column: 1 / span 4;
+  grid-column: 1 / span 2;
   align-self: start;
   max-width: none;
   margin: 0;
-  font-family: var(--type-title);
+  padding-right: clamp(1.5rem, 3vw, 2.75rem);
+  font-family: var(--type-display);
   font-size: clamp(2.25rem, 4vw, 4rem);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-display);
@@ -6446,7 +6466,7 @@ main:has(> .services-rules) > .pin-spacer {
 
 .about-journey__stage {
   position: relative;
-  grid-column: 6 / -1;
+  grid-column: 3 / -1;
   /* The tallest note sets it, so the block does not resize as they swap. The
      cards are taken out of flow below, which would otherwise leave it at zero. */
   min-height: 22rem;
@@ -6559,16 +6579,24 @@ main:has(> .services-rules) > .pin-spacer {
   padding-block: var(--section-space-lg);
 }
 
+/* From the second line to the edge (it was centred under a 21em measure). */
 .about-statement__line {
-  max-width: 21em;
-  margin: 0 auto;
-  font-family: var(--type-title);
+  max-width: none;
+  margin: 0 0 0 25%;
+  font-family: var(--type-display);
   font-size: clamp(1.5rem, 3.4vw, 3.5rem);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-display);
   line-height: var(--leading-heading);
-  text-align: center;
+  text-align: left;
   text-wrap: balance;
+}
+
+/* A phone has a line at its middle, not at a quarter: from the first. */
+@media (max-width: 40rem) {
+  .about-statement__line {
+    margin-left: 0;
+  }
 }
 
 /* ── About: who the work was for ──
@@ -6634,17 +6662,17 @@ main:has(> .services-rules) > .pin-spacer {
    line's bottom padding, so the two blocks stay one section-gap apart. */
 .about-clients__inner {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   padding-top: clamp(1.25rem, 3vh, 2rem);
   border-top: 1px solid var(--ink);
-  gap: clamp(1rem, 1.35vw, 1.4rem);
+  gap: clamp(1rem, 1.35vw, 1.4rem) 0;
 }
 
 /* The normal face, at reading size. `letter-spacing` is written out rather than
    left off: `--tracking-display` is -0.03em and is set for type at 40px and up,
    where it closes gaps the eye reads as slack. At 17px it is just tight. */
 .about-clients__title {
-  grid-column: 1 / span 4;
+  grid-column: 1 / span 2;
   align-self: start;
   margin: 0;
   font-family: var(--type-body);
@@ -6654,16 +6682,18 @@ main:has(> .services-rules) > .pin-spacer {
   line-height: 1.2;
 }
 
+/* From the middle line, its second column from the fourth. */
 .about-clients__list {
-  grid-column: 9 / -1;
+  grid-column: 3 / -1;
   margin: 0;
   padding: 0;
   columns: 2;
-  column-gap: clamp(1rem, 2vw, 2.5rem);
+  column-gap: 0;
   list-style: none;
 }
 
 .about-clients__name {
+  padding-right: 1rem;
   break-inside: avoid;
   margin-block-end: 0.55em;
   font-size: clamp(0.9375rem, 1.15vw, 1.125rem);
@@ -6748,13 +6778,15 @@ main:has(> .services-rules) > .pin-spacer {
 }
 
 .about-rooms__inner {
+  --rooms-gap: clamp(1.5rem, 3vw, 2.75rem);
+
   display: grid;
   /* So the offsets below can be a fraction of the BLOCK. Without it `cqw` reads
      whatever the nearest container is, or the viewport. */
   container-type: inline-size;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: start;
-  gap: clamp(1rem, 1.35vw, 1.4rem);
+  gap: clamp(1rem, 1.35vw, 1.4rem) 0;
 }
 
 .about-rooms__frame {
@@ -6774,19 +6806,31 @@ main:has(> .services-rules) > .pin-spacer {
   object-fit: cover;
 }
 
+/* Each picture from a line, stopping short of the next by the gap; the
+   smallest, the timber room, from the second line and lower down — owner,
+   2026-10-08: "the smaller image inside those to move down and move to the
+   left veritcal". */
 .about-rooms__frame--glass {
-  grid-column: 1 / span 4;
+  grid-column: 1 / span 1;
+  margin-right: var(--rooms-gap);
 }
 
 /* The smallest of the three and the one that falls furthest, which is what
    stops three adjacent columns reading as a row. */
+/* The smallest, made bigger and taken down until its top right corner meets
+   the wide picture's bottom left one — owner, 2026-10-08: "move the small
+   image down and bigger tiill it touches the leftbottom edge off that upper
+   image". So the whole second column (the second line to the middle one,
+   where the wide picture starts), and its top where the wide picture ends:
+   that picture's own drop (12cqw) plus its height, half the block wide at
+   3:2 (5472 x 3648). */
 .about-rooms__frame--timber {
-  grid-column: 5 / span 3;
-  margin-top: 30cqw;
+  grid-column: 2 / span 1;
+  margin-top: calc(12cqw + 50cqw * 2 / 3);
 }
 
 .about-rooms__frame--window {
-  grid-column: 8 / span 5;
+  grid-column: 3 / span 2;
   margin-top: 12cqw;
 }
 
@@ -6809,6 +6853,7 @@ main:has(> .services-rules) > .pin-spacer {
     grid-column: 1 / -1;
     grid-row: auto;
     margin-top: 0;
+    margin-right: 0;
   }
 }
 
@@ -7842,26 +7887,33 @@ main:has(> .services-rules) > .pin-spacer {
   background: var(--canvas);
 }
 
+/* On the page's four columns, where its lines are — owner, 2026-10-08:
+   "everything align to verticla line": the question from the first line,
+   the letter from the middle one to the edge (it began 10px past it, on
+   twelve columns with gaps). */
 .contact__inner {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: clamp(4rem, 11vh, 7.5rem) clamp(1rem, 1.35vw, 1.4rem);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(4rem, 11vh, 7.5rem) 0;
   align-items: start;
 }
 
 .contact__intro {
-  grid-column: 1 / span 7;
+  grid-column: 1 / span 2;
 }
 
 /* Its own row, so it stands under the question rather than beside it. */
 .contact__panel {
-  grid-column: 7 / -1;
+  grid-column: 3 / -1;
   grid-row: 2;
 }
 
+/* In the site's face, as the openings are — owner, 2026-10-08, of the
+   contact page: "just change the font and the font inside the field" (both
+   were the title face). Sizes as they were, so nothing moves. */
 .contact__title {
   margin: 0;
-  font-family: var(--type-title);
+  font-family: var(--type-display);
   font-size: var(--text-heading-xl);
   font-weight: var(--weight-heading-xl);
   letter-spacing: var(--tracking-display);
@@ -7966,28 +8018,28 @@ main:has(> .services-rules) > .pin-spacer {
   border-radius: 0;
   color: var(--ink);
   font: inherit;
-  font-family: var(--type-title);
+  font-family: var(--type-display);
   font-size: 1.25em;
   letter-spacing: var(--tracking-display);
   line-height: 1.6em;
-  background: var(--tint-red-bar);
+  /* Light grey, written in or not — owner, 2026-10-08: "change the color of
+     the fiedl to Grey light and textholder in our red" (they were red bars
+     with white words waiting in them). */
+  background: var(--surface);
   transition: background-color var(--duration-base) var(--ease-standard);
-}
-
-.letter__blank:not(:placeholder-shown) {
-  background: var(--tint-red);
 }
 
 /* What an empty blank says, in the display face's italic — the one place on the
    page the italic is used, so it reads as a prompt and never as something
    already written.
 
-   White — owner, 2026-09-13 (`--accent-contrast`). It measures about 2:1 on the empty bar, under AA even for large text;
-   `tests/contact.test.mjs` prints the number on every run rather than failing
-   on it, the way the footer's is recorded — his call, and not one to be
-   forgotten. */
+   In our red on the light grey — owner, 2026-10-08 ("textholder in our
+   red"; it was white on the red bar, his 2026-09-13 call). It measures about
+   3:1 on the grey, under AA for small text; `tests/contact.test.mjs` prints
+   the number on every run rather than failing on it — his call, and not one
+   to be forgotten. */
 .letter__blank::placeholder {
-  color: var(--accent-contrast);
+  color: var(--accent);
   font-style: italic;
   opacity: 1;
 }
@@ -8027,7 +8079,7 @@ main:has(> .services-rules) > .pin-spacer {
 .letter__blank--choice {
   padding-right: 2em;
   appearance: none;
-  background: var(--tint-red);
+  background: var(--surface);
   cursor: pointer;
 }
 
@@ -8035,14 +8087,14 @@ main:has(> .services-rules) > .pin-spacer {
    prompt — so "a project" is not the one blank in the letter that looks filled
    in before anyone has touched it. */
 .letter__blank--choice:has(option[value=""]:checked) {
-  color: var(--accent-contrast);
+  color: var(--accent);
   font-style: italic;
-  background: var(--tint-red-bar);
+  background: var(--surface);
 }
 
-/* The chevron follows the words: white while nothing is chosen. */
+/* The chevron follows the words: red while nothing is chosen. */
 .letter__choice:has(option[value=""]:checked) {
-  color: var(--accent-contrast);
+  color: var(--accent);
 }
 
 /* The open list is the browser's own, and on some systems it takes the
@@ -8098,17 +8150,21 @@ main:has(> .services-rules) > .pin-spacer {
 
 /* Send, on the letter's right edge and in the letter's own type. The label and
    the arrow turn purple together, the way every arrow link here does. */
+/* The site's word-and-arrow button, as VIEW ALL is — owner, 2026-10-08:
+   "chnage the button SEND to our button". */
 .letter__send {
   display: inline-flex;
-  gap: 0.45em;
+  gap: 0.7em;
   align-items: center;
   margin-left: auto;
   padding: 0;
   border: 0;
   color: var(--ink);
   font: inherit;
-  letter-spacing: inherit;
-  line-height: 1.2;
+  font-family: var(--type-body);
+  font-size: var(--text-body);
+  letter-spacing: normal;
+  line-height: 1;
   background: transparent;
   cursor: pointer;
   transition: color var(--duration-fast) var(--ease-standard);
@@ -8118,6 +8174,20 @@ main:has(> .services-rules) > .pin-spacer {
   .letter__send:hover:not(:disabled) {
     color: var(--accent);
   }
+}
+
+.letter__send-arrow {
+  flex: none;
+  width: 0.95em;
+  height: 0.95em;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: square;
+  stroke-width: 1.25px;
+}
+
+.letter__send-arrow path {
+  vector-effect: non-scaling-stroke;
 }
 
 .letter__send:disabled {
@@ -9606,6 +9676,358 @@ a.project-live:focus-visible {
 
 }
 
+/* ---------------------- Privacy, Terms, Cookies --------------------------- */
+
+/* **A document, not an opening** — owner, 2026-10-08: "for privacy term etc
+   don need the hero banner only normal page titles then text under it in
+   classic way". The title, a line under it, then each heading with its words
+   under it: one reading column from the second line to the fourth, the whole
+   width from the first line where the window is narrow. */
+.legal {
+  padding-block: clamp(3rem, 10vh, 7rem) var(--section-space-lg);
+}
+
+.container.legal__inner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.legal__body {
+  grid-column: 2 / span 2;
+}
+
+.legal__page-title {
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: var(--text-heading-xl);
+  font-weight: var(--weight-heading-xl);
+  letter-spacing: -0.02em;
+  line-height: var(--leading-heading-xl);
+}
+
+.legal__intro {
+  margin: clamp(1.25rem, 3vh, 1.75rem) 0 0;
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
+  line-height: 1.4;
+}
+
+.legal__section {
+  margin-top: clamp(2.75rem, 7vh, 4.5rem);
+}
+
+.legal__title {
+  margin: 0 0 0.75em;
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.legal__copy p {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.6;
+}
+
+.legal__copy p + p {
+  margin-top: 1em;
+}
+
+@media (max-width: 64rem) {
+  .legal__body {
+    grid-column: 1 / -1;
+  }
+}
+
+/* The Cookies page's way back to the panel: the site's word-and-arrow
+   button. */
+.legal__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  margin-top: 1.75rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--text-body);
+  line-height: 1;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+.legal__button-arrow {
+  flex: none;
+  width: 0.95em;
+  height: 0.95em;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: square;
+  stroke-width: 1.25px;
+}
+
+.legal__button-arrow path {
+  vector-effect: non-scaling-stroke;
+}
+
+@media (hover: hover) {
+  .legal__button:hover {
+    color: var(--accent);
+  }
+}
+
+.legal__button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.35em;
+}
+
+/* ── The cookie panel (CookieConsent) ──
+
+   Owner, 2026-10-08: "create a cookies design for accepting editing etc that
+   fits our design", then "make this Cookies popup in red and white and maybe
+   little bigger more professional", then "thiis is not our red?": the site's
+   red, `--accent` (#ff3300), with everything on it white — the plus beside
+   its label, the words, the switches. White on it measures 3.7:1, under AA
+   for text this size; his call, and the test prints the number every run. From the middle line to the right edge at
+   the foot of the screen; under the bar (and an open menu), over the page.
+   It rises in a moment after the page arrives and sinks away when answered. */
+.consent {
+  --consent-ground: var(--accent);
+  --consent-ink: var(--accent-contrast);
+
+  position: fixed;
+  z-index: 50;
+  right: var(--page-gutter);
+  bottom: max(var(--page-gutter), calc(env(safe-area-inset-bottom) + 1rem));
+  left: 50%;
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1.75rem, 2.6vw, 2.5rem);
+  background: var(--consent-ground);
+  color: var(--consent-ink);
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
+  line-height: 1.45;
+  animation: consent-in var(--duration-handover) var(--ease-standard) both;
+  transition:
+    opacity 420ms var(--ease-standard),
+    transform 420ms var(--ease-standard);
+}
+
+.consent[data-state="out"] {
+  opacity: 0;
+  transform: translateY(1rem);
+}
+
+@keyframes consent-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+}
+
+.consent__label {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.consent__mark {
+  color: var(--consent-ink);
+}
+
+.consent__text {
+  max-width: 44ch;
+  margin: 0;
+}
+
+.consent__more {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.consent__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-top: 0.5rem;
+}
+
+.consent__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--consent-ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--text-body);
+  line-height: 1;
+  transition:
+    color var(--duration-base) var(--ease-standard),
+    background-color var(--duration-base) var(--ease-standard);
+}
+
+/* "Accept all" and "Necessary only" are one button, twice: solid white, the
+   red words on it, the same size — so no answer is easier than the other. */
+.consent__button--solid {
+  min-width: 11em;
+  justify-content: center;
+  padding: 1em 1.5em;
+  background: var(--consent-ink);
+  color: var(--consent-ground);
+}
+
+/* The word button stands a little apart from the two answers. */
+.consent__button--text {
+  margin-left: 0.75rem;
+}
+
+.consent__arrow {
+  flex: none;
+  width: 0.95em;
+  height: 0.95em;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: square;
+  stroke-width: 1.25px;
+}
+
+.consent__arrow path {
+  vector-effect: non-scaling-stroke;
+}
+
+@media (hover: hover) {
+  .consent__button--solid:hover {
+    background: var(--ink);
+    color: var(--consent-ink);
+  }
+
+  .consent__button--text:hover,
+  .consent__more:hover {
+    color: var(--ink);
+  }
+}
+
+.consent__button:focus-visible,
+.consent__more:focus-visible,
+.consent__switch:focus-visible {
+  outline: 2px solid var(--consent-ink);
+  outline-offset: 0.3em;
+}
+
+/* Settings: each kind, its words and a switch. */
+.consent__kinds {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.consent__kind {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.consent__kind-name {
+  margin: 0;
+  font-weight: var(--weight-medium);
+}
+
+.consent__kind-text {
+  max-width: 40ch;
+  margin: 0.2em 0 0;
+  font-size: var(--text-body);
+}
+
+/* Off: a white ring, the knob white at the left. On: solid white, the knob
+   red at the right. Necessary is on and cannot be changed. */
+.consent__switch {
+  position: relative;
+  flex: none;
+  width: 2.6em;
+  height: 1.5em;
+  padding: 0;
+  border: 1.5px solid var(--consent-ink);
+  border-radius: var(--radius-full);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard);
+}
+
+.consent__knob {
+  position: absolute;
+  top: 50%;
+  left: 0.2em;
+  width: 0.95em;
+  height: 0.95em;
+  border-radius: 50%;
+  background: var(--consent-ink);
+  transform: translateY(-50%);
+  transition:
+    transform var(--duration-base) var(--ease-standard),
+    background-color var(--duration-base) var(--ease-standard);
+}
+
+.consent__switch[aria-checked="true"] {
+  background: var(--consent-ink);
+}
+
+.consent__switch[aria-checked="true"] .consent__knob {
+  background: var(--consent-ground);
+  transform: translate(1.1em, -50%);
+}
+
+.consent__switch[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* A phone: the whole width, above the home bar; the two answers share the
+   width evenly, Settings under them. */
+@media (max-width: 40rem) {
+  .consent {
+    left: var(--page-gutter);
+  }
+
+  .consent__button--solid {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 0.75em;
+    white-space: nowrap;
+  }
+
+  .consent__button--text {
+    flex-basis: 100%;
+    margin: 0.5rem 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .consent,
+  .consent__switch,
+  .consent__knob {
+    animation: none;
+    transition: none;
+  }
+}
+
 /* ----------------------------- Blog: one piece ---------------------------- */
 
 .blog-article {
@@ -10911,6 +11333,8 @@ a.project-live:focus-visible {
   .services-wheel__name,
   a.project-out__link,
   a.project-live,
+  .legal__button,
+  .consent__button--text,
   .project-showcase__step,
   .letter__send {
     padding-block: 14px;

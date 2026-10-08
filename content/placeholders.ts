@@ -36,7 +36,6 @@
  * compiler find every reference to it.
  */
 
-import { contactEmail } from "./home";
 
 /**
  * The heading every one of them carries, hand-broken the way both headers on
@@ -74,11 +73,6 @@ export type Placeholder = {
    */
   readonly pattern?: string;
 };
-
-const getInTouch = {
-  cta: "Get in touch",
-  ctaHref: `mailto:${contactEmail}`,
-} as const;
 
 /**
  * Keyed by route, and the keys are read by the test that walks all nine.
@@ -129,27 +123,6 @@ export const placeholders = {
     /* The homepage's "about" section — "#company", the Why Mardal section,
        left the homepage on the owner's word on 2026-10-05. */
     ctaHref: "/#about",
-  },
-  privacy: {
-    label: "Privacy",
-    title: "Privacy",
-    description: "How Mardal handles personal data.",
-    support: "How personal data is handled here.",
-    ...getInTouch,
-  },
-  terms: {
-    label: "Terms",
-    title: "Terms",
-    description: "The terms this site is used under.",
-    support: "The terms this site is used under.",
-    ...getInTouch,
-  },
-  cookies: {
-    label: "Cookies",
-    title: "Cookies",
-    description: "What this site stores, and why.",
-    support: "What this site stores, and why.",
-    ...getInTouch,
   },
 } as const satisfies Record<string, Placeholder>;
 

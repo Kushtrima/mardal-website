@@ -187,8 +187,11 @@ test("under it, a letter, and the blanks are where you write", async () => {
   assert.equal(buttons.length, 1, "the letter has more than one button");
   assert.match(buttons[0][0], /type="submit"/);
   /* "Send" rolls under the pointer (RollingLabel, 2026-10-05): the word twice,
-     the copy hidden, and the arrow straight after it, still. */
-  assert.match(form, /<span class="roll__face">Send<\/span><span class="roll__face roll__face--next" aria-hidden="true">Send<\/span><\/span><span class="pixel-arrow/);
+     the copy hidden, and VIEW ALL's thin arrow straight after it, still —
+     the site's button since 2026-10-08 ("chnage the button SEND to our
+     button"; it carried the pixel arrow). */
+  assert.match(form, /<span class="roll__face">Send<\/span><span class="roll__face roll__face--next" aria-hidden="true">Send<\/span><\/span><svg class="letter__send-arrow"/);
+  assert.doesNotMatch(form, /pixel-arrow/);
 
   /* Five bars draw in: four blanks in the sentences and the message. */
   assert.equal((form.match(/data-blank="true"/g) ?? []).length, 5);
@@ -303,15 +306,19 @@ test("the letter is set as the page's paragraph, and only the blanks in the disp
   assert.match(rule(".letter__blank--short"), /flex:\s*0 0 clamp\(6em, 30%, 9em\)/);
   assert.doesNotMatch(rule(".letter__blank"), /field-sizing/);
   assert.doesNotMatch(CSS, /\.letter__rows|\.letter__prompt/);
-  /* And the topic, before anything is chosen, looks as empty as the others. */
-  assert.match(CSS, /\.letter__blank--choice:has\(option\[value=""\]:checked\)\s*\{[^}]*--tint-red-bar/);
+  /* And the topic, before anything is chosen, looks as empty as the others:
+     the light grey every blank is since 2026-10-08. */
+  assert.match(CSS, /\.letter__blank--choice:has\(option\[value=""\]:checked\)\s*\{[^}]*background:\s*var\(--surface\)/);
 
   const blank = rule(".letter__blank");
-  assert.match(blank, /font-family:\s*var\(--type-title\)/);
+  /* The site's face since 2026-10-08 — owner: "change the font and the font
+     inside the field" (it was the title face). */
+  assert.match(blank, /font-family:\s*var\(--type-display\)/);
+  assert.doesNotMatch(blank, /--type-title/);
   /* After `font: inherit`, or the shorthand would put the plain face back — and
      the size with it, which is why the quarter up is written after it too. */
   assert.ok(
-    blank.indexOf("font: inherit") < blank.indexOf("font-family: var(--type-title)"),
+    blank.indexOf("font: inherit") < blank.indexOf("font-family: var(--type-display)"),
     "the blank's face is reset by the `font` shorthand written after it",
   );
   assert.ok(
@@ -320,20 +327,26 @@ test("the letter is set as the page's paragraph, and only the blanks in the disp
   );
 
   /* Solid while empty, pale once written, italic while it is only a prompt. */
-  assert.match(blank, /background:\s*var\(--tint-red-bar\)/);
-  assert.match(rule(".letter__blank:not(:placeholder-shown)"), /background:\s*var\(--tint-red\)/);
+  /* Light grey, written in or not — owner, 2026-10-08: "change the color of
+     the fiedl to Grey light" (they were the red bars). */
+  assert.match(blank, /background:\s*var\(--surface\)/);
+  assert.doesNotMatch(CSS, /\.letter__blank:not\(:placeholder-shown\)/);
   assert.match(rule(".letter__blank::placeholder"), /font-style:\s*italic/);
 });
 
 test("the question on the left, the letter under it on the right, one column when narrow", () => {
-  assert.match(rule(".contact__inner"), /grid-template-columns:\s*repeat\(12, minmax\(0, 1fr\)\)/);
+  /* On the page's four columns, no gap between them, so both start on a line
+     — owner, 2026-10-08: "everything align to verticla line". */
+  assert.match(rule(".contact__inner"), /grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\)/);
+  assert.match(rule(".contact__inner"), /gap:[^;]*\s0;/);
 
   /* Owner, 2026-09-13: the form on the right, not the left — and still under
      the question, which is what the explicit second row holds. Without it the
-     letter would rise beside the heading, the arrangement he moved it out of. */
-  assert.match(rule(".contact__intro"), /grid-column:\s*1 \/ span 7/);
+     letter would rise beside the heading, the arrangement he moved it out of.
+     From the middle line to the edge. */
+  assert.match(rule(".contact__intro"), /grid-column:\s*1 \/ span 2/);
   const panel = rule(".contact__panel");
-  assert.match(panel, /grid-column:\s*7 \/ -1/);
+  assert.match(panel, /grid-column:\s*3 \/ -1/);
   assert.match(panel, /grid-row:\s*2/);
 
   const stack = CSS.indexOf("@media (max-width: 64rem)", CSS.indexOf("\n.contact {"));
@@ -347,40 +360,40 @@ test("the question on the left, the letter under it on the right, one column whe
   assert.doesNotMatch(CSS, /\.contact__details?\b/);
 });
 
-test("the prompts in the blanks are white, and their contrast is said out loud", () => {
-  /* Owner, 2026-09-13: the placeholder text in white — the four prompts, and the
-     drop-down's "a project" with its chevron while nothing is chosen. */
-  assert.match(rule(".letter__blank::placeholder"), /color:\s*var\(--accent-contrast\)/);
+test("the prompts in the blanks are red, and their contrast is said out loud", () => {
+  /* Owner, 2026-10-08: "textholder in our red" — the four prompts, and the
+     drop-down's "a project" with its chevron while nothing is chosen (they
+     were white on the red bars, his 2026-09-13 call). */
+  assert.match(rule(".letter__blank::placeholder"), /color:\s*var\(--accent\)/);
   assert.match(
     CSS,
-    /\.letter__blank--choice:has\(option\[value=""\]:checked\)\s*\{[^}]*color:\s*var\(--accent-contrast\)/,
+    /\.letter__blank--choice:has\(option\[value=""\]:checked\)\s*\{[^}]*color:\s*var\(--accent\)/,
   );
-  assert.match(CSS, /\.letter__choice:has\(option\[value=""\]:checked\)\s*\{[^}]*color:\s*var\(--accent-contrast\)/);
-
-  /* White because the token is white — one page since 2026-10-03. */
-  assert.match(CSS, /--accent-contrast:\s*#ffffff;/);
+  assert.match(CSS, /\.letter__choice:has\(option\[value=""\]:checked\)\s*\{[^}]*color:\s*var\(--accent\)/);
 
   /* And the open list stays readable: some systems colour its options with the
      select's own colour, which would be white on a white menu. */
   assert.match(CSS, /\.letter__blank--choice option\s*\{[^}]*color:\s*var\(--ink\)/);
 
-  /* ⚠ Not a failure — a record, as theme.test.mjs keeps the footer's. White on
-     the empty bar is about 2:1, under AA even for large text; the owner asked
+  /* ⚠ Not a failure — a record, as theme.test.mjs keeps the footer's. Our red
+     on the light grey is about 3:1, under AA for small text; the owner asked
      for it, and what is not acceptable is it being forgotten. So the number is
      computed from the two values in the stylesheet and printed on every run. */
-  const bar = CSS.match(/--tint-red-bar:\s*(#[0-9a-f]{6})/i)?.[1];
-  assert.ok(bar, "the empty bar's colour is not a hex this can read");
+  const bar = CSS.match(/--surface:\s*(#[0-9a-f]{6})/i)?.[1];
+  const red = CSS.match(/--tint-red:\s*(#[0-9a-f]{6})/i)?.[1];
+  assert.ok(bar && red, "the blank's or the prompt's colour is not a hex this can read");
   const channel = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
   const luminance = (hex) => {
     const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
     return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
   };
-  const contrast = 1.05 / (luminance(bar) + 0.05);
+  const [hi, lo] = [luminance(bar), luminance(red)].sort((x, y) => y - x);
+  const contrast = (hi + 0.05) / (lo + 0.05);
   console.log(
-    `    contact blanks: white prompt on ${bar} is ${contrast.toFixed(2)}:1` +
-      (contrast >= 3 ? "" : " — under AA even for large text, kept on the owner's word"),
+    `    contact blanks: red prompt ${red} on ${bar} is ${contrast.toFixed(2)}:1` +
+      (contrast >= 4.5 ? "" : " — under AA for small text, kept on the owner's word"),
   );
-  assert.ok(contrast > 1.5, "the white prompt has disappeared into its bar");
+  assert.ok(contrast > 1.5, "the red prompt has disappeared into its blank");
 });
 
 test("the page states the facts it was given and invents none", async () => {

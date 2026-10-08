@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
-import { PlaceholderPage } from "../../components/placeholder/PlaceholderPage";
-import { placeholders } from "../../content/placeholders";
+import { LegalPage } from "../../components/legal/LegalPage";
+import { termsPage } from "../../content/legal";
 
 export const metadata: Metadata = {
-  title: placeholders["terms"].title,
-  description: placeholders["terms"].description,
+  title: termsPage.title,
+  description: termsPage.description,
 };
 
-/** An address the menu points at, and no writing behind it yet. The page is
- *  PlaceholderPage; the words are in content/placeholders.ts. */
+/** Written 2026-10-08 (it was an unwritten page): see content/legal.ts. */
 export default function TermsPage() {
-  return <PlaceholderPage page="terms" />;
+  return <LegalPage page="terms" />;
 }

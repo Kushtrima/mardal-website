@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SiteHeader } from "../components/layout/SiteHeader";
+import { CookieConsent } from "../components/consent/CookieConsent";
 import { RouteTransition } from "../components/motion/RouteTransition";
 import { SmoothScroll } from "../components/motion/SmoothScroll";
 
@@ -49,6 +50,10 @@ export default function RootLayout({
             each rendered their own. Each of those now renders `<HeaderSpace />`
             in its place to keep the room the bar took up in the page. */}
         <SiteHeader />
+
+        {/* The cookie panel: fixed to the window like the bar, so outside the
+            content ScrollSmoother moves for the same reason. */}
+        <CookieConsent />
 
         {/* ScrollSmoother scrolls this content itself rather than letting the
             browser do it, so it has to own a wrapper of its own. Without the

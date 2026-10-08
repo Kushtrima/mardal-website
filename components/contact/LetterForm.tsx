@@ -9,7 +9,6 @@ import {
   type FormEvent,
 } from "react";
 import gsap from "gsap";
-import { PixelArrow } from "../ui/PixelArrow";
 import { RollingLabel } from "../ui/RollingLabel";
 import { contactEmail } from "../../content/home";
 import { contactPage } from "../../content/contact";
@@ -227,11 +226,7 @@ export function LetterForm() {
           }}
         >
           <RollingLabel>{letter.again}</RollingLabel>
-          <PixelArrow
-            className="letter__send-arrow"
-            direction="up-right"
-            size="small"
-          />
+          <SendArrow />
         </button>
       </div>
     );
@@ -367,13 +362,25 @@ export function LetterForm() {
           disabled={status === "sending"}
         >
           <RollingLabel>{status === "sending" ? letter.sending : letter.send}</RollingLabel>
-          <PixelArrow
-            className="letter__send-arrow"
-            direction="up-right"
-            size="small"
-          />
+          <SendArrow />
         </button>
       </div>
     </form>
+  );
+}
+
+/** VIEW ALL's thin arrow, up and to the right: the site's button — owner,
+ *  2026-10-08: "chnage the button SEND to our button" (it carried the pixel
+ *  arrow). */
+function SendArrow() {
+  return (
+    <svg
+      className="letter__send-arrow"
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M2 14 14 2M4.5 2H14v9.5" />
+    </svg>
   );
 }

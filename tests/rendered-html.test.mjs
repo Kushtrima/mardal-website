@@ -1961,3 +1961,88 @@ test("the products' page opens as the services' does, in its own words", async (
   assert.equal((main.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 5);
   assert.equal((html.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 10);
 });
+
+/* **Privacy, Terms and Cookies — owner, 2026-10-08**: "now we have to work on
+   privacy, terms and Cookies", then "don need the hero banner only normal
+   page titles then text under it in classic way". A document each: the
+   title, a line under it, then each heading with its words under it. Every
+   fact not on file is a bracket, never a guess. */
+test("the three legal pages are written as documents, and guess nothing", async () => {
+  const expected = {
+    "/privacy": { title: "Privacy", intro: "This policy covers mardal.co", first: "Who is responsible" },
+    "/terms": { title: "Terms", intro: "Using mardal.co means accepting these terms", first: "Who we are" },
+    "/cookies": { title: "Cookies", intro: "Today this site sets no cookies", first: "What they are" },
+  };
+  for (const [path, page] of Object.entries(expected)) {
+    const response = await render(path);
+    assert.equal(response.status, 200, `${path} does not answer`);
+    const html = await response.text();
+    const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+
+    assert.match(html, new RegExp(`<title>${page.title} — Mardal</title>`, "i"));
+    assert.doesNotMatch(main, /Working[\s\S]{0,40}on it\./, `${path} is still a placeholder`);
+    assert.doesNotMatch(main, /services-hero/, `${path} has a hero again`);
+    assert.match(main, new RegExp(`<h1 class="legal__page-title" id="legal-title">${page.title}</h1><p class="legal__intro">${page.intro}`));
+    assert.equal((main.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 5, `${path} has not got the page's lines`);
+    assert.match(main, new RegExp(`<h2 class="legal__title">${page.first}</h2>`));
+
+    /* Nothing invented: the company is named as what is on file, and what is
+       not on file stays a bracket. */
+    const prose = main.replace(/<[^>]*>/g, " ");
+    assert.doesNotMatch(prose, /\b(L\.?L\.?C|SH\.?P\.?K|GmbH|Ltd)\b/, `${path} names a legal form nobody gave`);
+    assert.doesNotMatch(prose, /\b(Google Analytics|Vercel|Cloudflare|Netlify|AWS|Mailchimp)\b/, `${path} names a provider nobody chose`);
+  }
+
+  const privacy = await (await render("/privacy")).text();
+  assert.match(privacy, /\[registered name and number\]/);
+  assert.match(privacy, /\[hosting provider\]/);
+  assert.match(privacy, /We do not use analytics or advertising tools/);
+
+  /* The Cookies page says what the site keeps today — one choice — and has
+     the way back to the panel. */
+  const cookies = await (await render("/cookies")).text();
+  assert.match(cookies, /Today this site sets no cookies/);
+  assert.match(cookies, /mardal-consent/);
+  assert.match(cookies, /<button class="legal__button" type="button" data-roll="true"><span class="roll"><span class="roll__face">Change cookie settings</);
+});
+
+test("the cookie panel asks once, keeps one name, and says no as easily as yes", () => {
+  const panel = readFileSync(new URL("../components/consent/CookieConsent.tsx", import.meta.url), "utf8");
+  const store = readFileSync(new URL("../lib/consent.ts", import.meta.url), "utf8");
+  const layout = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
+  const CSSP = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+
+  /* Outside the scrolling content, as the bar is. */
+  assert.match(layout, /<SiteHeader \/>[\s\S]*<CookieConsent \/>[\s\S]*<div id="smooth-wrapper">/);
+
+  /* One name, versioned, read safely. */
+  assert.match(store, /CONSENT_KEY = "mardal-consent"/);
+  assert.match(store, /CONSENT_VERSION = 1/);
+  assert.match(store, /try \{[\s\S]*localStorage\.getItem/);
+
+  /* Accept all and Necessary only are the same solid button, so no is as easy
+     as yes; Settings is the word-and-arrow button. Red and white — owner,
+     2026-10-08: "make this Cookies popup in red and white". */
+  const solid = [...panel.matchAll(/className="consent__button consent__button--solid"/g)];
+  assert.equal(solid.length, 4, "Accept all, Necessary only, Save choices, Accept all");
+  assert.equal([...panel.matchAll(/className="consent__button consent__button--text"/g)].length, 1);
+  const panelRule = CSSP.slice(CSSP.indexOf("\n.consent {"), CSSP.indexOf("\n}", CSSP.indexOf("\n.consent {")));
+  /* Our red — owner, 2026-10-08: "thiis is not our red?" (it was the deeper
+     #cc2900). White on #ff3300 is under AA for text this size; kept on his
+     word, and printed here every run so it is not forgotten. */
+  assert.match(panelRule, /--consent-ground: var\(--accent\);/);
+  const lum = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
+    .reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
+  const red = CSSP.match(/--tint-red:\s*(#[0-9a-f]{6})/i)[1];
+  console.log(`    cookie panel: white on ${red} is ${(1.05 / (lum(red) + 0.05)).toFixed(2)}:1 — under AA for small text, kept on the owner's word`);
+  assert.match(panelRule, /--consent-ink: var\(--accent-contrast\);/);
+  assert.match(panel, /role="switch"/);
+  assert.match(panel, /aria-disabled=\{kind\.locked \? "true" : undefined\}/);
+
+  /* From the middle line to the edge, under the bar. */
+  const rule = CSSP.slice(CSSP.indexOf("\n.consent {"), CSSP.indexOf("\n}", CSSP.indexOf("\n.consent {")));
+  assert.match(rule, /left: 50%;/);
+  assert.match(rule, /right: var\(--page-gutter\);/);
+  assert.match(rule, /z-index: 50;/);
+});
