@@ -1641,3 +1641,20 @@ test("the Blog opens as the others and lists its pieces on the lines", async () 
   assert.doesNotMatch(CSSB, /\.blog-card__image \{[^}]*clip-path: inset\(100%/);
   assert.match(CSSB, /\.blog-cards \{[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
 });
+
+/* Owner, 2026-10-08: "i see often this outline" (round Menu), and "move the
+   menu to the right to the edge of the vertical line". */
+test("Menu draws no ring after a click unless Tab is pressed, and ends on the last line", () => {
+  const header = readFileSync(new URL("../components/layout/SiteHeader.tsx", import.meta.url), "utf8");
+  /* After a click the browser draws the ring for any key (Escape, Space, an
+     arrow, measured), so only Tab may bring it back. */
+  assert.match(header, /if \(event\.key === "Tab"\) header\.removeAttribute\("data-pressed"\);/);
+  assert.doesNotMatch(header, /const keyed = \(\) => header\.removeAttribute/);
+
+  /* One pixel on the right of the bar at every width: the last line stands a
+     whole pixel inside the column's edge. */
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  const pads = [...CSS.matchAll(/\.site-nav \{[^}]*?padding: ([^;]+);/g)].map((m) => m[1]);
+  assert.equal(pads.length, 3, `the bar is padded in ${pads.length} places`);
+  for (const pad of pads) assert.match(pad, /^\S+ 1px \S+ 0$/, `the bar keeps a right padding: ${pad}`);
+});

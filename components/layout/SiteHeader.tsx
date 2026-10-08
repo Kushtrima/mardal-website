@@ -297,13 +297,20 @@ export function SiteHeader() {
   /* **No ring after a press** — owner, 2026-10-06: "why sometines we have
      that outline red in menu". The ring is for the keyboard, but a phone can
      still draw it round Menu after a tap, where focus is handed to it. So the
-     header keeps how it was last used: a press hides the ring, a key brings
-     it back. */
+     header keeps how it was last used: a press hides the ring, and Tab — the
+     key that moves through the page — brings it back.
+
+     Tab only — owner, 2026-10-08, again: "i see often this outline". Any key
+     brought it back, and after Menu was clicked the browser draws the ring
+     for any key at all: Escape to close the row, Space or an arrow to scroll
+     (measured: every one of them drew it). */
   useEffect(() => {
     const header = headerRef.current;
     if (!header) return;
     const pressed = () => header.setAttribute("data-pressed", "");
-    const keyed = () => header.removeAttribute("data-pressed");
+    const keyed = (event: KeyboardEvent) => {
+      if (event.key === "Tab") header.removeAttribute("data-pressed");
+    };
     document.addEventListener("pointerdown", pressed, true);
     document.addEventListener("keydown", keyed, true);
     return () => {

@@ -1346,9 +1346,14 @@ video {
      both the bar and the page column already begin at `--page-gutter`. Any
      padding here is added to that gutter and to nothing else, so the mark sat 9
      to 17px inside every heading on the site — measured at a 1440 window, the
-     logo at 54px against the page column at 40. The bar keeps its right and
-     vertical padding. */
-  padding: 0.3rem 0.4rem 0.3rem 0;
+     logo at 54px against the page column at 40. The bar keeps its vertical
+     padding.
+
+     **One pixel on the right** — owner, 2026-10-08: "move the menu to the
+     right to the edge of the vertical line". The last line stands a whole
+     pixel inside the page column's right edge (ServicesRules rounds it
+     there), so MENU's plus ends where the line begins, at every width. */
+  padding: 0.3rem 1px 0.3rem 0;
   border: 0;
   border-radius: var(--shape-md);
   /* No slab. The bar sits straight on the page, so the padding and the radius
@@ -5299,19 +5304,10 @@ main:has(> .services-rules) > .pin-spacer {
   .site-nav {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.65rem;
-    /* Left off, so the wordmark keeps the page column. See the base rule. */
-    padding: 0.65rem 0.65rem 0.65rem 0;
+    /* Left off, so the wordmark keeps the page column; one pixel on the
+       right, so MENU meets the last line. See the base rule. */
+    padding: 0.65rem 1px 0.65rem 0;
   }
-
-  
-
-  
-
-  
-
-  
-
-  
 
   .services-intro,
   .solutions-intro,
@@ -5344,27 +5340,8 @@ main:has(> .services-rules) > .pin-spacer {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  
-
-  
-
-  
-
-  
-
   /* The list keeps the page; the drawing drops below it and still runs off the
      right edge. */
-  
-
-  
-
-  
-
-  
-
-  
-
-  
 
   .products-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -5397,8 +5374,9 @@ main:has(> .services-rules) > .pin-spacer {
   .site-nav {
     grid-template-columns: minmax(0, 1fr) auto;
     min-height: 3.15rem;
-    /* Left off, so the wordmark keeps the page column. See the base rule. */
-    padding: 0.55rem 0.55rem 0.55rem 0;
+    /* Left off, so the wordmark keeps the page column; one pixel on the
+       right, so MENU meets the last line. See the base rule. */
+    padding: 0.55rem 1px 0.55rem 0;
   }
 
   .brand {
@@ -5419,26 +5397,6 @@ main:has(> .services-rules) > .pin-spacer {
     height: 2.75rem;
   }
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
   .services-section,
   .solutions-section,
   .case-section,
@@ -5447,20 +5405,7 @@ main:has(> .services-rules) > .pin-spacer {
     padding-block: 4rem;
   }
 
-  
-
   /* Not enough width for two columns: the description drops under its name. */
-  
-
-  
-
-  
-
-  
-
-  
-
-  
 
   .services-intro,
   .solutions-intro,
@@ -9398,13 +9343,6 @@ a.project-live:focus-visible {
     padding-block: clamp(2.5rem, 6vh, 4rem) clamp(2.25rem, 5vh, 3.5rem);
   }
 
-  
-
-  
-
-  
-
-  
 }
 
 /* ── The journey as a document rather than a held stage ──
@@ -9526,39 +9464,11 @@ a.project-live:focus-visible {
    left a hole at 1024.5px where a card stayed `visibility: hidden` with nothing
    left to reveal it. */
 @media (prefers-reduced-motion: reduce) {
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
 
   [data-service-word] {
     display: inline;
   }
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
 }
 
 /* ── The service hero on a phone ──
@@ -9602,21 +9512,6 @@ a.project-live:focus-visible {
     padding-block: clamp(2rem, 7svh, 3.25rem) 0;
   }
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
 }
 
 /* The phone half of the journey's document flow, and so behind the same
