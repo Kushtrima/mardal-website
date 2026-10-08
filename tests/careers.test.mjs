@@ -322,7 +322,6 @@ test("the bare editorial openings are sized by two rules that meet", () => {
      a selector cannot check. A page opts in by wearing it; a page that forgets
      silently gets the service-page arrangement and its artwork-shaped hole. */
   for (const file of [
-    "../components/case-studies/ClientsPage.tsx",
     "../app/careers/page.tsx",
     /* Blog joined them 2026-08-27, when the owner took its redaction bars off
        the hero. It is the page this guard was written for: it had the base

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 async function render(path = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -210,8 +210,10 @@ test("server-renders the Mardal homepage", async () => {
      --"): nothing folds it into a minus any more. */
   assert.doesNotMatch(CSS.replace(/\/\*[\s\S]*?\*\//g, ""), /\.mobile-menu-toggle\[aria-expanded="true"\] \.mobile-menu-toggle__plus/);
   /* The split: each stroke's middle is left open, upright and level alike. */
-  assert.match(CSS, /\.mobile-menu-toggle__plus::before\s*\{[^}]*linear-gradient\(\s*to right,\s*currentcolor var\(--plus-arm\),\s*transparent 0 calc\(100% - var\(--plus-arm\)\)/);
-  assert.match(CSS, /\.mobile-menu-toggle__plus::after\s*\{[^}]*linear-gradient\(\s*to bottom,\s*currentcolor var\(--plus-arm\),\s*transparent 0 calc\(100% - var\(--plus-arm\)\)/);
+  /* Shared since 2026-10-08 with FILTERS on the Clients page, which draws
+     the same plus — so the selector may be a list. */
+  assert.match(CSS, /\.mobile-menu-toggle__plus::before(?:,\s*[.\w:-]+)*\s*\{[^}]*linear-gradient\(\s*to right,\s*currentcolor var\(--plus-arm\),\s*transparent 0 calc\(100% - var\(--plus-arm\)\)/);
+  assert.match(CSS, /\.mobile-menu-toggle__plus::after(?:,\s*[.\w:-]+)*\s*\{[^}]*linear-gradient\(\s*to bottom,\s*currentcolor var\(--plus-arm\),\s*transparent 0 calc\(100% - var\(--plus-arm\)\)/);
   /* A minus only while the menu is open; under the pointer the plus turns
      slowly instead, at its own size — he wanted neither the minus nor a bigger
      plus on hover. */
@@ -975,11 +977,10 @@ test("the ends of the run wrap rather than offering nothing", async () => {
   );
 });
 
-/* The Clients page, which is a hero and nothing else yet — the same order the
-   Blog was built in. Two of these assertions are about the opening; the third
-   is the one that matters. Still served at /case-studies: the hero's drawing is
-   generated from that slug, so the route was left alone when the word was
-   changed. */
+/* The Clients page. Still served at /case-studies: the route was left alone
+   when the word was changed. Since 2026-10-08 it opens as the services and
+   the products do — owner: "change the hero of Client to be same design as
+   in product and service that style of course add a appropriate text". */
 test("server-renders the Clients hero", async () => {
   const response = await render("/case-studies");
   assert.equal(response.status, 200);
@@ -987,27 +988,30 @@ test("server-renders the Clients hero", async () => {
   const html = await response.text();
   /* The tab has to say what was clicked to get here. */
   assert.match(html, /<title>Clients — Mardal<\/title>/i);
+  assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);
 
-  /* Two authored line spans, so the break falls where it was chosen rather than
-     wherever the measure happens to run out. The words are the owner's and they
-     turn the page around: "Systems we built / and handed over." was written
-     from Mardal's side, this is written from the reader's. */
-  assert.match(html, /class="service-hero__title-line">Customer</);
-  assert.match(html, /class="service-hero__title-line">stories</);
-  assert.equal(
-    (html.match(/class="service-hero__title-line"/g) ?? []).length,
-    2,
+  /* The services' opening, in the clients' words: the label beside its plus,
+     the heading in its three authored lines with the red full stop, the note,
+     four marks. The old opening ("Customer / stories", its sentence and its
+     way in) is gone with it. */
+  const opening = html.slice(html.indexOf('class="services-hero services-hero--clients"'), html.indexOf("</section>"));
+  assert.ok(opening.length > 0, "the Clients page does not open on the services' hero");
+  assert.match(opening, /aria-labelledby="clients-hero-title" data-services-hero="true"/);
+  assert.match(opening, /<p class="services-hero__label" data-services-hero-first="true"><span class="services-hero__mark" aria-hidden="true"><\/span>Clients<\/p>/);
+  assert.deepEqual(
+    [...opening.replace(/<!-- -->/g, "").matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "")),
+    ["Every project here started", "with a real problem. Every one of them", "ended with a measurable result."],
   );
-  assert.doesNotMatch(html, /Systems we built|and handed over/);
-  assert.match(html, /What each one replaced, what it does now/);
+  assert.match(opening, /<h1 class="services-hero__title" id="clients-hero-title" data-services-hero-title="true">/);
+  assert.match(opening, /<span class="services-hero__stop">\.<\/span>/);
+  assert.match(opening, /We don’t show work to impress\. We show it to prove a point — that strategy, design, and execution working together produce real outcomes most agencies only pitch about, but rarely deliver\./);
+  assert.equal((opening.match(/class="services-hero__mark/g) ?? []).length, 4);
+  assert.doesNotMatch(html, /class="service-hero[ "]|service-hero__title-line|Customer|data-service-hero-cta/);
 
-  /* No artwork in this opening, which makes it the only hero on the site
-     without one — the five service pages mask a PNG and the Blog draws the
-     vector. Owner's call. Asserted rather than left to the eye because the
-     hero's layout now depends on it: the heading's measure and the column the
-     support line stands in were both set by where the drawing was. */
-  assert.doesNotMatch(html, /service-hero__pattern/);
-  assert.doesNotMatch(html, /class="service-hero__drawing"/);
+  /* On the same hairlines: the page's five, from its top, and the footer's. */
+  const main = html.slice(html.indexOf('<main class="service-page service-page--clients service-page--case-studies"'), html.indexOf('class="services-hero'));
+  assert.equal((main.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 5);
+  assert.equal((html.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 10);
 
   /* **No client is named, and none may be until the owner says so.**
      PRODUCT.md records that the delivered archive may be described as Mardal's
@@ -1052,7 +1056,7 @@ test("server-renders the Clients hero", async () => {
 
    The card assertions below are the filter test's own and are kept: they were
    never about filtering, they are about what a card is. */
-test("the Clients index is one page with a rail, not seven filtered views", async () => {
+test("the Clients index is one page under FILTERS, not seven filtered views", async () => {
   const all = await (await render("/case-studies")).text();
 
   /* **The grid element, taken once — everything about a card is read out of
@@ -1072,83 +1076,51 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
   assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 8);
   assert.equal((cardMarkup.match(/<article/g) ?? []).length, 8);
 
-  /* **What ClientsPin holds must not be a grid item, and this is the only place
-     that fact is visible.**
-
-     ScrollTrigger pins by wrapping its target in a `pin-spacer` and lifting the
-     element out of flow inside it. Point it at a direct child of
-     `.clients-layout` and the spacer becomes the grid item — so every refresh
-     re-measures a box the grid lays itself out from, which can move the work
-     column, whose height the pin watches in order to decide when to refresh.
-     The page walks up and down on every press. That is exactly what happened
-     when the rail was asked to stick and the pin was aimed one level too high.
-
-     Two halves, and both are needed: the selector the pin defaults to, read out
-     of its own source, and the proof that the element wearing it is nested
-     inside the grid item rather than being it. */
-  const pinSource = readFileSync(
-    new URL("../components/case-studies/ClientsPin.tsx", import.meta.url),
-    "utf8",
+  /* **FILTERS, under the opening — owner, 2026-10-08**: "under the hero add
+     this then when click to open …", then "i want when open menu to open on
+     the left horisontally as menu, then to be selectd only All and active with
+     red underline". It replaced the rail down the left (owner: remove it), so
+     the rail, its "Selected work" heading and the pin that held it are
+     asserted gone. */
+  const filters = all.match(/<div class="clients-filters" data-open="false">[\s\S]*?<\/ul>/)?.[0];
+  assert.ok(filters, "FILTERS is not rendered, or arrives open");
+  assert.ok(
+    all.indexOf('class="clients-filters"') < all.indexOf('<ul class="clients-grid">'),
+    "FILTERS does not stand above the work",
   );
-  const pinned = pinSource.match(/rail:\s*railSelector\s*=\s*"\.([\w-]+)"/)?.[1];
-  assert.ok(pinned, "ClientsPin names no rail to hold");
-  assert.match(
-    all,
-    new RegExp(`<div class="clients-layout"><div class="[\\w-]+"><div class="${pinned}"`),
-    `ClientsPin holds .${pinned}, which is the grid item itself`,
-  );
+  assert.match(filters, /<button class="clients-filters__toggle" type="button" data-roll="true" aria-expanded="false" aria-controls="clients-filters-list">/);
+  assert.match(filters, /<span class="clients-filters__plus" aria-hidden="true"><\/span><span class="roll"><span class="roll__face">FILTERS<\/span>/);
 
-  /* The heading, in the special face and on its two authored lines. */
-  assert.match(all, /class="clients-rail__title"/);
-  assert.match(all, /clients-rail__title-line">Selected<[\s\S]*?clients-rail__title-line">work</);
-
-  /* The rail itself. Matched on the group element rather than on
-     `.clients-rail`, whose closing tag a non-greedy match now finds inside the
-     holder — the holder is nested in it, so the first `</div>` after
-     `class="clients-rail"` closes the wrong box. */
-  const rail = all.match(
-    /<div class="clients-filter" id="clients-filter"[\s\S]*?<\/div>\s*<\/div>/,
-  )?.[0];
-  assert.ok(rail, "the rail is not rendered");
-
-  /* The seven, in order, then All. As a list because the order is the owner's
-     and a set would pass while they were shuffled. */
+  /* All, then his seven in his order — a list, because a set would pass
+     shuffled — each a word that rolls, out of the tab order while shut; All
+     the only one chosen when the page arrives. */
+  const options = [...filters.matchAll(/<button class="clients-filters__option"[^>]*>[\s\S]*?<\/button>/g)].map((m) => m[0]);
   assert.deepEqual(
-    [...rail.matchAll(/class="clients-filter__label">([^<]*)</g)].map((m) => m[1]),
-    [
-      "UX/UI Design",
-      "Branding",
-      "Websites",
-      "Applications",
-      "Software",
-      "CRM",
-      "AI &amp; Automation",
-      "All",
-    ],
+    options.map((option) => option.match(/class="roll__face">([^<]*)</)?.[1]),
+    ["All", "UX/UI Design", "Branding", "Websites", "Applications", "Software", "CRM", "AI &amp; Automation"],
+  );
+  assert.deepEqual(
+    options.map((option) => option.match(/aria-pressed="(\w+)"/)?.[1]),
+    ["true", "false", "false", "false", "false", "false", "false", "false"],
+  );
+  for (const option of options) {
+    assert.match(option, /data-roll="true"/);
+    assert.match(option, /tabindex="-1"/i);
+  }
+  assert.doesNotMatch(all, /clients-rail|class="clients-filter"|clients-filter__|clients-layout|clients-filters__tick/);
+  assert.ok(
+    !existsSync(new URL("../components/case-studies/ClientsPin.tsx", import.meta.url)),
+    "the rail's pin is back",
   );
 
-  /* **Eight pressable words: the seven, then All.** The rail filters again —
-     owner's call, after one build in which it was static text — so what is
-     asserted is that every discipline is a control and that `All` is the eighth
-     and last of them, held off by the rule at the foot of the index.
-
-     `aria-pressed` rather than `aria-current`: these are toggles over one list,
-     not links to eight places. That distinction is the whole difference between
-     this rail and the sector routes it replaced, and it is the only thing in
-     the markup that says so. */
-  const controls = [...rail.matchAll(/<button[^>]*class="clients-filter__item[^"]*"[^>]*>/g)];
-  assert.equal(controls.length, 8);
-  assert.match(rail, /clients-filter__item clients-filter__item--all/);
-  assert.doesNotMatch(rail, /<a /);
-
-  /* **All is chosen when the page arrives**, and it is the ONLY one that is.
-     A rail arriving with two marks drawn, or with none, is the failure this
-     catches — and neither would fail anything else here, since the eight
-     buttons would still be eight buttons. */
-  const current = [...rail.matchAll(/class="clients-filter__item[^"]*is-current[^"]*"[\s\S]*?<span class="clients-filter__label">([^<]*)</g)]
-    .map((match) => match[1]);
-  assert.deepEqual(current, ["All"]);
-  assert.equal((rail.match(/aria-pressed="true"/g) ?? []).length, 1);
+  /* Opened beside FILTERS, as the bar's row is from Menu: wiped out from it,
+     and the chosen word underlined in the red. */
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(CSS, /\.clients-filters__list \{[^}]*clip-path: inset\(-0\.6em 100% -0\.6em 0\)/);
+  assert.match(CSS, /\.clients-filters__option\[aria-pressed="true"\]::after \{\s*transform: none;/);
+  assert.match(CSS, /\.clients-filters__option::after \{[^}]*background: var\(--accent\)/);
+  /* The plus red all the time; the word red while open. */
+  assert.match(CSS, /\.clients-filters__plus,\s*\.clients-filters\[data-open="true"\] \.clients-filters__toggle \{\s*color: var\(--accent\);/);
 
   /* And with All chosen the grid is every entry — which is what makes the
      default meaningful rather than just marked. */
@@ -1189,7 +1161,8 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
      fails the build the day someone tries to publish this page with stock
      frames still in it, which is exactly when nobody is reading comments.
      Delete it in the same commit that puts real screenshots in. */
-  assert.equal((cardMarkup.match(/https:\/\/picsum\.photos\//g) ?? []).length, 8);
+  /* One `src` each (the srcset names the same frame again, at two sizes). */
+  assert.equal((cardMarkup.match(/ src="https:\/\/picsum\.photos\//g) ?? []).length, 8);
   /* Decorative, so every one of them is silent to a screen reader. */
   assert.doesNotMatch(cardMarkup, /class="clients-card__art"[^>]*alt="[^"]+"/);
 
@@ -1214,63 +1187,34 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
      worse than eight brackets. */
   assert.doesNotMatch(all, /\[Project|\[Client name\]|\[Location\]/);
 
-  /* **Three lines under each name: the client's industry, the service, and
-     where** — owner, 2026-09-30, in that order, from his own portfolio. The
-     industry is the line the rail does not repeat: the rail files by
-     discipline, and the service line is those same disciplines, every one the
-     entry lists.
+  /* **The name and nothing under it** — owner, 2026-10-08: "only name of the
+     company and servces", then "remove the service complete under the
+     project". (Industry, services and country stood there from 2026-09-30.) */
+  assert.equal(
+    [...cardMarkup.matchAll(/class="clients-card__name">[^<]*<\/h3><\/article>/g)].length,
+    8,
+  );
+  assert.doesNotMatch(cardMarkup, /clients-card__fact/);
+  assert.doesNotMatch(cardMarkup, />(Switzerland|Germany|Austria|Kosovo|Finance|Healthcare|Manufacturing|Automotive|Retail|Logistics|Public Sector|UX\/UI Design|Branding|Software|CRM)</);
 
-     Read per CARD rather than as one flat list. Flat, a place landing in an
-     industry's slot — or one card losing a line and shifting every line after
-     it — would still be twenty-four strings drawn from the right three sets. */
-  const COUNTRIES = ["Switzerland", "Germany", "Austria", "Kosovo"];
-  const SECTORS = [
-    "Finance",
-    "Healthcare",
-    "Manufacturing",
-    "Automotive",
-    "Retail",
-    "Logistics",
-    "Public Sector",
-  ];
-  /* The rail's seven, as the server writes them — the ampersand escaped. */
-  const DISCIPLINES = [
-    "UX/UI Design",
-    "Branding",
-    "Websites",
-    "Applications",
-    "Software",
-    "CRM",
-    "AI &amp; Automation",
-  ];
-  const facts = [
-    ...cardMarkup.matchAll(
-      /class="clients-card__name">[^<]*<\/h3><p class="clients-card__fact">([^<]*)<\/p><p class="clients-card__fact">([^<]*)<\/p><p class="clients-card__fact">([^<]*)<\/p>/g,
+  /* **Three shapes, two to a row at most, sometimes one** — owner,
+     2026-10-08: "i want the project to have three format Box, wide and
+     portrat and to be mixed", each starting on one of the page's lines, then
+     "max 2 project in one row sometimes 1". Eight cards are rows of two, one,
+     two, one, two; each card's shape, columns (of the page's four) and — a
+     row's first — starting line set by its place. */
+  assert.deepEqual(
+    [...cardMarkup.matchAll(/<li data-format="(\w+)" data-span="(\d+)"(?: data-start="(\d)")? data-row="(\d)" data-place="(\d)">/g)].map(
+      (m) => `${m[1]} ${m[2]}${m[3] ? "@" + m[3] : ""} ${m[4]}.${m[5]}`,
     ),
-  ];
-  assert.equal(facts.length, 8);
-  for (const [, sector, service, place] of facts) {
-    /* The industry is the one line on a card that is not invented: it is
-       derived from the entry's own sector, out of the list declared once in
-       content/home.ts that the homepage reads too. */
-    assert.ok(SECTORS.includes(sector), `"${sector}" is not one of the seven`);
-    assert.ok(
-      service.split(", ").every((one) => DISCIPLINES.includes(one)),
-      `"${service}" is not a list of the rail's disciplines`,
-    );
-    /* Unspecific on purpose — a country, not a city or an address — asserted as
-       a closed set, because "unspecific" is the kind of instruction a later
-       edit satisfies once and then forgets. */
-    assert.ok(
-      COUNTRIES.includes(place),
-      `"${place}" is more specific than a country`,
-    );
-  }
-
-  /* Read out of the cards, not off the page: Next embeds the whole tree a
-     second time as its RSC payload, so counting an attribute document-wide
-     counts everything twice. */
-  assert.equal((cardMarkup.match(/class="clients-card__fact"/g) ?? []).length, 24);
+    [
+      "portrait 2@1 2.1", "wide 2 2.2",
+      "wide 3@2 1.1",
+      "box 2@1 2.1", "portrait 2 2.2",
+      "box 2@1 1.1",
+      "portrait 2@1 2.1", "wide 2 2.2",
+    ],
+  );
 
   /* **One card is a link, and only one.** The pilot story is the only entry
      with a page behind it; the other seven go nowhere on purpose, because a
@@ -1318,7 +1262,11 @@ test("the Clients index is one page with a rail, not seven filtered views", asyn
 });
 
 /* The pilot story — the page a card opens, and the only one there is. What is
-   being judged is the shape; the words in it are slots. */
+   being judged is the shape; the words in it are slots.
+
+   **A new approach — owner, 2026-10-08**, from three references: "hero with
+   big images", the project in a paragraph with its record under it, "then
+   changellens etc", then the delivered pages one after the next. */
 test("server-renders the one customer story", async () => {
   /* The sector segment came out of this address with the taxonomy on
      2026-08-25; next.config.ts redirects the old one. */
@@ -1327,160 +1275,106 @@ test("server-renders the one customer story", async () => {
   assert.equal(response.status, 200);
 
   const html = await response.text();
+  const page = html.slice(0, html.indexOf("<footer"));
 
-  /* The tab is the whole title on one line — a heading may be two, a title may
-     not, and a shared link shows the title. */
-  assert.match(
-    html,
-    /<title>A website for a healthcare office — Mardal<\/title>/i,
-  );
+  /* The tab is the whole title on one line; the heading is the card's name. */
+  assert.match(html, /<title>A website for a healthcare office — Mardal<\/title>/i);
+  assert.equal((page.match(/<h1[\s>]/g) ?? []).length, 1);
 
-  /* Authored line spans, so the heading breaks where it was chosen. */
-  assert.match(html, /class="service-hero__title-line">A website for a</);
-  assert.match(html, /class="service-hero__title-line">healthcare office</);
+  /* **The opening: one picture across the screen**, the bar white over it,
+     the page's lines drawn over it, and from the middle line the industry
+     beside the red square and the name of the card it was opened from. */
+  const hero = page.match(/<section class="project-hero"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(hero, "the story does not open on the picture");
+  assert.match(hero, /data-bar-dark="true" data-project-hero="true"/);
+  assert.match(hero, /class="project-hero__image"[^>]*src="https:\/\/picsum\.photos\/seed\/mardal-healthcare-hero\//);
+  assert.equal((hero.match(/class="services-rules__line"/g) ?? []).length, 5);
+  assert.match(hero, /<span class="project-hero__mark" aria-hidden="true"><\/span>Healthcare<\/p>/);
+  assert.match(hero, /<h1 class="project-hero__title" id="project-title" data-project-hero-title="true">Solvei<\/h1>/);
 
-  /* The record across the page under the opening, the reading below it. It was
-     a rail down the left held against the scroll; asserting the layout element
-     is gone is what stops the pin being reinstated with nothing to hold. */
-  assert.doesNotMatch(html, /class="story-layout"/);
-  assert.match(html, /class="story-record"/);
-  assert.match(html, /class="story-reading"/);
-  for (const heading of [
-    "What it replaced",
-    "What it does now",
-    "What the client owns",
-  ]) {
-    assert.match(html, new RegExp(`class="story-index__title">${heading}<`));
-  }
-
-  /* Three entries. Matched to the end of the class NAME rather than the
-     attribute: a modifier on the element would break a match pinned to the bare
-     class, which is a trap this file has been caught by three times — the
-     linked client card, the sector filter, and the accordion this index
-     replaced. */
-  assert.equal((html.match(/class="story-index__entry[" ]/g) ?? []).length, 3);
-
-  /* Numbered, and the number is decoration for the sequence rather than
-     content: it is hidden from a screen reader, which reads the three headings
-     in order and gets the sequence from that. */
+  /* **The project**: its name where a logo would stand (there is none on
+     file), the paragraph, the record two by two, the way to the live site —
+     with no address on file, not a link. */
+  const intro = page.match(/<section class="project-intro"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(intro, "the project is not introduced");
+  assert.match(intro, /<h2 class="project-intro__name" id="project-intro-title">Solvei<\/h2>/);
+  assert.match(intro, /class="project-intro__summary">\[Two or three sentences/);
   assert.deepEqual(
-    [...html.matchAll(/class="story-index__number"[^>]*>([^<]*)/g)].map(
-      (m) => m[1],
-    ),
-    ["01", "02", "03"],
+    [...intro.matchAll(/class="project-intro__label">([^<]*)</g)].map((m) => m[1]),
+    ["INDUSTRY:", "SERVICES:", "CHALLENGE:", "SOLUTION:"],
   );
-  /* The titles stay <h2>: they are the section headings of this page, which is
-     why the number sits beside one in a div rather than the pair being a
-     paragraph. */
-  assert.equal((html.match(/<h2 class="story-index__title">/g) ?? []).length, 3);
+  assert.match(intro, /class="project-intro__value">Healthcare</);
+  assert.match(intro, /class="project-intro__value">UX\/UI Design, Websites</);
+  assert.match(intro, /<p class="project-live" aria-disabled="true"><span>LIVE WEBSITE<\/span>/);
+  /* The site's word-and-arrow button (VIEW ALL's), not a box; labels black. */
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  const live = CSS.slice(CSS.indexOf("\n.project-live {"), CSS.indexOf("\n}", CSS.indexOf("\n.project-live {")));
+  assert.doesNotMatch(live, /background|border/);
+  assert.match(live, /gap: 0\.7em;/);
+  assert.match(CSS, /\.project-intro__label \{[^}]*color: var\(--ink\);/);
+  assert.doesNotMatch(intro, /<a [^>]*class="project-live"/);
 
-  /* **Nothing opens, and nothing is hidden.** The index does not collapse — the
-     bars travel between two piles and every reading is at full height between
-     them the whole time. So the served markup carries no open/shut state at
-     all, and a reader with no JavaScript, a crawler, and anyone with reduced
-     motion get the same three readings in the same order. The assertion is here
-     because the shape this replaced DID hide them, and reinstating a collapse
-     without meaning to would show up as nothing on the page. */
-  assert.doesNotMatch(html, /story-index[^"]*is-open/);
-  assert.match(html, /class="story-index__copy">\[What the office was working/);
-
-  /* **Three paragraphs and exactly one picture in every entry.** Two other
-     arrangements were built and rejected on the page, and both are pinned here
-     rather than left to drift back: an entry carrying two pictures, which made
-     itself half as long again as its neighbours, and an entry carrying none,
-     which became a band of text across the width. The counts are what catch
-     either one returning. */
-  assert.equal((html.match(/class="story-index__copy"/g) ?? []).length, 9);
-  assert.equal((html.match(/class="story-index__shot"/g) ?? []).length, 3);
-  for (const shot of html.matchAll(
-    /class="story-index__shot">(.*?)<\/figure>/g,
-  )) {
-    assert.equal(
-      (shot[1].match(/<img/g) ?? []).length,
-      1,
-      "a picture column holds one frame, never a stack",
-    );
-  }
-  /* No entry carries a modifier — the three are the same shape, which is the
-     thing that took two rejections to settle. */
-  assert.doesNotMatch(html, /class="story-index__entry [a-z-]/);
-
-  /* The way back, and both halves of it: leaving a story should offer the
-     sector it sits in as well as the whole index. */
-  assert.match(html, /href="\/case-studies"/);
-  /* One crumb now. The second pointed at the sector view this story sat
-     under, and that view no longer exists. */
-  assert.doesNotMatch(html, /href="\/case-studies\/healthcare"/);
-
-  /* **Still no client named, on the page most likely to name one.** A story is
-     where a name wants to go — it is a page about one customer — so this is the
-     assertion that matters most on this route. */
-  for (const client of [
-    "EN NUR",
-    "Spitex",
-    "Stolzbau",
-    "Henor",
-    "ANDI SPORT",
-    "Jetonikeramika",
-  ]) {
-    assert.doesNotMatch(html, new RegExp(client, "i"), `${client} named`);
-  }
-  /* **The pictures are stock and must not ship** — the same guard the index
-     carries, which fails the build the day this page is published with them
-     still in it. Counted as distinct seeds: this route is server-rendered, so
-     the RSC payload after the markup repeats every src. */
-  const shots = new Set(
-    [...html.matchAll(/https:\/\/picsum\.photos\/seed\/([a-z-]+)/g)].map(
-      (match) => match[1],
-    ),
+  /* **The account**: the three the Clients page has promised, each heading
+     over its slots. */
+  assert.deepEqual(
+    [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
+    ["What it replaced", "What it does now", "What the client owns"],
   );
-  assert.equal(shots.size, 5);
-
-  /* The plate under the record: square, and inside the same column the record
-     is ruled to. Order asserted because it is the argument — the record says
-     what the job was, the plate shows it, the reading explains it. */
-  /* Three paragraphs about the client company, in one row above the plate, and
-     no headings over them. They were three sections about Mardal, which could
-     carry real prose; about the client they are slots, because the office
-     cannot be named and nothing about it is written down anywhere. */
-  assert.equal((html.match(/class="story-about__copy"/g) ?? []).length, 3);
-  const about = html.slice(
-    html.indexOf('class="story-about"'),
-    html.indexOf('class="story-plate"'),
-  );
-  assert.doesNotMatch(about, /<h[1-6]/);
-  /* Every one of the three is still a bracket. This is the assertion that
-     catches a plausible description of a healthcare practice being written in —
-     which would read perfectly and be an invention. */
-  assert.equal((about.match(/\[/g) ?? []).length, 3);
-
-  assert.match(html, /class="story-plate"/);
+  assert.match(page, /class="project-passage__copy"><p>\[What the office was working/);
+  /* Still, one under the next, no effect on the scroll at all — owner,
+     2026-10-08, after a reveal and a held version: "remove all on scroll
+     leave it as it was in normal state". */
+  assert.match(page, /<section class="project-account"[^>]*>[\s\S]*?data-enter-mode="none"/);
+  assert.doesNotMatch(page, /project-account__stack|data-held|project-passage__rise/);
   assert.ok(
-    html.indexOf('class="story-record"') < html.indexOf('class="story-plate"') &&
-      html.indexOf('class="story-plate"') < html.indexOf('class="story-reading"'),
-    "the plate belongs between the record and the reading",
+    !existsSync(new URL("../components/case-studies/ProjectAccountMotion.tsx", import.meta.url)),
+    "the account is moved by the scroll again",
   );
 
-  /* The right half of the opening carries a picture, behind the words rather
-     than beside them — the heading, the lede and the way in all keep their
-     places over it, and the menu stays white because the picture is darkened
-     under it rather than the type being recoloured. */
-  assert.match(html, /class="story-hero__art"/);
-  assert.match(html, /class="story-hero__art-image"/);
+  /* **The pages**, on the white page ("here bacground in white"): six, the
+     same six in small with a frame over the part in view, Previous (shut at
+     the first) and Next. No dark ground, so the bar stays as it is. */
+  const showcase = page.match(/<section class="project-showcase"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(showcase, "the pages are not shown");
+  assert.doesNotMatch(showcase, /data-bar-dark/);
+  assert.equal((showcase.match(/<li class="project-showcase__page">/g) ?? []).length, 6);
+  assert.equal((showcase.match(/class="project-showcase__thumb"/g) ?? []).length, 6);
+  assert.match(showcase, /class="project-showcase__window"/);
+  assert.match(showcase, /<button class="project-showcase__step" type="button" disabled=""><span>Previous<\/span>/);
+  assert.match(showcase, /<button class="project-showcase__step" type="button"><span>Next<\/span>/);
+  assert.match(showcase, /aria-label="Page 1" aria-current="true"/);
+
+  /* In that order, then the way back to every story. */
+  const order = ["project-hero", "project-intro", "project-account", "project-showcase"]
+    .map((name) => page.indexOf(`<section class="${name}"`))
+    .concat(page.indexOf('<nav class="project-out"'));
+  assert.deepEqual([...order].sort((x, y) => x - y), order, `the sections are out of order: ${order}`);
+  /* The foot: Back on the left to every story, Next Project on the right —
+     owner, 2026-10-08. No second story yet, so Next Project is no link. */
+  const back = page.match(/<a [^>]*class="project-out__link project-out__link--back"[^>]*>[\s\S]*?<\/a>/)?.[0];
+  assert.ok(back, "there is no way back");
+  assert.match(back, /href="\/case-studies"/);
+  /* Arrows only on the page ("remove text only leave it arrows"), the words
+     kept for a screen reader. */
+  assert.match(back, /<svg class="project-out__arrow"[\s\S]*?<span class="visually-hidden">Back<\/span>/);
+  assert.match(page, /<p class="project-out__link project-out__link--next" aria-disabled="true"><span class="visually-hidden">Next Project<\/span><svg class="project-out__arrow"/);
+  assert.doesNotMatch(page.slice(page.indexOf('<nav class="project-out"')), /class="roll__face"/);
+  assert.doesNotMatch(page, /All customer stories/);
+
+  /* **Every picture is stock and must not ship**: the opening and six pages,
+     one `src` each. Delete this with the commit that puts real shots in. */
+  assert.equal((page.match(/ src="https:\/\/picsum\.photos\/seed\/mardal-healthcare-/g) ?? []).length, 1 + 6 + 6);
+
+  /* The old page is gone: its record rail, its steps, its plate. */
+  assert.doesNotMatch(page, /class="story-|service-hero/);
 
   /* Exactly one story exists, and any other slug is a wrong address rather than
      an unwritten page. */
   assert.equal((await render("/case-studies/not-a-story")).status, 404);
 
-  /* **The two-segment addresses are now redirects, not 404s**, and the
-     difference is deliberate. They were `/case-studies/{sector}/{story}` and
-     the sector segment came out with the taxonomy on 2026-08-25, so an old
-     address is a moved page rather than a wrong one — `next.config.ts` strips
-     the segment and lets the router judge what is left.
-
-     Which means a wrong story under an old sector redirects to a 404 rather
-     than answering with one directly. That is the correct pair of answers in
-     the correct order: the address moved, and then it does not exist. */
+  /* **The two-segment addresses are now redirects, not 404s** — they were
+     `/case-studies/{sector}/{story}`; an old address is a moved page, then
+     the router judges what is left. */
   const moved = await render("/case-studies/healthcare/not-a-story");
   assert.equal(moved.status, 308);
   assert.equal(moved.headers.get("location"), "/case-studies/not-a-story");

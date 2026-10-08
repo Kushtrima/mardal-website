@@ -23,16 +23,30 @@
  * product and PRODUCT.md is explicit that it must never be written as a
  * delivered client outcome. Products is where it lives.
  */
+
+import type { PageHeroContent } from "../components/services/ServicesHero";
+
 /**
- * The unfiltered view, named once so the page and the rail cannot disagree
- * about it. Not one of the seven and deliberately not in that list — "all" is a
- * state the page can be in rather than a kind of work anyone does.
- *
- * It was `ALL_SECTORS` while the rail filtered by the client's industry. The
- * owner replaced that taxonomy with the disciplines on 2026-08-25; the constant
- * is the same idea under the thing that replaced it.
+ * **The opening is the services page's, in the clients' words** — owner,
+ * 2026-10-08: "change the hero of Client to be same design as in product and
+ * service that style of course add a appropriate text", then his own words
+ * for both: "use this text for title: … and this for paragraf: …". Verbatim;
+ * only his " - " set as the site's spaced dash and his apostrophe curled, as
+ * the services' note has it.
  */
-export const ALL_WORK = "all";
+export const clientsHero = {
+  label: "Clients",
+  /* Three lines, broken where the sentences turn: the second, the longest,
+     ends a few pixels short of the edge (measured), the first set in to the
+     second rule as on the other two pages. */
+  titleLines: [
+    "Every project here started",
+    "with a real problem. Every one of them",
+    "ended with a measurable result",
+  ],
+  titleStop: ".",
+  note: "We don’t show work to impress. We show it to prove a point — that strategy, design, and execution working together produce real outcomes most agencies only pitch about, but rarely deliver.",
+} as const satisfies PageHeroContent;
 
 export const caseStudies = {
   /* The seed the hero's drawing is generated from, and the route it is served
@@ -47,35 +61,6 @@ export const caseStudies = {
   lede:
     "Delivered work: what each system replaced, what it does now, and what the client owns.",
 
-  /* One line now, set here rather than in the page: where a line turns is a
-     decision about the copy, not about the markup.
-
-     Owner's words, and they change what the page is about. "Systems we built /
-     and handed over" was written from Mardal's side — what was made, and that
-     it left. "Customer stories" is written from the reader's: the entries are
-     the customer's, and the reader is here to find one that looks like them.
-     The cards were already going that way, headed by sector and asking who it
-     was for before what it was.
-
-     Broken after "Customer", and broken here rather than left to wrap: the two
-     words stack, which is what lets the type go up. Eight characters is the
-     longest line now against a measure cut for twenty-one, and that spare
-     measure is exactly what the size spends. */
-  titleLines: ["Customer", "stories"],
-
-  /* A promise about what a study contains, which is a promise this site can
-     keep, rather than a claim about results, which it cannot: PRODUCT.md
-     records zero quantified claims anywhere and no client outcome on file. */
-  support:
-    "What each one replaced, what it does now, and what the client owns.",
-
-  heroCta: "Get in touch",
-
-  /* The filter's own words. "All" is not a sector, so it is named here rather
-     than smuggled into the list of seven. */
-  filterAll: "All",
-  filterLabel: "Filter delivered work by sector",
-
   /* What a card's two lines are called.
      They were three — Replaced, Does now, Client owns — set to answer the hero's
      promise in its own three parts. Owner's change: who it was for, then what it
@@ -87,29 +72,23 @@ export const caseStudies = {
      never recorded, so it stays a bracket until that decision is made — the one
      slot on this page where a plausible guess would do real damage. */
   /**
-   * The rail down the left of the index.
-   *
-   * **This replaced the seven-sector filter on 2026-08-25.** The index used to
-   * be Finance / Healthcare / Manufacturing and so on — the client's industry —
-   * with seven prerendered routes behind it and the header's Clients panel
-   * pointing at them. Owner replaced the whole taxonomy: what the page indexes
-   * now is the WORK, by what kind of work it is.
-   *
-   * It is a statement and not a control. Nothing filters, nothing is clickable,
-   * and there is no state anywhere in `ClientsIndex` any more — which is what
-   * let it stop being a client component at all. If these are ever meant to
-   * filter, every entry needs a discipline recorded on it first; the sectors
-   * could filter because `sector` was on every entry, and nothing here is.
+   * **FILTERS, under the opening** — owner, 2026-10-08, with a picture of
+   * "-¦- FILTERS": "under the hero add this then when click to open …", then
+   * "i want when open menu to open on the left horisontally as menu, then to
+   * be selectd only All and active with red underline". The seven are his
+   * list, in his order, after All; All is chosen when the page arrives. It
+   * replaced the rail down the left that held the same seven (owner: remove
+   * it).
    *
    * The seven read as the five services split where a service covers two
-   * distinct crafts — UX/UI & Branding into its two halves, Website & Apps into
-   * its two. They are deliberately NOT generated from the services list: that
-   * list is what Mardal sells and this one is what it has made, and the day
-   * those two stop matching is the day this would silently start lying.
+   * distinct crafts. They are deliberately NOT generated from the services
+   * list: that list is what Mardal sells and this one is what it has made.
    */
-  rail: {
-    title: ["Selected", "work"],
-    /* The word for the unfiltered view, and it is not one of the seven. */
+  filters: {
+    /* In capitals here, as his picture has it, rather than by the stylesheet. */
+    button: "FILTERS",
+    label: "Filter the work",
+    /* Every entry; first in the row, and chosen when the page arrives. */
     all: "All",
     items: [
       "UX/UI Design",
@@ -281,7 +260,9 @@ export const clientEntries = [
    * publication alongside the client name. Until then the drawn plate this
    * displaced is one commit back and is the honest version.
    */
-  image: `https://picsum.photos/seed/mardal-${entry.slug}/640/360`,
+  /* Square since 2026-10-08, when the cards took three shapes (wide, box,
+     portrait): one square frame crops to any of them. */
+  image: `https://picsum.photos/seed/mardal-${entry.slug}/1200/1200`,
 }));
 
 export type ClientEntry = (typeof clientEntries)[number];
@@ -303,60 +284,58 @@ export type ClientEntry = (typeof clientEntries)[number];
  *
  * The pictures are stock and must go. See `image` above for why.
  */
+/** The entry the story is told for: its card's name heads the page, and its
+ *  services are the record's. */
+const pilotEntry = clientEntries.find((entry) => "story" in entry)!;
+
 export const pilotStory = {
   slug: "healthcare-office-website",
   sector: "healthcare",
 
-  /* Two authored lines, the way every heading on this site is set — where the
-     line turns is a decision about the copy, not about the markup. */
-  titleLines: ["A website for a", "healthcare office"],
-
-  /* What the tab says. Not the heading: a heading can be two lines and a title
-     cannot, and "A website for a healthcare office — Mardal" is what a shared
-     link has to read as. */
+  /* What the tab says, and what a shared link reads as. The page's big
+     heading is the entry's name (below), as the card it was opened from. */
   title: "A website for a healthcare office",
+
+  /* The page's big heading: the name on the card it was opened from. */
+  name: pilotEntry.name,
 
   lede: "[One line: what the office needed, and what was built for it.]",
 
-  /* The record, and it lives down the left of the page rather than in a row
-     across it. What a reader checks before deciding to read: who it was for,
-     what sector, what was built, which service it was.
+  /**
+   * **The page, a new approach — owner, 2026-10-08**, from three references:
+   * "hero with big images", then the project in a paragraph with its record
+   * under it, "then changellens etc", then a showcase of the delivered pages
+   * one after the next. Every bracket is still a slot: the office cannot be
+   * named until per-client sign-off is on file, and nothing about the job is
+   * written down anywhere this repo can read — no date, no tools, no address
+   * for the live site, no logo. Where a reference showed one of those, this
+   * page shows what it can say truthfully or leaves the slot.
+   */
 
-     "Handed over" was a fifth and the owner took it out. It read as a date
-     field, and a date is the one thing on this record that could not be a slot
-     for long — a bracket where a month should be reads as an oversight rather
-     than a decision, and the real one is not written down anywhere this repo
-     can reach. Four facts that can all be filled honestly beat five where one
-     is waiting on an archive nobody has.
+  /* The opening: one picture across the whole screen. Stock, like every
+     picture on this page — the real one is a shot of the delivered site. */
+  heroImage: "https://picsum.photos/seed/mardal-healthcare-hero/2400/1500",
 
-     Every value here is still a slot. Client is the one that cannot be filled
-     at all until per-client sign-off exists. */
-  facts: [
-    { label: "Client", value: "[Client name]" },
-    { label: "Sector", value: "Healthcare" },
-    { label: "Work", value: "[What was built]" },
-    { label: "Services", value: "[Which of the five]" },
+  /* The project in a few sentences, set large beside its name. */
+  summary:
+    "[Two or three sentences: who the office is and what the project was — what Mardal built for them, and what it had to make easier. Described, not named, until sign-off is on file.]",
+
+  /* The record under it, two by two. Industry and services are what the
+     entry already says; the challenge and the solution are slots. */
+  record: [
+    { label: "INDUSTRY:", value: "Healthcare" },
+    { label: "SERVICES:", value: pilotEntry.disciplines.join(", ") },
+    { label: "CHALLENGE:", value: "[The problem, in one line.]" },
+    { label: "SOLUTION:", value: "[What was built, in one line.]" },
   ],
 
-  /* The reading, down the right. Three states in the order the hero has been
-     promising since it was written — what it replaced, what it does now, what
-     the client owns — with the pictures set between them rather than collected
-     at either end.
+  /* The way to the delivered site. No address is on file, so it stands
+     without a link until one is. */
+  live: { label: "LIVE WEBSITE", href: null as string | null },
 
-     **One picture each, and three paragraphs each.** Two other arrangements
-     were built and rejected on the page before this one, and both are recorded
-     here rather than left to be rediscovered: a passage carrying two pictures
-     made its own entry half as long again as its neighbours (879px against
-     618), so the section stopped reading as a list of three; and a passage
-     carrying none turned that entry into a band of text across the width, which
-     is a different kind of row rather than a quieter one. Owner's call both
-     times. Same shape three times, and the reading is what differs.
-
-     `paragraphs` is a list because it was `body` and `more` and then needed a
-     third, which is a rename in two files if the count is in the field names
-     and nothing at all if it is not. Every one is a slot and has to be: the
-     office cannot be named until sign-off is on file, and nothing about what it
-     ran on before is written down anywhere this repo can read. */
+  /* The account, under the record — what it replaced, what it does now, what
+     the client owns: the three the Clients page has promised since it was
+     written. Every paragraph is a slot. */
   passages: [
     {
       id: "replaced",
@@ -364,9 +343,7 @@ export const pilotStory = {
       paragraphs: [
         "[What the office was working with before. Two or three sentences on the state of things — where the information lived, who had to touch it, and what a patient had to do to get an answer. State it, do not complain about it.]",
         "[The second paragraph: what that cost them week to week, and which part of it was the reason they picked up the phone.]",
-        "[The third paragraph: what they had already tried before they called, and the reason it did not hold.]",
       ],
-      image: "https://picsum.photos/seed/mardal-healthcare-a/1600/1000",
     },
     {
       id: "now",
@@ -374,63 +351,44 @@ export const pilotStory = {
       paragraphs: [
         "[What the site does for the office and for the people who visit it. Name the things that changed for someone outside the building, not the technology that changed inside it.]",
         "[The second paragraph: what a patient can do now that they could not do at all, and what the office stopped doing by hand.]",
-        "[The third paragraph: what the office does with the time it used to spend on this, and what it now knows that it could not see before.]",
       ],
-      image: "https://picsum.photos/seed/mardal-healthcare-b/1600/1000",
     },
     {
       id: "owns",
       heading: "What the client owns",
       paragraphs: [
         "[Named one by one — the repository and who holds it, the domain and the DNS, the hosting account and the bill, the content and who can change it without calling anyone.]",
-        "[The second paragraph: what they can change without calling anyone, and who they would call if they wanted to.]",
-        "[The third paragraph: what keeps running if they never call again — what renews itself, what does not, and where that is written down for whoever comes next.]",
+        "[The second paragraph: what keeps running if they never call again, and where that is written down for whoever comes next.]",
       ],
-      /* This one has twice been argued out of a picture and twice been given one
-         back: what the client owns is a list of holdings, and a holding is not a
-         thing a photograph can show. Owner's call, both times, and the second
-         time was after seeing the alternative on the page. Recorded so it is not
-         re-litigated a third time — the real frame here is a shot of the handover
-         itself, the repository or the account in their name. */
-      image: "https://picsum.photos/seed/mardal-healthcare-c/1600/1000",
     },
   ],
 
-  /* The right half of the opening. Stock, like every other picture on this page
-     and under the same guard — the real one is a shot of the delivered site.
-     Cut tall rather than wide: it fills a half-window column, so a landscape
-     frame would crop to its middle strip and lose whatever it was of. */
-  heroImage: "https://picsum.photos/seed/mardal-healthcare-hero/1200/1600",
+  /* The delivered pages, one after the next, on a dark ground; the pages in
+     small down the right, the way back and forward on the left. Stock frames
+     standing in for screenshots of the delivered site. */
+  showcase: {
+    title: "The website, page by page",
+    previous: "Previous",
+    next: "Next",
+    page: "Page",
+    pages: [
+      "https://picsum.photos/seed/mardal-healthcare-page-1/1600/1000",
+      "https://picsum.photos/seed/mardal-healthcare-page-2/1600/1000",
+      "https://picsum.photos/seed/mardal-healthcare-page-3/1600/1000",
+      "https://picsum.photos/seed/mardal-healthcare-page-4/1600/1000",
+      "https://picsum.photos/seed/mardal-healthcare-page-5/1600/1000",
+      "https://picsum.photos/seed/mardal-healthcare-page-6/1600/1000",
+    ],
+  },
 
-  /* The plate under the record, and the biggest thing on the page. It comes
-     after the four facts and before the account: the record says what the job
-     was, this shows it, and the reading explains it.
-
-     Cut wide — it stands in a column rather than a window, so a tall frame
-     would crop to a strip of its middle. */
-  plate: "https://picsum.photos/seed/mardal-healthcare-plate/2000/1125",
-
-  /* Three short paragraphs about the client company, side by side above the
-     plate. No headings: three labels over three thirty-word paragraphs is more
-     label than paragraph, and the row reads as one statement in three parts.
-
-     **Back to slots, and they have to be.** These were three paragraphs about
-     Mardal, which could be written because the company's own position is
-     settled and owner-confirmed. About the client they cannot: the office
-     cannot be named until per-client sign-off is on file, and nothing about who
-     they are, how they ran or what they needed is written down anywhere this
-     repo can reach. A plausible description of a healthcare practice would read
-     perfectly and be an invention.
-
-     What each slot asks for is deliberate — who they are, how they ran, what
-     they needed — because that is the order a reader meets a stranger in, and
-     it is the part of the story the passages below do not tell. */
-  about: [
-    "[Who the office is: what kind of practice it is, who it serves and roughly how big it is — described, not named, until sign-off is on file.]",
-    "[How it ran before: where the information lived, who kept it, and what somebody outside the building had to do to reach it.]",
-    "[What it needed: the thing that made them look for help, stated the way they would state it rather than the way a supplier would.]",
-  ],
-
-  backLabel: "All customer stories",
-  cta: "Get in touch",
+  /* The page's foot: Back on the left, Next Project on the right — owner,
+     2026-10-08: "in the end to have button on the right Next Project and on
+     the left to be Back". This is the only story written, so there is no
+     next one to go to yet: it stands without a link until there is. */
+  way: {
+    label: "More projects",
+    back: "Back",
+    next: "Next Project",
+    nextHref: null as string | null,
+  },
 } as const;

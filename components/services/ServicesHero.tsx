@@ -24,13 +24,16 @@ export type PageHeroContent = {
  * same hero banner but with different text". `name` is the page's, for the
  * heading's id and, where it is not the services', a class of its own the
  * stylesheet sizes its heading by.
+ *
+ * **And the clients'** — owner, 2026-10-08: "change the hero of Client to be
+ * same design as in product and service".
  */
 export function ServicesHero({
   hero,
   name,
 }: {
   hero: PageHeroContent;
-  name: "services" | "products";
+  name: "services" | "products" | "clients";
 }) {
   return (
     <section

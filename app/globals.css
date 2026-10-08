@@ -1490,7 +1490,8 @@ video {
    services page's opening it is not said at all (owner, 2026-10-06: "remove
    this text form services hero banner: Operating from Kosova"). */
 :root:has([data-house-hero]) .site-nav__place,
-:root:has([data-services-hero]) .site-nav__place {
+:root:has([data-services-hero]) .site-nav__place,
+:root:has([data-project-hero]) .site-nav__place {
   visibility: hidden;
 }
 
@@ -1596,7 +1597,8 @@ video {
 
 /* Whole pixels throughout: an even box and a 2px stroke put every stroke on
    the pixel grid, so the short arms stay square-ended rather than soft. */
-.mobile-menu-toggle__plus {
+.mobile-menu-toggle__plus,
+.clients-filters__plus {
   --plus-arm: round(calc(round(0.98em, 2px) * 0.31), 1px);
   position: relative;
   display: block;
@@ -1606,13 +1608,16 @@ video {
 }
 
 .mobile-menu-toggle__plus::before,
-.mobile-menu-toggle__plus::after {
+.mobile-menu-toggle__plus::after,
+.clients-filters__plus::before,
+.clients-filters__plus::after {
   position: absolute;
   content: "";
 }
 
 /* The two level arms: one bar with its middle left open… */
-.mobile-menu-toggle__plus::before {
+.mobile-menu-toggle__plus::before,
+.clients-filters__plus::before {
   top: 50%;
   left: 0;
   width: 100%;
@@ -1628,7 +1633,8 @@ video {
 
 /* …and the two upright ones, drawn upright rather than turned, so they sit on
    the grid as sharply as the level pair. */
-.mobile-menu-toggle__plus::after {
+.mobile-menu-toggle__plus::after,
+.clients-filters__plus::after {
   top: 0;
   left: 50%;
   width: 2px;
@@ -1839,8 +1845,6 @@ video {
   background: transparent;
   color: var(--ink);
 }
-
-
 
 .site-header--mobile-menu-open .mobile-menu-toggle {
   border-color: color-mix(in srgb, var(--ink) 62%, transparent);
@@ -2502,7 +2506,7 @@ video {
    them, in the red. In the page itself, from its top to the wheel's foot in
    one piece, under everything the opening and the wheel hold — neither has
    a ground of its own, so they show through both. */
-.service-page:is(.service-page--services, .service-page--products) {
+.service-page:is(.service-page--services, .service-page--products, .service-page--case-studies) {
   position: relative;
   isolation: isolate;
 }
@@ -2665,6 +2669,25 @@ video {
   margin-bottom: var(--section-space);
 }
 
+/* The clients' heading is sized from its SECOND line — owner's words,
+   2026-10-08, in three lines broken where the sentences turn. "with a real
+   problem. Every one of them" is 16.73 of its size wide (measured) and runs
+   from the first rule, so at 75cqw / 12.75 it ends a few pixels short of the
+   edge, as the services' second line does; the first ("Every project here
+   started", 11.25) stops short of the last rule. The same foot as the
+   products' (owner, 2026-10-08: "same design as in product and service"). */
+.services-hero--clients {
+  --hero-fit: 12.75;
+
+  margin-bottom: var(--section-space);
+}
+
+/* Under it the delivered work stands on the page itself, no ground of its
+   own, so the five hairlines run on through it to the footer as they do on
+   the services' and the products' pages. */
+.service-page--case-studies .clients-index {
+  background: none;
+}
 
 /* The full stop in the red (owner, 2026-10-06: "in the end the . to be in
    red"). */
@@ -7009,65 +7032,6 @@ video {
   opacity: 0.72;
 }
 
-/* -------------------------------- Clients --------------------------------- */
-
-/* The largest heading on the site, and the copy is what paid for it. The old
-   one spent two lines and 33 characters on the measure; "Customer / stories"
-   spends two lines and 8, so the room the words gave back goes into the size
-   rather than being left as air beside them.
-
-   Written as a clamp here and not lifted into :root, which is the one place
-   this file's own rule about tokens is deliberately not followed. A token is
-   for a value more than one thing reads; this is one heading on one page,
-   standing a step above --text-hero because it is the only heading on the site
-   with two words and a whole opening to itself. Putting it in :root would
-   invite a second page to reach for it, and the next page to want it will have
-   different words.
-
-   What stops it is the page, not the measure, and that was worth measuring
-   rather than assuming. This serif draws "Customer" at about 0.39em a
-   character, not the 0.56 a grotesque would — at 116px the word came to 360px
-   against the 760 the artwork leaves, so the line had over half its measure
-   spare and the width was never going to be the thing that ran out. What runs
-   out is height: the support line sits under this, and two lines of it at 160px
-   close most of the gap that was there at 116.
-
-   So the ceiling is set from the vertical, and the floor keeps it above the
-   display size on a phone, where the artwork drops away and the measure is the
-   page.
-
-   Scoped to this page. The five service heroes and the Blog are two- and
-   three-line headings of ordinary length and are unchanged. */
-.service-page--case-studies .service-hero__title {
-  /* The measure was min(21ch, the room left before the artwork), and the second
-     term reserved 30rem for a drawing this page no longer has. With the picture
-     gone the only thing that should bound the heading is the column it stands
-     in, which the grid already sets — so the cap comes off rather than being
-     recalculated around a box that is not there. */
-  max-width: none;
-  /* The floor, not the slope, is what a phone gets: 11vw is only about 43px at
-     390 wide, so every phone reads the first term and nothing else. It was
-     3.5rem and the heading came out at 56px — smaller in absolute terms than
-     this page wants, on the one page whose desktop heading is set at double
-     every other hero's slope.
-     5.5rem, and the ceiling on it is measured rather than picked. `Customer` is
-     the longer of the two authored lines and sets 2.886em of width, so at 88px
-     it runs 254 of the 288 a 320px window leaves and 254 of 358 at 390 — full
-     on the smallest screen sold, comfortable on the common ones.
-     Raised as the floor rather than as a phone override on purpose: the two
-     terms cross at an 800px window, so this is one continuous curve and the
-     desktop size is untouched — and it meets the phone rule's own ceiling at
-     the same 88px, so there is no step at the breakpoint either. */
-  font-size: clamp(5.5rem, 11vw, 10rem);
-
-  /* The two facts the section's phone rule needs about this page's copy:
-     `Customer` is the longer of the two authored lines at 3.218em, and 5.5rem
-     is as large as it should go — the same 88px the line above settles at, so
-     the two sides of the breakpoint agree. */
-  --hero-line: 3.218;
-  --hero-max: 5.5rem;
-}
-
 /* ── About: the longest heading on the site, and the only one that is a
    sentence ──
 
@@ -7162,14 +7126,15 @@ video {
    nothing said so, because being in a list is not something a page can be
    missing loudly.
 
-   Carrying it: ClientsPage, PlaceholderPage, the Careers index and — since
-   2026-08-27, when its bars came out — the Blog index. Not the five service
+   Carrying it: PlaceholderPage, the Careers index and — since 2026-08-27,
+   when its bars came out — the Blog index. (ClientsPage did until 2026-10-08,
+   when it took the services' opening.) Not the five service
    pages or a story: those have artwork, and the base rules are written for
    exactly that.
 
    What it does NOT own is anything to do with the copy: how large a particular
-   heading is set, and where its lines break, stay with the page. See
-   `.service-page--case-studies .service-hero__title` and its Careers twin.
+   heading is set, and where its lines break, stay with the page. See the
+   Careers index's heading rule.
 
    ── What the arrangement is ──
 
@@ -7276,8 +7241,8 @@ video {
    is built for it: no artwork, no eyebrow, and a hero holding one sentence.
    Clients does the same thing for the same reason.
 
-   Not Clients' number, though. That rule runs to 10rem because `Customer` is
-   3.218em wide and a 12-column intro will take it at any size the page wants.
+   Not Clients' number, though. Its old rule ran to 10rem because `Customer` was
+   3.218em wide and a 12-column intro took it at any size the page wanted.
    The longest line here is `with the right team.` at 6.506em — twice the
    measure — so the same 160px would run 1041px into a 900px column and turn a
    line the copy turned on purpose.
@@ -8269,418 +8234,271 @@ video {
   background: var(--service-surface);
 }
 
-/* One line of words, wrapping only when it must.
+/* ── FILTERS ──
 
-   The first version marked the chosen sector by lighting it and dimming the
-   rest, which is the menu panel's language and was the safe answer. It was also
-   invisible from two feet away: eight words in two greys, and the only thing
-   telling you which list you were looking at was which of them was slightly
-   brighter.
+   Owner, 2026-10-08, with a picture of "-¦- FILTERS": "under the hero add
+   this then when click to open …", and then "i want when open menu to open on
+   the left horisontally as menu, then to be selectd only All and active with
+   red underline". FILTERS on the first rule, its plus centred on it as the
+   opening's are on theirs, and the choices in one row beside it, opening as
+   the bar's row of pages does from Menu — wiped out from FILTERS, each word
+   sliding in after it, the nearest first; folded back the same way, quicker.
+   All first and chosen; the chosen one underlined in the red. Where the row
+   is narrow the words wrap in the room beside FILTERS and the work moves down
+   under them. No line under the row (owner, 2026-10-08: "also remove that
+   grey horisontal line").
 
-   So the mark is the bar. Redaction is the one motif this site owns — every
-   hero on it is a page of writing with the words blacked out — and the chosen
-   sector is that idea turned over: instead of a bar standing where a word was
-   hidden, the word stands on the bar. It is the same shape, the same tint the
-   hero field is drawn in, and it reads across a room.
-
-   A row of bordered pills was the other option and is what most sites do here.
-   It would put eight outlined shapes on a page whose whole argument is that
-   words on a ground are enough — and it would mark the seven you have not
-   chosen as loudly as the one you have. */
-/* The index beside the work, not above it. `start` rather than stretch so the
-   column of sectors sits at the top of the block and does not grow to the
-   height of whatever the grid happens to be showing. */
-.clients-layout {
-  display: grid;
-  align-items: start;
-  /* The air between the rail and the work — owner asked for more of it,
-     2026-08-25. It was 28-52px, set when the rail was a column of one-word
-     sector names under no heading; it now carries a 76px heading and seven
-     longer words, and a block that size needs the gap to read as two columns
-     rather than as a wide first one. 48-120px, in two steps: 28-52 was the old
-     value, 40-96 was the first ask, and this is the second.
-
-     The work column is `minmax(0, 1fr)` and absorbs it, so this comes out of
-     the cards rather than out of the page. There is a floor under how far it
-     can go — two 4:3 pictures and the gap between them still have to fit the
-     track — but at 120px the cards are nowhere near it. */
-  gap: clamp(3rem, 7.5vw, 7.5rem);
-  /* The first track is a definite width rather than minmax(0, …), and that is
-     load-bearing: ClientsPin lifts the index out of flow to hold it against the
-     scroll, and a track sized to its content would collapse to nothing the
-     moment the content left it — taking the work column across the page with
-     it. Given a width of its own the column stays where it is whether anything
-     is standing in it or not. */
-  /* Widened on 2026-08-25 with the heading that stands in it — see
-     `.clients-rail__title` for the arithmetic. It was
-     `clamp(9.5rem, 15vw, 13.5rem)`, sized for a list of one-word sectors under
-     no heading at all. */
-  grid-template-columns: clamp(11rem, 22vw, 20rem) minmax(0, 1fr);
-}
-
-.clients-work {
-  min-width: 0;
-}
-
-/* **The rail: what kind of work this page holds.**
-
-   It was the sector filter — eight pressable words with a rule drawn from the
-   left of the chosen one and the word stepping aside to let it in. The owner
-   replaced the taxonomy on 2026-08-25 and nothing in here is pressable now, so
-   all of that came out: the hover, the current mark, the phone disclosure that
-   opened and shut it, and the toggle row that stood in for it while it was
-   shut. Twenty-six rules.
-
-   What is left is an index in the plainest sense — a heading and a list — and
-   it needs no state, which is what let ClientsIndex stop being a client
-   component at all. */
-.clients-rail {
-  min-width: 0;
-}
-
-/* What is actually pinned. It carries nothing of its own — the box exists so
-   that ScrollTrigger has something to take out of flow that is NOT the grid
-   item above it; see the note in ClientsIndex.tsx. */
-.clients-rail__inner {
-  min-width: 0;
-}
-
-/* The special face, which on this site is the one thing set in it: `--type-title`
-   is CS Alistair and it opens the hero, the story titles and this. Two authored
-   lines, so the turn is a decision rather than the column's width.
-
-   **Bigger twice — owner's call, 2026-08-25.** 28-40px first, which read as a
-   label over a list; then 40-76; now 48-96.
-
-   The track widened at the first step on an ESTIMATE, and the estimate was
-   wrong. "Selected" was guessed at roughly 3.8 times the type size; measured in
-   the browser it is **2.71** — CS Alistair is a good deal narrower than that —
-   so at 69px the word is 188px inside a 306px column with 118px spare, and the
-   ceiling that actually fits is about 113px.
-
-   96 rather than 113, and 6.5vw rather than 7, because the SLOPE is what has to
-   be safe and not the cap. Where both the column and the type are scaling the
-   word takes `6.5 * 2.71 / 22` of the track — about 80% — which leaves room for
-   the fallback stack to be wider than the real face. At 7vw it is 86%, close
-   enough to the edge that a font failing to load breaks the authored line in
-   half.
-
-   So the track does not have to move again for this. If the type is ever pushed
-   past about 113px it does, and 2.71 is the ratio to recompute against. */
-.clients-rail__title {
-  /* The space under it, raised alongside the type each time it grew: 24-40px
-     when the heading was 40-76, then 36-64, now 48-88. A heading that doubles
-     while the gap under it stands still stops reading as a heading over a list
-     and starts reading as the first item of one.
-
-     `vh` and not `rem`, which is how it was already written and is right here:
-     the rail is a full-height column held against a scrolling grid, so what
-     this gap has to hold its own against is the window rather than the type. */
-  margin: 0 0 clamp(3rem, 7.5vh, 5.5rem);
-  color: var(--ink);
-  font-family: var(--type-title);
-  font-size: clamp(3rem, 6.5vw, 6rem);
-  font-weight: var(--weight-heading-xl);
-  /* The face's own token, like every other heading in it. This was the heading
-     that started the change — it went to 76px and the old -0.055em closed the
-     letters up — and for one build it was the only thing on the site set to
-     `normal`. That exception is gone: what was wrong was the number, not the
-     idea of tokenising it. */
-  letter-spacing: var(--tracking-display);
-  line-height: 1.02;
-}
-
-.clients-rail__title-line {
-  display: block;
-}
-
-.clients-rail__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* One under the next, and read as an index rather than as a row of controls. */
-.clients-filter {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: clamp(0.15rem, 0.5vh, 0.35rem);
-}
-
-/* The mega menu's own way of marking a name, which is the reason this stood up
-   in the first place: a rule is drawn from the left and the word steps aside to
-   let it in. Both measures are named here because two declarations have to
-   agree on them — the rule's width, and how far the word moves to clear it.
-
-   Set to the cards' own text rather than smaller. The rail is one of the two
-   columns on this page, not a caption beside the other one. */
-.clients-filter__item {
-  --mark: clamp(1.05rem, 1.7vw, 1.5rem);
-  --mark-gap: 0.55rem;
+   It replaced the rail down the left — the same seven, held against the
+   scroll — and every rule that drew it. */
+.clients-filters {
+  --filters-mark: round(0.98em, 2px);
 
   position: relative;
-  display: block;
-  width: 100%;
-  padding: clamp(0.3rem, 0.9vh, 0.5rem) 0;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: clamp(2.5rem, 6vh, 4rem);
+  padding-bottom: clamp(1.75rem, 4vh, 2.5rem);
+  font-size: var(--text-body);
+  font-weight: var(--weight-body);
+  line-height: 1;
+}
+
+.clients-filters__toggle,
+.clients-filters__option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
   border: 0;
   background: transparent;
-  /* **Black, all of them — owner's call, 2026-08-25.** The unchosen seven were
-     `--ink-grey` and the chosen one went to `--ink`, so the mark was made
-     twice: a rule drawn from the left AND the word darkening. One of the two
-     had to go, and the rule is the one that says which of eight rather than
-     just "this one is different" — a reader glancing at the column sees where
-     the line is, not which grey is darker. */
   color: var(--ink);
   cursor: pointer;
   font: inherit;
-  font-family: var(--type-body);
-  font-size: clamp(18px, calc(15.43px + 0.286vw), 20px);
-  letter-spacing: -0.02em;
-  line-height: 1.25;
-  text-align: left;
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  white-space: nowrap;
 }
 
-/* One hairline, in the colour of the word it belongs to — not a coloured bar.
-   The rule is the same object the panel draws, so it is drawn the same way:
-   currentcolor, one pixel, from the left. */
-.clients-filter__item::before {
+.clients-filters__toggle {
+  flex: none;
+  gap: 0.48em;
+  /* The plus's middle on the first rule. */
+  margin-left: calc(var(--filters-mark) / -2);
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* The plus in the red all the time, and the word too while the row is open —
+   owner, 2026-10-08: "i want the + of menu to be red all the time then when
+   open also the FILTER". */
+.clients-filters__plus,
+.clients-filters[data-open="true"] .clients-filters__toggle {
+  color: var(--accent);
+}
+
+/* The row's height, from nothing to its lines: on one line beside FILTERS it
+   never shows; wrapped, it is the work making room. */
+.clients-filters__panel {
+  display: grid;
+  flex: 1 1 0;
+  min-width: 0;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 420ms var(--ease-handover);
+}
+
+.clients-filters[data-open="true"] .clients-filters__panel {
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--duration-handover) var(--ease-standard);
+}
+
+/* Closed, wiped back to the edge it shares with FILTERS; open, the wipe runs
+   out rightward from there. Open a little above and below, so a rolling word
+   and its underline are never cut. */
+.clients-filters__list {
+  display: flex;
+  min-height: 0;
+  flex-wrap: wrap;
+  gap: 0.9em 1.6em;
+  margin: 0;
+  /* More air after FILTERS than between the words — owner, 2026-10-08: "add
+     little more space between the FILTER and the rest of the text". */
+  padding: 0 0 0 3em;
+  list-style: none;
+  clip-path: inset(-0.6em 100% -0.6em 0);
+  visibility: hidden;
+  transition:
+    clip-path 420ms var(--ease-handover),
+    visibility 0s linear 420ms;
+}
+
+.clients-filters[data-open="true"] .clients-filters__list {
+  clip-path: inset(-0.6em 0 -0.6em 0);
+  visibility: visible;
+  transition:
+    clip-path var(--duration-handover) var(--ease-standard),
+    visibility 0s;
+}
+
+.clients-filters__option {
+  opacity: 0;
+  transform: translateX(-1.5em);
+  transition:
+    transform 320ms var(--ease-standard),
+    opacity 200ms var(--ease-standard),
+    color var(--duration-base) var(--ease-standard);
+}
+
+/* The one nearest FILTERS first, then outward. */
+.clients-filters__item:nth-child(2) {
+  --filters-step: 1;
+}
+
+.clients-filters__item:nth-child(3) {
+  --filters-step: 2;
+}
+
+.clients-filters__item:nth-child(4) {
+  --filters-step: 3;
+}
+
+.clients-filters__item:nth-child(5) {
+  --filters-step: 4;
+}
+
+.clients-filters__item:nth-child(6) {
+  --filters-step: 5;
+}
+
+.clients-filters__item:nth-child(7) {
+  --filters-step: 6;
+}
+
+.clients-filters__item:nth-child(8) {
+  --filters-step: 7;
+}
+
+.clients-filters[data-open="true"] .clients-filters__option {
+  opacity: 1;
+  transform: none;
+  transition:
+    transform var(--duration-handover) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard),
+    color var(--duration-base) var(--ease-standard);
+  transition-delay:
+    calc(var(--filters-step, 0) * 60ms),
+    calc(var(--filters-step, 0) * 60ms),
+    0s;
+}
+
+/* The chosen one: a 2px rule in the red under the word, drawn out from its
+   left as it is chosen. */
+.clients-filters__option::after {
   position: absolute;
-  top: 50%;
+  right: 0;
+  bottom: -0.32em;
   left: 0;
-  width: var(--mark);
-  height: 1px;
-  background: currentcolor;
+  height: 2px;
+  background: var(--accent);
   content: "";
   transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--duration-base) var(--ease-handover);
+  transform-origin: left center;
+  transition: transform var(--duration-base) var(--ease-standard);
 }
 
-/* The word travels, not the button — the same split the panel makes, so the
-   hit area stays where it was while the label moves. */
-.clients-filter__label {
-  display: inline-block;
-  transition: transform var(--duration-base) var(--ease-handover);
+.clients-filters__option[aria-pressed="true"]::after {
+  transform: none;
 }
 
-.clients-filter__item.is-current::before {
-  transform: scaleX(1);
-}
-
-.clients-filter__item.is-current .clients-filter__label {
-  transform: translateX(calc(var(--mark) + var(--mark-gap)));
-}
-
-/* Held off the seven by a rule and the space either side of it. Down a column
-   this can be a line without being a border on a control — it is the foot of an
-   index, and what is under it is a different kind of entry. */
-.clients-filter__item--all {
-  margin-top: clamp(0.7rem, 1.8vh, 1.05rem);
-  padding-top: clamp(0.75rem, 1.9vh, 1.1rem);
-  border-top: 1px solid var(--line-soft);
-}
-
-/* Hovering is not choosing: a rule that followed the pointer would have the
-   index drawing and undrawing itself all the way down. It used to answer in
-   colour — grey going to ink — and there is no colour left to move now that
-   every word is ink, so it answers the way the mega menu's own legal line does.
-
-   Under a hover query, because on a touch screen the state sticks after a tap
-   and the word stays faded until something else is pressed. */
 @media (hover: hover) {
-  .clients-filter__item:hover {
-    opacity: 0.68;
+  .clients-filters__toggle:hover,
+  .clients-filters__option:hover {
+    color: var(--accent);
   }
 }
 
-.clients-filter__item:focus-visible {
-  opacity: 0.68;
+.clients-filters__toggle:focus-visible,
+.clients-filters__option:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.45em;
 }
 
-/* The toggle exists only where the index is shut, which is only on a phone. On
-   the wide page the rail stands open beside the work and there is nothing to
-   open. */
-.clients-filter-holder {
-  min-width: 0;
-}
-
-.clients-filter__toggle {
-  display: none;
-}
-
-/* Stacked, the rail is a block of words above the work rather than a column
-   beside it, so it takes the gap a section pays and nothing else. The width
-   query is the same one ClientsPin reads back through matchMedia — the rail is
-   only held against the scroll while there is a column of work beside it. */
-@media (max-width: 64rem) {
-  .clients-rail {
-    margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+@media (prefers-reduced-motion: reduce) {
+  .clients-filters__panel,
+  .clients-filters__list,
+  .clients-filters__option,
+  .clients-filters__option::after,
+  .clients-filters[data-open="true"] :is(.clients-filters__panel, .clients-filters__list, .clients-filters__option) {
+    transition: none;
   }
 }
 
-/* One column below this width, and the rail becomes a block of words above the
-   work rather than a column beside it.
-
-   The comment that stood here described a phone disclosure — the index shut to
-   a single row with a mark saying there was more, opening to the tall column —
-   and all of it went with the filter on 2026-08-25. Seven words that do not
-   respond to being pressed do not need to be hidden behind a control; they are
-   shorter than the thing they index, which is the test the sector list failed.
-
-   The complement of this query is read back in ClientsPin through matchMedia:
-   the rail is only held against the scroll while there is a column of work
-   beside it to hold it against. Change the width here and change it there. */
-@media (max-width: 64rem) {
-  .clients-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  /* The row that stands in for the index. Set as one of its own entries rather
-     than as a control — same size, same rhythm, same left edge — so opening it
-     is the list growing out of the word rather than a panel arriving. Lit,
-     because it is where you are. */
-  .clients-filter__toggle {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: clamp(0.3rem, 0.9vh, 0.5rem) 0 clamp(0.65rem, 1.7vh, 0.95rem);
-    border: 0;
-    /* Ruled off while it is shut, in the site's own hairline, so the row reads
-       as a thing that is closed rather than as a heading standing on its own.
-       It is the same rule `All` draws at the foot of the open index.
-
-       Kept as a border and turned transparent rather than removed when it
-       opens: the row holds its height either way, so opening the index moves
-       nothing above it. */
-    border-bottom: 1px solid var(--line-soft);
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-    font: inherit;
-    font-family: var(--type-body);
-    font-size: clamp(18px, calc(15.43px + 0.286vw), 20px);
-    letter-spacing: -0.02em;
-    line-height: 1.25;
-    text-align: left;
-  }
-
-  .clients-filter__toggle[aria-expanded="true"] {
-    border-bottom-color: transparent;
-  }
-
-  /* The opening, and it is a grid track rather than a height.
-   *
-   * `display: none` cannot be transitioned and a height cannot be transitioned
-   * to `auto`, which is why an accordion is usually either instant or built on
-   * a magic max-height that is wrong the day an entry is added. A track can:
-   * the holder becomes two rows — the shut row, then the index — and the second
-   * runs `0fr` to `1fr`, which is nothing to exactly the height of whatever is
-   * standing in it, measured by the browser at every step.
-   *
-   * `overflow: hidden` on the index is what makes that a reveal rather than a
-   * squash: the words keep their own size and the track uncovers them.
-   *
-   * `visibility` is the half that is not decoration. Collapsed to nothing the
-   * index is still focusable and still read aloud, so it is hidden outright —
-   * and the delay is what sequences it: going out it waits for the track to
-   * close, coming in it does not wait at all. */
-  .clients-filter-holder {
-    display: grid;
-    grid-template-rows: auto 0fr;
-    transition: grid-template-rows var(--duration-handover)
-      var(--ease-handover);
-  }
-
-  .clients-filter-holder[data-open="true"] {
-    grid-template-rows: auto 1fr;
-  }
-
-  .clients-filter {
-    min-height: 0;
-    padding-top: clamp(0.3rem, 0.9vh, 0.5rem);
-    overflow: hidden;
-    visibility: hidden;
-    transition: visibility 0s linear var(--duration-handover);
-  }
-
-  .clients-filter-holder[data-open="true"] .clients-filter {
-    visibility: visible;
-    transition-delay: 0s;
-  }
-
-  /* A cross that closes to a dash — the site's own small mark, and the smallest
-     thing that could say `there is more here`. One bar lies flat and never
-     moves; the other stands and is scaled away when the index opens, so the
-     shut state is a cross and the open state is the rule the index draws
-     everywhere else. */
-  .clients-filter__toggle-mark {
-    position: relative;
-    flex: none;
-    width: var(--mark, 1.05rem);
-    height: var(--mark, 1.05rem);
-  }
-
-  .clients-filter__toggle-mark::before,
-  .clients-filter__toggle-mark::after {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    background: currentcolor;
-    content: "";
-    transition: transform var(--duration-handover) var(--ease-handover);
-  }
-
-  .clients-filter__toggle-mark::after {
-    transform: rotate(90deg);
-  }
-
-  .clients-filter__toggle[aria-expanded="true"] .clients-filter__toggle-mark::after {
-    transform: rotate(90deg) scaleX(0);
-  }
-}
-
-/* The Blog's grid, at the same measure. Entries are equal here for the reason
-   pieces are equal there: an index where one item is drawn larger is telling
-   the reader which to pick before they have read any of them. */
-/* **Two to a row, at every width — owner's call, 2026-08-25.**
-
-   It was `auto-fit` with a 19rem floor, which is a rule about how much room a
-   card needs rather than how many there should be: the grid took three columns
-   on a laptop and four on a wide monitor, and the count changed under you as
-   the window moved. A fixed two is a decision about the page instead.
-
-   `repeat(2, ...)` and no media query, which is what "always" means here. It
-   holds down to the narrowest phone — two cards on a 320px screen are about
-   150px each, which the pictures carry and the three lines under them survive
-   at 18px. If that ever reads as too tight, the fix is one breakpoint, and it
-   would be a change to this decision rather than a repair of it.
-
-   `minmax(0, 1fr)` rather than `1fr`: a bare `1fr` floors at the content's
-   min-content width, which a long client name would push past, and the two
-   columns would stop being equal. */
+/* **Three shapes, two to a row at most, sometimes one — owner,
+   2026-10-08**: "i want the project to have three format Box, wide and
+   portrat and to be mixed", "the images need to start always from the
+   [vertical] line not in the middle", then "max 2 project in one row
+   sometimes 1". It was two equal pictures to a row at every width
+   (2026-08-25). On the page's four columns, where its five lines stand, with
+   no gap between them: each picture starts ON a line, and the air between two
+   pictures is taken off the right of the first, short of the next line.
+   ClientsIndex gives each card its shape, its columns and — a row's first —
+   its line by its place in the rhythm (`data-format`, `data-span`,
+   `data-start`): a row of two is two halves; a row of one is a wide picture
+   from the second line to the edge, or a box over the first half, the rest
+   of its row left empty. A row's first picture names its line, so every row
+   starts a row of its own. Pictures stand level at the top, as the
+   homepage's Selected Work does, each name and its services under its own
+   picture. */
 .clients-grid {
+  --clients-gap: clamp(1.5rem, 3vw, 2.75rem);
+
+  /* So a card can read the page's columns (`cqw`) — the name's start. */
+  container-type: inline-size;
   display: grid;
   margin: 0;
   padding: 0;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  /* Measured off the reference rather than picked: its two pictures are 680
-     wide with 42 between them across a 1402 span, which is 3% — so 3vw, with a
-     floor and a ceiling either side of it the way every other gap on this site
-     is written. It was 12-18px, set when the cards were panels with frames of
-     their own; two pictures standing on the page need the air those frames used
-     to give them. */
-  gap: clamp(1.5rem, 3vw, 2.75rem);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(3rem, 6vw, 5.5rem) 0;
   list-style: none;
 }
 
 .clients-grid > li {
   display: flex;
+}
+
+.clients-grid > [data-span="2"] {
+  grid-column-end: span 2;
+}
+
+.clients-grid > [data-span="3"] {
+  grid-column-end: span 3;
+}
+
+.clients-grid > [data-start="1"] {
+  grid-column-start: 1;
+}
+
+.clients-grid > [data-start="2"] {
+  grid-column-start: 2;
+}
+
+/* The first of two stops short of the next line. */
+.clients-grid > [data-row="2"][data-place="1"] {
+  padding-right: var(--clients-gap);
+}
+
+/* A phone: two columns, on its three lines — a row of two as two halves, a
+   row of one across the page. Each keeps its shape, and each still starts
+   on a line. */
+@media (max-width: 40rem) {
+  .clients-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .clients-grid > [data-row="2"] {
+    grid-column-end: span 1;
+  }
+
+  .clients-grid > [data-row="1"] {
+    grid-column: 1 / -1;
+  }
 }
 
 /* No min-height any more. It was holding the card open around a one-word title
@@ -8733,6 +8551,19 @@ video {
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background: var(--plate-tint);
+}
+
+/* The three shapes: wide, box, portrait. */
+[data-format="wide"] > .clients-card .clients-card__plate {
+  aspect-ratio: 3 / 2;
+}
+
+[data-format="box"] > .clients-card .clients-card__plate {
+  aspect-ratio: 1;
+}
+
+[data-format="portrait"] > .clients-card .clients-card__plate {
+  aspect-ratio: 4 / 5;
 }
 
 /* The shade the sector is read against, and it is on the picture rather than on
@@ -8809,22 +8640,35 @@ video {
    that is enough to lead; putting it in `--type-title` would make eight cards
    compete with the heading standing beside them in the rail, which is set in
    that face at up to 76px. */
-.clients-card__name,
-.clients-card__fact {
-  margin: 0;
+/* **The name alone, smaller, from the line in the middle of its picture** —
+   owner, 2026-10-08: "make smaller name also remove the service complete
+   under the project and alwas the name of the project put like in the middle
+   of project when the vertical line start not in the begining". At the
+   homepage's Selected Work caption size (it was 24-30px, over the services
+   line), and one of the page's columns in from the picture's start — the
+   middle line of a half, the page's middle line under the wide one that runs
+   from the second line to the edge. `cqw` reads the grid, which is the
+   page's four columns. A phone's half has no line inside it, so there the
+   name starts with its picture; under a picture across the page, from the
+   middle line. */
+.clients-card__name {
+  margin: clamp(0.9rem, 1.8vh, 1.25rem) 0 0 25cqw;
   color: var(--ink);
   font-family: var(--type-body);
-  letter-spacing: normal;
-  line-height: 1.5;
-}
-
-.clients-card__name {
-  margin-top: clamp(0.9rem, 1.8vh, 1.25rem);
-  /* Up from the values' 18-20px, which it used to share with them. */
-  font-size: clamp(1.5rem, 2vw, 1.875rem);
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
   font-weight: var(--weight-medium);
   letter-spacing: -0.01em;
   line-height: 1.2;
+}
+
+@media (max-width: 40rem) {
+  [data-row="2"] > .clients-card .clients-card__name {
+    margin-left: 0;
+  }
+
+  [data-row="1"] > .clients-card .clients-card__name {
+    margin-left: 50cqw;
+  }
 }
 
 /* Dropped to the foot, so a row of cards agrees along its bottom edge however
@@ -8875,23 +8719,6 @@ video {
    what the hover is; it is the only part of the card that has a surface. */
 .clients-card--linked:hover .clients-card__name {
   color: var(--accent-strong);
-}
-
-/* The facts: straight under the name with no gap of their own, one block with
-   it, as in his portfolio.
-
-   The size they have had since 2026-08-25 — they went down to `--text-copy` for
-   one build and came straight back, because what the owner wanted smaller then
-   was the label, not the thing it labels.
-
-   **Grey, which is newer than "black".** On 2026-08-25 the owner asked for the
-   text on this page to be black; the reference he sent on 2026-09-30 sets these
-   three in grey under a bright name, and that is the later word. The plain
-   `--ink-grey`, as his is, not the lavender `--ink-muted`: #9a9a9a on the black
-   page and #595959 on the white, 7.46:1 and 7.00:1. */
-.clients-card__fact {
-  color: var(--ink-grey);
-  font-size: clamp(18px, calc(15.43px + 0.286vw), 20px);
 }
 
 /* **The picture darkens and a plus is drawn on it — owner's call, 2026-08-25.**
@@ -9015,128 +8842,6 @@ video {
   }
 }
 
-/* ---------------------------- Clients: one story -------------------------- */
-
-/* The trail, and the heading under it. Small, tracked and grey — the voice this
-   site gives its labels — so it sits over the title without competing with it.
-   Two links rather than one: all the stories, and the sector this one is in,
-   because leaving a story should put you back among the ones like it. */
-.story-hero__trail {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: clamp(0.5rem, 1vw, 0.8rem);
-  margin: 0 0 clamp(1.1rem, 2.5vh, 1.75rem);
-  color: var(--ink-grey);
-  font-size: var(--text-small);
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-
-.story-hero__back {
-  color: inherit;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-.story-hero__back:hover,
-.story-hero__back:focus-visible {
-  color: var(--ink);
-}
-
-/* A step under the index's heading. "Customer stories" is the department and
-   this is one item in it, so it cannot be set at the same size — but it is
-   still the opening of a page, so it keeps the display size the service heroes
-   use rather than dropping to a section heading. */
-.service-page--story .service-hero__title {
-  max-width: 18ch;
-  font-size: var(--text-heading-xl);
-
-  /* What the section's phone rule needs about this page's copy: `healthcare
-     office` is the longer of the two authored lines at 5.542em. The ceiling is
-     4rem rather than the index's 5.5 — this heading is a sentence where that one
-     is two words, and 64px is where it stops filling the column and starts
-     running out of it.
-
-     A story with different lines re-measures the first number. Leave both off
-     and the defaults are 5.6em and 4rem, which is close enough to this page that
-     nothing has to be written for an ordinary title. */
-  --hero-line: 5.542;
-  --hero-max: 4rem;
-}
-
-/* The right half of the opening.
-   Pulled up by the header's own height — the same expression .site-header uses
-   for its top padding plus the bar's height — because the header is a sibling
-   above this section and the picture is meant to run behind the menu rather
-   than start under it. Written as the expression rather than a number so the
-   two cannot drift; .service-hero__inner already names the same sum. */
-/* The bar's ground, taken off on this page only.
-   `.site-header` paints an opaque black at z-index 5 and sits above this
-   section, so the picture's top hundred pixels were being covered by it — the
-   box reached the top of the window all along and the header was painted over
-   it. Transparent here costs nothing: the left half of the bar still stands on
-   the page's own black, which is the same colour it was painting. */
-.service-page--story .site-header {
-  background: transparent;
-}
-
-.story-hero__art {
-  position: absolute;
-  top: calc(-1 * var(--header-space));
-  right: calc(-1 * var(--page-gutter));
-  bottom: 0;
-  left: 50%;
-  overflow: hidden;
-}
-
-/* Thirty per cent transparent, evenly, across the whole frame — which on this
-   page's black ground is a flat thirty per cent darker. It replaces the two
-   gradients that came off: those covered the picture hardest exactly where the
-   menu and the lede stand and left the middle clear, and this treats every part
-   of the frame the same.
-
-   On the image rather than a layer over it: a sheet on top would also sit over
-   the shade that comes up on scroll and dilute it, and one of the two would
-   always be fighting the other. */
-.story-hero__art-image {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.7;
-}
-
-/* Nothing over the picture at rest. It carried a gradient at both ends — heavy
-   at the top so the menu could be read on it, heavy at the foot for the lede —
-   and the owner took both off: the opening is meant to be the photograph when
-   you arrive at it.
-
-   **The trade that buys is worth stating.** The menu and the lede are white and
-   now stand on whatever the picture opens with. On this frame they hold; on a
-   brighter one they will not, and the answer then is a darker frame rather than
-   the gradient coming back.
-
-   What is left is the foot, and only once the page is moving — see
-   StoryHeroShade. The edge where the picture meets the page below it is the one
-   place cover is doing a job rather than protecting type. */
-.story-hero__shade {
-  position: absolute;
-  z-index: 1;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 45%;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    color-mix(in srgb, var(--canvas) 34%, transparent) 46%,
-    color-mix(in srgb, var(--canvas) 82%, transparent) 100%
-  );
-  content: "";
-  opacity: 0;
-  pointer-events: none;
-}
-
 /* Stacked, the picture takes the whole opening rather than half of it — a
    half-width column on a phone is a stripe.
 
@@ -9153,33 +8858,6 @@ video {
    has to be kept in step with it. It also puts the scroll shade back where it
    was designed to work — the foot of the picture is the edge where the page
    below begins again, not a line across the middle of the screen. */
-@media (max-width: 64rem) {
-  .story-hero__art {
-    left: calc(-1 * var(--page-gutter));
-  }
-}
-
-.service-page--story .service-hero__aside {
-  z-index: 1;
-  display: flex;
-  grid-column: 7 / -1;
-  grid-row: 2 / -1;
-  flex-direction: column;
-  align-items: flex-start;
-  align-self: end;
-  justify-self: end;
-  width: fit-content;
-}
-
-.service-page--story .service-hero__support {
-  max-width: 26ch;
-  margin-bottom: 20px;
-}
-
-.service-page--story .service-hero__cta {
-  align-self: flex-start;
-  justify-self: auto;
-}
 
 /* Phone only: the lede stands off the right edge with the way in under it, and
    both are read up from the corner rather than across the foot.
@@ -9195,25 +8873,9 @@ video {
    foot, and 2.6rem here puts the lede's last line about 15 clear of its top.
    That is the number to change if the CTA's size ever does. */
 @media (max-width: 48rem) {
-  .service-page--story .service-hero__support {
-    right: 0;
-    left: auto;
-    margin-bottom: 2.6rem;
-    text-align: right;
-  }
+  
 
-  /* The trail in the page's own white on a phone, not the grey it takes
-     everywhere else. Grey is the site's label voice and it is right on a desktop,
-     where the trail stands on the page's black beside the picture. On a phone the
-     picture is the whole opening and the trail stands on the photograph — grey
-     against a pale sky is the weakest thing on the screen, and it is the one line
-     that says where you are.
-
-     Set on the paragraph so both links take it: they carry `color: inherit`, and
-     hover still resolves to the same ink. */
-  .story-hero__trail {
-    color: var(--ink);
-  }
+  
 
   /* ── Every Clients hero on a phone, sized from its own copy ──
      The index, all seven sectors, and every story written after them. Owner
@@ -9406,375 +9068,8 @@ video {
   }
 }
 
-.story {
-  padding-block: var(--section-space-lg);
-  color: var(--service-ink);
-  background: var(--service-surface);
-}
-
-/* Across the page, under the opening. It was a rail down the left held against
-   the scroll — owner's change. A row states the job once and is passed, which is
-   how a record is actually read: at a glance, before the account rather than
-   beside it. No pin on this page any more; ClientsPin stays where it was
-   written and the sector index still uses it.
-
-   Ruled top and bottom so it reads as a record rather than as four headings.
-   Four equal tracks stated rather than auto-fit: auto-fit with a minmax laid six
-   tracks for four facts on the index once, and the two empty ones still took
-   their gap, so the row could not reach the edge it is ruled to. */
-.story-record {
-  display: grid;
-  margin: 0;
-  padding-block: clamp(1.1rem, 2.6vh, 1.6rem);
-  border-top: 1px solid var(--line-soft);
-  border-bottom: 1px solid var(--line-soft);
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(1.25rem, 3vw, 2.5rem);
-}
-
-.story-record__fact dt {
-  margin-bottom: 0.45rem;
-  color: var(--ink-grey);
-  font-size: var(--text-fine);
-  letter-spacing: 0.06em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-.story-record__fact dd {
-  margin: 0;
-  color: var(--ink);
-  font-size: var(--text-copy);
-  line-height: 1.5;
-  text-wrap: pretty;
-}
-
-/* Three short paragraphs about the client company, in one row above the plate.
-   One statement in three parts rather than three sections, so there are no
-   headings over them and no rules between them — the columns are the division.
-
-   Equal thirds, stated rather than auto-fit: the three are read together and a
-   track that sized itself to its own text would make the shortest paragraph
-   look like the least important one. */
-.story-about {
-  display: grid;
-  margin: clamp(2.5rem, 7vh, 4rem) 0 0;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  /* Wide, and then wider. The three were 52px apart and read as one paragraph
-     broken twice rather than three standing beside each other; with no rule and
-     no heading between them the space is the only thing dividing them, so it
-     has to do the work a rule would. 52 to 91 to this.
-
-     The ceiling is set from the measure rather than from taste: each column is
-     about 60 characters here and holds three lines, and taking much more would
-     start breaking the paragraphs into four. */
-  gap: clamp(2.5rem, 9vw, 11rem);
-}
-
-/* Set on --text-body, not the --text-copy the rest of the site's paragraphs
-   take. Owner's call, 2026-08-12: this row is read as the opening statement of a
-   story rather than as supporting copy beside something else, and at the copy
-   size it sat a step under the page it opens.
-
-   The knock-on to know before touching the gap above: a column here is about 60
-   characters at the copy size and the gap's ceiling was set from that, to keep
-   each paragraph at three lines. Two more pixels is roughly six characters a
-   line off every column, so the longest of the three can turn a fourth. If they
-   have to agree at three, the gap is where it is bought back — not this rule. */
-.story-about__copy {
-  margin: 0;
-  color: var(--ink-read, var(--ink));
-  font-size: var(--text-body);
-  line-height: 1.65;
-  text-wrap: pretty;
-}
-
-/* The plate under the record: the biggest thing on the page, and held to the
-   same column everything else is. Not full-bleed — the record is ruled to the
-   container's edges and the reading sits inside them, so a picture that broke
-   the line would make those two look inset rather than making itself look
-   large.
-
-   Square. Every rounded thing on this site is a card or a panel, an object with
-   edges of its own; a plate is a window onto the work, and a rounded window is
-   a card with a photograph in it. */
-.story-plate {
-  margin: clamp(2.5rem, 7vh, 4rem) 0 0;
-  overflow: hidden;
-  background: var(--surface-raised);
-  box-shadow: var(--panel-shadow);
-}
-
-.story-plate__art {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-}
-
-/* Under the record. The copy keeps its own measure, so a wider column does not
-   become a wider line. */
-.story-reading {
-  min-width: 0;
-  margin-top: clamp(2.5rem, 7vh, 4rem);
-}
-
-/* The three states as a ruled index that un-stacks: the whole list is present
-   from the first moment, piled at the foot of the window, and it empties one
-   entry at a time into a second pile at the top. See StorySteps.tsx — the two
-   anchors are computed there, because ScrollSmoother makes `position: sticky`
-   impossible on this site. Everything here is the resting layout, which is what
-   a reader with no motion and a reader on a phone both get. */
-.story-index {
-  margin-top: clamp(2.5rem, 7vh, 4rem);
-}
-
-.story-index__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* Title bar and reading in the left column, the picture beside both. The row
-   track is `1fr` so the reading's row takes whatever the entry's height leaves
-   it — which is what gives the picture spanning both rows a definite height to
-   fill, rather than a circular one.
-
-   The minimum height is the travel. Each bar rides its own entry from the foot
-   pile to the top pile, so an entry shorter than a screen would hand the reader
-   two entries at once and none of the order. */
-.story-index__entry {
-  display: grid;
-  min-height: clamp(26rem, 76vh, 44rem);
-  gap: 0 clamp(1.5rem, 5vw, 5rem);
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  grid-template-rows: auto minmax(0, 1fr);
-}
-
-.story-index__entry:last-child {
-  border-bottom: 1px solid var(--ink);
-}
-
-/* The travelling box. Opaque to the page's own black, so a bar resting in
-   either pile covers the reading passing under it — a translucent one would let
-   two paragraphs show through each other, which is the single thing that would
-   make the piles look like a fault rather than a mechanism.
-
-   The rules are the page's own ink rather than the hairline the rest of this
-   site draws at 16%. Owner's call, and it changes what the list is: at full
-   strength the entries read as a ruled index — a thing with rows — rather than
-   as three paragraphs with faint separators between them. */
-.story-index__bar {
-  position: relative;
-  z-index: 3;
-  display: flex;
-  align-items: baseline;
-  padding-block: clamp(0.9rem, 2.2vh, 1.25rem);
-  border-top: 1px solid var(--ink);
-  background: var(--canvas);
-  gap: clamp(1rem, 2.5vw, 2.25rem);
-  grid-column: 1;
-  grid-row: 1;
-}
-
-/* Descending, so a bar still travelling passes UNDER the pile it is joining
-   rather than over the top of it. Three entries, three values — a rule per
-   entry is longer than a formula and it is also the only version that says out
-   loud how many there are. */
-.story-index__entry:nth-child(2) .story-index__bar {
-  z-index: 2;
-}
-
-.story-index__entry:nth-child(3) .story-index__bar {
-  z-index: 1;
-}
-
-/* Held to a fixed measure so every title starts at the same place across the
-   column, whatever the number beside it. */
-.story-index__number {
-  flex: none;
-  width: 2ch;
-  color: var(--ink-grey);
-  font-size: var(--text-fine);
-  letter-spacing: 0.08em;
-  line-height: 1.6;
-}
-
-.story-index__title {
-  margin: 0;
-  color: var(--ink);
-  font-family: var(--type-display);
-  font-size: clamp(1.1rem, 1.5vw, 1.5rem);
-  font-weight: var(--weight-heading);
-  letter-spacing: 0.02em;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
-/* At the FOOT of its entry rather than tucked under its own title, which is
-   where the reference puts it and it took watching this run to see why. A
-   reading set directly under the bar rides up with it and has gone past the top
-   of the window by the time that bar arrives in the top pile — so the title
-   lands held and clear with nothing beside it, and the writing it belongs to
-   was readable only on the way in. Set at the end, it comes up into the open
-   band between the two piles while its own title is already held above it. */
-.story-index__text {
-  align-self: end;
-  padding-block: clamp(1.25rem, 3.5vh, 2rem);
-  grid-column: 1;
-  grid-row: 2;
-}
-
-/* The reading, on --text-body with the row above it. This is the one block on
-   the page that is genuinely long-form, and it was set two pixels under the
-   Blog's own reading while doing the same job — the Blog was raised for exactly
-   this reason and this had been left behind.
-
-   It shortens the line rather than lengthening it, which is the opposite of what
-   raising type usually does here: the column is fixed by the grid, so the same
-   width now holds fewer characters — about seventy-two at a 1440 window against
-   the eighty-odd it was running, which is where the Blog's measure landed.
-
-   `62ch` stays as the cap for wide windows only. It is not the constraint at
-   normal widths and it must not be read as the measure: this face's zero is half
-   again its average letter, so 62ch is nearer eighty-two characters than
-   sixty-two. Set a measure here in rem if it ever has to be exact. */
-.story-index__copy {
-  max-width: 62ch;
-  margin: 0;
-  color: var(--ink-read, var(--ink));
-  font-size: var(--text-body);
-  line-height: 1.65;
-  text-wrap: pretty;
-}
-
-.story-index__copy + .story-index__copy {
-  margin-top: clamp(1rem, 2.6vh, 1.5rem);
-}
-
-/* Down the whole entry, beside the bar as well as the reading — the bar only
-   covers its own column, so a picture that started under the title would leave
-   a band of nothing beside every rule. Square corners, like the plate above.
-
-   One frame, filling that height. A pair stacked here was built and taken out
-   again: two pictures at their own aspect came to 879px against the 618 of a
-   single one, so the entry holding them was half as long again as its
-   neighbours and the section stopped reading as a list of three. Owner's call,
-   and the measurement is why it was the right one. */
-.story-index__shot {
-  margin: 0;
-  overflow: hidden;
-  background: var(--surface-raised);
-  box-shadow: var(--panel-shadow);
-  grid-column: 2;
-  grid-row: 1 / -1;
-}
-
-.story-index__shot img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* A `--quiet` variant lived here for an entry with no picture: the reading ran
-   across the whole width as two paragraphs side by side. It went when the third
-   passage was given a frame like the other two, and it is not left in — a rule
-   set no markup reaches is untested by construction, and the next person to
-   read this file would take it for a state the section can be in.
-
-   Worth keeping the one fact it cost a build to learn, in case that variant is
-   ever wanted again: **do not change the entry's columns to do it.** The bar is
-   a grid item of the entry, so a one-column entry makes that bar wider than the
-   ones above it and the pile sits ragged against the window's edge. Change only
-   what is inside the row. */
-
-/* At the foot of the reading rather than under both columns: it belongs to the
-   column that ends, and the rail does not end, it is released.
-
-   **No rule over it** — owner's call, 2026-08-12, at every width. It carried the
-   site's hairline and it was the second line inside about sixty pixels: the
-   index already closes itself with a rule of its own under the last picture, so
-   this drew a faint one again just below it and the foot of the page read as two
-   endings rather than one.
-
-   The space stays. `padding-top` is left where it was so the row sits exactly
-   where it sat — what has gone is the line, not the gap it was drawn in, which
-   is what keeps this from being a re-spacing of the foot of the page. */
-.story-out {
-  margin: clamp(2.5rem, 7vh, 4rem) 0 0;
-  padding-top: clamp(1.25rem, 3vh, 2rem);
-}
-
-.story-out__link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55em;
-  color: var(--ink);
-  font-family: var(--type-display);
-  font-size: var(--service-text-action);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1;
-}
-
 /* Two across on a tablet, one on a phone: four bracketed values side by side at
    30rem is four columns of two words each. */
-@media (max-width: 64rem) {
-  .story-record {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: clamp(1.1rem, 3vh, 1.6rem);
-  }
-
-  /* One under the next. Three paragraphs across a tablet is three columns of
-     four words. */
-  .story-about {
-    grid-template-columns: minmax(0, 1fr);
-    gap: clamp(1.1rem, 3vh, 1.6rem);
-  }
-
-  /* One column, in the entry's own order: title, reading, picture.
-
-     No piles at this width, and the reason is the layout rather than taste. The
-     two piles work on two columns because an entry is `min-height: 76vh` with
-     its reading dropped to the foot, so a bar in transit crosses an empty band
-     with the picture standing beside it. In one column there is no band: a bar
-     between the piles crosses the reading itself, and the reader watches the
-     text go by through the space between the two stacks. Tried on 2026-08-12
-     and taken straight back out.
-
-     Below 48rem the section gets held titles a different way — see the block
-     under this one. Between the two widths it is a plain stack, which is what
-     it has always been.
-
-     The minimum height comes off with the piles: its job is to buy travel, and
-     with nothing travelling a floor set in vh only opens a band of nothing
-     under the shortest entry. */
-  .story-index__entry {
-    min-height: 0;
-    gap: 0;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto auto;
-  }
-
-  .story-index__bar,
-  .story-index__text {
-    grid-column: 1;
-  }
-
-  .story-index__shot {
-    margin-bottom: clamp(1.5rem, 4vh, 2.25rem);
-    grid-column: 1;
-    grid-row: 3;
-  }
-
-  .story-index__shot img {
-    height: auto;
-    min-height: 0;
-    aspect-ratio: 8 / 5;
-  }
-}
 
 /* The same two piles a desktop gets — the whole index at the foot of the window
    to begin with, emptying one entry at a time into a pile at the top — but held
@@ -9839,51 +9134,570 @@ video {
    breakpoint. Written as 48 these overlapped on one pixel, and on that pixel the
    smoother is running while these bars are sticky, which is the one combination
    that drifts. */
-@media (max-width: 47.9375rem) and (prefers-reduced-motion: no-preference) {
-  .story-index__entry {
-    display: contents;
+
+/* ---------------------------- Clients: one story -------------------------- */
+
+/* **A new approach — owner, 2026-10-08**, from three references: "hero with
+   big images", the project in a paragraph with its record under it, "then
+   changellens etc", then the delivered pages one after the next. All of it on
+   the page's four columns and its five lines (ServicesFooterRules in the page,
+   under everything; the opening and the pages draw over them). */
+.project-page {
+  position: relative;
+  isolation: isolate;
+}
+
+/* ── The opening: one picture across the whole screen ──
+   Under the bar, which turns white over it (`data-bar-dark`). The page's
+   lines drawn over the picture in a light veil of the photo ink; a shade from
+   the foot so the words read on any picture; from the middle line, the
+   industry beside the red square and, under it, the project's name. */
+.project-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: 100svh;
+  align-items: end;
+  overflow: hidden;
+  background: var(--ink);
+  color: var(--ink-on-photo);
+}
+
+.project-hero__media {
+  position: absolute;
+  inset: 0;
+}
+
+.project-hero__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-hero__media::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--ink) 72%, transparent),
+    color-mix(in srgb, var(--ink) 18%, transparent) 55%
+  );
+  content: "";
+}
+
+.project-hero__rules {
+  z-index: 1;
+}
+
+.project-hero__rules .services-rules__line {
+  background: color-mix(in srgb, var(--ink-on-photo) 28%, transparent);
+}
+
+.container.project-hero__inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding-bottom: clamp(2rem, 6vh, 4rem);
+}
+
+.project-hero__meta,
+.project-hero__title {
+  grid-column: 3 / -1;
+}
+
+.project-hero__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  margin: 0 0 clamp(0.5rem, 1.5vh, 1rem);
+  font-size: var(--text-body);
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+/* The red square, on the middle line. */
+.project-hero__mark {
+  flex: none;
+  width: 0.62em;
+  height: 0.62em;
+  background: var(--accent);
+}
+
+.project-hero__title {
+  margin: 0;
+  font-family: var(--type-display);
+  font-size: var(--text-house);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-heading);
+}
+
+/* Where the opening's entrance starts (ProjectHeroReveal): the name hidden
+   until its words are split, the industry not yet there. Only with script,
+   and not for a reader who asked for less motion. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .project-hero__title {
+    visibility: hidden;
   }
 
-  /* Measured by StorySteps and written onto the list, because the height of a
-     bar is a font's line box plus two clamps and is not worth computing twice.
-     The fallback is that measurement at a 390px window, so the piles are within
-     a pixel even if the script never runs. */
-  .story-index__bar {
-    position: sticky;
-    top: var(--pile-head);
-    bottom: var(--pile-foot);
-  }
-
-  /* Three entries, three rules — the same choice the z-index ladder above makes.
-     A formula would be shorter and would stop saying out loud how many there
-     are, which is the thing that has to be checked when a fourth story is
-     written. */
-  .story-index__entry:nth-child(1) .story-index__bar {
-    --pile-head: 0px;
-    --pile-foot: calc(2 * var(--story-bar, 3.45rem));
-  }
-
-  .story-index__entry:nth-child(2) .story-index__bar {
-    --pile-head: var(--story-bar, 3.45rem);
-    --pile-foot: var(--story-bar, 3.45rem);
-  }
-
-  .story-index__entry:nth-child(3) .story-index__bar {
-    --pile-head: calc(2 * var(--story-bar, 3.45rem));
-    --pile-foot: 0px;
-  }
-
-  /* The rule that closed the list, moved off the entry that no longer has a box
-     and onto the last thing in it. */
-  .story-index__entry:last-child .story-index__shot {
-    border-bottom: 1px solid var(--ink);
+  [data-project-hero-meta] {
+    opacity: 0;
+    transform: translateY(0.75rem);
   }
 }
 
-@media (max-width: 30rem) {
-  .story-record {
-    grid-template-columns: minmax(0, 1fr);
+/* ── The project: name, paragraph, record, the way to the live site ── */
+.project-intro {
+  padding-block: var(--section-space-lg) var(--section-space);
+}
+
+.container.project-intro__inner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+}
+
+/* Where a reference sets the client's logo, its name, in words. Level with
+   the paragraph's first line. */
+.project-intro__name {
+  grid-column: 2;
+  grid-row: 1;
+  margin: calc((var(--text-heading) * 1.25 - 1.2em) / 2) 0 0;
+  padding-right: 1.5rem;
+  color: var(--ink-grey);
+  font-family: var(--type-display);
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.project-intro__summary {
+  grid-column: 3 / -1;
+  grid-row: 1;
+  margin: 0;
+  font-size: var(--text-heading);
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.project-intro__record {
+  display: grid;
+  grid-column: 3 / -1;
+  grid-row: 2;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  row-gap: clamp(2.5rem, 6vh, 4rem);
+  margin: clamp(4rem, 10vh, 7rem) 0 0;
+}
+
+.project-intro__fact {
+  padding-right: 1.5rem;
+}
+
+/* Black, as the values are — owner, 2026-10-08: "here all text on black". */
+.project-intro__label {
+  margin: 0 0 0.4em;
+  color: var(--ink);
+  font-size: var(--text-body);
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+}
+
+.project-intro__value {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.35;
+}
+
+/* The way to the delivered site: the site's word-and-arrow button, as VIEW
+   ALL is — owner, 2026-10-08: "the button make it a normal button that we
+   use it" (it was a grey box with the red on its left edge). From the middle
+   line. */
+.project-live {
+  display: inline-flex;
+  grid-column: 3 / -1;
+  grid-row: 3;
+  align-items: center;
+  justify-self: start;
+  gap: 0.7em;
+  margin: clamp(3rem, 8vh, 5rem) 0 0;
+  color: var(--ink);
+  font-size: var(--text-body);
+  line-height: 1;
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  a.project-live:hover {
+    color: var(--accent);
   }
+}
+
+a.project-live:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.2em;
+}
+
+/* VIEW ALL's thin arrow. */
+.project-arrow {
+  flex: none;
+  width: 0.95em;
+  height: 0.95em;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: square;
+  stroke-width: 1.25px;
+}
+
+.project-arrow path {
+  vector-effect: non-scaling-stroke;
+}
+
+/* ── The account: what it replaced, what it does now, what the client owns ──
+   Each heading on the second line, its paragraphs from the middle line. */
+.project-account {
+  padding-block: var(--section-space) var(--section-space-lg);
+}
+
+.project-passage {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+}
+
+.project-passage + .project-passage {
+  margin-top: clamp(4rem, 10vh, 7rem);
+}
+
+.project-passage__title {
+  grid-column: 2;
+  margin: 0;
+  padding-right: 1.5rem;
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.project-passage__copy {
+  grid-column: 3 / -1;
+}
+
+.project-passage__copy p {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.55;
+}
+
+.project-passage__copy p + p {
+  margin-top: 1em;
+}
+
+/* ── The pages (ProjectShowcase) ──
+   A screen tall and held while the pages pass through the middle columns;
+   Previous and Next on the left; every page in small at the right edge, a
+   frame over the part in view. On the white page, no ground of its own, so
+   the page's lines run on through it — owner, 2026-10-08: "here bacground in
+   white" (it was a charcoal ground, from his reference). */
+.project-showcase {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  color: var(--ink);
+}
+
+.container.project-showcase__inner {
+  display: grid;
+  height: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.project-showcase__nav {
+  display: flex;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+}
+
+.project-showcase__step {
+  display: grid;
+  justify-items: start;
+  gap: 0.75em;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--text-body);
+  line-height: 1;
+  transition:
+    color var(--duration-base) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard);
+}
+
+.project-showcase__step:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+@media (hover: hover) {
+  .project-showcase__step:not(:disabled):hover {
+    color: var(--accent);
+  }
+}
+
+.project-showcase__step:focus-visible,
+.project-showcase__thumb:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.35em;
+}
+
+.project-showcase__arrow {
+  width: 4em;
+  height: 0.75em;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.25px;
+}
+
+.project-showcase__arrow path {
+  vector-effect: non-scaling-stroke;
+}
+
+/* The middle columns, the second line to the fourth: the pages pass through
+   here. Each is 16:10, so each is 62.5% of the column's width tall, and the
+   list is padded so the first and the last stand in the middle of the
+   screen. */
+.project-showcase__stage {
+  grid-column: 2 / span 2;
+  grid-row: 1;
+  height: 100%;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.project-showcase__pages {
+  display: grid;
+  gap: clamp(4rem, 12vh, 9rem);
+  margin: 0;
+  padding: max(1rem, calc((100svh - 62.5cqw) / 2)) 0;
+  list-style: none;
+  will-change: transform;
+}
+
+.project-showcase__page {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.project-showcase__page img,
+.project-showcase__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-showcase__strip {
+  position: relative;
+  grid-column: 4;
+  grid-row: 1;
+  justify-self: end;
+  align-self: center;
+  width: clamp(4.5rem, 6.6vw, 7.5rem);
+}
+
+.project-showcase__thumbs {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-showcase__thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 3px;
+  background: var(--surface);
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.project-showcase__thumb[aria-current="true"] {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .project-showcase__thumb:hover {
+    opacity: 1;
+  }
+}
+
+/* Over the part of the pages in view; its height and place are set as the
+   pages pass. */
+.project-showcase__window {
+  position: absolute;
+  top: 0;
+  right: -0.3rem;
+  left: -0.3rem;
+  height: 0;
+  border: 1.5px solid var(--ink);
+  border-radius: 5px;
+  pointer-events: none;
+}
+
+/* ── The way back to every story ── */
+.project-out {
+  padding-block: var(--section-space-lg);
+}
+
+.container.project-out__inner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Back on the left, Next Project on the right — owner, 2026-10-08: "in the
+   end to have button on the right Next Project and on the left to be Back",
+   then "move both … inside other field in the middle": Back from the second
+   line, Next Project ending on the fourth; then "remove text only leave it
+   arrows but make longer arrows also when hover to tourn in red". Room
+   above and below each arrow for the pointer, taken back so nothing moves. */
+.project-out__link {
+  display: inline-flex;
+  grid-column: 2;
+  align-items: center;
+  justify-self: start;
+  margin: -0.6em 0;
+  padding: 0.6em 0;
+  gap: 0.7em;
+  color: var(--ink);
+  font-size: var(--text-body);
+  line-height: 1;
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+.project-out__link--next {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.project-out__arrow {
+  width: 4em;
+  height: 0.75em;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.25px;
+}
+
+.project-out__arrow path {
+  vector-effect: non-scaling-stroke;
+}
+
+@media (hover: hover) {
+  .project-out__link:hover {
+    color: var(--accent);
+  }
+}
+
+.project-out__link:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.35em;
+}
+
+/* A phone: the same page on two columns. The opening's words from the
+   middle line; the name over the paragraph, the paragraph and the record
+   across both; each heading over its paragraphs; the pages one under the
+   next across the page, not held, with nothing beside them. */
+@media (max-width: 40rem) {
+  .container.project-hero__inner,
+  .container.project-intro__inner,
+  .project-passage,
+  .container.project-out__inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .project-hero__meta,
+  .project-hero__title {
+    grid-column: 2 / -1;
+  }
+
+  .project-intro__name {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+
+  .project-intro__summary {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 1.25rem;
+  }
+
+  .project-intro__record {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  .project-live {
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+
+  .project-passage__title,
+  .project-passage__copy {
+    grid-column: 1 / -1;
+  }
+
+  .project-passage__copy {
+    margin-top: 1rem;
+  }
+
+  .project-showcase {
+    height: auto;
+    padding-block: var(--section-space);
+  }
+
+  .container.project-showcase__inner {
+    display: block;
+    height: auto;
+  }
+
+  .project-showcase__nav,
+  .project-showcase__strip {
+    display: none;
+  }
+
+  .project-showcase__stage {
+    height: auto;
+    overflow: visible;
+  }
+
+  .project-showcase__pages {
+    gap: 1.5rem;
+    padding: 0;
+  }
+
+  .project-out__link {
+    grid-column: 1;
+  }
+
+  .project-out__link--next {
+    grid-column: 2;
+  }
+
 }
 
 /* ----------------------------- Blog: one piece ---------------------------- */
@@ -11189,9 +11003,18 @@ video {
   .service-journey__next,
   .service-journey__nav-link,
   .services-wheel__name,
+  a.project-out__link,
+  a.project-live,
+  .project-showcase__step,
   .letter__send {
     padding-block: 14px;
     margin-block: -14px;
+  }
+
+  /* FILTERS and its seven: a finger's height, the row level either way. */
+  .clients-filters__toggle,
+  .clients-filters__option {
+    min-height: 44px;
   }
 
   /* The footer's links already reach past their line (0.6875rem each way,

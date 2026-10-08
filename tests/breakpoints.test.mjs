@@ -142,56 +142,47 @@ test("the smoother is killed rather than only dropped when the menu appears", ()
 });
 
 /**
- * Two client cards to a row, at every width.
- *
- * Owner's call, 2026-08-25, and "always" is the substance of it: the grid ran
- * on `auto-fit` with a 19rem floor, so the column count changed under the
- * reader as the window moved — three on a laptop, four on a wide monitor. What
- * was asked for is a fixed two.
- *
- * Which makes this a breakpoint claim rather than a styling one, and that is
- * why it is held in this file: it is not enough that the rule says two, nothing
- * anywhere may override it at a width.
+ * **The clients grid: the page's four columns, rows of two and of one —
+ * owner, 2026-10-08**: "i want the project to have three format Box, wide and
+ * portrat and to be mixed", "the images need to start always from the
+ * [vertical] line", and "max 2 project in one row sometimes 1". It was two
+ * equal columns at every width (2026-08-25), which this test held. What it
+ * holds now: one top-level rule, four columns with no gap between them (so
+ * every picture starts on a line), never `auto-fit`, the spans and starting
+ * lines a row is made of, and the phone's two columns inside the phone query.
  */
-test("the clients grid is two columns and no width changes it", () => {
+test("the clients grid is the page's four columns, in rows of two and of one", () => {
   const stripped = code(CSS);
 
-  const rules = [...stripped.matchAll(/\.clients-grid\s*\{([^}]*)\}/g)].map(
+  const rules = [...stripped.matchAll(/\n\.clients-grid\s*\{([^}]*)\}/g)].map(
     (match) => match[1],
   );
   assert.equal(rules.length, 1, "the clients grid is styled in more than one place");
-  assert.match(rules[0], /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
-
-  /* `auto-fit` and `auto-fill` are the two ways a column count becomes a
-     function of the window again, which is exactly what this replaced. */
+  assert.match(rules[0], /grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(rules[0], /gap:[^;]*\s0;/);
   assert.doesNotMatch(rules[0], /auto-fit|auto-fill/);
 
-  /* And nothing inside any media query touches it — the assertion above reads
-     the one top-level rule and would go on passing while a query below it
-     rewrote the columns at some width. Walked by brace depth, the same way
-     `menuQuery` above does, because a top-level rule and a rule nested in a
-     query are indistinguishable to a flat regex. */
-  let depth = 0;
-  let condition = null;
-
-  for (const line of stripped.split("\n")) {
-    const trimmed = line.trim();
-
-    if (depth === 0 && trimmed.startsWith("@media")) {
-      condition = trimmed.replace(/^@media\s*/, "").replace(/\s*\{\s*$/, "");
-    } else if (condition) {
-      assert.doesNotMatch(
-        line,
-        /\.clients-grid\b/,
-        `a media query changes the clients grid at ${condition}`,
-      );
-    }
-
-    depth += (line.match(/\{/g) ?? []).length;
-    depth -= (line.match(/\}/g) ?? []).length;
-
-    if (depth === 0) condition = null;
+  for (const span of [2, 3]) {
+    assert.match(
+      stripped,
+      new RegExp(`\\.clients-grid > \\[data-span="${span}"\\] \\{\\s*grid-column-end: span ${span};`),
+      `no rule spans ${span} columns`,
+    );
   }
+  for (const start of [1, 2]) {
+    assert.match(
+      stripped,
+      new RegExp(`\\.clients-grid > \\[data-start="${start}"\\] \\{\\s*grid-column-start: ${start};`),
+      `no rule starts a picture on line ${start}`,
+    );
+  }
+
+  /* The phone's halves and wholes, in the phone query. */
+  const phone = stripped.match(/@media \(max-width: 40rem\) \{\s*\.clients-grid \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(phone, "a phone does not rearrange the clients rows");
+  assert.match(phone, /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(phone, /grid-column-end: span 1;/);
+  assert.match(phone, /grid-column: 1 \/ -1;/);
 });
 
 /**

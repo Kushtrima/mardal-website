@@ -1,38 +1,33 @@
 import Link from "next/link";
-import { StoryHeroShade } from "./StoryHeroShade";
-import { StorySteps } from "./StorySteps";
 import { Container } from "../layout/Container";
 import { SiteFooter } from "../layout/SiteFooter";
-import { HeaderSpace } from "../layout/HeaderSpace";
 import { SectionEnter } from "../motion/SectionEnter";
-import { ServicePageEntry } from "../services/ServicePageEntry";
-import { PixelArrow } from "../ui/PixelArrow";
+import { ServicesFooterRules } from "../services/ServicesFooterRules";
 import { RollingLabel } from "../ui/RollingLabel";
+import { ProjectHeroReveal } from "./ProjectHeroReveal";
+import { ProjectShowcase } from "./ProjectShowcase";
 import { pilotStory } from "../../content/case-studies";
-import { industries, products } from "../../content/home";
+import { industries } from "../../content/home";
 
 /**
  * One customer's story — the page a card on the index opens.
  *
- * Two columns, owner's shape: the record down the left, the reading down the
- * right. The rail is held against the scroll rather than travelling with it,
- * which is the whole point of putting it there — a reader three paragraphs into
- * what the system replaced can still see who it was for.
+ * **A new approach — owner, 2026-10-08**, from three references: "hero with
+ * big images", then the project in a paragraph with its record under it,
+ * "then changellens etc", then the delivered pages shown one after the next.
+ * So, in that order, on the page's four columns and its five lines:
  *
- * Four bodies were built under this hero before this one and each was rejected:
- * a cover with a text block and a gallery, an image essay of alternating
- * plates, a staged sequence down a ruled spine, and then nothing at all. They
- * are in the history if any is ever wanted back.
+ * — the opening: one picture across the whole screen, its lines drawn over
+ *   it, and from the middle line the industry and the project's name;
+ * — the project: its name on the second line, a paragraph from the middle
+ *   line to the edge, the record two by two under it, and the way to the live
+ *   site;
+ * — the account: what it replaced, what it does now, what the client owns;
+ * — the pages, one after the next (ProjectShowcase);
+ * — the way back to every story.
  *
- * A pilot, and the only one: seven more cards go nowhere on purpose, because
- * nowhere is where they should go until someone has written them.
- *
- * Built on the same bones as the index it came from. `service-hero` and its
- * `data-service-hero-*` hooks are the site's editorial page opening, and
- * ServicePageEntry drives them, so this arrives and dissolves the way every
- * other page here does. No artwork, for the same reason the index has none.
- *
- * A server component throughout. There is no state on this page.
+ * The earlier pages (a record down the left beside the reading, and four
+ * bodies before it) are in the history.
  */
 export function ClientsStory() {
   const sector = industries.find(
@@ -42,208 +37,214 @@ export function ClientsStory() {
   return (
     <>
       <SectionEnter />
-      <ServicePageEntry />
 
-      {/* `--clients` is the section and `--story` is this kind of page in it.
-          The phone heading rule is written against the first, so every story
-          written after this one is sized by carrying the class. */}
-      <main
-        className="service-page service-page--clients service-page--story"
-        id="main-content"
-        data-service-page
-      >
-        <HeaderSpace />
+      <main className="project-page" id="main-content">
+        {/* The page's five lines, grey, from the top to the foot; the
+            opening and the pages draw over them. */}
+        <ServicesFooterRules />
 
         <section
-          className="service-hero story-hero"
-          aria-labelledby="story-title"
-          data-service-hero
+          className="project-hero"
+          aria-labelledby="project-title"
+          /* The bar turns white over the picture, and says no "Operating
+             from Kosova" over it (the stylesheet). */
+          data-bar-dark
+          data-project-hero
         >
-          <Container className="service-hero__inner story-hero__inner">
-            <div className="service-hero__intro story-hero__intro">
-              {/* Where you are, and the way back up, in one line. The sector is
-                  a link rather than a label because it is the view of the index
-                  this story sits in — leaving a story should put you back among
-                  the ones like it, not at the top of everything. */}
-              <p className="story-hero__trail">
-                {/* One crumb now. There were two — Clients, then the sector
-                    this story sat under — and the second pointed at a route
-                    that no longer exists: the owner replaced the industry
-                    taxonomy on 2026-08-25 and the seven sector views went with
-                    it. There is nowhere between here and the index any more, so
-                    there is nothing between them in the trail either. */}
-                <Link className="story-hero__back" href="/case-studies">
-                  {pilotStory.backLabel}
-                </Link>
-              </p>
+          <ProjectHeroReveal />
 
-              <h1
-                className="service-hero__title story-hero__title"
-                id="story-title"
-                data-service-hero-title
-              >
-                {pilotStory.titleLines.map((line) => (
-                  <span className="service-hero__title-line" key={line}>
-                    {line}
-                  </span>
-                ))}
-              </h1>
-            </div>
-
-            <div className="service-hero__aside story-hero__aside">
-              <p className="service-hero__support" data-service-hero-support>
-                {pilotStory.lede}
-              </p>
-
-              <a
-                className="service-hero__cta"
-                data-roll
-                href={products.ctaHref}
-                data-service-hero-cta
-              >
-                <RollingLabel>{pilotStory.cta}</RollingLabel>
-                <PixelArrow
-                  className="service-hero__cta-arrow"
-                  direction="up-right"
-                  size="small"
-                />
-              </a>
-            </div>
-          </Container>
-
-          {/* The right half of the opening, running the full height of the
-              window rather than starting under the bar: the header is a sibling
-              above this section, so this is pulled up by exactly the height
-              that sibling occupies and the menu ends up standing on the
-              picture.
-
-              Outside the Container, the way the blur and the fade are, so it
-              reaches the window's edge instead of stopping at a gutter. Behind
-              everything — the intro and the aside both carry z-index 1 and this
-              carries none — so the heading, the lede and the way in keep their
-              places over it. */}
-          <div className="story-hero__art" aria-hidden="true">
+          <div className="project-hero__media" aria-hidden="true">
+            {/* Decorative, so alt is empty: a stock frame standing in for a
+                shot of the delivered site. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              className="story-hero__art-image"
+              className="project-hero__image"
               src={pilotStory.heroImage}
+              srcSet={`${pilotStory.heroImage.replace("/2400/1500", "/1200/750")} 1200w, ${pilotStory.heroImage} 2400w`}
+              sizes="100vw"
               alt=""
-              width="1200"
-              height="1600"
+              width="2400"
+              height="1500"
+              loading="eager"
+              fetchPriority="high"
+              data-project-hero-image
             />
-
-            {/* Nothing at rest. StoryHeroShade brings this up the foot of the
-                picture as the page is scrolled — the one moment cover is
-                actually needed, which is where the image meets the page below
-                it rather than where a reader first looks at it. */}
-            <span className="story-hero__shade" />
           </div>
 
-          <StoryHeroShade />
+          {/* The page's lines, over the picture. */}
+          <div
+            className="services-rules project-hero__rules"
+            aria-hidden="true"
+          >
+            {[0, 1, 2, 3, 4].map((index) => (
+              <span className="services-rules__line" key={index} />
+            ))}
+          </div>
 
-          <div
-            className="service-hero__blur"
-            aria-hidden="true"
-            data-service-hero-blur
-          />
-          <div
-            className="service-hero__fade"
-            aria-hidden="true"
-            data-service-hero-fade
-          />
+          <Container className="project-hero__inner">
+            <p className="project-hero__meta" data-project-hero-meta>
+              <span className="project-hero__mark" aria-hidden="true" />
+              {sector?.title ?? pilotStory.sector}
+            </p>
+            <h1
+              className="project-hero__title"
+              id="project-title"
+              data-project-hero-title
+            >
+              {pilotStory.name}
+            </h1>
+          </Container>
         </section>
 
-        {/* The record across the page, under the opening, and the reading
-            below it. It was a rail down the left held against the scroll —
-            owner's change. A row states the job once, at the top, the way a
-            record should be read: at a glance, before the account rather than
-            beside it.
+        <section
+          className="project-intro"
+          aria-labelledby="project-intro-title"
+          data-route-section
+        >
+          <Container
+            className="project-intro__inner"
+            data-enter
+            data-enter-mode="fade"
+          >
+            {/* Where a reference shows the client's logo: there is none on
+                file, so its name stands there in words. */}
+            <h2 className="project-intro__name" id="project-intro-title">
+              {pilotStory.name}
+            </h2>
 
-            No pin here any more. The rail was held because a reader three
-            paragraphs down could otherwise no longer see who it was for; a row
-            that is read and passed has nothing to hold. ClientsPin stays where
-            it was written and the sector index still uses it. */}
-        <section className="story" data-route-section>
-          <Container data-enter data-enter-mode="fade">
-            <dl className="story-record">
-              {pilotStory.facts.map((fact) => (
-                <div className="story-record__fact" key={fact.label}>
-                  <dt>{fact.label}</dt>
-                  <dd>{fact.value}</dd>
+            <p className="project-intro__summary">{pilotStory.summary}</p>
+
+            <dl className="project-intro__record">
+              {pilotStory.record.map((fact) => (
+                <div className="project-intro__fact" key={fact.label}>
+                  <dt className="project-intro__label">{fact.label}</dt>
+                  <dd className="project-intro__value">{fact.value}</dd>
                 </div>
               ))}
             </dl>
 
-            {/* Three short paragraphs about the client company, in one row
-                above the plate. No headings — three labels over three
-                thirty-word paragraphs is more label than paragraph, and the row
-                is one statement in three parts rather than three sections.
-
-                Every one is a slot, and has to be: the office cannot be named
-                until sign-off exists, and nothing about it is written down
-                anywhere this repo can reach. */}
-            <div className="story-about">
-              {pilotStory.about.map((paragraph) => (
-                <p className="story-about__copy" key={paragraph}>
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-
-            {/* The plate. Big, but stopped at the container the record is ruled
-                to rather than run to the window's edges — the record above it
-                and the reading below both stop there, and a picture that breaks
-                that line makes the two of them look inset rather than making
-                itself look large.
-
-                Square corners. Everything else on this site that carries a
-                radius is a card or a panel — a thing with edges of its own. A
-                plate is a window onto the work, and a rounded window is a card
-                with a photograph in it. */}
-            <figure className="story-plate">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                className="story-plate__art"
-                src={pilotStory.plate}
-                alt=""
-                width="2000"
-                height="1125"
-                loading="lazy"
-                decoding="async"
-              />
-            </figure>
-
-            {/* The three states as a numbered index that un-stacks on the way
-                down: the whole list waits piled at the foot of the window and
-                empties into a pile at the top, one entry per reading, with the
-                picture beside it. The owner sent ref.digital/work/sopfeu for
-                this and that section was read before this was rebuilt — nothing
-                in it opens, which turns out to be the point of it. The finding
-                is written up in StorySteps.tsx.
-
-                Better for these three than the accordion it replaced: the order
-                is the argument here, and a list that is whole from the first
-                moment states the order before it states anything else. */}
-            <StorySteps />
-
-            <div className="story-reading">
-              <p className="story-out">
-                <Link className="story-out__link" data-roll href="/case-studies">
-                  <RollingLabel>{pilotStory.backLabel}</RollingLabel>
-                  <PixelArrow
-                    className="story-out__arrow"
-                    direction="up-right"
-                    size="small"
-                  />
-                </Link>
+            {/* No address is on file: it stands without a link until one
+                is, rather than linking anywhere. */}
+            {pilotStory.live.href ? (
+              <a
+                className="project-live"
+                href={pilotStory.live.href}
+                data-roll
+                target="_blank"
+                rel="noreferrer"
+              >
+                <RollingLabel>{pilotStory.live.label}</RollingLabel>
+                <ProjectArrow />
+              </a>
+            ) : (
+              <p className="project-live" aria-disabled="true">
+                <span>{pilotStory.live.label}</span>
+                <ProjectArrow />
               </p>
-            </div>
+            )}
           </Container>
         </section>
 
+        <section
+          className="project-account"
+          aria-labelledby="project-account-title"
+          data-route-section
+        >
+          {/* Still: no effect on the scroll at all — owner, 2026-10-08, after
+              a reveal and a held version: "remove all on scroll leave it as
+              it was in normal state". */}
+          <Container data-enter data-enter-mode="none">
+            <h2 className="visually-hidden" id="project-account-title">
+              {pilotStory.title}
+            </h2>
+            {pilotStory.passages.map((passage) => (
+              <article className="project-passage" key={passage.id}>
+                <h3 className="project-passage__title">{passage.heading}</h3>
+                <div className="project-passage__copy">
+                  {passage.paragraphs.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </Container>
+        </section>
+
+        <ProjectShowcase
+          title={pilotStory.showcase.title}
+          pages={pilotStory.showcase.pages}
+          previous={pilotStory.showcase.previous}
+          next={pilotStory.showcase.next}
+          page={pilotStory.showcase.page}
+        />
+
+        {/* Back from the second line, Next Project ending on the fourth: two
+            long arrows and no words on the page — owner, 2026-10-08: "remove
+            text only leave it arrows but make longer arrows also when hover
+            to tourn in red". The words stay for a screen reader. There is no
+            second story yet, so Next Project stands without a link until
+            there is one. */}
+        <nav className="project-out" aria-label={pilotStory.way.label}>
+          <Container className="project-out__inner">
+            <Link
+              className="project-out__link project-out__link--back"
+              href="/case-studies"
+            >
+              <LongArrow back />
+              <span className="visually-hidden">{pilotStory.way.back}</span>
+            </Link>
+            {pilotStory.way.nextHref ? (
+              <Link
+                className="project-out__link project-out__link--next"
+                href={pilotStory.way.nextHref}
+              >
+                <span className="visually-hidden">{pilotStory.way.next}</span>
+                <LongArrow />
+              </Link>
+            ) : (
+              <p
+                className="project-out__link project-out__link--next"
+                aria-disabled="true"
+              >
+                <span className="visually-hidden">{pilotStory.way.next}</span>
+                <LongArrow />
+              </p>
+            )}
+          </Container>
+        </nav>
       </main>
 
-      <SiteFooter />
+      {/* The grey lines on to the foot of the page. */}
+      <SiteFooter rules={<ServicesFooterRules />} />
     </>
+  );
+}
+
+/** VIEW ALL's thin arrow, up and to the right. */
+function ProjectArrow() {
+  return (
+    <svg
+      className="project-arrow"
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M2 14 14 2M4.5 2H14v9.5" />
+    </svg>
+  );
+}
+
+/** A long thin arrow, back or on — the pages' Previous and Next draw the
+ *  same. */
+function LongArrow({ back = false }: { back?: boolean }) {
+  return (
+    <svg
+      className="project-out__arrow"
+      viewBox="0 0 64 12"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d={back ? "M63 6H1M7 1 1 6l6 5" : "M1 6h62M57 1l6 5-6 5"} />
+    </svg>
   );
 }

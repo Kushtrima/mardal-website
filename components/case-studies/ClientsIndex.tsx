@@ -1,18 +1,15 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { fadeIn, fadeOut, hide, OUT } from "../../lib/page-transition";
-import { ClientsPin } from "./ClientsPin";
 import { Container } from "../layout/Container";
+import { RollingLabel } from "../ui/RollingLabel";
 import {
-  ALL_WORK,
   caseStudies,
   clientEntries,
   pilotStory,
 } from "../../content/case-studies";
-import { industries } from "../../content/home";
 
 /* The four, cycled. Named here rather than set as a colour on the element,
    because the render test fails the build on a server-rendered `style=` — the
@@ -24,125 +21,146 @@ import { industries } from "../../content/home";
 const TINTS = ["one", "two", "three", "four"] as const;
 
 /**
- * Where the section comes to rest when a filter is chosen.
- *
- * The same 88 `ClientsPin` holds the rail at, and it has to be: the rail is
- * pinned to that line while there is anything to pin it for, so landing the
- * section anywhere else would move the rail by the difference at exactly the
- * moment the reader is watching it. Written out rather than imported, because
- * the pin's copy is a private constant and one of the two files would have to
- * export a number that is really a shared decision — this comment is the link.
+ * **Three shapes, two to a row at most, sometimes one** — owner, 2026-10-08:
+ * "i want the project to have three format Box, wide and portrat and to be
+ * mixed", "the images need to start always from the [vertical] line not in
+ * the middle", then "max 2 project in one row sometimes 1". So on the page's
+ * own four columns, each picture starting on a line, rows of two and of one
+ * by turns. A row of two is two halves — a portrait and a wide one, then a
+ * box and a portrait. A row of one stands alone with the rest of its row
+ * empty — a wide one from the second line to the edge, then a box over the
+ * first half. The shape is the card's PLACE in that rhythm, not the entry's,
+ * so a filtered list keeps the rhythm too.
  */
-const SECTION_CLEARANCE = 88;
+type Format = "wide" | "box" | "portrait";
+type Slot = {
+  format: Format;
+  /** Columns of the four it takes. */
+  span: number;
+  /** The line it starts on; set on a row's first picture, so every row
+   *  begins a row of its own. */
+  start?: number;
+  row: number;
+  place: number;
+};
+
+/** Each row's pictures: shape, columns, and — a row's first — its line. */
+const ROWS: Record<number, readonly (readonly [Format, number, number?])[][]> = {
+  1: [[["wide", 3, 2]], [["box", 2, 1]]],
+  2: [
+    [["portrait", 2, 1], ["wide", 2]],
+    [["box", 2, 1], ["portrait", 2]],
+  ],
+};
+
+/** Rows of two and of one, by turns: eight is 2 + 1 + 2 + 1 + 2. */
+function arrange(count: number): Slot[] {
+  const slots: Slot[] = [];
+  const used: Record<number, number> = { 1: 0, 2: 0 };
+  let size = 2;
+  while (slots.length < count) {
+    const take = Math.min(size, count - slots.length);
+    const shapes = ROWS[take][used[take]++ % ROWS[take].length];
+    shapes.forEach(([format, span, start], index) =>
+      slots.push({ format, span, start, row: take, place: index + 1 }),
+    );
+    size = take === 2 ? 1 : 2;
+  }
+  return slots;
+}
+
+/** What a picture is drawn at, by its share of the page: on a phone a half
+ *  or the whole width, else its columns' share. */
+function sizesFor(slot: Slot) {
+  const phone = slot.row === 2 ? 50 : 100;
+  return `(max-width: 40rem) ${phone}vw, ${(slot.span / 4) * 100}vw`;
+}
+
+const ALL: string = caseStudies.filters.all;
+/** All first, then the seven — the order they stand in the row. */
+const CHOICES: readonly string[] = [ALL, ...caseStudies.filters.items];
 
 /**
- * The Clients index: one list, with a rail down the left filtering it by what
- * kind of work each entry is.
+ * The Clients index: FILTERS under the opening, and the work under it.
  *
- * ── What it filters on, and what it used to ──
- * Seven disciplines — UX/UI Design through AI & Automation — with `All` at the
- * foot, chosen by default. It filtered by the client's INDUSTRY until
- * 2026-08-25, over seven prerendered routes, and the owner replaced the
- * taxonomy: what the page indexes is the work rather than whose industry it was
- * for.
+ * ── FILTERS ──
+ * Owner, 2026-10-08, with a picture of "-¦- FILTERS": "under the hero add
+ * this then when click to open …". Then: "i want when open menu to open on
+ * the left horisontally as menu, then to be selectd only All and active with
+ * red underline". So the choices open in one row beside FILTERS, wiped in
+ * from it as the bar's row of pages is from Menu, the nearest first; All
+ * first and chosen when the page arrives; one chosen at a time, the chosen
+ * one underlined in the red. It replaced the rail down the left that held the
+ * same seven and the pin that held it against the scroll (owner: remove it).
+ * An entry is shown under a discipline when it lists it; several list more
+ * than one.
  *
- * ── Which is why this filters in the browser and the sectors filtered on the
- * server ──
- * A sector was an address: `/case-studies/finance` painted Finance first,
- * because the route decided it before anything rendered. The disciplines have
- * no routes — the owner took those away with the taxonomy — so a discipline is
- * state and only state. Nothing here touches the address bar, and that is the
- * one thing the old filter did that this deliberately does not: writing
- * `/case-studies/websites` into history would hand out a link that 404s on
- * reload.
+ * In the browser and nowhere else: the disciplines have no routes, so a
+ * choice is state and only state — nothing touches the address bar.
  *
  * ── The two states, and why they are two ──
- * `filter` is what is CHOSEN and `listed` is what the grid is SHOWING. They are
- * the same value a moment apart, and the moment is the point: the mark has to
- * move on the press, while the cards leave and different cards arrive on the
- * shared page-transition movement. Held as one state the rail sat dead for half
- * a second after every press.
+ * `chosen` is what is CHOSEN and `listed` is what the grid is SHOWING. They are
+ * the same value a moment apart, and the moment is the point: the underline
+ * has to move on the press, while the cards leave and different cards arrive
+ * on the shared page-transition movement. Presses in a run are gathered: the
+ * cards go out once and come back once, with the last choice.
  */
 export function ClientsIndex() {
-  const [filter, setFilter] = useState<string>(ALL_WORK);
-
-  /* Shut, and only where the stylesheet acts on it. A phone spends a screen on
-     an index before it reaches a card, so on a phone the rail is one row until
-     it is asked for. The state is carried at every width and read at one: on
-     the wide page the rail is always open and this does nothing, which is why
-     there is no width in this file. */
   const [open, setOpen] = useState(false);
-
-  const [listed, setListed] = useState<string>(ALL_WORK);
+  const [chosen, setChosen] = useState(ALL);
+  const [listed, setListed] = useState(ALL);
   const workRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
   /** The work is on screen before it is ever swapped, so the arrival below must
    *  not run for the list the page was served with. */
   const firstRef = useRef(true);
+  /** A swap waiting for the cards to finish leaving. */
+  const swapRef = useRef<number | undefined>(undefined);
+  /** The choice as of the last press, not the last render: two presses
+   *  before React has drawn the first must both count. */
+  const chosenRef = useRef(ALL);
 
   function choose(next: string) {
-    if (next === filter) return;
-
-    setFilter(next);
-
-    /* Shut behind the choice. On the wide page nothing closes because nothing
-       was open; on a phone the rail has done its job the moment something is
-       picked, and leaving it standing would put the answer below the question
-       again. */
-    setOpen(false);
+    if (next === chosenRef.current) return;
+    chosenRef.current = next;
+    setChosen(next);
 
     const work = workRef.current;
-    const noMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    if (!work || noMotion) {
+    if (!work || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setListed(next);
       return;
     }
 
-    fadeOut(work);
-
-    /* Swapped on a timer rather than on the tween finishing, for the reason the
-       page transition pushes its route on one: GSAP's ticker sleeps while the
-       tab is hidden, and a list that only changed when a tween completed would
-       simply never change for anyone who pressed and looked away. */
-    window.setTimeout(() => setListed(next), OUT * 1000);
+    /* Out once for a run of presses, and the swap on a timer rather than on
+       the tween finishing, for the reason the page transition pushes its route
+       on one: GSAP's ticker sleeps while the tab is hidden, and a list that
+       only changed when a tween completed would never change for anyone who
+       pressed and looked away. */
+    if (swapRef.current === undefined) fadeOut(work);
+    window.clearTimeout(swapRef.current);
+    swapRef.current = window.setTimeout(() => {
+      swapRef.current = undefined;
+      setListed(next);
+    }, OUT * 1000);
   }
 
-  /**
-   * The work arriving, and the reader put at the top of it.
-   *
-   * ── Why the scroll is here at all ──
-   * **Measured on 2026-08-25: the work column is 1933px with all eight cards
-   * and 456px with Branding's two, while the rail beside it is 513.** So
-   * choosing a short view takes about 1400px out of the document under a reader
-   * who is scrolled into it — the browser clamps their position, and
-   * `ClientsPin` lets go of the rail in the same frame, because the distance it
-   * holds the rail for is the work column's height MINUS the rail's and that
-   * has just gone to zero. Both move at once. The owner saw it as the whole
-   * left-hand column jumping up.
-   *
-   * Neither half is wrong on its own. A rail cannot be held against a column
-   * shorter than itself, and a page that has lost its content is shorter. What
-   * was missing is that nobody decided where the reader should be afterwards,
-   * so the browser decided, and a clamp is not a decision.
-   *
-   * Top of the section, then — which is where someone who has just changed what
-   * they are looking at wants to be. It happens under the same blur the cards
-   * arrive through, so it reads as the page answering rather than as a jump.
-   *
-   * ── `useLayoutEffect`, not `useEffect` ──
-   * This runs after React has written the new list and before the browser
-   * paints. In `useEffect` the reader would see one frame at the clamped
-   * position first, which is the flicker this exists to remove.
-   *
-   * ── Through the smoother where there is one ──
-   * `window.scrollTo` sets the native position, which ScrollSmoother then eases
-   * towards over the next few frames — a scroll it did not perform and has to
-   * catch up with. `scrollTo(target, false)` is the same instruction given to
-   * the thing that actually owns the scroll. The fallback is for reduced motion
-   * and for a page where the smoother never built.
-   */
+  /* Escape shuts the list and hands the focus back to FILTERS. */
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      toggleRef.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  useEffect(() => () => window.clearTimeout(swapRef.current), []);
+
+  /* The new list arriving. `useLayoutEffect` so it is hidden before the
+     browser paints it, and comes up through the same blur the old one left
+     in. */
   useLayoutEffect(() => {
     if (firstRef.current) {
       firstRef.current = false;
@@ -151,41 +169,20 @@ export function ClientsIndex() {
 
     const work = workRef.current;
     if (!work) return;
-
-    const section = work.closest(".clients-index");
-    if (section) {
-      const smoother = ScrollSmoother.get();
-
-      if (smoother) {
-        smoother.scrollTo(section, false, `top top+=${SECTION_CLEARANCE}`);
-      } else {
-        const top =
-          section.getBoundingClientRect().top + window.scrollY - SECTION_CLEARANCE;
-        window.scrollTo(0, Math.max(0, Math.round(top)));
-      }
-    }
-
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     hide(work);
     fadeIn(work);
   }, [listed]);
 
-  /* An entry is in a view if it does that kind of work — several of them do
-     more than one, which is what makes the filter worth having: seven views
-     each holding one card is the failure the sector routes had. */
   const shown =
-    listed === ALL_WORK
+    listed === ALL
       ? clientEntries
       : clientEntries.filter((entry) =>
           (entry.disciplines as readonly string[]).includes(listed),
         );
 
-  /* The client's industry, by its own name. Declared once in content/home.ts and
-     read by the homepage's Industries run as well, so a sector renamed there is
-     renamed here rather than in two places. */
-  const sectorTitle = (id: string) =>
-    industries.find((industry) => industry.id === id)?.title ?? id;
+  const slots = arrange(shown.length);
 
   return (
     <section
@@ -193,260 +190,177 @@ export function ClientsIndex() {
       aria-labelledby="clients-index-title"
       data-route-section
     >
-      <ClientsPin />
-
       <Container data-enter data-enter-mode="fade">
         <h2 className="visually-hidden" id="clients-index-title">
           Delivered work
         </h2>
 
-        {/* An index down the side rather than a strip across the top. Three
-            treatments of the row were tried when this was a filter and none of
-            them stopped it reading as a toolbar — eight words in a line above a
-            grid is a control bar wherever you put it, and this site does not
-            have control bars. Standing it up made it an index, and an index is
-            what it still is now that nothing in it is pressable. */}
-        <div className="clients-layout">
-          <div className="clients-rail">
-            {/* **The pinned element, and it is deliberately not the grid item
-                above it.**
+        {/* FILTERS on the first rule, and the choices opening in a row
+            beside it — wrapping, where the row is narrow, in the room beside
+            it — the work moving down under them if they take more than its
+            line. */}
+        <div className="clients-filters" data-open={open ? "true" : "false"}>
+          <button
+            className="clients-filters__toggle"
+            type="button"
+            ref={toggleRef}
+            data-roll
+            aria-expanded={open}
+            aria-controls="clients-filters-list"
+            onClick={() => setOpen((wasOpen) => !wasOpen)}
+          >
+            {/* The Menu's split plus; it stays a plus while the list is
+                open, as the Menu's does. */}
+            <span className="clients-filters__plus" aria-hidden="true" />
+            <RollingLabel>{caseStudies.filters.button}</RollingLabel>
+          </button>
 
-                ScrollTrigger pins by wrapping its target in a `pin-spacer` and
-                taking the element out of normal flow inside it. Pin a grid
-                CHILD and that spacer becomes the grid item — so every refresh
-                re-measures something the grid is laid out from, the work column
-                beside it can move, and `ClientsPin` is watching that column's
-                height with a ResizeObserver in order to decide when to refresh.
-                That is a loop, and it is what the owner saw as the page moving
-                up and down on every press.
-
-                It only appeared when the heading was asked to stick: the pin
-                used to target `.clients-filter`, three levels down and
-                incapable of moving the grid. This box restores that — the grid
-                item never moves, and what is held against the scroll is
-                everything inside it. */}
-            <div className="clients-rail__inner">
-              {/* Two authored lines, the way every heading on this site is set:
-                where the line turns is a decision about the copy rather than
-                something left to the width of the column. Outside the holder
-                below, which is a two-row grid on a phone — a third thing in it
-                would be a third row and the disclosure would open the wrong
-                one. */}
-              <p className="clients-rail__title">
-                {caseStudies.rail.title.map((line) => (
-                  <span className="clients-rail__title-line" key={line}>
-                    {line}
-                  </span>
-                ))}
-              </p>
-
-              {/* The state is carried on the holder rather than on the rail, so
-                the stylesheet can open a row around it: the two are a grid and
-                its track, and a track is the one thing that can be animated
-                from nothing to the height of whatever is standing in it. */}
-              <div
-                className="clients-filter-holder"
-                data-open={open ? "true" : "false"}
-              >
-                {/* The rail, shut, on a phone. It names what you are looking at
-                  rather than what it does — a reader who has chosen Websites is
-                  told Websites, and the mark beside it says there is more.
-                  `Filter` over it would be a label on a control, and this site
-                  labels nothing. */}
-                <button
-                  className="clients-filter__toggle"
-                  type="button"
-                  aria-expanded={open}
-                  aria-controls="clients-filter"
-                  onClick={() => setOpen((wasOpen) => !wasOpen)}
-                >
-                  <span className="clients-filter__toggle-label">
-                    {filter === ALL_WORK ? caseStudies.rail.all : filter}
-                  </span>
-                  <span
-                    className="clients-filter__toggle-mark"
-                    aria-hidden="true"
-                  />
-                </button>
-
-                <div
-                  className="clients-filter"
-                  id="clients-filter"
-                  role="group"
-                  aria-label="Filter the work"
-                >
-                  {caseStudies.rail.items.map((item) => (
-                    <button
-                      className={`clients-filter__item${
-                        filter === item ? " is-current" : ""
-                      }`}
-                      key={item}
-                      type="button"
-                      aria-pressed={filter === item}
-                      onClick={() => choose(item)}
-                    >
-                      <span className="clients-filter__label">{item}</span>
-                    </button>
-                  ))}
-
-                  {/* `All` closes the rail rather than opening it: the seven are a
-                    list, and the way out of one of them is not the eighth
-                    member of that list. It is chosen when the page arrives. */}
+          <div className="clients-filters__panel">
+            <ul
+              className="clients-filters__list"
+              id="clients-filters-list"
+              aria-label={caseStudies.filters.label}
+            >
+              {CHOICES.map((item) => (
+                <li className="clients-filters__item" key={item}>
                   <button
-                    className={`clients-filter__item clients-filter__item--all${
-                      filter === ALL_WORK ? " is-current" : ""
-                    }`}
+                    className="clients-filters__option"
                     type="button"
-                    aria-pressed={filter === ALL_WORK}
-                    onClick={() => choose(ALL_WORK)}
+                    data-roll
+                    aria-pressed={chosen === item}
+                    /* Out of the tab order while the row is shut. */
+                    tabIndex={open ? undefined : -1}
+                    onClick={() => choose(item)}
                   >
-                    <span className="clients-filter__label">
-                      {caseStudies.rail.all}
-                    </span>
+                    <RollingLabel>{item}</RollingLabel>
                   </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="clients-work" ref={workRef}>
-            {/* No empty state any more. It existed because a sector could be
-                chosen that held nothing, and every sector was in that state;
-                with no filter the grid is always all eight entries and the
-                branch that drew the redaction bars is unreachable. */}
-            <ul className="clients-grid">
-              {shown.map((entry, index) => {
-                /* The picture. Stock frames for now, at the owner's ask, so the
-                   card can be judged against real photography — see
-                   content/case-studies.ts for why they must not ship.
-
-                   The tint stays under the image rather than being dropped with
-                   the drawing. It is what stands in the box while a remote
-                   frame is still in flight, and what is left there if it never
-                   arrives — a card whose picture fails should be a coloured
-                   panel, not a broken one. */
-                const plate = (
-                  <div
-                    className="clients-card__plate"
-                    data-tint={TINTS[index % TINTS.length]}
-                    /* Where the ground and the mark are drawn — see
-                       `data-opens` on the article. Marked on every card, not
-                       only the ones that open: it says "this is the box the
-                       treatment paints in", and whether it paints is the
-                       article's to say. */
-                    data-opens-mark
-                  >
-                    {/* Decorative, so alt is empty: these photographs are of
-                        nothing to do with the work, and describing one to a
-                        screen reader would be describing a placeholder. */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      className="clients-card__art"
-                      src={entry.image}
-                      alt=""
-                      width="640"
-                      height="360"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-                );
-
-                return (
-                  <li key={entry.slug}>
-                    {/* A card is a link only where there is a story behind it,
-                        which today is one of the eight. The other seven are
-                        articles and go nowhere, on purpose: a card that looks
-                        like a link and answers with an empty page is worse than
-                        a card that never offered. */}
-                    <article
-                      className={`clients-card${
-                        "story" in entry ? " clients-card--linked" : ""
-                      }`}
-                      /* The sector as data rather than as a word on the page.
-                         It is no longer shown or filtered on — the owner took
-                         the industry off the card and out of the rail — but it
-                         is still what each entry IS, and the one test that has
-                         to tell two entries apart reads it from here rather
-                         than from a line of text that has been restyled three
-                         times in a day. */
-                      data-sector={entry.sector}
-                      /* **The hook the hover treatment hangs off, and it is
-                         deliberately not a Clients class.**
-
-                         A card that opens something darkens and draws a plus on
-                         its picture. That is a rule about cards in general
-                         rather than about this page, so the stylesheet answers
-                         to `[data-opens]` and `[data-opens-mark]` — any card
-                         anywhere adopts the whole treatment by carrying those
-                         two attributes, with no CSS written for it.
-
-                         Set from the entry rather than by hand: a card gets it
-                         the moment a story exists behind it, which is the same
-                         condition that makes it a link at all. When the other
-                         seven are written they gain it with them. */
-                      data-opens={"story" in entry ? "true" : undefined}
-                    >
-                      {/* The link wraps the picture, and where it sits in this
-                          tree is the whole of how much of the card can be
-                          clicked — it is not a nesting preference. The
-                          stylesheet stretches this anchor over the card with an
-                          inset pseudo-element, and an inset pseudo-element
-                          measures from the nearest POSITIONED ancestor. While
-                          the anchor sat inside the heading, that ancestor was
-                          the heading, and the target was one word. */}
-                      {"story" in entry ? (
-                        <Link
-                          className="clients-card__link"
-                          href={`/case-studies/${entry.slug}`}
-                          /* The only thing inside this link is an image with an
-                             empty alt, on purpose — so without a label the one
-                             clickable card on the page announces itself as
-                             "link" with nothing to say where it goes. Named
-                             from the study rather than from a sentence written
-                             here, so it cannot drift from the page it opens. */
-                          aria-label={pilotStory.title}
-                        >
-                          {plate}
-                        </Link>
-                      ) : (
-                        plate
-                      )}
-
-                      {/* The name, then three plain lines under it: the
-                          client's industry, the service, and where — owner,
-                          2026-09-30, the way his own portfolio sets its work.
-
-                          **No labels.** They were over the facts from
-                          2026-08-25 ("a label over each fact, and none over the
-                          name") and he has taken them off: the values say what
-                          they are. So the facts are bare `<p>`s rather than a
-                          description list — the markup follows the labels, and
-                          there are none to pair a value with.
-
-                          **The industry is not the rail's taxonomy.** The rail
-                          filters by DISCIPLINE, so the two say different things
-                          and the card can carry both: whose industry it was
-                          for, and — on the service line, every discipline the
-                          entry lists — the words the rail files it under.
-
-                          The heading tag stays. It is what puts each card in
-                          the page's outline; styling it flat is a look, not a
-                          demotion. */}
-                      <h3 className="clients-card__name">{entry.name}</h3>
-                      <p className="clients-card__fact">
-                        {sectorTitle(entry.sector)}
-                      </p>
-                      <p className="clients-card__fact">
-                        {entry.disciplines.join(", ")}
-                      </p>
-                      <p className="clients-card__fact">{entry.location}</p>
-                    </article>
-                  </li>
-                );
-              })}
+                </li>
+              ))}
             </ul>
           </div>
+        </div>
+
+        <div className="clients-work" ref={workRef}>
+          <ul className="clients-grid">
+            {shown.map((entry, index) => {
+              const slot = slots[index];
+              /* The picture. Stock frames for now, at the owner's ask, so the
+                 card can be judged against real photography — see
+                 content/case-studies.ts for why they must not ship.
+
+                 The tint stays under the image rather than being dropped with
+                 the drawing. It is what stands in the box while a remote
+                 frame is still in flight, and what is left there if it never
+                 arrives — a card whose picture fails should be a coloured
+                 panel, not a broken one. */
+              const plate = (
+                <div
+                  className="clients-card__plate"
+                  data-tint={TINTS[index % TINTS.length]}
+                  /* Where the ground and the mark are drawn — see
+                     `data-opens` on the article. Marked on every card, not
+                     only the ones that open: it says "this is the box the
+                     treatment paints in", and whether it paints is the
+                     article's to say. */
+                  data-opens-mark
+                >
+                  {/* Decorative, so alt is empty: these photographs are of
+                      nothing to do with the work, and describing one to a
+                      screen reader would be describing a placeholder. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className="clients-card__art"
+                    src={entry.image}
+                    srcSet={`${entry.image.replace("/1200/1200", "/600/600")} 600w, ${entry.image} 1200w`}
+                    sizes={sizesFor(slot)}
+                    alt=""
+                    width="1200"
+                    height="1200"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              );
+
+              return (
+                <li
+                  key={entry.slug}
+                  data-format={slot.format}
+                  data-span={slot.span}
+                  data-start={slot.start}
+                  data-row={slot.row}
+                  data-place={slot.place}
+                >
+                  {/* A card is a link only where there is a story behind it,
+                      which today is one of the eight. The other seven are
+                      articles and go nowhere, on purpose: a card that looks
+                      like a link and answers with an empty page is worse than
+                      a card that never offered. */}
+                  <article
+                    className={`clients-card${
+                      "story" in entry ? " clients-card--linked" : ""
+                    }`}
+                    /* The sector as data rather than as a word on the page.
+                       It is no longer shown or filtered on — the owner took
+                       the industry off the card and out of the rail — but it
+                       is still what each entry IS, and the one test that has
+                       to tell two entries apart reads it from here rather
+                       than from a line of text that has been restyled three
+                       times in a day. */
+                    data-sector={entry.sector}
+                    /* **The hook the hover treatment hangs off, and it is
+                       deliberately not a Clients class.**
+
+                       A card that opens something darkens and draws a plus on
+                       its picture. That is a rule about cards in general
+                       rather than about this page, so the stylesheet answers
+                       to `[data-opens]` and `[data-opens-mark]` — any card
+                       anywhere adopts the whole treatment by carrying those
+                       two attributes, with no CSS written for it.
+
+                       Set from the entry rather than by hand: a card gets it
+                       the moment a story exists behind it, which is the same
+                       condition that makes it a link at all. When the other
+                       seven are written they gain it with them. */
+                    data-opens={"story" in entry ? "true" : undefined}
+                  >
+                    {/* The link wraps the picture, and where it sits in this
+                        tree is the whole of how much of the card can be
+                        clicked — it is not a nesting preference. The
+                        stylesheet stretches this anchor over the card with an
+                        inset pseudo-element, and an inset pseudo-element
+                        measures from the nearest POSITIONED ancestor. While
+                        the anchor sat inside the heading, that ancestor was
+                        the heading, and the target was one word. */}
+                    {"story" in entry ? (
+                      <Link
+                        className="clients-card__link"
+                        href={`/case-studies/${entry.slug}`}
+                        /* The only thing inside this link is an image with an
+                           empty alt, on purpose — so without a label the one
+                           clickable card on the page announces itself as
+                           "link" with nothing to say where it goes. Named
+                           from the study rather than from a sentence written
+                           here, so it cannot drift from the page it opens. */
+                        aria-label={pilotStory.title}
+                      >
+                        {plate}
+                      </Link>
+                    ) : (
+                      plate
+                    )}
+
+                    {/* The name, and nothing else — owner, 2026-10-08:
+                        "remove the service complete under the project".
+                        (Industry, services and country stood under it from
+                        2026-09-30.) The heading tag stays: it is what puts
+                        each card in the page's outline. */}
+                    <h3 className="clients-card__name">{entry.name}</h3>
+                  </article>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </Container>
     </section>

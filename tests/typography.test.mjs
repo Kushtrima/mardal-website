@@ -191,41 +191,15 @@ test("the client card's name leads without borrowing the display face", () => {
   assert.doesNotMatch(declared, /var\(--type-title\)/);
   assert.match(declared, /font-family: var\(--type-body\)/);
 
-  /* Bigger than the value under it. Compared rather than pinned to a number, so
-     tuning either size stays free as long as the order holds. */
-  /* One level of token indirection resolved, because a size set as
-     `var(--text-copy)` is still a size — reading only literal clamps reported
-     the card's facts as unsized the moment they moved onto the site's own copy
-     token. */
-  const floor = (sel) => {
-    const rule = ALL.find((r) => r.selector === sel);
-    let value = rule?.body.match(/font-size:\s*([^;]+);/)?.[1]?.trim();
-    assert.ok(value, `${sel} sets no font-size`);
-
-    const token = value.match(/^var\((--[a-z0-9-]+)\)$/);
-    if (token) {
-      value = CSS.match(new RegExp(`${token[1]}:\\s*([^;]+);`))?.[1]?.trim();
-      assert.ok(value, `${token[1]} is not defined`);
-    }
-
-    /* A clamp's floor, or a flat size, so a size written either way can be
-       compared. The card's label was the flat one, at 10px, until its labels
-       came off on 2026-09-30. */
-    const clamped = value.match(/clamp\(\s*([\d.]+)(px|rem)/);
-    const flat = value.match(/^([\d.]+)(px|rem)$/);
-    const size = clamped ?? flat;
-    assert.ok(size, `${sel} is sized in a way this cannot read: ${value}`);
-    return Number(size[1]) * (size[2] === "rem" ? 16 : 1);
-  };
-  /* The whole hierarchy, as an ordering. Three sizes went up and down this card
-     across a day — the name shared the values' size, then the values were taken
-     smaller when it was the LABEL that was meant — so what is held is the order
-     rather than any of the numbers. Two sizes since 2026-09-30, when the labels
-     came off: the name over the facts. */
-  const name = floor(".clients-card__name");
-  const value = floor(".clients-card__fact");
-
-  assert.ok(name > value, "the card name is no larger than the facts under it");
+  /* **Alone under its picture, at the homepage's caption size** — owner,
+     2026-10-08: "make smaller name also remove the service complete under
+     the project". Nothing stands under it to be bigger than, so what is held
+     is the size it shares with Selected Work's captions. */
+  assert.match(declared, /font-size: max\(var\(--text-copy\), calc\(var\(--text-house\) \* 0\.21\)\)/);
+  assert.ok(
+    !ALL.some((rule) => rule.selector.split(",").some((part) => part.trim() === ".clients-card__fact")),
+    "the card's facts are styled again",
+  );
 });
 
 test("every arrow link is one size, and one step", () => {
@@ -307,12 +281,13 @@ test("every arrow link is one size, and one step", () => {
   }
 
   /* **`--service-text-action` is not what changed.** It is the service pages'
-     action size and seven other rules read it — role links, the story way-out,
-     the journey, the cards. Only the hero's CTA left it, and only because it is
-     one of the four links this is about. */
+     action size and six other rules read it — role links, the journey, the
+     cards. Only the hero's CTA left it, and only because it is one of the four
+     links this is about. (The story's way out read it too, until the story
+     page was rebuilt on 2026-10-08.) */
   assert.match(CSS, /--service-text-action:\s*20px/);
   assert.ok(
-    (CSS.match(/var\(--service-text-action\)/g) ?? []).length >= 7,
+    (CSS.match(/var\(--service-text-action\)/g) ?? []).length >= 6,
     "the service action size lost users it should have kept",
   );
 });
