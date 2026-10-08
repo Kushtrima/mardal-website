@@ -76,8 +76,9 @@ test("the file parses into rules at all", () => {
      silence, which is the one way this file could lie. */
   assert.ok(ALL.length > 400, `only ${ALL.length} rules parsed`);
   /* A floor for the walker, not a count to hold: About's three headings left
-     the title face on 2026-10-08 ("title are in other font"). */
-  assert.ok(titleFace.length > 10, `only ${titleFace.length} in the display face`);
+     the title face on 2026-10-08 ("title are in other font"), and the service
+     pages' with their pages the same day. */
+  assert.ok(titleFace.length > 2, `only ${titleFace.length} in the display face`);
 });
 
 test("the display face is fitted by one token, everywhere", () => {
@@ -101,21 +102,16 @@ test("the display face is fitted by one token, everywhere", () => {
   }
 });
 
-/* And the token survives, because the sans still reads it. Deleting it would
-   take the nav links and the service support line with it — a different face at
-   a different size, where the same number does something else. */
-test("the tight token is still there for the sans", () => {
-  const readers = ALL.filter((rule) =>
-    /letter-spacing:\s*var\(--tracking-tight\)/.test(rule.body),
+/* **The tight token is gone.** It was the display face's tightening, then
+   the sans's on four rules; the last two that read it left with the service
+   pages on 2026-10-08, and this test said to remove it once it was dead. Not
+   to come back on a title-face heading, where it was too tight. */
+test("the tight token is gone, and nothing reads it", () => {
+  assert.doesNotMatch(CSS, /--tracking-tight:/);
+  assert.ok(
+    !ALL.some((rule) => /var\(--tracking-tight\)/.test(rule.body)),
+    "a rule reads --tracking-tight, which is no longer declared",
   );
-  assert.ok(readers.length > 0, "--tracking-tight is now dead and should be removed");
-  for (const rule of readers) {
-    assert.doesNotMatch(
-      rule.body,
-      /font-family: var\(--type-title\)/,
-      `${rule.selector} is the display face`,
-    );
-  }
 });
 
 /* **The card name leads, and it is not set in the display face.**
@@ -216,11 +212,10 @@ test("every arrow link is one size, and one step", () => {
 
      Held as a SET rather than as four assertions of the same value: what has to
      be true is that they agree, and the token is what makes that structural. */
-  /* `.industries-explore` left with its section on 2026-10-05. */
+  /* `.industries-explore` left with its section on 2026-10-05, and
+     `.service-hero__cta` with the service pages on 2026-10-08. */
   const LINKS = [
-    ".service-hero__cta {",
     ".product__cta {",
-    ".blog-more__all {",
   ];
   /* The rule that sizes it, wherever it is: a selector can also close a
      shared list (the footer's quiet links) that sets no size. */
@@ -258,39 +253,15 @@ test("every arrow link is one size, and one step", () => {
      change together or the hover reads as two things happening. 4.77:1 on the
      light canvas and 7.29 on the dark, AA for text at any size. Held as a set
      for the same reason the size is. */
-  const hover = CSS.indexOf(".service-hero__cta:hover,");
-  assert.ok(hover > 0, "the labels do not turn together");
-  const rule = CSS.slice(hover, CSS.indexOf("\n  }", hover));
-  for (const link of [
-    ".service-hero__cta:hover",
-    ".product__cta:hover",
-    ".blog-more__all:hover",
-  ]) {
-    assert.ok(rule.includes(link), `${link} is not in the family`);
-  }
-  assert.match(CSS.slice(hover, CSS.indexOf("}\n}", hover)), /color:\s*var\(--accent\);/);
-  assert.doesNotMatch(
-    CSS.slice(hover, CSS.indexOf("}\n}", hover)),
-    /--accent-strong/,
-  );
-
-  /* And nowhere else answers it differently. */
-  for (const stray of [
-    ".product__cta:hover {",
-    ".service-hero__cta:hover {",
-  ]) {
-    assert.ok(!CSS.includes(stray), `${stray} still has a hover of its own`);
-  }
-
-  /* **`--service-text-action` is not what changed.** It is the service pages'
-     action size and six other rules read it — role links, the journey, the
-     cards. Only the hero's CTA left it, and only because it is one of the four
-     links this is about. (The story's way out read it too, until the story
-     page was rebuilt on 2026-10-08.) */
-  assert.match(CSS, /--service-text-action:\s*20px/);
-  assert.ok(
-    (CSS.match(/var\(--service-text-action\)/g) ?? []).length >= 6,
-    "the service action size lost users it should have kept",
+  const hover = CSS.indexOf("  .product__cta:hover {");
+  assert.ok(hover > 0, "the label does not turn on hover");
+  const rule = CSS.slice(hover, CSS.indexOf("}", hover));
+  assert.match(rule, /color:\s*var\(--accent\);/);
+  assert.doesNotMatch(rule, /--accent-strong/);
+  assert.equal(
+    (CSS.match(/\.product__cta:hover\b/g) ?? []).length,
+    1,
+    ".product__cta answers the pointer in more than one rule",
   );
 });
 

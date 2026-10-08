@@ -222,41 +222,6 @@ test("the heading is sized to the columns, as the others are", () => {
   assert.doesNotMatch(CSS, /\.service-page--about\b/);
 });
 
-test("the sentence takes the site's support scale, not one of its own", () => {
-  /* What survives from the rule this replaces, and the only part of it that was
-     ever about the site rather than about this page.
-
-     The measure it also carried — 30ch, six columns — went with the rest of
-     About's foot on 2026-08-27; the sentence is held at `--bare`'s 26ch now, the
-     same as every other artwork-less hero. The size is different in kind: it was
-     set at 20-26px for an hour and the owner caught it as smaller than the other
-     pages, and `--service-text-support` is one pixel scale for every service
-     page. A page quietly opting out of it is how a scale stops being one.
-
-     So the assertion inverts. There is no longer a page rule to read the size
-     off — the base rule supplies it, which is the point — and what is checked is
-     that nothing here sets a size of its own again. */
-  const base = CSS.indexOf(".service-hero__support {");
-  assert.ok(base > 0, "the shared support rule is gone");
-  assert.match(
-    CSS.slice(base, CSS.indexOf("}", base)),
-    /font-size:\s*var\(--service-text-support\)/,
-    "the shared support rule no longer carries the shared scale",
-  );
-
-  const pageScoped = [...CSS.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(
-    (m) =>
-      /\.service-page--about\b/.test(m[1]) &&
-      /\.service-hero__support\b/.test(m[1]) &&
-      /font-size/.test(m[2]),
-  );
-  assert.equal(
-    pageScoped.length,
-    0,
-    "About sets a support size of its own again, which is how a shared scale stops being one",
-  );
-});
-
 test("the photograph is under the hero, and says only what it shows", async () => {
   const html = await (await render("/about")).text();
 
@@ -1646,30 +1611,4 @@ test("the closing line's measure survives the build", () => {
   assert.match(rule, /text-wrap:balance/);
   assert.match(rule, /text-align:left/);
   assert.match(rule, /font-family:var\(--type-display\)/);
-});
-
-test("About is out of the placeholder module, and out of its test", () => {
-  const placeholderModule = readFileSync(
-    new URL("../content/placeholders.ts", import.meta.url),
-    "utf8",
-  );
-  const table = readFileSync(
-    new URL("./placeholder-pages.test.mjs", import.meta.url),
-    "utf8",
-  );
-
-  /* Leaving one of those behind is the whole failure mode of graduating a page:
-     the module entry would still compile, the table would still fetch `/about`,
-     and it would assert the shared heading against a page that no longer has it. */
-  assert.doesNotMatch(placeholderModule, /^\s{2}about: \{/m);
-  assert.doesNotMatch(table, /path: "\/about"/);
-
-  /* About took the count to ten. Contact took it to nine on 2026-09-13, so what
-     is held here is that it never climbs back past where it stands — a page
-     graduating after About is not About coming back, and must not fail About's
-     test. Eleven since 2026-10-03: UX/UI Design and Print Design arrived as new
-     placeholders, which is not About returning either. The two assertions above
-     are the ones that say About is gone; this one only keeps the table honest. */
-  const count = Number(table.match(/const PLACEHOLDER_PAGES = (\d+);/)?.[1]);
-  assert.ok(count > 0 && count <= 11, `the placeholder table counts ${count}`);
 });

@@ -11,6 +11,8 @@
  * piece is written. A page with a gap beats a page with a plausible guess.
  */
 
+import type { PageHeroContent } from "../components/services/ServicesHero";
+
 /**
  * A piece of writing, as blocks rather than one string of markup.
  *
@@ -54,6 +56,11 @@ export type BlogPost = {
   /** ISO date. Shown, because hiding it to look busier is the kind of small
    *  lie this site does not tell. */
   date: string;
+  /** The picture the card shows under the pointer — owner, 2026-10-08:
+   *  "maybe only image on hover". ⚠ STOCK STAND-INS (picsum), like the
+   *  Clients cards': nothing to do with the pieces, and they must not ship —
+   *  the render test pins them so publishing means deleting it on purpose. */
+  cover: string;
   body: BlogBlock[];
 };
 
@@ -93,28 +100,27 @@ export function readingMinutes(post: BlogPost): number {
   return Math.max(1, Math.round(words / WORDS_A_MINUTE));
 }
 
+/**
+ * **The Blog opens as the other pages do** — owner, 2026-10-08: "now work on
+ * blog page so change the hero as others". His heading, broken where it was
+ * (2026-08-27: after "things", the sentence's joint), with the red full
+ * stop; the line that stood beside it as the note.
+ */
+export const blogHero = {
+  label: "Blog",
+  titleLines: ["Notes on the things", "we’re exploring"],
+  titleStop: ".",
+  note: "Notes on software, applied AI, and the systems businesses run on.",
+} as const satisfies PageHeroContent;
+
 export const blog = {
   slug: "blog",
   title: "Blog",
   lede: "What we learn, written down.",
-  /* Two lines, set here rather than in the page: where the line turns is a
-     decision about the copy, not about the markup.
-
-     Owner's words, 2026-08-27, replacing "What we learn, / written down.".
-     Broken after "things" because that is where the sentence has a joint — the
-     alternative that fits, `…things we're` over `exploring`, turns on a
-     possessive and leaves a one-word second line under a nineteen-character
-     first one.
-
-     The note this replaces cited a 13.5ch measure. That number is gone rather
-     than stale: the hero went bare on 2026-08-27 and
-     `.service-hero--bare .service-hero__title` sets `max-width: none`, so what
-     bounds the heading now is the eight-column intro, not a measure. The longest
-     line here is nineteen characters against the fourteen it replaces, which is
-     the reason that was worth checking rather than assuming. */
-  titleLines: ["Notes on the things", "we’re exploring"],
-  support: "Notes on software, applied AI, and the systems businesses run on.",
-  heroCta: "Get in touch",
+  /* The label on the first line beside the pieces. */
+  indexLabel: "Writing",
+  /* Over the piece's headings, down the right of a piece. */
+  contents: "Contents",
 
   /* Today's real state, and therefore a screen that had to be designed rather
      than left to render as nothing. It names what is coming in the words the
@@ -124,22 +130,13 @@ export const blog = {
     copy: "The first pieces will be about what happens between systems: migration, ownership, permissions, and cutover.",
   },
 
-  /* What closes a piece, before the call to action. "More writing" rather than
+  /* What closes a piece. "More writing" rather than
      "read next": the block offers every other piece, so a label naming one of
      them would be wrong on the second row and wrong again for a reader who has
      already read the first. Both are plain statements of where the link goes —
      "read more" is not an offer, and neither is "continue". */
   more: {
     title: "More writing",
-    all: "All writing",
-  },
-
-  /* The same closing block every service page ends on, so a piece finishes
-     where the rest of the site finishes. Line breaks are the copy's:
-     .service-cta__title is white-space: pre-line for exactly this. */
-  cta: {
-    title: "Let’s build\nwhat your business\nneeds next.",
-    label: "Get in touch",
   },
 
   /**
@@ -163,6 +160,7 @@ export const blog = {
       thesis:
         "The software that fails is rarely the software that was written. It fails where two systems meet, and that is the part nobody was asked to test.",
       date: "2026-08-07",
+      cover: "https://picsum.photos/seed/mardal-blog-between-systems/1200/960",
       body: [
         {
           type: "p",
@@ -225,6 +223,7 @@ export const blog = {
       thesis:
         "Scope only holds when the exclusions are written down first, and agreed by the same people who will later want them included.",
       date: "2026-08-07",
+      cover: "https://picsum.photos/seed/mardal-blog-what-phase-one-does-not-include/1200/960",
       body: [
         {
           type: "p",
@@ -280,6 +279,7 @@ export const blog = {
       thesis:
         "Moving the data is not the last step of replacing a system. It is the work itself, and scheduling it at the end is how projects arrive late and then go back.",
       date: "2026-08-07",
+      cover: "https://picsum.photos/seed/mardal-blog-migration-is-the-project/1200/960",
       body: [
         {
           type: "p",

@@ -407,11 +407,6 @@
      would only be a band of ground held over the reading. */
   --header-pad-scrolled: clamp(0.5rem, 1.2vh, 0.9rem);
 
-  /* One pixel-based scale for every service page. New service routes inherit
-     these values instead of introducing smaller one-off type rules. */
-  --service-text-support: clamp(30px, 2.7vw, 40px);
-  --service-text-action: 20px;
-
   /* **The one size every arrow link is set at.** Owner, 2026-08-27: one
      dimension for all of them on desktop, one globally for mobile.
 
@@ -428,24 +423,9 @@
 
      Desktop went 18 to 20 on 2026-08-27 — a little bigger, his word — which is
      where `.service-hero__cta` already was before the four were brought
-     together. Mobile stays at 16.
-
-     It does NOT replace `--service-text-action`. That token is the service
-     pages' action size and seven other rules read it — role links, the story
-     way-out, the journey, the cards. Only the hero's CTA leaves it, and only
-     because it is one of the four links this is about. */
+     together. Mobile stays at 16. (The service pages, and with them that
+     link and their own action size, were deleted on 2026-10-08.) */
   --text-cta: 16px;
-  --service-text-card-title: clamp(52px, 4.2vw, 72px);
-  /* Both point at the page's copy size rather than holding their own. They
-     were 20 and 18: a service card is read full-screen, which was the argument
-     for setting its copy larger than a column's. That argument does not
-     survive the copy on every other page being one size — it left the service
-     pages reading a step above the rest of the site. Kept as names because the
-     service rules ask for them by name, and kept as two because the mobile one
-     is a separate hook if the pages ever need it back. */
-  --service-text-copy: var(--text-copy);
-  --service-text-copy-mobile: var(--text-copy);
-  --service-text-number: 20px;
   /* Pointed at the page's paragraph leading rather than holding a number of
      its own, so service copy cannot drift from the copy on every other page.
      It is kept as a name because the service rules read it by that name. */
@@ -489,12 +469,6 @@
      shows at the top of the scale, which is exactly where it was wanted. */
   --tracking-display: -0.03em;
 
-  /* The sans's tightening, and no longer the display face's. Four rules read
-     it, all `--type-display` — nav links, the service support line, the mobile
-     menu and its card title — where at those sizes it pulls under a pixel.
-     Do not put it back on a title-face heading; tests/typography.test.mjs
-     holds that. */
-  --tracking-tight: -0.055em;
   --tracking-wide: 0.12em;
 
   /* Layout and spacing */
@@ -1495,10 +1469,15 @@ video {
    opening's own (.house-hero__place), which starts at the band's right end
    and goes down to the foot of the opened photograph on the scroll. Over the
    services page's opening it is not said at all (owner, 2026-10-06: "remove
-   this text form services hero banner: Operating from Kosova"). */
+   this text form services hero banner: Operating from Kosova"), nor over a
+   blog piece's (owner, 2026-10-08: "also delete this text: Operating from
+   Kosova from hero banner in blog page"), nor over Contact's ("also from
+   contact page delete this: Operating from Kosova"). */
 :root:has([data-house-hero]) .site-nav__place,
 :root:has([data-services-hero]) .site-nav__place,
-:root:has([data-project-hero]) .site-nav__place {
+:root:has([data-project-hero]) .site-nav__place,
+:root:has([data-article-hero]) .site-nav__place,
+:root:has([data-contact-hero]) .site-nav__place {
   visibility: hidden;
 }
 
@@ -2540,12 +2519,8 @@ main:has(> .services-rules) {
    phone's journey bar — keep theirs. */
 main:has(> .services-rules) :is(
   .service-hero,
-  .service-offerings,
-  .service-cta,
   .blog-index,
   .blog-article,
-  .careers-roles,
-  .role-page,
   .contact
 ),
 main:has(> .services-rules) > .pin-spacer {
@@ -4820,9 +4795,7 @@ main:has(> .services-rules) > .pin-spacer {
    pass more comfortably, but it is not what the arrow beside it takes, and this
    pair has to match. */
 @media (hover: hover) {
-  .service-hero__cta:hover,
-  .product__cta:hover,
-  .blog-more__all:hover {
+  .product__cta:hover {
     color: var(--accent);
   }
 }
@@ -5267,8 +5240,8 @@ main:has(> .services-rules) > .pin-spacer {
   vector-effect: non-scaling-stroke;
 }
 
-/* On a phone: Menu and Services side by side, Contact under them; the
-   wordmark the width of the screen; the foot in two columns. */
+/* On a phone: Menu and Contact side by side, as on a desktop; the wordmark
+   the width of the screen; the foot in two columns. */
 @media (max-width: 40rem) {
   .site-footer__columns {
     row-gap: 2.5rem;
@@ -5280,10 +5253,6 @@ main:has(> .services-rules) > .pin-spacer {
 
   .site-footer__columns > :first-child {
     grid-column: 1 / span 2;
-  }
-
-  .site-footer__detail {
-    grid-column: 1 / -1;
   }
 
   .site-footer__brand-mask {
@@ -6001,18 +5970,6 @@ main:has(> .services-rules) > .pin-spacer {
   --service-surface: var(--canvas);
   --service-ink: var(--ink);
   --service-mobile-hero-tail: 30px;
-  /* **How far below the top of the screen the pinned journey stands, and the
-     one number two files have to agree on.** ScrollTrigger's start is
-     `top-=<lead> top`, so for the whole of the pinned run the section sits
-     exactly this far down the screen — which means a section a full screen tall
-     loses exactly this much off its bottom, permanently, because a pinned
-     section is the one thing a reader cannot scroll within.
-
-     `ServiceOfferingsScroll` reads this value rather than naming 60 a second
-     time, and `breakpoints.test.mjs` holds the two together — the same
-     arrangement, and the same reason, as the mobile-menu query it already
-     guards. */
-  --journey-pin-lead: 60px;
 
   color: var(--service-ink);
   background: var(--service-surface);
@@ -6047,42 +6004,6 @@ main:has(> .services-rules) > .pin-spacer {
   background: var(--canvas);
 }
 
-/* The dissolve, lifted from the homepage bar field: a blurred pane whose top
-   edge travels up the hero as it is scrolled past, and a gradient that takes
-   whatever is still legible into the page. Both are driven from
-   ServicePageEntry and sit at 0 opacity until it moves them. */
-.service-hero__blur {
-  --service-hero-blur-start: 34;
-
-  position: absolute;
-  z-index: 4;
-  inset: calc(var(--service-hero-blur-start) * 1%) 0 0;
-  backdrop-filter: blur(0.75rem);
-  -webkit-backdrop-filter: blur(0.75rem);
-  background: var(--canvas-veil);
-  mask-image: linear-gradient(to bottom, transparent, #000 52%, #000);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 52%, #000);
-  opacity: 0;
-  pointer-events: none;
-  will-change: opacity;
-}
-
-.service-hero__fade {
-  position: absolute;
-  z-index: 5;
-  inset: 40% 0 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 0,
-    var(--canvas-fade) 34%,
-    var(--canvas) 86%,
-    var(--canvas) 100%
-  );
-  opacity: 0;
-  pointer-events: none;
-  will-change: opacity;
-}
-
 .service-hero__inner {
   --service-header-height: var(--header-space);
 
@@ -6095,142 +6016,6 @@ main:has(> .services-rules) > .pin-spacer {
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: clamp(1rem, 1.35vw, 1.4rem);
   padding-block: clamp(3rem, 7vh, 5.5rem) clamp(2.5rem, 6vh, 4.5rem);
-}
-
-.service-hero__intro {
-  z-index: 1;
-  grid-column: 1 / span 8;
-  grid-row: 1;
-  transform: translateY(50px);
-}
-
-/* The name of the page, standing over a heading that is the same on all twelve
-   unwritten pages. `.eyebrow` carries the treatment — muted, uppercase, set at
-   the paragraph size like every other small line on this site — and this adds
-   only the air under it, which the shared class has no business knowing. */
-.service-hero__eyebrow {
-  margin-bottom: clamp(0.85rem, 1.1vw, 1.15rem);
-}
-
-.service-hero__title {
-  /* Wide enough that every authored line span sits on one line -- the longest
-     is 20.9ch -- while the second term keeps the heading clear of the pattern,
-     which is 30rem wide against the right edge of the same box. */
-  max-width: min(21ch, calc(100cqw - 30rem - 2rem));
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading-xl);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading-xl);
-}
-
-.service-hero__title-line {
-  display: block;
-}
-
-.service-hero__support {
-  z-index: 1;
-  grid-column: 1 / span 4;
-  grid-row: 3;
-  max-width: 16ch;
-  align-self: end;
-  margin: 0;
-  font-family: var(--type-display);
-  font-size: var(--service-text-support);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-tight);
-  line-height: 1.05;
-}
-
-.service-hero__cta {
-  z-index: 1;
-  display: inline-flex;
-  grid-column: 9 / -1;
-  grid-row: 3;
-  gap: 0.55em;
-  align-items: center;
-  align-self: end;
-  justify-self: end;
-  padding-block: 0.2rem;
-  font-family: var(--type-display);
-  font-size: var(--text-cta);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-/* **The heroes draw their bars; none of them is a mask any more.** Owner,
-   2026-08-26: the same movement on every service pattern, each keeping its OWN
-   drawing rather than taking Branding's. A bar inside a mask is pixels — there
-   is no element to move — so all five PNGs were read back out of their own alpha
-   channels by `SVG/trace-pattern.py` and are drawn as paths.
-
-   So this rule is geometry and nothing else now. It used to carry a flat
-   `background` and the AI page's mask, which every other variant then had to
-   undo — `--lines` and `--drawn` have been undoing it since the Blog and Case
-   Studies started drawing their own bars, and each new drawing added a third
-   place to keep in step. A base that does not paint has nothing to undo.
-
-   The PNGs stay in `public/`. They are the source each of these was traced
-   from, and the tracer is repeatable against them. */
-.service-hero__pattern {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  width: min(100%, 30rem);
-  aspect-ratio: 1447 / 1087;
-  transform: translateY(calc(-50% - 50px));
-}
-
-/* Every service keeps the same artwork box and responsive dimensions while
-   supplying its own geometry, and its own colour, on top of it.
-
-   **Each hero wears its own card's colour.** Owner, 2026-08-26, with the
-   homepage Different section on screen: take the stronger colour from each card,
-   not the pale background. So the pairing below is not a choice made here — it
-   is read off `.difference-card--one` through `--five` and the order the boxes
-   are authored in, and `pattern-drift.test.mjs` asserts the two agree.
-
-       Branding         box 1   red
-       Websites         box 2   butter
-       Software         box 3   mint
-       CRM Solution     box 4   sky
-       AI & Automation  box 5   clay
-
-   Every one of the five moved. The old set was a permutation of this one —
-   Branding had butter and Websites lilac, Software had sky and CRM mint — which
-   is what happens when colours are assigned a page at a time as the pages get
-   written, rather than from the one place that already names them.
-
-   `--accent` stays as the fallback for a hero that names no tint. There is no
-   such hero now: AI & Automation was it, wearing the brand purple because it was
-   the drawing the base rule masked with, and it has a modifier of its own. */
-.service-hero__bars {
-  width: 100%;
-  height: 100%;
-  fill: var(--accent);
-}
-
-.service-hero__pattern--branding .service-hero__bars {
-  fill: var(--tint-red-bar);
-}
-
-.service-hero__pattern--websites .service-hero__bars {
-  fill: var(--tint-butter-bar);
-}
-
-.service-hero__pattern--software .service-hero__bars {
-  fill: var(--tint-mint-bar);
-}
-
-.service-hero__pattern--crm-solution .service-hero__bars {
-  fill: var(--tint-sky-bar);
-}
-
-.service-hero__pattern--ai-automation .service-hero__bars {
-  fill: var(--tint-clay-bar);
 }
 
 /* ── About: the photograph under the hero ──
@@ -6857,217 +6642,12 @@ main:has(> .services-rules) > .pin-spacer {
   }
 }
 
-/* The blog's hero bars were here — `.service-hero__pattern--lines` and
-   `.service-hero__lines`, the one hero artwork on the site drawn from a vector
-   rather than traced from a PNG. Removed 2026-08-27 with the drawing they
-   styled: owner, pointing at Careers, "remove that pattern design", which is
-   the same call he made on the twelve unwritten pages on 2026-08-19.
-
-   Deleted rather than left standing. `PlaceholderPage` composes this class from
-   `content.pattern`, so a `--lines` rule with nothing rendering it is not inert
-   — it is a working pattern name that no longer appears in any markup, and the
-   next person reading this file would find styling for a drawing the site does
-   not have and reasonably conclude something had gone missing. `RedactedLines`
-   itself stays: the blog's empty state and the homepage still draw it. */
-
-/* Case Studies draws its bars too, but from the generator rather than from a
-   stored vector: BlogPattern at plate density, seeded on the route.
-
-   The box takes the plate's own 242x136 (22 columns x 11 units by 17 rows x 8),
-   which is near enough 16:9. The drawing is preserveAspectRatio="xMidYMid meet"
-   rather than "none", so a box of any other ratio letterboxes it instead of
-   stretching it, and the composition would sit in a band of nothing. */
-.service-hero__pattern--drawn {
-  width: min(100%, 32rem);
-  aspect-ratio: 242 / 136;
-}
-
-.service-hero__drawing {
-  width: 100%;
-  height: 100%;
-  fill: var(--accent);
-}
-
 /* --------------------------------- Blog ---------------------------------- */
 
 .blog-index {
   padding-block: var(--section-space-lg);
   color: var(--service-ink);
   background: var(--service-surface);
-}
-
-/* The mark on a piece. A ground of its own, because a drawing sitting straight
-   on the page reads as an ornament attached to the text, and one inside a
-   bordered field reads as a plate belonging to the piece. */
-/* The piece's drawing at plate size, inside the article. Accent here and grey
-   on the index card: the plate is artwork, in the colour the same arrangement
-   wears across all five service heroes, and the card's is a mark, which has to
-   stay quieter than the headline above it. */
-.blog-art {
-  display: block;
-  width: 100%;
-  height: 100%;
-  fill: var(--accent);
-  /* Texture at the head of the reading, not the subject. At full strength it
-     competes with the words it is introducing. */
-  opacity: 0.5;
-  transition: opacity var(--duration-base) var(--ease-standard);
-}
-
-/* ------------------------------- Blog: grid ------------------------------- */
-
-/* Every piece the same size. This replaced a wide lead above two smaller
-   cards, and the argument for that lead — that an index where everything is
-   equal asks the reader to choose without telling them anything — turned out
-   to be answered better by the card itself: each one now carries the date, the
-   whole thesis and the length, so a reader chooses on what the piece says
-   rather than on how big it was drawn. Editorial order still decides which
-   comes first. */
-.blog-grid {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
-  gap: clamp(0.75rem, 1.2vw, 1.15rem);
-  list-style: none;
-}
-
-.blog-grid > li {
-  display: flex;
-}
-
-/* A panel, and the gap between panels is the only separator: no border, which
-   would draw four lines around something that is already a surface.
-   min-height gives the card the proportion the composition depends on — the
-   title at the top, the thesis at the bottom, and deliberate air between them.
-   Without it a one-line title collapses the card to nothing next to a
-   four-line one. */
-.blog-card {
-  position: relative;
-  display: flex;
-  width: 100%;
-  min-height: clamp(20rem, 30vw, 26rem);
-  flex-direction: column;
-  padding: clamp(1.35rem, 1.9vw, 1.85rem);
-  overflow: hidden;
-  border-radius: var(--shape-md);
-  background: var(--surface-raised);
-  /* No shadow — owner's call, 2026-08-25, the same call he made on the Why
-     Mardal cards. It carried `var(--panel-shadow)`, which is nothing on the
-     dark page and a real drop on the light one, so it only ever showed in light
-     mode: the drop under these cards appeared the day the page's default did.
-
-     `--surface-raised` is left to be the whole of the separation. Two of the
-     four things that read `--panel-shadow` have now given it up; the remaining
-     two are the story plate and the story index's shot, both single large
-     images rather than a run of cards. */
-  transition: background var(--duration-fast) var(--ease-standard);
-}
-
-/* Date only. There is no category on a piece and none is invented to fill the
-   slot the reference puts one in; there is no byline either, for the same
-   reason. Same muted, tracked, upper voice the article's own meta line uses,
-   so the index and the piece introduce themselves the same way. */
-/* The title face, not the display face. --type-title is documented h1-only and
-   this is the one place it is asked to do more: the card is the piece's first
-   appearance and the piece's own h1 is set in the same face, so the index now
-   introduces a title in the voice the article will answer in. Set with the h1's
-   own weight and tracking rather than the heading scale's, because the face was
-   drawn for those and looks slack at 400.
-   Sized a step above --text-heading: this serif has a small x-height for its
-   body, so 30px of it reads smaller than 30px of Geist. */
-.blog-card__title {
-  margin: clamp(0.7rem, 1.6vh, 1rem) 0 0;
-  color: var(--ink);
-  font-family: var(--type-title);
-  font-size: clamp(1.75rem, 2.1vw, 2.125rem);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: 1.06;
-  text-wrap: balance;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-/* The card carries no mark now — the drawing is the piece's, and it is drawn
-   when the piece is opened. Nothing replaces it and nothing needs to: the rule
-   below holds the card's shape whatever stands between the title and the foot,
-   which is why taking the mark out cost the layout nothing. */
-
-/* margin-top: auto is the whole layout. It drops the thesis and the length to
-   the foot of the card, so a row of cards agrees along its bottom edge however
-   many lines each title runs to, and the space that opens above them is even
-   rather than accidental. */
-.blog-card__foot {
-  display: block;
-  margin-top: auto;
-  padding-top: clamp(1.5rem, 4vh, 2.5rem);
-}
-
-.blog-card__thesis {
-  display: block;
-  color: var(--ink-grey);
-  font-size: var(--text-copy);
-  /* Reading leading, not the page's 1.3. See .blog-article__body. */
-  line-height: 1.6;
-  text-wrap: pretty;
-}
-
-/* What closes the card, and all that closes it: the date and the length, over
-   the rule the byline used to carry.
-
-   The name went. It was set in --text-copy, which put it at the size of the
-   thesis it stood under — and when running text went from 14–16 to 16–18 it
-   went with it, so a card ended on a byline as large as the argument above it.
-   Sizing it down would have answered that and not the reason it was there:
-   every piece on this site is by the same person, so the name was the one fact
-   on the card a reader could do nothing with, printed three times in the space
-   the two useful ones had to share. It is a byline on the piece, where it says
-   something. A second writer belongs in this line, ahead of the date.
-
-   The setting is not invented here either. The piece's own page carries its
-   date in small tracked caps over the headline (.blog-article__meta), so the
-   card says the same fact the same way. Lowercase and grey it read as a
-   sentence left unfinished; in caps it reads as what it is, the filing rather
-   than the writing.
-
-   No avatar and no role: the site uses no photography, and PRODUCT.md records
-   that roles have not been supplied for publication. */
-.blog-card__stamp {
-  display: flex;
-  gap: 0.75em;
-  margin-top: clamp(1rem, 2.5vh, 1.4rem);
-  padding-top: clamp(0.85rem, 2vh, 1.1rem);
-  align-items: baseline;
-  border-top: 1px solid var(--line-soft);
-  color: var(--ink-grey);
-  font-size: var(--text-fine);
-  font-weight: var(--weight-strong);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-}
-
-@media (hover: hover) {
-  /* Colour and light only: these sit in a grid, so anything that moves shoves
-     its neighbours. */
-  .blog-card:hover {
-    background: var(--surface-raised-strong);
-  }
-
-  .blog-card:hover .blog-card__title {
-    color: var(--accent);
-  }
-}
-
-@media (max-width: 48rem) {
-  /* One column, and the card stops reserving height it no longer needs: at
-     full width a title cannot run long enough to need it. */
-  .blog-card {
-    min-height: 0;
-  }
-
-  .blog-card__foot {
-    padding-top: clamp(1.75rem, 6vh, 2.5rem);
-  }
 }
 
 /* ------------------------------ Blog: empty ------------------------------- */
@@ -7117,514 +6697,16 @@ main:has(> .services-rules) > .pin-spacer {
   opacity: 0.72;
 }
 
-/* **About was the odd one out, and is not any more — owner, 2026-08-27.**
-
-   Three rules stood here: `display: contents` on the aside above 48rem, which
-   dissolved the wrapper so the sentence took column 1 and the link column 9,
-   plus the support measure and the link placement that arrangement needed. They
-   came from the owner's 2026-08-26 ask — the link was on the left and had to go
-   right "like the other pages" — and at that moment the other pages meant the
-   five service pages, which stand their foot on two edges around artwork.
-
-   Today he asked for the opposite comparison: About, Blog and Contact matching
-   CAREERS, whose foot is one block in the bottom-right corner. That is what
-   plain `service-hero--bare` already does, so About now carries no foot rules of
-   its own — the way Blog, Contact, Clients and the eleven unwritten pages carry
-   none. Measured before removing them: About's support sat 730px from the right
-   edge at a 1440 window where every other bare page's sat at 40.
-
-   The phone halves went with them. They existed to undo `display: contents`
-   below 48rem and to left-align what the desktop had set left; with the desktop
-   rules gone there is nothing to undo, and `--bare`'s own phone block — one
-   block on the right, the sentence over the way in, lifted off the home
-   indicator — is the arrangement they were working around. */
-
-/* ── `service-hero--bare`: a hero with no artwork ──
-
-   ONE class, carried by the page, rather than a list of page names that has to
-   be extended. Add `service-hero--bare` beside `service-hero` on the section and
-   the whole arrangement below follows — the foot, the measure, the phone
-   layout. Nothing else has to be touched, here or anywhere.
-
-   It is written this way because the alternative already failed. These rules
-   began as `.service-page--case-studies …` and grew a name each time a page
-   needed them, and the growth is where the bugs came from: Careers was given the
-   aside rules and NOT the phone rule that belongs with them, and the eleven
-   unwritten pages inherited that same gap without anyone adding them to
-   anything. The sentence lay across the link on every one of them, measured at
-   320px — the support ending at 894 against the link beginning at 880 — and
-   nothing said so, because being in a list is not something a page can be
-   missing loudly.
-
-   Carrying it: PlaceholderPage, the Careers index and — since 2026-08-27,
-   when its bars came out — the Blog index. (ClientsPage did until 2026-10-08,
-   when it took the services' opening.) Not the five service
-   pages or a story: those have artwork, and the base rules are written for
-   exactly that.
-
-   What it does NOT own is anything to do with the copy: how large a particular
-   heading is set, and where its lines break, stay with the page. See the
-   Careers index's heading rule.
-
-   ── What the arrangement is ──
-
-   The support line and the way in, standing where the drawing stood. They were
-   the two ends of the hero's bottom row — the sentence at the left margin and
-   the link pushed to the right — which is the arrangement the five service pages
-   still use, and it only reads as an arrangement while there is artwork between
-   them holding the middle. With that gone they were two things at opposite edges
-   of an empty row.
-
-   `width: fit-content` is the whole of how this sits on the right edge without
-   the text being turned over to face it. Given the column's full width the box
-   ended at 1312 while its longest line stopped at 1263, so the writing read as
-   short of the edge by 49px — right-aligning the type would have closed that and
-   was the wrong fix, because it re-sets three lines of prose to be read from a
-   ragged left. Shrunk to its longest line the box IS the writing, and putting
-   the box on the edge puts the writing there. */
-.service-hero--bare .service-hero__aside {
-  z-index: 1;
-  display: flex;
-  grid-column: 7 / -1;
-  grid-row: 2 / -1;
-  flex-direction: column;
-  /* **Every line ends on the right edge — owner, 2026-08-27.**
-
-     `width: fit-content` below puts the BOX on the edge, and for a one-line
-     sentence that is the same thing as putting the writing there: the box is the
-     line. For a sentence that wraps it is not. `fit-content` capped by a
-     max-width resolves to the cap, so Blog's two lines and About's four sat in a
-     690px box left-aligned, and the shorter lines stopped up to 200px short of
-     an edge the box was meeting. Measured on Blog at a 1570 window: the box's
-     right edge at 40px from the hero, the second line's last character at 240.
-     The owner read that as the text not being on the right, and it was not.
-
-     So the edge is given to the lines rather than to their container. This is
-     the arrangement `--bare` already used below 48rem, for this exact reason —
-     it is lifted out of the phone block rather than invented, and that block now
-     keeps only the lift that is genuinely about phones.
-
-     The cost is stated where it was argued: an earlier note here rejected
-     right-aligned type because it re-sets prose to be read from a ragged left.
-     That is true and it is the trade the owner chose, having seen both. It is
-     four lines of support copy in a corner, not body text. */
-  align-items: flex-end;
-  align-self: end;
-  justify-self: end;
-  text-align: right;
-  /* Shrink-wrapped to the sentence, which is capped on the sentence itself —
-     `ch` is a unit of the element that reads it, and 26ch here is 26 characters
-     of the block's inherited 18px rather than of the 40px the sentence is set
-     in. Measured: it came out at 293px against the 519 the same number gives on
-     the paragraph, and the line broke into four. A child's max-width is
-     accounted for in the parent's fit-content, so capping it below and
-     shrink-wrapping here gives the block the width of the sentence. */
-  width: fit-content;
-}
-
-.service-hero--bare .service-hero__support {
-  /* Wider than the 16ch the service pages hold it to: there it is a fragment
-     beside a picture, here it is the only prose in the opening and it carries
-     the whole promise of the page. */
-  max-width: 26ch;
-  /* Owner's 20px. The block is set to its bottom edge, so space added under the
-     sentence lifts the sentence and leaves the way in where it is. Margin
-     rather than a transform: ServicePageEntry animates these on arrival and
-     would overwrite one. */
-  margin-bottom: 20px;
-}
-
-/* Under the sentence and on its left edge. Both are reset from the base rule,
-   which places this as a grid item at the far right of the hero's last row —
-   inside the block those become an instruction to push it to the right-hand
-   edge of the column, which is the one place it must not be. */
-/* And the way in stands on the same edge as the sentence above it, rather than
-   under the sentence's first character. `justify-self` is reset because the base
-   rule pushes this to the right-hand edge of the GRID, and inside the block that
-   would mean the edge of the column rather than of the page.
-
-   This moves Careers, which is worth saying plainly: its sentence is one line,
-   so it was the one page where "under the start of the line" and "on the right
-   edge" were visibly different, and its link sat 137px inside the edge its
-   sentence met. It now meets it too. One rule for five pages beats a rule that
-   is right on four of them. */
-.service-hero--bare .service-hero__cta {
-  align-self: flex-end;
-  justify-self: auto;
-}
-
-/* The same removal Clients made, for the same reason and not for the same
-   gain. The base measure is `min(21ch, 100cqw - 30rem - 2rem)`, and its second
-   term reserves 30rem for a drawing these pages no longer have. "Working" and
-   "on it." are far too short to reach either bound, so nothing on the page
-   moves — the cap comes off because it is a reservation for a picture that is
-   gone, not because the heading was being cut short by it.
-
-   The font-size is deliberately NOT taken with it. Clients doubles its hero
-   because a two-word title is all that page opens with; this one has a name
-   above it and a sentence below it, and stays at the site's big header. */
-.service-hero--bare .service-hero__title {
-  max-width: none;
-}
-
-/* Careers takes the opening at a size of its own — owner's call, and the page
-   is built for it: no artwork, no eyebrow, and a hero holding one sentence.
-   Clients does the same thing for the same reason.
-
-   Not Clients' number, though. Its old rule ran to 10rem because `Customer` was
-   3.218em wide and a 12-column intro took it at any size the page wanted.
-   The longest line here is `with the right team.` at 6.506em — twice the
-   measure — so the same 160px would run 1041px into a 900px column and turn a
-   line the copy turned on purpose.
-
-   6.5rem is where that stops being true with room over. There was a tight band
-   at 768–1024px, where the intro dropped to seven of twelve columns while the
-   slope was still climbing, and the slope was tuned around it — that band is
-   gone: the intro takes the whole column now (rule below), so nothing between
-   the breakpoint and the cap binds. Measured at a 1440 window the line renders
-   674px in 1360.
-
-   Two rules rather than one, which is the exception on this site and not a
-   habit: a phone gets its own, because the authored break cannot be large in a
-   288px column and giving it up is a decision that belongs to that width alone.
-   See the 48rem query. The two meet at 72px so the heading does not step
-   backwards crossing between them. */
-/* The whole column, at every width. The eight-column intro exists to keep a
-   heading clear of the 30rem pattern against the right edge, and this hero has
-   no pattern — the aside below it is on its own row, so nothing is beside the
-   title to leave room for. Without this the heading was reading at 544px on a
-   1024 window while 944 stood empty beside it, and it turned lines the copy had
-   turned on purpose. */
-.service-page--careers .service-hero__intro,
-.service-page--blog .service-hero__intro {
-  grid-column: 1 / -1;
-}
-
-/* Floor measured, not chosen. The longest authored line is 7.03em, and the
-   narrowest case is a 320px window, where the column is 288px — so anything
-   over 40px turns it. 2.25rem leaves 35px of that column spare, which is the
-   margin a font loading late needs.
-
-   It was 3.25rem for one commit and wrapped both lines on every phone. The
-   check that missed it only went down to 768px, because above that the answer
-   had been the same at every width and I stopped. */
-/* **Blog takes the same setting — owner, 2026-08-27, "same as the text on
-   careers page".** Listed on the rule rather than copied into one of its own,
-   which is the exception this file makes for copy sizing and is worth stating.
-   The usual doctrine is that how large a heading is set stays with its page,
-   because the number is tuned to that page's longest line. These two are the
-   same number for the same reason — a bare editorial hero opening on one
-   sentence — and two hand-kept copies of `9.4vw` would drift the first time
-   either was touched.
-
-   Blog's line is the one that binds. `Notes on the things` measures 6.667em
-   against Careers' `with the right team.` at 6.506, so anyone retuning this
-   should read it off Blog: at the 6.5rem ceiling that is 693px, in the 1360
-   column a 1440 window gives. Careers' own note below is kept intact — its
-   reasoning for the slope is unchanged, and it is the page the numbers were
-   originally measured on. */
-.service-page--careers .service-hero__title,
-.service-page--blog .service-hero__title {
-  /* The slope is set by where this rule STARTS, not by where it ends. Below
-     48rem the phone rule runs to 4.5rem, so at 768px the heading is 72px; at
-     7.2vw this rule opened at 55px and the heading stepped backwards by 17px
-     crossing its own breakpoint. 9.4vw meets it: 72.3px at 769, against 72 at
-     768.
-
-     Floor and ceiling both stay. The floor never binds now — the phone rule
-     owns everything below 768 — and is kept as the thing that catches a future
-     breakpoint change rather than letting the heading collapse. */
-  font-size: clamp(2.25rem, 9.4vw, 6.5rem);
-}
-
-/* ── Careers: the open roles ──
-
-   A record rather than a set of cards. Three panels side by side is a card
-   grid, and a card grid is one of this site's standing rejections — it is the
-   arrangement any competitor could paste in unchanged. So the roles are ruled
-   rows: a row states the opening once and is passed, which is how a listing is
-   actually read.
-
-   Three columns, and each is one question. What the role is called and the two
-   facts known about it; what the work is; and the way in. The rule between rows
-   is the only division — no boxes, no fills, nothing enclosing them.
-
-   Ruled top on every row and bottom on the list, so the last opening closes
-   instead of running out. */
-.careers-roles {
-  /* The same ground and foot as the site's other two indexes, the Blog and
-     Clients. A reader arriving at any of the three should not be able to tell
-     they were built weeks apart. */
-  padding-block: var(--section-space-lg);
-  color: var(--service-ink);
-  background: var(--service-surface);
-}
-
-.role-list {
-  margin: 0;
-  padding: 0;
-  border-bottom: 1px solid var(--line-soft);
-  list-style: none;
-}
-
-.role {
-  display: grid;
-  padding-block: clamp(1.75rem, 4vh, 2.75rem);
-  border-top: 1px solid var(--line-soft);
-  grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) auto;
-  gap: clamp(1.25rem, 3vw, 3rem);
-  align-items: start;
-  transition: border-color var(--duration-fast) var(--ease-standard);
-}
-
 /* The row acknowledging the pointer, which is the site's own answer to a hover
    — the content responds, rather than a decoration chasing the cursor. The rule
    is the row's only drawn part, so it is the part that answers. */
-@media (hover: hover) {
-  .role:hover {
-    border-top-color: var(--line);
-  }
-}
-
-.role__title {
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading);
-}
-
-.role__facts {
-  display: grid;
-  margin: clamp(1rem, 2.2vh, 1.5rem) 0 0;
-  gap: 0.7rem;
-}
-
-/* The same treatment the story record gives a fact: the label small, tracked
-   and grey, the value in the reading size. Two of them, because two are all
-   that is known — see content/careers.ts. */
-.role__fact dt {
-  margin-bottom: 0.3rem;
-  color: var(--ink-grey);
-  font-size: var(--text-fine);
-  letter-spacing: var(--tracking-wide);
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-.role__fact dd {
-  margin: 0;
-  color: var(--ink);
-  font-size: var(--text-copy);
-  line-height: 1.5;
-}
-
-.role__copy {
-  /* Capped on the prose rather than on the column: at a wide window the middle
-     track runs past a comfortable measure, and a paragraph read across 90
-     characters is read twice. */
-  max-width: 52ch;
-  margin: 0;
-  color: var(--ink-read);
-  font-size: var(--text-copy);
-  line-height: 1.55;
-  text-wrap: pretty;
-}
-
-.role__more {
-  display: inline-flex;
-  gap: 0.55em;
-  align-items: center;
-  justify-self: end;
-  font-family: var(--type-display);
-  font-size: var(--service-text-action);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1;
-  white-space: nowrap;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
 
 /* The row is the link, so the row is what answers: the label takes the accent
    wherever inside it the pointer happens to be, rather than only when it is on
    the two words themselves. */
-@media (hover: hover) {
-  .role:hover .role__more {
-    color: var(--accent-strong);
-  }
-}
 
 /* The third column is the first to go. It holds two words, and the row needs
    its width for the name and the prose long before it needs it for them. */
-@media (max-width: 64rem) {
-  .role {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
-  }
-
-  .role__more {
-    grid-column: 2;
-    grid-row: 2;
-    justify-self: start;
-    margin-top: clamp(1rem, 2vh, 1.5rem);
-  }
-}
-
-/* ── One role, opened ──
-
-   Two columns: what the role is, held still, and what the work is, moving. The
-   left is pinned by RolePin rather than by `position: sticky`, which cannot
-   work on a page ScrollSmoother is translating — the pin is switched on and off
-   at the same width the columns collapse at, and 64rem below is that width.
-
-   No `service-hero` on this page, alone on the site. The rail is the opening;
-   a hero would state the role's name across the top and the rail would state it
-   again a screen lower. */
-.role-page {
-  padding-block: clamp(3rem, 9vh, 6.5rem) var(--section-space-lg);
-  color: var(--service-ink);
-  background: var(--service-surface);
-}
-
-/* Two columns and nothing above them. The role's name and the sentence about it
-   are each the first thing in their own column, so they start on the same line
-   at every width with nothing arranging it.
-
-   It took three grid areas to say that for one commit: an "Open roles" link sat
-   inside the rail and pushed the name a line down, so the link was given a row
-   of its own. The owner then deleted the link, which is the better version of
-   the same fix — the alignment is now a consequence of there being nothing
-   there rather than of a row holding a place for something. */
-.role-page__layout {
-  display: grid;
-  grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
-  column-gap: clamp(2rem, 6vw, 5rem);
-  align-items: start;
-}
-
-/* Its own height and no more. The pin holds this element, and a rail stretched
-   to the height of the writing beside it would have nothing left to hold. */
-.role-page__rail {
-  grid-column: 1;
-  align-self: start;
-}
-
-.role-page__body {
-  grid-column: 2;
-}
-
-.role-page__title {
-  max-width: 14ch;
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading-xl);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading-xl);
-}
-
-/* Under the name and above the way in, ruled off from both: the facts are a
-   different kind of statement from either and the rules say so without a
-   heading over them. */
-.role-page__facts {
-  margin-block: clamp(1.5rem, 3.5vh, 2.25rem);
-  padding-block: clamp(1.1rem, 2.6vh, 1.6rem);
-  border-top: 1px solid var(--line-soft);
-  border-bottom: 1px solid var(--line-soft);
-}
-
-.role-page__apply {
-  display: inline-flex;
-  gap: 0.55em;
-  align-items: center;
-  font-family: var(--type-display);
-  font-size: var(--service-text-action);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-@media (hover: hover) {
-  .role-page__apply:hover {
-    color: var(--accent-strong);
-  }
-}
-
-/* The line the page opens on, set at the header size so the reading column has
-   an opening of its own rather than beginning mid-paragraph beside a heading
-   that belongs to the other column. */
-.role-page__lede {
-  max-width: 30ch;
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading);
-}
-
-.role-section {
-  margin-top: clamp(2.5rem, 6vh, 4rem);
-}
-
-.role-section__title {
-  margin: 0 0 clamp(0.75rem, 1.8vh, 1.1rem);
-  color: var(--ink-grey);
-  font-size: var(--text-fine);
-  font-weight: var(--weight-strong);
-  letter-spacing: var(--tracking-wide);
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-.role-section__copy {
-  max-width: 62ch;
-  margin: 0 0 1em;
-  color: var(--ink-read);
-  font-size: var(--text-copy);
-  line-height: 1.6;
-  text-wrap: pretty;
-}
-
-.role-section__copy:last-child {
-  margin-bottom: 0;
-}
-
-/* The one block on the page that takes something in, so it is ruled off from
-   the writing above it the way the facts are from the name. */
-.role-section--apply {
-  margin-top: clamp(3rem, 8vh, 5rem);
-  padding-top: clamp(2rem, 5vh, 3rem);
-  border-top: 1px solid var(--line-soft);
-}
-
-/* ── The application form ──
-
-   Fields on the site's own ground rather than in boxes: a hairline under each
-   one, which is the same mark the records above use, and the label above it in
-   the small tracked caps every label here is set in. A bordered box per field
-   would be the one arrangement on this page belonging to no other.
-
-   Rebuilt once, on the owner: "make this part more clear". Three things were
-   not, and the fixes are all here — a row per field saying whether it has to be
-   filled in, a CV control that is this site's rather than the browser's, and
-   spacing that puts each hint nearer the field it describes than the next one. */
-.apply-form {
-  margin-top: clamp(1.5rem, 4vh, 2.5rem);
-}
-
-.apply-form__grid {
-  display: grid;
-  max-width: 44rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  /* Row gap deliberately larger than the column gap, and larger than anything
-     inside a field. The hints used to read as belonging to the field under
-     them, which is a spacing fault rather than a wording one: they sat 8px
-     below their own rule and 20px above the next label. Proximity is the fix —
-     nothing here says "this hint is mine" except being closer to it. */
-  gap: clamp(2.25rem, 5vh, 3.25rem) clamp(1.25rem, 3vw, 2rem);
-}
 
 .apply-field--wide {
   grid-column: 1 / -1;
@@ -7778,94 +6860,6 @@ main:has(> .services-rules) > .pin-spacer {
    never two rules about the same field on screen at once. */
 .apply-field__hint[data-error="true"] {
   color: var(--accent-strong);
-}
-
-.apply-form__foot {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(1rem, 2.5vw, 1.75rem);
-  align-items: center;
-  margin-top: clamp(2rem, 5vh, 3rem);
-}
-
-.apply-form__submit {
-  display: inline-flex;
-  gap: 0.55em;
-  align-items: center;
-  padding: 0.75rem 1.4rem;
-  border: 1px solid var(--line);
-  border-radius: 0;
-  color: var(--ink);
-  font-family: var(--type-display);
-  font-size: var(--text-body);
-  font-weight: var(--weight-medium);
-  letter-spacing: -0.02em;
-  line-height: 1;
-  background: transparent;
-  cursor: pointer;
-  transition:
-    color var(--duration-fast) var(--ease-standard),
-    border-color var(--duration-fast) var(--ease-standard);
-}
-
-@media (hover: hover) {
-  .apply-form__submit:hover:not(:disabled) {
-    border-color: var(--accent);
-    color: var(--accent-strong);
-  }
-}
-
-.apply-form__submit:disabled {
-  color: var(--ink-grey);
-  cursor: progress;
-}
-
-/* Beside the button that was pressed, and empty until there is something to
-   say — an element holding a line for a message that has not happened yet
-   pushes the form around when it does. */
-.apply-form__status {
-  margin: 0;
-  color: var(--ink-read);
-  font-size: var(--text-copy);
-  line-height: 1.5;
-}
-
-.apply-form__status:empty {
-  display: none;
-}
-
-.apply-form__status[data-state="sent"] {
-  color: var(--accent-strong);
-}
-
-@media (max-width: 64rem) {
-  /* The rail stops being a column and becomes the top of the page. RolePin
-     tears the pin down at this width for the same reason: a pinned rail with
-     its own body underneath it would hold a heading over its own text. */
-  .role-page__layout {
-    grid-template-columns: minmax(0, 1fr);
-    /* Stacked, so the two run down one column and a row gap is needed — side by
-       side there is none, because nothing is above anything. */
-    row-gap: clamp(2rem, 5vh, 3rem);
-  }
-
-  .role-page__body {
-    grid-column: 1;
-  }
-
-  .role-page__title {
-    max-width: 20ch;
-  }
-
-  .role-page__lede {
-    max-width: 40ch;
-  }
-}
-
-@media (max-width: 48rem) {
-  .apply-form__grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 /* ── Contact ──
@@ -8253,29 +7247,6 @@ main:has(> .services-rules) > .pin-spacer {
   .letter__blank--short,
   .letter__blank--fill {
     flex-basis: 100%;
-  }
-}
-
-@media (max-width: 48rem) {
-  .role {
-    grid-template-columns: minmax(0, 1fr);
-    gap: clamp(1rem, 3vw, 1.5rem);
-  }
-
-  .role__more {
-    grid-column: 1;
-    grid-row: auto;
-    margin-top: 0;
-  }
-
-  /* Side by side on a phone: two stacked labels cost a third of the row's
-     height for eight words. */
-  .role__facts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .role__copy {
-    max-width: none;
   }
 }
 
@@ -8873,176 +7844,6 @@ main:has(> .services-rules) > .pin-spacer {
    flat line plus its own 0.2rem block padding, so it stands about 27 off the
    foot, and 2.6rem here puts the lede's last line about 15 clear of its top.
    That is the number to change if the CTA's size ever does. */
-@media (max-width: 48rem) {
-  
-
-  
-
-  /* ── Every Clients hero on a phone, sized from its own copy ──
-     The index, all seven sectors, and every story written after them. Owner
-     asked for it as a section rule rather than a page one, so a new sub-page is
-     sized by carrying `service-page--clients` and nothing else has to be added.
-     Deliberately not the five service heroes, the Blog or the home page.
-
-     **The size cannot be one number, and that is the whole design of this rule.**
-     An authored line must never wrap — where a heading turns is a decision about
-     the copy — so the largest size a page can take is its column divided by the
-     width of its longest line. `Customer` is 3.218em and `healthcare office` is
-     5.542em, so at a 390px window one page can hold 111px and the other 65. A
-     shared number is either too small for the first or breaks the second.
-
-     So the rule divides rather than declares: the column, less a margin, over
-     the line it has to hold. The page contributes one measured fact about its
-     own copy and the arithmetic is here, once.
-
-     **Adding a page:** set `--hero-line` on it to the width of its longest
-     authored line in em, measured rather than guessed —
-
-       const s = document.createElement('span');
-       Object.assign(s.style, {position:'absolute', visibility:'hidden',
-         whiteSpace:'nowrap', font: getComputedStyle(title).font});
-       s.style.fontSize = '100px'; s.textContent = 'the longest line';
-       document.body.append(s); s.getBoundingClientRect().width / 100;
-
-     Set nothing and it takes 5.6, which is a sentence-length line and about what
-     a story title runs to — safe for anything at or under that, and a page with
-     a longer line than 5.6em must set its own or it will turn.
-
-     `96cqi` and not 100: the last four per cent is the margin between filling
-     the column and touching the gutter. `cqi` reads `.service-hero__inner`,
-     which is the column itself, so this follows the gutter at every width
-     without restating it.
-
-     Checked by rendering, not by arithmetic — one line box per span at 320, 375,
-     390, 430 and 600 for both pages.
-
-     `max-width` comes off with it: 18ch and 21ch are desktop measures, and here
-     the column is already the narrower of the two — leaving them in only risks
-     turning a line the copy did not turn. */
-  .service-page--clients .service-hero__title {
-    max-width: none;
-    font-size: clamp(
-      3rem,
-      calc(96cqi / var(--hero-line, 5.6)),
-      var(--hero-max, 4rem)
-    );
-  }
-
-  /* **The heading was never getting the column the rule above hands it**, and
-     the cause was one desktop line leaking down here. Both Clients pages place
-     their aside at `grid-column: 7 / -1`, which is right on the 12-column grid
-     they were written for. This width replaces that grid with two columns — so
-     column 7 does not exist, and asking for it builds four implicit ones. They
-     are empty and 0px wide, but their gaps are not: measured at a 390px window
-     the tracks came out `278px 0 0 0 0 0`, four dead gaps taking 64px of a
-     358px row.
-     Then the second half of it, which is the part that actually turned the
-     lines: a negative grid line counts back through the EXPLICIT grid only, so
-     the intro's own `1 / -1` stops at the second column and it was laid out in
-     294px while the row was 358. `A website for a` needs 299 and `healthcare
-     office` needs 327 — so a heading that fits its column on paper broke into
-     four lines on the page.
-     Put back on the row it belongs to. The aside carries nothing in flow at this
-     width — the lede and the way in are both absolute — so it costs no height,
-     and the intro gets the whole 358 back. */
-  .service-hero--bare .service-hero__aside {
-    grid-column: 1 / -1;
-  }
-
-  /* ── The Careers opening on a phone ──
-
-     Owner asked for it bigger here, and the authored break is what was stopping
-     it. `with the right team.` is 6.505em, and a 320px window leaves a 288px
-     column, so holding that break caps the heading at 44px however much room
-     the page has otherwise. Measured, not estimated.
-
-     So the break is given up at this width and only at this width. The spans go
-     inline, the browser balances what it makes of the sentence, and the size is
-     free to be what the column can hold — the longest WORD is 1.851em, which
-     puts the real ceiling at 155px rather than 44.
-
-     This is a deliberate exception to the rule that a break on this site is a
-     decision. It is worth stating why: the desktop break is a composition, and
-     there is no two-line composition of this sentence that is large on a 288px
-     column. `balance` is what keeps the result from being a decision nobody
-     made — it evens the lines rather than filling the first and orphaning the
-     last.
-
-     The separator between the two spans is a leading space in the markup rather
-     than a pseudo-element here: `::after` content is not in `textContent`, so
-     nothing that reads the page can tell whether the words are joined, and the
-     first version of this shipped `startswith` with every measurement passing.
-     A real space collapses to nothing when the spans are blocks again. */
-  .service-page--careers .service-hero__title,
-  .service-page--blog .service-hero__title {
-    font-size: clamp(3.5rem, 17vw, 4.5rem);
-    text-wrap: balance;
-  }
-
-  /* Blog comes with it and must: without this rule its heading would take the
-     desktop clamp all the way down, where 9.4vw is 30px and the 2.25rem floor
-     catches it at 36 — four pixels SMALLER on a phone than the 40 it rendered
-     at before any of this. The size below is the point of the change, not a
-     side effect of it. */
-  .service-page--careers .service-hero__title-line,
-  .service-page--blog .service-hero__title-line {
-    display: inline;
-  }
-
-  
-
-  
-
-  /* ── The foot of an artwork-less hero on a phone ──
-
-     Owner asked for this on Careers and then on Clients: put the support line
-     on the right, and lift it off the bottom. It is one fix and it belongs to
-     every page carrying the shared aside, so it is written once here.
-
-     What it corrects is a real collision, not a preference. The base phone rule
-     pins the support to the bottom-LEFT and the way in to the bottom-RIGHT —
-     a pair that frames the artwork standing between them on a service page.
-     These heroes have no artwork, and the sentence is capped at a measure meant
-     to clear one, so on Clients and on the eleven unwritten pages it ran the
-     full width of a 320px screen and OVERLAPPED the link: measured, the
-     sentence's foot at 894px against the link's head at 880.
-
-     The phone gets what the desktop already has: one block on the right, the
-     sentence over the way in. `position: static` is the whole of it — the rest
-     is giving back what the base rule set while the two were absolute, which
-     otherwise lingers. */
-  .service-hero--bare .service-hero__support,
-  .service-hero--bare .service-hero__cta {
-    position: static;
-    right: auto;
-    bottom: auto;
-    left: auto;
-    margin: 0;
-  }
-
-  .service-hero--bare .service-hero__aside {
-    /* The right edge and the link that sits on it used to be set here, and are
-       now unconditional — see the shared rule. What is left is the only part of
-       this that was ever about phones.
-
-       The lift. The hero pays no bottom padding at this width, so without it
-       the block sits on the last pixel of the screen — which on a phone is also
-       where the home indicator is. */
-    margin-bottom: clamp(1.5rem, 5vh, 3rem);
-  }
-
-  .service-hero--bare .service-hero__support {
-    margin-bottom: 0.9rem;
-  }
-
-  .service-page--careers .service-hero__support {
-    /* Careers only. The base rule holds the sentence to 11ch to keep it clear
-       of artwork; without one, that measure broke this short sentence into
-       three lines against the edge. The Clients sentence is 66 characters and
-       needs the width it already has. */
-    max-width: 20ch;
-  }
-}
 
 /* Two across on a tablet, one on a phone: four bracketed values side by side at
    30rem is four columns of two words each. */
@@ -10028,118 +8829,312 @@ a.project-live:focus-visible {
   }
 }
 
+/* --------------------------- Blog: the index ----------------------------- */
+
+/* The Blog's heading sized to the columns, as the other openings' are:
+   "Notes on the things" is 8.62 of its size wide (measured), so its first
+   line, set in to the second rule, ends on the last. */
+.services-hero--blog {
+  --hero-fit: 8.72;
+
+  margin-bottom: var(--section-space);
+}
+
+/* **Three to a row, the picture only under the pointer** — owner,
+   2026-10-08: "i would like in 3 blog post in on row and maybe only image on
+   hover", from a reference card (a line of facts, a picture, the title) "in
+   our style". On the page's four columns: "Writing" on the first line, the
+   pieces from the second, third and fourth, each stopping short of the next
+   line by the gap. A card: its reading time and date on one line; its
+   picture; the title. Then "i want image to be visible not text, then when
+   hover like to be hover with efefct as revealing again": under the pointer
+   the picture is revealed again — the site's red sweeps up over it and lifts
+   off the top, the picture settling from a little larger as it is
+   uncovered — and the title turns red. Each hover plays it anew. */
+.blog-row {
+  --blog-gap: clamp(1.5rem, 3vw, 2.75rem);
+
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+}
+
+.blog-row__label {
+  grid-column: 1;
+  margin: 0;
+  padding-right: var(--blog-gap);
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.blog-cards {
+  display: grid;
+  grid-column: 2 / -1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  row-gap: clamp(3rem, 7vh, 5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Every card stops the gap short of the next line, the last too, so the
+   three are one size. */
+.blog-card {
+  padding-right: var(--blog-gap);
+}
+
+.blog-card__link {
+  display: grid;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.blog-card__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 0.85rem;
+  font-size: var(--text-body);
+  line-height: 1.3;
+}
+
+.blog-card__field {
+  position: relative;
+  display: block;
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.blog-card__image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-card__title {
+  margin: 1rem 0 0;
+  font-family: var(--type-display);
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* The red that sweeps over the picture, waiting flat at the field's foot. */
+.blog-card__field::after {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  content: "";
+  transform: scaleY(0);
+  transform-origin: 50% 100%;
+  pointer-events: none;
+}
+
+/* With a pointer: the picture revealed again on every hover. */
+@media (hover: hover) {
+  .blog-card__link:hover .blog-card__field::after,
+  .blog-card__link:focus-visible .blog-card__field::after {
+    animation: blog-curtain 1.1s var(--ease-handover) both;
+  }
+
+  .blog-card__link:hover .blog-card__image,
+  .blog-card__link:focus-visible .blog-card__image {
+    animation: blog-uncover 1.1s var(--ease-handover) both;
+  }
+
+  .blog-card__link:hover .blog-card__title {
+    color: var(--accent);
+  }
+}
+
+/* Up over the picture from its foot, then off through its top. */
+@keyframes blog-curtain {
+  0% {
+    transform: scaleY(0);
+    transform-origin: 50% 100%;
+  }
+
+  45% {
+    transform: scaleY(1);
+    transform-origin: 50% 100%;
+  }
+
+  55% {
+    transform: scaleY(1);
+    transform-origin: 50% 0%;
+  }
+
+  100% {
+    transform: scaleY(0);
+    transform-origin: 50% 0%;
+  }
+}
+
+/* Larger while it is covered, settling as it is uncovered. */
+@keyframes blog-uncover {
+  0%,
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.blog-card__link:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.5rem;
+}
+
+/* Where the entrance starts (BlogEntriesReveal): the title hidden until its
+   words are split, the facts and the field not yet up. Only with script,
+   and not for a reader who asked for less motion. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .blog-card__title {
+    visibility: hidden;
+  }
+
+  [data-blog-entry-after] {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+/* A tablet: "Writing" over the pieces, two to a row, on the page's lines. */
+@media (max-width: 64rem) {
+  .blog-row__label {
+    grid-column: 1 / -1;
+    margin-bottom: 1.5rem;
+  }
+
+  .blog-cards {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+/* A phone: one under the next. */
+@media (max-width: 40rem) {
+  .blog-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .blog-card {
+    padding-right: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blog-card__link:hover .blog-card__field::after,
+  .blog-card__link:hover .blog-card__image,
+  .blog-card__link:focus-visible .blog-card__field::after,
+  .blog-card__link:focus-visible .blog-card__image {
+    animation: none;
+  }
+
+  .blog-card__title {
+    transition: none;
+  }
+}
+
 /* ----------------------------- Blog: one piece ---------------------------- */
 
+/* **A professional piece — owner, 2026-10-08**: "change the structure font
+   remove that design inside the blog when open because there needs to be
+   image right and make as a professional blog so on the right to be title
+   online offline when scrollin in the middle to be text". On the page's four
+   columns, in the site's one face: the date and reading time, the title at
+   the big header size across three columns, the thesis and the author under
+   it; the piece's picture the whole width (it was the drawing); then the
+   text in the middle two columns, the second line to the fourth, and its
+   headings down the right from the fourth (ArticleContents), the one being
+   read in ink with the red mark, the rest in grey. Narrower than 64rem the
+   list goes and the text takes the width. */
 .blog-article {
   padding-block: clamp(2.5rem, 7vh, 4.5rem) var(--section-space-lg);
-  color: var(--service-ink);
-  background: var(--service-surface);
+  color: var(--ink);
 }
 
-/* Centred, and this is the correction that mattered most. The first version
-   pinned the column to the left gutter and left the right half of a 1456px
-   page empty, so every line of a long read began at the far edge of a wide
-   black field with nothing opposite it. A reading column belongs in the middle
-   of the page it is read on. */
-.blog-article__inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.container.blog-article__inner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
 }
 
-/* 38rem, not 40. The rule this column exists to keep is the one written above
-   .blog-article__body: no more than about 75 characters to a line. It was not
-   being kept. 40rem of Geist at 16px measured 86.4 characters a line, counted
-   off the rendered text rather than assumed, because `ch` is the width of a
-   zero and Geist's zero is half again as wide as its average letter — a
-   measure set in `ch` in this face comes out a third too long. 38rem at the
-   18px below measures ~73. */
-.blog-article__head,
-.blog-article__body {
-  width: 100%;
-  max-width: 38rem;
+.blog-article__head {
+  grid-column: 1 / span 3;
+  grid-row: 1;
+  padding-right: clamp(1.5rem, 3vw, 2.75rem);
 }
 
-/* The site's small-label voice — muted, tracked, upper — rather than a faded
-   copy of the body. Fading text with opacity was the wrong instrument twice on
-   this page: it makes the ink depend on whatever is behind it, and it reads as
-   the same text turned down rather than as a different kind of text. */
 .blog-article__meta {
   display: flex;
-  gap: 0.75em;
-  align-items: baseline;
+  gap: 0.6em;
   margin: 0 0 clamp(1rem, 2.5vh, 1.5rem);
-  color: var(--ink-grey);
-  font-size: var(--text-small);
-  font-weight: var(--weight-strong);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+  font-size: var(--text-body);
 }
 
-/* The measure belongs on the title, not on the block around it. `ch` is the
-   width of a zero in the element's OWN font, and this heading is set in the
-   title face at display size while the block around it inherits the body face
-   at body size, so a max-width in `ch` there is counted in the wrong font. */
 .blog-article__title {
-  max-width: 18ch;
   margin: 0;
-  font-family: var(--type-title);
-  font-size: clamp(2.25rem, 4vw, 3.5rem);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: 1.04;
+  font-family: var(--type-display);
+  font-size: var(--text-heading-xl);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
   text-wrap: balance;
 }
 
-/* The sentence the index promised, kept at the top of the piece rather than
-   left for the reader to find again. Larger than the body, lighter than the
-   title. It is the invitation into the piece, so it is set at full ink and
-   given its size to carry the difference — it was previously the one element
-   on the page turned down to 0.78, which put the quietest treatment on the
-   line whose whole job is to make someone start reading. */
 .blog-article__standfirst {
-  margin: clamp(1rem, 2.5vh, 1.5rem) 0 0;
-  color: var(--ink);
-  font-size: clamp(1.125rem, 0.4vw + 1rem, 1.3125rem);
-  line-height: 1.45;
-  letter-spacing: -0.015em;
+  max-width: 34em;
+  margin: clamp(1.25rem, 3vh, 1.75rem) 0 0;
+  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
+  line-height: 1.4;
+  letter-spacing: -0.01em;
   text-wrap: pretty;
 }
 
-/* Who wrote it. Full ink at copy size, so it reads as a person rather than as
-   another line of filing information, and ruled off above so the head of the
-   piece closes on it. */
 .blog-article__byline {
-  margin: clamp(1.25rem, 3vh, 1.75rem) 0 0;
-  padding-top: clamp(0.85rem, 2vh, 1.1rem);
-  border-top: 1px solid var(--line-soft);
-  color: var(--ink);
-  font-size: var(--text-copy);
-  letter-spacing: -0.015em;
+  margin: clamp(1rem, 2.5vh, 1.5rem) 0 0;
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
 }
 
-/* Wider than the words. The plate breaks the measure on both sides, which is
-   what tells the eye the reading has not started yet. */
-.blog-article__art {
+.blog-article__cover {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  aspect-ratio: 2 / 1;
+  margin: clamp(2.5rem, 6vh, 4rem) 0 clamp(3rem, 8vh, 5.5rem);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.blog-article__cover-image {
   display: block;
   width: 100%;
-  max-width: 52rem;
-  aspect-ratio: 16 / 9;
-  margin-block: clamp(2rem, 5vh, 3.25rem);
+  height: 100%;
+  object-fit: cover;
 }
 
-/* The measure, and the only reason this column exists. Prose past roughly 75
-   characters loses the line it is on when the eye comes back to the left.
-
-   The leading is 1.6 rather than the page's --leading-body of 1.3. That token
-   was set deliberately and is not touched here: it is right for a marketing
-   paragraph of two lines and wrong for nine hundred words, where the eye needs
-   a clear track back to the start of the next line. This is the one place on
-   the site that has nine hundred words. */
 .blog-article__body {
-  color: var(--ink-read);
-  font-size: clamp(1.0625rem, 0.35vw + 0.95rem, 1.125rem);
-  line-height: 1.6;
+  grid-column: 2 / span 2;
+  grid-row: 3;
+  padding-right: clamp(1.5rem, 3vw, 2.75rem);
+  font-size: var(--text-body);
+  line-height: 1.65;
+}
+
+.blog-article__body > :first-child {
+  margin-top: 0;
 }
 
 .blog-article__copy {
@@ -10147,65 +9142,28 @@ a.project-live:focus-visible {
   text-wrap: pretty;
 }
 
-/* A section, and it has to look like one. This was clamp(1.2rem, 1.6vw,
-   1.45rem): 1.33x the body, in the body's own face and the body's own colour,
-   which is not a rank — it read as a sentence someone had enlarged. A subhead
-   is the skim structure of the piece and the only thing a reader scrolling
-   fast actually sees.
-   --text-heading is the site's own second size, so this is a return to the
-   scale rather than another number invented for the blog: 30px against an 18px
-   body, 1.67x, which is where the publications this page is measured against
-   sit.
-
-   **No rule above it.** There was a 60px accent mark here and the owner struck
-   it, with the pulled line's rule, as too many lines through the reading. Space
-   does the work the mark was doing: the top margin carries the 0.85em the rule
-   used to occupy as well as its own, so the gap above a section break is the
-   same size it always was and only the line is gone. That gap is now the only
-   thing announcing a section, which is why it is this large — cut it and the
-   subhead becomes a sentence someone enlarged, which is the fault this heading
-   was rebuilt out of once already. */
 .blog-article__heading {
-  margin: 3.45em 0 0.75em;
-  color: var(--ink);
+  margin: 2.6em 0 0.75em;
   font-family: var(--type-display);
   font-size: var(--text-heading);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: var(--leading-heading);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  scroll-margin-top: 120px;
 }
 
-/* The accent hairline down its left edge went with the subhead's mark, and
-   taking it away broke the piece's order: the pulled line and the subhead were
-   both the display face at full --ink a quarter apart in size, and the rule was
-   the only thing telling them apart. Read without it, a pulled line under a
-   subhead is a second, smaller heading.
-
-   So the difference moves into the face. The quote now speaks in --type-title,
-   the serif this piece's own h1 and its index card are set in — the piece's
-   voice raised, against Geist subheads and Geist body. Nothing is drawn, and a
-   reader cannot mistake it for a rank in the structure.
-
-   Sized where it is because the face is not Geist: CS Alistair has a small
-   x-height for its body, so 32px of it reads at about 28 of the subhead's,
-   which keeps the earlier correction — a pulled line is a moment inside a
-   section, not a rank above one — while looking nothing like it. */
 .blog-article__quote {
-  margin: 2.2em 0;
-  color: var(--ink);
-  font-family: var(--type-title);
-  font-size: clamp(1.5rem, 0.9vw + 1.25rem, 2rem);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: 1.2;
+  margin: 2em 0;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--accent);
+  font-family: var(--type-display);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-body);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
   text-wrap: pretty;
 }
 
-/* Parallel points, set as parallel points. Three of the pieces already argue
-   in lists — four commitments, six exclusions — and with no list block they
-   were written as runs of one-sentence paragraphs, which is the copy working
-   around the template. The marker is the accent so the run reads as a set at a
-   glance, and the text hangs off it rather than wrapping under it. */
 .blog-article__list {
   margin: 0 0 1.35em;
   padding: 0;
@@ -10239,6 +9197,89 @@ a.project-live:focus-visible {
   content: "—";
 }
 
+/* The headings down the right: the one being read in ink with the red
+   square before it, the rest in grey. */
+.blog-article__aside {
+  grid-column: 4;
+  grid-row: 3;
+}
+
+.article-contents__label {
+  margin: 0 0 1rem;
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+}
+
+.article-contents__list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.article-contents__link {
+  position: relative;
+  display: block;
+  padding-left: 1.1em;
+  color: var(--line-grid);
+  font-size: var(--text-body);
+  line-height: 1.35;
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+.article-contents__link::before {
+  position: absolute;
+  top: 0.45em;
+  left: 0;
+  width: 0.45em;
+  height: 0.45em;
+  background: var(--accent);
+  content: "";
+  transform: scale(0);
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.article-contents__link[aria-current="true"] {
+  color: var(--ink);
+}
+
+.article-contents__link[aria-current="true"]::before {
+  transform: none;
+}
+
+@media (hover: hover) {
+  .article-contents__link:hover {
+    color: var(--ink);
+  }
+}
+
+.article-contents__link:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.25em;
+}
+
+/* No column for the headings: the text takes the width, from the first
+   line. */
+@media (max-width: 64rem) {
+  .blog-article__head,
+  .blog-article__body {
+    grid-column: 1 / -1;
+    padding-right: 0;
+  }
+
+  .blog-article__aside {
+    display: none;
+  }
+}
+
+@media (max-width: 40rem) {
+  .blog-article__cover {
+    aspect-ratio: 4 / 3;
+  }
+}
+
 /* --------------------------- Blog: end of piece --------------------------- */
 
 /* One row across the whole content column: the piece behind on the left, the
@@ -10253,11 +9294,12 @@ a.project-live:focus-visible {
    edges of the page for the row to read as two directions. --container-default
    is where every other section on this site ends, so it lines up with the
    footer beneath it rather than floating inside its own margin. */
+/* No line over it — owner, 2026-10-08: "remove that horisontal grey line". */
 .blog-more {
+  grid-column: 1 / -1;
+  grid-row: 4;
   width: 100%;
   margin-top: clamp(3.5rem, 9vh, 6rem);
-  padding-top: clamp(1.5rem, 4vh, 2.25rem);
-  border-top: 1px solid var(--line-soft);
 }
 
 /* Three cells, and the middle one is sized by its words so it sits on the
@@ -10267,238 +9309,72 @@ a.project-live:focus-visible {
    The empty span rendered when there is nothing behind is doing real work: it
    holds the left cell open so the middle stays in the middle on the first
    piece of a two-piece run. */
+/* Two long arrows on the page's columns: the piece behind from the second
+   line, the piece ahead ending on the fourth — as the project page ends.
+   Room above and below each for the pointer, taken back so nothing moves. */
 .blog-more__row {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: clamp(1.25rem, 4vw, 3rem);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: center;
 }
 
-/* A title with an arrow on the outside of it — pointing away from the middle,
-   left on the left and right on the right, so the pair reads as a position in
-   a run before a single word of it is read. Aligned to its own edge for the
-   same reason. */
 .blog-more__side {
-  display: flex;
-  gap: 0.7em;
-  /* Centred, not on the baseline. The arrow is a grid of dots with no text in
-     it, so it has no baseline of its own to sit on and dropped a few pixels
-     under the title's when asked for one. */
+  display: inline-flex;
   align-items: center;
-  min-width: 0;
+  margin: -0.6em 0;
+  padding: 0.6em 0;
+  color: var(--ink);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.blog-more__side--back {
+  grid-column: 2;
+  justify-self: start;
 }
 
 .blog-more__side--on {
-  justify-content: flex-end;
-  text-align: right;
+  grid-column: 3;
+  justify-self: end;
 }
 
-/* The title face. A piece is introduced in the same voice wherever it appears —
-   the index card, its own h1, and here — so arriving at the article continues
-   the thing that was clicked rather than starting a new typographic idea. A
-   step below the card: this is a footnote to a piece already read, not the
-   front of the publication. */
-.blog-more__name {
-  color: var(--ink);
-  font-family: var(--type-title);
-  font-size: clamp(1.375rem, 1.9vw, 1.75rem);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: 1.1;
-  text-wrap: balance;
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
+/* The long thin arrow, in ink, red under the pointer. */
 .blog-more__arrow {
   flex: 0 0 auto;
-  color: var(--accent);
+  width: 4em;
+  height: 0.75em;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.25px;
 }
 
-/* The way out of the run, and a different kind of destination from the two
-   beside it: those are pieces to read, this is the shelf they came off. So it
-   is set in the body voice rather than the title face — same size, same weight
-   as any other link on the site — and the difference in face is what ranks it
-   under the two titles without turning it down. */
-.blog-more__all {
-  color: var(--ink);
-  font-size: var(--text-cta);
-  letter-spacing: -0.02em;
-  line-height: 1;
-  text-align: center;
-  white-space: nowrap;
-  transition: color var(--duration-fast) var(--ease-standard);
+.blog-more__arrow path {
+  vector-effect: non-scaling-stroke;
 }
 
 @media (hover: hover) {
-  .blog-more__side:hover .blog-more__name {
+  .blog-more__side:hover {
     color: var(--accent);
   }
 }
 
-/* One column below the breakpoint. Three cells across a phone gives each title
-   two words to a line, and the middle link ends up wedged between two ragged
-   columns. Stacked, the order is the one the row reads in: back, out, on.
-   Below the laptop step of the page's scale (lib/breakpoints.ts; it was
-   52rem). */
-@media (max-width: 64rem) {
+.blog-more__side:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.35em;
+}
+
+/* A phone has two columns: the arrows at its two edges. */
+@media (max-width: 40rem) {
   .blog-more__row {
-    grid-template-columns: minmax(0, 1fr);
-    gap: clamp(1.1rem, 4vh, 1.6rem);
-    justify-items: start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  /* An empty cell contributes a gap it has no content to justify. */
-  .blog-more__side:empty {
-    display: none;
+  .blog-more__side--back {
+    grid-column: 1;
   }
 
-  /* Each arrow keeps the direction it means — left leading the piece behind,
-     right trailing the piece ahead — so the pair still reads as two directions
-     once they are no longer on two sides. */
   .blog-more__side--on {
-    justify-content: flex-start;
-    text-align: left;
+    grid-column: 2;
   }
-
-  .blog-more__all {
-    text-align: left;
-  }
-}
-
-.service-offerings {
-  color: var(--service-ink);
-  background: var(--service-surface);
-}
-
-.service-journey {
-  position: relative;
-  height: 100svh;
-  min-height: 42rem;
-  overflow: hidden;
-}
-
-.service-journey__layout {
-  position: relative;
-  display: grid;
-  height: 100%;
-  grid-template-columns: clamp(12rem, 20vw, 19rem) minmax(0, 1fr);
-  gap: clamp(2rem, 4vw, 5rem);
-  padding-block: clamp(3.25rem, 6vh, 4.5rem);
-}
-
-.service-journey__nav {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  grid-column: 1;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.service-journey__nav-link {
-  color: color-mix(in srgb, var(--service-ink) 38%, transparent);
-  font-family: var(--type-body);
-  font-size: var(--service-text-action);
-  font-weight: var(--weight-medium);
-  line-height: 1.2;
-  transition: color 320ms var(--ease-standard);
-}
-
-.service-journey__nav-link.is-active,
-.service-journey__nav-link[aria-current="true"] {
-  color: var(--accent);
-}
-
-.service-journey__skip {
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  font-family: var(--type-body);
-  font-size: var(--service-text-action);
-  font-weight: var(--weight-medium);
-  line-height: 1;
-  transition: color 250ms var(--ease-standard);
-}
-
-.service-journey__skip-icon {
-  --pixel-arrow-dot: 0.085rem;
-  --pixel-arrow-gap: 0.04rem;
-}
-
-.service-journey__stage {
-  display: grid;
-  min-width: 0;
-  height: 100%;
-  grid-column: 2;
-  grid-template-rows: auto minmax(0, 1fr);
-}
-
-.service-journey__current-title {
-  max-width: 100%;
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--service-text-card-title);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: 0.94;
-}
-
-.service-journey__window {
-  height: clamp(25rem, 50vh, 31rem);
-  margin-top: clamp(2.5rem, 4.5vh, 3.25rem);
-  overflow: visible;
-}
-
-.service-journey__track {
-  --service-card-gap: clamp(3rem, 5vw, 6.5rem);
-
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.service-card {
-  position: absolute;
-  inset: 0 auto auto 0;
-  display: grid;
-  width: calc((100% - var(--service-card-gap)) / 2);
-  height: 100%;
-  grid-template-rows: minmax(0, 1fr) auto;
-  align-content: start;
-  opacity: 0;
-  scroll-margin-inline: 2rem;
-  visibility: hidden;
-}
-
-.service-card:first-child {
-  opacity: 1;
-  visibility: visible;
-}
-
-.service-card__mobile-title {
-  display: none;
-  margin: 0;
-}
-
-.service-card__body {
-  display: grid;
-  max-width: none;
-  align-content: start;
-  gap: clamp(1.25rem, 2.5vh, 2rem);
-  padding-top: 10px;
-}
-
-.service-card__copy,
-.service-card__capabilities,
-.service-card__example {
-  max-width: 35ch;
-  margin: 0;
-  color: var(--service-ink);
-  font-family: var(--type-body);
-  font-size: var(--service-text-copy);
-  font-weight: var(--weight-body);
-  line-height: var(--service-leading-copy);
 }
 
 [data-service-word] {
@@ -10506,149 +9382,13 @@ a.project-live:focus-visible {
   will-change: transform, opacity;
 }
 
-.service-card__number {
-  align-self: end;
-  color: var(--accent);
-  font-family: var(--type-body);
-  font-size: var(--service-text-number);
-  font-weight: var(--weight-medium);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-
-.service-journey__next {
-  position: absolute;
-  z-index: 3;
-  right: clamp(1rem, 2vw, 2rem);
-  bottom: clamp(5.5rem, 10vh, 7rem);
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  font-family: var(--type-body);
-  font-size: var(--service-text-action);
-  font-weight: var(--weight-medium);
-  line-height: 1;
-  transition: color 250ms var(--ease-standard);
-}
-
-.service-page .service-journey__controls {
-  position: absolute;
-  z-index: 3;
-  right: clamp(1rem, 2vw, 2rem);
-  bottom: clamp(5.5rem, 10vh, 7rem);
-  left: calc(clamp(12rem, 20vw, 19rem) + clamp(2rem, 4vw, 5rem));
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.service-page .service-journey__controls .service-journey__next {
-  position: static;
-}
-
-.service-skip-transition {
-  position: fixed;
-  z-index: 1000;
-  inset: 0;
-  overflow: hidden;
-  background: var(--service-surface, var(--canvas));
-  pointer-events: none;
-}
-
-.service-skip-transition__track {
-  width: 100%;
-  will-change: transform;
-}
-
-.service-skip-transition__frame {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  height: 100svh;
-  overflow: hidden;
-  background: var(--service-surface, var(--canvas));
-}
-
-/* Same black as the page, for the same reason: this frame is a still of the
-   foot of the page, and a near-black here would flash a grey band mid-skip. */
-.service-skip-transition__frame--target {
-  background: var(--canvas);
-}
-
-.service-skip-transition__frame--target .site-footer {
-  background: var(--canvas);
-}
-
-.service-skip-transition__frame .service-journey {
-  height: 100%;
-  min-height: 0;
-}
-
-.service-skip-transition__frame [data-enter] {
-  opacity: 1 !important;
-  visibility: visible !important;
-  transform: none !important;
-}
-
-@media (hover: hover) {
-  .service-journey__nav-link:hover,
-  .service-journey__skip:hover,
-  .service-journey__next:hover {
-    color: var(--accent);
-  }
-}
-
-.service-cta {
-  padding-block: var(--section-space-lg);
-  color: var(--service-ink);
-  background: var(--service-surface);
-}
-
 /* The page's own ground, not a near-miss of it. A #050505 here predated the
    canvas going fully black, and against the #000 above it the seam showed as a
    grey band across the foot of every service page. The ink had been left behind
    as a near-white when the background was moved onto the token — same seam, the
    other way up, and on a light page it would have been off-white on white. */
-.service-page .service-cta,
 .service-page + .site-footer {
   background: var(--canvas);
-}
-
-.service-page .service-cta {
-  color: var(--ink);
-}
-
-.service-cta__inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.service-page .service-cta__inner[data-enter-mode="none"] {
-  opacity: 1 !important;
-  transform: none !important;
-}
-
-.service-cta__title {
-  max-width: 20ch;
-  margin: 0 auto;
-  font-family: var(--type-title);
-  font-size: var(--text-heading-xl);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading-xl);
-  white-space: pre-line;
-}
-
-.service-cta__link {
-  display: inline-flex;
-  gap: 0.5em;
-  align-items: center;
-  margin-top: clamp(1.5rem, 3vw, 2.25rem);
-  font-size: var(--text-body);
-  letter-spacing: -0.02em;
-  line-height: 1;
 }
 
 /* Tablet: preserve the desktop composition, but reduce the title and pattern
@@ -10658,25 +9398,13 @@ a.project-live:focus-visible {
     padding-block: clamp(2.5rem, 6vh, 4rem) clamp(2.25rem, 5vh, 3.5rem);
   }
 
-  .service-hero__intro {
-    grid-column: 1 / span 7;
-  }
+  
 
-  .service-hero__title {
-    max-width: 11.5ch;
-    font-size: clamp(48px, 6.2vw, 64px);
-  }
+  
 
-  .service-hero__pattern {
-    top: 52%;
-    width: min(39vw, 22rem);
-  }
+  
 
-  .service-hero__support {
-    grid-column: 1 / span 5;
-    max-width: 14ch;
-    font-size: clamp(28px, 3.4vw, 35px);
-  }
+  
 }
 
 /* ── The journey as a document rather than a held stage ──
@@ -10735,180 +9463,6 @@ a.project-live:focus-visible {
    358px runs taller than that, so here the stage's `minmax(0, 1fr)` row owns the
    height and the window fills it — the pin is one screen either way, so what the
    window can be is whatever the rail and the title leave. */
-@media (max-width: 64rem) {
-  /* **One screen means one screen — owner, 2026-08-27: only the number shows,
-     not Skip and the link beside it.**
-
-     The base pairs `height: 100svh` with `min-height: 42rem`, and 42rem is 672px:
-     on any window shorter than that the floor wins and the section is TALLER
-     than the screen it is pinned to. A pinned section cannot be scrolled within,
-     so every pixel past the fold is simply never seen — and the foot is the last
-     row, so the foot is what goes. Measured on Branding: 44px of it under the
-     edge at 375x600, 76px at 360x568, and the card's number left sitting on the
-     bottom edge as the only thing down there, which is exactly what the owner
-     saw.
-
-     A floor is the right instinct on a desktop, where the section is one item in
-     a long page and a squashed card helps nobody. Here it buys card room with
-     the only currency the reader cannot spend. The row below is `minmax(0, 1fr)`
-     and gives the height back on its own; the short-screen block further down is
-     what makes the card fit in it. */
-  .service-journey {
-    /* One screen means the screen, not the screen plus the lead. `100svh` here
-       is 60px taller than what a pinned section can actually show, and the foot
-       is the last row, so the foot is what went under the edge: measured 32px
-       under at 375x600 and 33px at 360x568, with the card's number left sitting
-       on the bottom edge as the only thing down there. */
-    height: calc(100svh - var(--journey-pin-lead));
-    min-height: 0;
-  }
-
-  .service-journey__layout {
-    grid-template-columns: minmax(0, 1fr);
-    /* Three rows: the rail, the card, and the foot. The foot is a row here
-       rather than an overlay — see the controls rule at the end of this block. */
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    gap: clamp(1.25rem, 3vw, 2rem);
-  }
-
-  .service-journey__nav {
-    grid-row: 1;
-    grid-column: 1;
-    flex-direction: row;
-    gap: 1.25rem;
-    /* Owner, 2026-08-27: the chapter's name sits too close under the rail.
-       Air under the rail rather than a wider `row-gap`, because the gap is one
-       value for both seams and the other seam is the foot — widening it would
-       push Skip and the link toward an edge they have only just come back from.
-       A margin on the rail lands in row one, which is `auto`, so it moves the
-       one seam it is about.
-
-       10px first, then 25 — the owner asked for more of it once he had seen the
-       ten. */
-    margin-bottom: 1.5625rem;
-    /* For a page whose chapters outgrow the row even broken over two lines.
-       Inert while they fit, since a label that wraps never overflows, and no
-       scrollbar is drawn across the names when it does engage. */
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .service-journey__nav::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* **Smaller — owner, 2026-08-27, and then a little of it back.**
-
-     `--service-text-action` is 20px, which is a desktop's rail read at a
-     desktop's distance. In a 358px row it is too large: Branding's three chapter
-     names measure about 505px against the stage, so each broke over two lines
-     and the rail read as a block of text rather than a row of labels. 14px was
-     the first answer and the owner asked for some of it back; this lands at 16px
-     on a 390 window and 18 from 430 up.
-
-     **The break stays, and that is deliberate.** `Visual` over `Identity` is the
-     shape the owner asked for. A flex item shrinks to share the row before it
-     overflows, so wrapping is what these do on their own — this rule sets the
-     size and nothing else. A pass that added `white-space: nowrap` with
-     `flex-shrink: 0` gave one line per label and a rail that scrolled sideways,
-     which hides chapters a reader has no reason to know are there. Two lines
-     that are all visible beats one line that is not.
-
-     Only the rail is resized. The skip and next links share this token and are
-     read one at a time rather than as a row. */
-  .service-journey__nav-link {
-    font-size: clamp(16px, 4.2vw, 18px);
-  }
-
-  .service-journey__stage {
-    grid-row: 2;
-    grid-column: 1;
-  }
-
-  /* The chapter's name, which the run rewrites as the cards turn over.
-     `--service-text-card-title` resolves to 52px, and it is set beside a
-     457px-wide card on a desktop. On a 320px window it was still 52px — a 49px
-     band above a card that has nowhere near that to spare, and oversized for the
-     column besides. */
-  .service-journey__current-title {
-    font-size: clamp(28px, 7vw, 40px);
-  }
-
-  /* `auto`, not `100%`. The base sets a fixed `clamp(25rem, 50vh, 31rem)` and
-     this row is `minmax(0, 1fr)`, so the window should simply fill what the rail
-     and the title leave — which a grid item does on its own, `align-self`
-     defaulting to `stretch`. Asking for `height: 100%` instead resolves against
-     the row and THEN adds the margin below, so the window ended up its own
-     margin past the row's foot: measured 1px into the controls at 390x844 and
-     3px at 768. Stretch subtracts the margin; a percentage does not. */
-  .service-journey__window {
-    height: auto;
-    margin-top: clamp(1.25rem, 2.5vh, 2rem);
-    /* **One card at a time — owner, 2026-08-27: the next card's text shows at
-       the edge.**
-
-       Two cards share the stage on a desktop and the composition is built on
-       seeing both, so the base window does not clip. Here one card IS the stage:
-       `cardGap` is derived as `stage - cardWidth * 2`, which for a full-width
-       card is negative and floors at 0, so the next card butts directly against
-       this one's right edge. That edge is the column's, not the screen's — the
-       page margin is 16px wide — so exactly one margin's worth of the next card
-       was legible in the gutter, mid-sentence.
-
-       `overflow-x`, not `overflow`, and `clip` rather than `hidden`. The card's
-       copy can outrun its box on a short screen; hiding that behind a clip would
-       be a silent truncation, and `hidden` on one axis forces the other to
-       `auto`, which is a scrollbar inside a pinned run. `clip` is the one value
-       that pairs with `visible` and leaves it alone. */
-    overflow-x: clip;
-  }
-
-  .service-card {
-    width: 100%;
-  }
-
-  /* Owner, 2026-08-27: the number lifts off the foot of the card by 15px. It is
-     the `auto` row of the card's two, so the margin comes out of the `1fr` row
-     above it — which is the copy's room.
-
-     15px first, then 30 when he had seen it. The copy still clears its number by
-     55px at 412x732, the tightest size that fits at all; the screens that do not
-     fit are excluded from this below, along with the rail's air. */
-  .service-card__number {
-    margin-bottom: 1.875rem;
-  }
-
-  /* **The foot is a row, not an overlay — owner, 2026-08-27: Skip and Let's
-     build were printed on top of each other.**
-
-     Two separate faults, and the second only showed once the first was fixed.
-
-     `.service-page .service-journey__controls` is `position: absolute` with
-     `left: calc(clamp(12rem, 20vw, 19rem) + clamp(2rem, 4vw, 5rem))` — the
-     desktop nav column plus the grid gap, so the foot starts where the stage
-     starts and sits under the card rather than under the rail. That is right
-     while the rail IS a column. Here it is a row on top, so the reservation was
-     pure loss: at 390px it left the two links 150px of a 390px window to share
-     under `justify-content: space-between`, which is the two of them on top of
-     each other.
-
-     Widening it to the page margin fixed the collision and revealed the real
-     one. The foot is positioned from the SECTION's bottom, while the window now
-     takes `height: 100%` of a `minmax(0, 1fr)` row — so the card ran underneath
-     it, measured 92px of overlap at 320x568 with the card's number sitting in
-     the same band as the links. It did not happen on a desktop only because the
-     window's fixed `clamp(25rem, 50vh, 31rem)` stops short of the foot by luck
-     of the arithmetic.
-
-     So the foot joins the grid instead. Row three, static, and the `1fr` row
-     above can no longer take space that belongs to it — the layout stops
-     depending on two heights agreeing and cannot overlap by construction. */
-  .service-page .service-journey__controls {
-    position: static;
-    grid-row: 3;
-    grid-column: 1;
-  }
-}
 
 /* ── The smallest screens, where the tallest card does not quite fit ──
 
@@ -10931,25 +9485,6 @@ a.project-live:focus-visible {
    Raised from 40rem to 48rem on 2026-08-27, when the foot became a row of its
    own and took about 40px out of the card's box: a 375x667 phone had been just
    outside the old boundary and went 43px over without it. */
-@media (max-width: 48rem) and (max-height: 48rem) {
-  .service-journey__layout {
-    padding-block: clamp(1.75rem, 4vh, 3rem);
-    /* Three rows now, so two gaps — 40px of a 568px screen at the narrow
-       default. */
-    row-gap: clamp(0.75rem, 2vh, 1.25rem);
-  }
-
-  /* The air over the card, which is a desktop's 20px here and does not need to
-     be. Branding is the page that decides this number: nine cards, and the
-     tallest of them missed the window by 3px with only the two rules above. */
-  .service-journey__window {
-    margin-top: clamp(0.75rem, 2vh, 1.5rem);
-  }
-
-  .service-card__body {
-    gap: clamp(0.85rem, 2vh, 1.25rem);
-  }
-}
 
 /* ── And a tighter tier under it, for the screens the run no longer fits ──
 
@@ -10978,36 +9513,6 @@ a.project-live:focus-visible {
    too short. Closing the rest is a content decision — shorter cards — or a
    fallback to the stacked document the reduced-motion reader already gets below
    some height, and neither is a thing a stylesheet should decide on its own. */
-@media (max-width: 48rem) and (max-height: 40rem) {
-  .service-journey__layout {
-    padding-block: clamp(1rem, 2.5vh, 1.5rem);
-    row-gap: 0.5rem;
-  }
-
-  /* The air under the rail, and the lift under the number, are the two things
-     above that this tier does not keep. Its whole job is to find pixels for a
-     card that does not fit, and spending them back on spacing is the opposite of
-     that. Every screen tall enough for the card keeps both. */
-  .service-journey__nav {
-    margin-bottom: 0;
-  }
-
-  .service-card__number {
-    margin-bottom: 0;
-  }
-
-  .service-journey__current-title {
-    font-size: clamp(22px, 6vw, 26px);
-  }
-
-  .service-journey__window {
-    margin-top: 0.5rem;
-  }
-
-  .service-card__body {
-    gap: clamp(0.6rem, 1.6vh, 0.9rem);
-  }
-}
 
 /* **Only a reader who declined motion, since 2026-08-27.** This said
    `(max-width: 64rem), (prefers-reduced-motion: reduce)` while the run above it
@@ -11021,113 +9526,39 @@ a.project-live:focus-visible {
    left a hole at 1024.5px where a card stayed `visibility: hidden` with nothing
    left to reveal it. */
 @media (prefers-reduced-motion: reduce) {
-  .service-journey {
-    height: auto;
-    min-height: 0;
-    overflow: visible;
-    padding-block: clamp(5rem, 10vw, 8rem);
-  }
+  
 
-  .service-journey__layout {
-    display: block;
-    height: auto;
-    padding-block: 0;
-  }
+  
 
-  .service-journey__nav {
-    position: sticky;
-    top: 0;
-    flex-direction: row;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-    padding-block: 1rem;
-    background: var(--service-surface);
-  }
+  
 
-  .service-journey__stage {
-    display: block;
-    height: auto;
-    overflow: visible;
-  }
+  
 
-  .service-journey__current-title {
-    display: none;
-  }
+  
 
-  .service-journey__window {
-    height: auto;
-    margin-top: 0;
-    overflow: visible;
-  }
+  
 
-  .service-journey__track {
-    display: block;
-    width: auto;
-    height: auto;
-    transform: none !important;
-    will-change: auto;
-  }
+  
 
-  .service-card {
-    position: static;
-    display: block;
-    width: auto;
-    height: auto;
-    min-height: 28rem;
-    padding-block: 3.5rem;
-    border-top: 1px solid
-      color-mix(in srgb, var(--service-ink) 72%, transparent);
-    opacity: 1;
-    visibility: visible;
-  }
+  
 
   [data-service-word] {
     display: inline;
   }
 
-  .service-card__mobile-title {
-    display: block;
-    max-width: 10ch;
-    margin: 0 0 2.5rem;
-    font-family: var(--type-display);
-    font-size: clamp(56px, 8vw, 88px);
-    font-weight: var(--weight-heading-xl);
-    letter-spacing: var(--tracking-tight);
-    line-height: 0.94;
-  }
+  
 
-  .service-card__copy,
-  .service-card__capabilities,
-  .service-card__example {
-    max-width: 36ch;
-  }
+  
 
-  .service-card__body {
-    max-width: 42rem;
-  }
+  
 
-  .service-card__number {
-    display: block;
-    margin-top: 3rem;
-  }
+  
 
-  .service-journey__next {
-    position: static;
-    justify-content: flex-end;
-    margin-top: 2.5rem;
-  }
+  
 
-  .service-page .service-journey__controls {
-    position: static;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 2.5rem;
-  }
+  
 
-  .service-page .service-journey__controls .service-journey__next {
-    margin-top: 0;
-  }
+  
 }
 
 /* ── The service hero on a phone ──
@@ -11171,81 +9602,21 @@ a.project-live:focus-visible {
     padding-block: clamp(2rem, 7svh, 3.25rem) 0;
   }
 
-  .service-hero__intro {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    transform: none;
-  }
+  
 
-  .service-hero__title {
-    max-width: none;
-    font-size: clamp(40px, 10.6vw, 56px);
-  }
+  
 
-  /* **Under the title, at a distance measured from the title.** Owner,
-     2026-08-27: bring it up, closer to the heading.
+  
 
-     It was `top: 61%` with a centring transform — a fraction of the hero, which
-     knows nothing about the heading above it. On Branding's two lines that left
-     191px of empty page between the two; on a page whose heading wraps to three
-     it would have left less, for no reason either page could name.
+  
 
-     Row 2 is already the band between the heading and the foot, and an
-     absolutely positioned box given a definite row takes THAT row's top edge as
-     its origin rather than the container's padding edge. So the grid has done
-     the measuring, and the only number left in the rule is the air itself —
-     roughly a line and a half of the heading, at every phone size. */
-  .service-hero__pattern {
-    position: absolute;
-    grid-column: 1 / -1;
-    grid-row: 2;
-    top: clamp(2rem, 6vh, 3.25rem);
-    right: 0;
-    width: min(88vw, 22rem);
-    margin: 0;
-    transform: none;
-  }
+  
 
-  .service-hero__support {
-    position: absolute;
-    bottom: max(1rem, env(safe-area-inset-bottom));
-    left: 0;
-    max-width: 11ch;
-    margin: 0;
-    /* Owner, 2026-08-27: a little smaller than the 24px floor it had. It is the
-       hero's second voice and not a second heading, and at three lines in an
-       11ch measure it was reading as one. Still four points clear of the CTA on
-       the other end of the same row, which is what keeps the foot a pair rather
-       than two of the same thing. */
-    font-size: clamp(22px, 5.6vw, 26px);
-  }
+  
 
-  .service-hero__cta {
-    position: absolute;
-    right: 0;
-    bottom: max(1rem, env(safe-area-inset-bottom));
-    margin: 0;
-    font-size: var(--service-text-action);
-    white-space: nowrap;
-  }
+  
 
-  /* The block that closes the page comes with the one that opens it, for the
-     same reason: `--text-heading-xl` bottoms out at 40px, which is a heading
-     that has stopped being one, and 20ch of it is a paragraph. Neither number
-     has ever had anything to do with motion either. */
-  .service-cta {
-    padding-block: var(--section-space-lg);
-    background: var(--service-surface);
-  }
-
-  .service-cta__title {
-    max-width: 10ch;
-    font-size: clamp(48px, 13vw, 72px);
-  }
-
-  .service-cta__link {
-    margin-top: 2rem;
-  }
+  
 }
 
 /* The phone half of the journey's document flow, and so behind the same
@@ -11253,40 +9624,6 @@ a.project-live:focus-visible {
    of the run. The one rule here that was never about the flow — the nav
    scrolling sideways instead of wrapping — is lifted into the narrow-width
    journey block above, which needs it at every motion setting. */
-@media (max-width: 48rem) and (prefers-reduced-motion: reduce) {
-  .service-offerings {
-    padding: 0;
-    overflow: clip;
-  }
-
-  .service-journey {
-    padding-block: 4.5rem 6rem;
-  }
-
-  .service-journey__nav {
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-    overflow-x: auto;
-  }
-
-  .service-card {
-    min-height: 0;
-    padding-block: 3rem 4rem;
-  }
-
-  .service-card__mobile-title {
-    max-width: 9ch;
-    font-size: clamp(48px, 14vw, 76px);
-  }
-
-  .service-card__number {
-    margin-top: 3rem;
-  }
-
-  .service-journey__next {
-    margin-top: 0;
-  }
-}
 
 /* Smartphone service journey: keep the chapter navigation anchored while
    each service replaces the previous one inside a single pinned viewport. */
@@ -11294,24 +9631,6 @@ a.project-live:focus-visible {
 /* Very narrow phones get a little more clear space between the artwork and
    the bottom row without changing the content order. The smallest step of
    the page's scale (lib/breakpoints.ts; it was 23rem). */
-@media (max-width: 24rem) {
-  .service-hero__pattern {
-    right: 0;
-    width: 88vw;
-  }
-
-  .service-hero__support {
-    max-width: 10ch;
-    /* Below the rule above rather than above it: this block exists to give a
-       320px screen more air, and it had been handing it a LARGER sentence than
-       a 390px one got ever since that rule gained a floor. */
-    font-size: 21px;
-  }
-
-  .service-hero__cta {
-    font-size: 18px;
-  }
-}
 
 /* ── Room for a finger ──
 
@@ -11322,21 +9641,17 @@ a.project-live:focus-visible {
    so nothing on the page moves. `scripts/responsive-check.mjs` measures it. */
 @media (pointer: coarse) {
   .brand,
-  .selected-work__all,
-  .expertise__all,
-  .services-wheel__cta,
-  .service-cta__link,
-  .service-hero__cta,
-  .service-journey__skip,
-  .service-journey__next,
-  .service-journey__nav-link,
-  .services-wheel__name,
-  a.project-out__link,
-  a.project-live,
-  .legal__button,
-  .consent__button--text,
-  .project-showcase__step,
-  .letter__send {
+.selected-work__all,
+.expertise__all,
+.services-wheel__cta,
+.services-wheel__name,
+a.project-out__link,
+a.project-live,
+.legal__button,
+.consent__button--text,
+.blog-more__side,
+.project-showcase__step,
+.letter__send {
     padding-block: 14px;
     margin-block: -14px;
   }

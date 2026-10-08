@@ -115,40 +115,42 @@ function audiencesOf(descriptor: string): string[] {
  * Development leads because building and connecting systems is the position
  * (PRODUCT.md); Creative is the work that stands beside it. The order inside
  * each half is the owner's as well.
+ *
+ * Names only since 2026-10-08: each had a page of its own in the old design,
+ * and the owner had them deleted ("delete it all", "we dont have seperate
+ * pages for those links") — every service is on the services page's wheel.
+ * The names are still the contact letter's topics (content/contact.ts).
  */
 const serviceGroups = [
   {
     label: "Development",
     items: [
-      /* Renamed on 2026-08-25, and the routes followed an hour later on the
-         owner's word — so a label and its address say the same thing again.
-         `next.config.ts` redirects all four of the old ones; nothing that was
-         ever linked stops resolving. */
-      { label: "Websites", href: "/services/websites" },
-      { label: "Software", href: "/services/software" },
-      { label: "CRM Solution", href: "/services/crm-solution" },
-      { label: "AI & Automation", href: "/services/ai-automation" },
+      { label: "Websites" },
+      { label: "Software" },
+      { label: "CRM Solution" },
+      { label: "AI & Automation" },
     ],
   },
   {
     label: "Creative",
     items: [
-      /* Branding & Logo in the menu only. The page behind it still calls itself
-         Branding and keeps its address: a logo is part of a brand, and the
-         page already covers it. */
-      { label: "Branding & Logo", href: "/services/branding" },
-      /* Addresses with a placeholder behind them until the copy arrives — see
-         content/placeholders.ts. */
-      { label: "UX/UI Design", href: "/services/ux-ui-design" },
-      { label: "Print Design", href: "/services/print-design" },
+      { label: "Branding & Logo" },
+      { label: "UX/UI Design" },
+      { label: "Print Design" },
     ],
   },
 ] as const;
 
 /* One service, whichever half it is in. Named so the two halves can be run
-   together below: left to infer from a union of two tuples, `flatMap` gives up
-   and calls every item `unknown`. */
-type ServiceLink = (typeof serviceGroups)[number]["items"][number];
+   together: left to infer from a union of two tuples, `flatMap` gives up and
+   calls every item `unknown`. */
+type ServiceName = (typeof serviceGroups)[number]["items"][number];
+
+/** The seven by name, the two halves run together, in the owner's order —
+ *  the contact letter's topics (content/contact.ts). */
+export const serviceNames: readonly ServiceName[] = serviceGroups.flatMap<ServiceName>(
+  (group) => group.items,
+);
 
 /**
  * The site's menu, and the only copy of it.
@@ -173,7 +175,7 @@ export const menu = [
        new pages". It was a disclosure (owner's call, 2026-08-24, for Services,
        Products and Company alike: disclosures, not destinations) while
        /services was a placeholder; it is the wheel of every service now, so
-       the word is a page, as Clients is. Products is still the other way.
+       the word is a page, as Clients is. Products followed on 2026-10-08.
 
        A separate field rather than blanking `href`, because the address is
        still true — `/services` is a real route and the page behind it is real,
@@ -185,19 +187,9 @@ export const menu = [
        nothing so the field is a decision on every entry instead of an
        exception someone has to notice is absent. */
     panelOnly: false,
-    /* The one entry split into groups, and the panel shows them as such: a
-       heading over each half. Only the header reads `groups`.
-
-       `items` is the two halves run together, so everything that reads this
-       list without caring about the split — the footer's column, the phone
-       sheet's "is this section current" check, the contact letter's topics —
-       sees the same seven in the same order.
-
-       The homepage's difference boxes (`difference` below) still name the five
-       services from before the split, in the old order. Each box's drawing is
-       keyed to its label, so they were left as they are. */
-    groups: serviceGroups,
-    items: serviceGroups.flatMap<ServiceLink>((group) => group.items),
+    /* No panel and no links under the word: the services' own pages were
+       deleted on 2026-10-08, and every service is on this page's wheel. */
+    items: [],
   },
   /* Solutions is deliberately not here. The seven industries have no pages of
      their own, so every entry it carried was an anchor back to a run further
@@ -211,11 +203,11 @@ export const menu = [
     eyebrow: "Mardal Products",
     description: "Focused digital products designed and built by Mardal.",
     href: "/products",
-    panelOnly: true,
-    items: [
-      { label: "Arvena AI", href: "/products/arvena-ai" },
-      { label: "Ftesa.co", href: "/products/ftesa" },
-    ],
+    /* A page, as Services is — owner, 2026-10-08, of the two products'
+       own pages: "delete it all", "we dont have seperate pages for those
+       links". Both products are on the products page. */
+    panelOnly: false,
+    items: [],
   },
   /* The only entry in the bar that is both a page and a list. `href` is a route
      rather than an anchor, so the word itself is a link and clicking it goes to
@@ -267,9 +259,9 @@ export const menu = [
   /* **About is one page, and Contact a word of its own** — owner,
      2026-10-08, of the menu's About (a parent holding About, Blog, Careers
      and Contact): "i want to remain only one page about", and "add contact".
-     So both are plain links, as Clients is. Blog and Careers stay where they
-     are, reached from the About page and the footer, which already lists
-     both. (This entry was Company, a panel of those four.) */
+     So both are plain links, as Clients is. Blog stays in the footer;
+     Careers was deleted the same day. (This entry was Company, a panel of
+     those four.) */
   {
     key: "about",
     label: "About",
@@ -618,10 +610,6 @@ export const products = {
     {
       id: "arvena-ai",
       title: "Arvena AI",
-      /** Its own page — where the products page sends it (owner,
-       *  2026-10-07: "each of product when click needs to have its one
-       *  page"). */
-      href: "/products/arvena-ai",
       status: "In development",
       description:
         "Applied AI for mental-health support, built around safety and consent. The hard part was never the conversation — it is knowing what not to say, when to step back, and how to hand someone on to real help.",
@@ -633,7 +621,6 @@ export const products = {
     {
       id: "ftesa",
       title: "Ftesa.co",
-      href: "/products/ftesa",
       status: "In development",
       description:
         "Self-service digital invitations, personalised for every guest. Everyone invited gets their own invitation and their own link, and the replies come back to one place instead of scattered across a dozen chats.",
@@ -716,25 +703,21 @@ export const footer = {
    *  an arrow in a ring. */
   backToTop: "Back to top",
   /** The footer's first column — owner's reference of 2026-10-05, a "Menu"
-   *  over the site's pages. Only pages that are there: Services and Products
-   *  are disclosures in the header, not destinations (see `menu`), so their
-   *  own pages are not linked from here; the services have a column of their
-   *  own. */
+   *  over the site's pages. Since 2026-10-08 (owner: "based on what we have
+   *  on menu what you suggest to change on footer", then "yes") the bar's
+   *  own words in the bar's order, read from `menu` so the two cannot say
+   *  different things, then Blog, which is the footer's alone. No Home: the
+   *  bar has none either, and the wordmark is the way home. */
   pagesTitle: "Menu",
   pages: [
-    { label: "Home", href: "/" },
-    { label: "About", href: "/about" },
-    { label: "Clients", href: "/case-studies" },
+    ...menu.map(({ label, href }) => ({ label, href })),
     { label: "Blog", href: "/blog" },
-    { label: "Careers", href: "/careers" },
-    { label: "Contact", href: "/contact" },
   ],
   social: ["instagram", "facebook", "linkedin"],
   /**
-   * The three a company site is expected to carry. None of them is written
-   * yet, but each is a route now rather than a `#privacy` that resolved
-   * nowhere at all — the page behind it says so in the site's own voice
-   * instead of the link dying under the pointer. See content/placeholders.ts.
+   * The three a company site is expected to carry, each a route rather than
+   * a `#privacy` that resolved nowhere at all; written on 2026-10-08
+   * (content/legal.ts).
    */
   legal: [
     { label: "Privacy", href: "/privacy" },

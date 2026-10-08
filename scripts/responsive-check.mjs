@@ -52,18 +52,11 @@ const PORT = Number(option("--port", "9460"));
 const ALL_ROUTES = [
   "/",
   "/services",
-  "/services/branding",
-  "/services/websites",
-  "/services/software",
-  "/services/crm-solution",
-  "/services/ai-automation",
   "/products",
-  "/products/arvena-ai",
   "/case-studies",
   "/about",
   "/contact",
   "/blog",
-  "/careers",
   "/privacy",
 ];
 

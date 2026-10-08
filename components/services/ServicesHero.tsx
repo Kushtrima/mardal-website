@@ -33,7 +33,7 @@ export function ServicesHero({
   name,
 }: {
   hero: PageHeroContent;
-  name: "services" | "products" | "clients" | "about";
+  name: "services" | "products" | "clients" | "about" | "blog";
 }) {
   return (
     <section

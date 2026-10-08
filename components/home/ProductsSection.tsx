@@ -27,8 +27,9 @@ const PRODUCT_WIDTHS = [480, 800, 1200, 1600];
  * two products in this page below", after "a paragraf and a title" of his
  * context, and each one opening "its one page". The same section in the same
  * hand, with that page's label, heading and paragraph (content/
- * products-index.ts) and each product's link going to its own page; on that
- * page's hairlines rather than its own.
+ * products-index.ts) and each product's link going to its own page (until
+ * those pages were deleted, 2026-10-08); on that page's hairlines rather
+ * than its own.
  *
  * **There each product is a band of its own** — owner, 2026-10-07, "lets
  * try your version" of a presentation unlike the homepage's: one under the
@@ -152,7 +153,10 @@ export function ProductsSection({ page = false }: { page?: boolean }) {
                 className="product__cta"
                 data-roll
                 data-product-fade
-                href={page ? product.href : products.ctaHref}
+                /* Each product's own page was deleted on 2026-10-08 (owner:
+                   "delete it all"), so on the products page too the link
+                   writes to Mardal, as the homepage's does. */
+                href={products.ctaHref}
               >
                 <RollingLabel>{products.cta}</RollingLabel>
                 {/* VIEW ALL's arrow: a hairline, still while the word rolls. */}

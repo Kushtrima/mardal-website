@@ -3,15 +3,19 @@ import { notFound } from "next/navigation";
 import { Container } from "../../../components/layout/Container";
 import { SiteFooter } from "../../../components/layout/SiteFooter";
 import { HeaderSpace } from "../../../components/layout/HeaderSpace";
-import { BlogPattern } from "../../../components/blog/BlogPattern";
-import { SectionEnter } from "../../../components/motion/SectionEnter";
-import { PixelArrow } from "../../../components/ui/PixelArrow";
-import { RollingLabel } from "../../../components/ui/RollingLabel";
+import { ArticleContents } from "../../../components/blog/ArticleContents";
 import { blog, formatDate, readingMinutes } from "../../../content/blog";
-import { products } from "../../../content/home";
 import { ServicesFooterRules } from "../../../components/services/ServicesFooterRules";
 
 type Params = { slug: string };
+
+/** A heading's address in the piece, from its words. */
+function headingId(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 export function generateStaticParams(): Params[] {
   return blog.posts.map((post) => ({ slug: post.slug }));
@@ -70,8 +74,6 @@ export default async function BlogPostPage({
 
   return (
     <>
-      <SectionEnter />
-
       <main className="service-page blog-post" id="main-content">
         {/* The page's five lines, grey, from its top to its foot — owner,
             2026-10-08: "add the vertical lines to the rest of the pages". */}
@@ -80,48 +82,53 @@ export default async function BlogPostPage({
 
         <article className="blog-article">
           <Container className="blog-article__inner">
-            <header className="blog-article__head">
+            {/* **A professional piece — owner, 2026-10-08**: "change the
+                structure font remove that design inside the blog when open
+                because there needs to be image right and make as a
+                professional blog so on the right to be title online offline
+                when scrollin in the middle to be text". On the page's four
+                columns: the date and reading time, the title large, the
+                thesis and the author; the piece's picture the whole width
+                (in place of the drawing); then the text in the middle two
+                columns and its headings down the right (ArticleContents),
+                the one being read lit. One face throughout, the site's. */}
+            {/* The bar says no "Operating from Kosova" over it — owner,
+                2026-10-08 (the stylesheet). */}
+            <header className="blog-article__head" data-article-hero>
               <p className="blog-article__meta">
                 <time dateTime={post.date}>{formatDate(post.date)}</time>
                 <span aria-hidden="true">·</span>
                 <span>{readingMinutes(post)} min read</span>
               </p>
-
               <h1 className="blog-article__title">{post.title}</h1>
-
-              {/* The thesis again, as a standfirst. It is the sentence the
-                  index promised, so the piece should open by keeping that
-                  promise rather than making the reader find it. Set larger than
-                  the body and lighter than the title, which is what a standfirst
-                  is for. */}
               <p className="blog-article__standfirst">{post.thesis}</p>
-
-              {/* Under the standfirst rather than in the meta line above it: a
-                  person's name set in the tracked upper case that line uses
-                  would shout, and a byline belongs next to the writing it is
-                  claiming rather than next to the filing information. */}
               <p className="blog-article__byline">{post.author}</p>
             </header>
 
-            {/* The piece's own drawing, the same language the index card
-                showed, at the head of the reading rather than as a banner
-                above it. It is the handover: you clicked this drawing, here it
-                is again at full size, the words start underneath. */}
-            <div className="blog-article__art" aria-hidden="true">
-              <BlogPattern
-                slug={post.slug}
-                density="plate"
-                className="blog-art"
+            <figure className="blog-article__cover">
+              {/* A stand-in, decorative: alt is empty (content/blog.ts). */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="blog-article__cover-image"
+                src={post.cover}
+                srcSet={`${post.cover.replace("/1200/960", "/600/480")} 600w, ${post.cover} 1200w`}
+                sizes="100vw"
+                alt=""
+                width="1200"
+                height="960"
+                loading="eager"
               />
-            </div>
+            </figure>
 
-            {/* Blocks rather than markup in a string, so a note and an argument
-                render through one template instead of two that each half-fit. */}
-            <div className="blog-article__body">
+            <div className="blog-article__body" data-article-body>
               {post.body.map((block, index) => {
                 if (block.type === "h") {
                   return (
-                    <h2 className="blog-article__heading" key={index}>
+                    <h2
+                      className="blog-article__heading"
+                      id={headingId(block.text)}
+                      key={index}
+                    >
                       {block.text}
                     </h2>
                   );
@@ -135,12 +142,8 @@ export default async function BlogPostPage({
                   );
                 }
 
-                /* ol when the count carries meaning, ul when it does not, so
-                   the element says what the list is rather than leaving the
-                   marker to say it. */
                 if (block.type === "list") {
                   const List = block.ordered ? "ol" : "ul";
-
                   return (
                     <List
                       className={
@@ -167,101 +170,71 @@ export default async function BlogPostPage({
               })}
             </div>
 
-            {/* Somewhere to go next, before the call to action. Someone who has
-                finished a piece and is not ready to write an email is looking
-                for the next piece, and a page that only offers contact loses
-                them.
+            <aside className="blog-article__aside">
+              <ArticleContents
+                label={blog.contents}
+                headings={post.body
+                  .filter((block) => block.type === "h")
+                  .map((block) => ({ id: headingId(block.text), text: block.text }))}
+              />
+            </aside>
 
-                One row: the piece behind on the left, the piece ahead on the
-                right, the way out of the run in the middle. It replaced a
-                stacked list that carried each piece's drawing, thesis, date and
-                length — a second index printed under every article, when what a
-                reader wants at the foot of a piece is a direction, not a
-                catalogue. Titles only, at the owner's call.
-
-                It runs the full content column rather than the prose's 38rem.
-                The left and right have to reach the edges of the page for the
-                row to read as two directions rather than as a list that happens
-                to be spread out, and 80rem is where every other section on this
-                site ends. */}
             <nav className="blog-more" aria-labelledby="blog-more-title">
               <h2 className="visually-hidden" id="blog-more-title">
                 {blog.more.title}
               </h2>
 
+              {/* Two long arrows and no words on the page — owner,
+                  2026-10-08: "remove the text leave it only arrows and bring
+                  it more inside also remove that All writing": the piece
+                  behind from the second line, the piece ahead ending on the
+                  fourth, as the project page ends. The titles stay for a
+                  screen reader. */}
               <div className="blog-more__row">
-                {/* An empty cell when there is nothing behind, so the middle
-                    stays in the middle. The grid holds the position; the link
-                    only fills it. */}
                 {before ? (
                   <a
                     className="blog-more__side blog-more__side--back"
                     href={`/blog/${before.slug}`}
                   >
-                    <PixelArrow
-                      className="blog-more__arrow"
-                      direction="left"
-                      size="small"
-                    />
-                    <span className="blog-more__name">{before.title}</span>
+                    <MoreArrow back />
+                    <span className="visually-hidden">{before.title}</span>
                   </a>
-                ) : (
-                  <span className="blog-more__side" aria-hidden="true" />
-                )}
-
-                <a className="blog-more__all" href="/blog">
-                  {blog.more.all}
-                </a>
+                ) : null}
 
                 {next ? (
                   <a
                     className="blog-more__side blog-more__side--on"
                     href={`/blog/${next.slug}`}
                   >
-                    <span className="blog-more__name">{next.title}</span>
-                    <PixelArrow
-                      className="blog-more__arrow"
-                      direction="right"
-                      size="small"
-                    />
+                    <span className="visually-hidden">{next.title}</span>
+                    <MoreArrow />
                   </a>
-                ) : (
-                  <span className="blog-more__side" aria-hidden="true" />
-                )}
+                ) : null}
               </div>
             </nav>
           </Container>
         </article>
 
-        <section
-          className="service-cta"
-          aria-labelledby="blog-cta-title"
-          data-route-section
-        >
-          <Container>
-            <div
-              className="service-cta__inner"
-              data-enter
-              data-enter-mode="none"
-            >
-              <h2 className="service-cta__title" id="blog-cta-title">
-                {blog.cta.title}
-              </h2>
-
-              <a className="service-cta__link" data-roll href={products.ctaHref}>
-                <RollingLabel>{blog.cta.label}</RollingLabel>
-                <PixelArrow
-                  className="service-cta__arrow"
-                  direction="up-right"
-                  size="small"
-                />
-              </a>
-            </div>
-          </Container>
-        </section>
       </main>
 
       <SiteFooter rules={<ServicesFooterRules />} />
     </>
+  );
+}
+
+/** The long thin arrow, back or on — owner, 2026-10-08, of the row that
+ *  ends a piece: "change the font, chage the arrws and remove that
+ *  horisontal grey line". The arrows the project page's Back and Next
+ *  Project draw. */
+function MoreArrow({ back = false }: { back?: boolean }) {
+  return (
+    <svg
+      className="blog-more__arrow"
+      viewBox="0 0 64 12"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d={back ? "M63 6H1M7 1 1 6l6 5" : "M1 6h62M57 1l6 5-6 5"} />
+    </svg>
   );
 }

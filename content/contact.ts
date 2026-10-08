@@ -16,13 +16,14 @@
  * an unsupplied fact is an absence.
  */
 
-import { menu } from "./home";
+import { serviceNames } from "./home";
 
 /**
- * How each service reads inside the letter, keyed by its label in the menu.
+ * How each service reads inside the letter, keyed by its name
+ * (`serviceNames` in content/home.ts — the menu's list until 2026-10-08).
  *
- * The menu's list is the source — the owner reorders and renames it there — so
- * a service added to the menu without a phrase here stops the build rather
+ * That list is the source — the owner reorders and renames it there — so
+ * a service added to it without a phrase here stops the build rather
  * than quietly missing from the letter.
  */
 const PHRASES: Record<string, string> = {
@@ -37,12 +38,10 @@ const PHRASES: Record<string, string> = {
   "Print Design": "print design",
 };
 
-const services = menu.find((group) => group.key === "services");
-if (!services) throw new Error("the menu in content/home.ts has no services group");
-const serviceItems: readonly { readonly label: string }[] = services.items;
+const serviceItems: readonly { readonly label: string }[] = serviceNames;
 
 /** The choices in the letter's one drop-down: the sentence as it reads before
- *  anything is chosen, the five services in the menu's order, and the rest. */
+ *  anything is chosen, the services in the owner's order, and the rest. */
 const topics = [
   { value: "", phrase: "a project" },
   ...serviceItems.map((item) => {
@@ -114,8 +113,7 @@ export const contactPage = {
     badEmail: "That email address does not look complete.",
 
     sentTitle: "Thank you, {name}.",
-    /** The Careers form's answer, word for word, so the two forms on this site
-     *  answer alike. */
+    /** The answer a sent letter gets. */
     sent: "Received. We will read it and come back to you at {email}.",
     again: "Write another",
 

@@ -28,20 +28,6 @@ async function render(path) {
   );
 }
 
-/** The rectangles of every drawing carrying `className`, one string each.
- *
- *  Deduplicated, because the rendered document carries the RSC payload after
- *  the markup and every drawing therefore appears more than once. Collapsing
- *  identical strings is also exactly the comparison being made: two pieces that
- *  drew the same thing would collapse into one entry and fail the count. */
-function drawings(html, className) {
-  const svgs = html.matchAll(
-    new RegExp(`<svg[^>]*class="${className}"[^>]*>(.*?)</svg>`, "gs"),
-  );
-
-  return new Set([...svgs].map((match) => match[1]));
-}
-
 function slugs(html) {
   return new Set(
     [...html.matchAll(/href="\/blog\/([a-z0-9-]+)"/g)].map(
@@ -50,67 +36,38 @@ function slugs(html) {
   );
 }
 
-test("every published piece draws its own pattern", async () => {
-  const response = await render("/blog");
-  assert.equal(response.status, 200);
-
-  const html = await response.text();
-  const published = slugs(html);
-
+/* **A professional piece — owner, 2026-10-08**: "remove that design inside
+   the blog when open because there needs to be image … on the right to be
+   title online offline when scrollin in the middle to be text". The drawing
+   that opened every piece is gone: each piece opens on its own picture, and
+   its headings stand down the right for the reader to follow. */
+test("every piece opens on its own picture, and its headings are listed beside it", async () => {
+  const index = await (await render("/blog")).text();
+  const published = slugs(index);
   assert.ok(published.size >= 3, "expected the index to list the pieces");
 
-  /* The index draws nothing of its own. Every card used to close its headline
-     with the piece's drawing at mark density — the same picture the piece opens
-     on, one size down — and it has been taken off: the drawing belongs to the
-     piece, and the reader meets it there. Asserted rather than assumed, so that
-     it stays off. */
-  assert.equal(
-    drawings(html, "blog-card__mark").size,
-    0,
-    "a card is drawing a mark again",
-  );
-
-  /* The promise moved with the drawing. It is the plates that have to differ
-     now, and there is one to a piece, so every piece is rendered and they are
-     compared as a set — two pieces that drew the same thing collapse into one
-     entry and fail the count, exactly as two identical marks used to. */
-  const plates = new Set();
-
+  const covers = new Set();
   for (const slug of published) {
-    const piece = await render(`/blog/${slug}`);
-    assert.equal(piece.status, 200, `/blog/${slug} did not render`);
+    const response = await render(`/blog/${slug}`);
+    assert.equal(response.status, 200, `/blog/${slug} did not render`);
+    const html = await response.text();
+    const article = html.slice(html.indexOf('<article class="blog-article">'), html.indexOf("</article>"));
 
-    const [plate] = drawings(await piece.text(), "blog-art");
-    assert.ok(plate, `/blog/${slug} opened on no drawing at all`);
-    plates.add(plate);
+    /* No drawing: a picture, the whole width. */
+    assert.doesNotMatch(article, /blog-art\b|<svg[^>]*class="blog-art/);
+    const cover = article.match(/<img class="blog-article__cover-image" src="([^"]+)"/)?.[1];
+    assert.ok(cover, `/blog/${slug} opens on no picture`);
+    covers.add(cover);
+
+    /* Every heading in the text has an address, and the list down the right
+       names each of them, in order. */
+    const headings = [...article.matchAll(/<h2 class="blog-article__heading" id="([a-z0-9-]+)">([^<]*)<\/h2>/g)];
+    assert.ok(headings.length > 0, `/blog/${slug} has no headings`);
+    const listed = [...article.matchAll(/<a class="article-contents__link" href="#([a-z0-9-]+)"/g)].map((m) => m[1]);
+    assert.deepEqual(listed, headings.map((m) => m[1]), `/blog/${slug} lists headings it has not got`);
+
+    /* One face: the title and the headings in the site's display face. */
+    assert.match(article, /<h1 class="blog-article__title">/);
   }
-
-  assert.equal(
-    plates.size,
-    published.size,
-    `${published.size} pieces but ${plates.size} distinct drawings — two pieces share one`,
-  );
-});
-
-test("a piece opens on its own drawing, at plate size", async () => {
-  const response = await render("/blog/between-systems");
-  assert.equal(response.status, 200);
-
-  const html = await response.text();
-  const plates = drawings(html, "blog-art");
-
-  assert.equal(plates.size, 1, "expected exactly one plate on a piece");
-
-  const [plate] = plates;
-  const rectangles = [...plate.matchAll(/<rect/g)].length;
-
-  /* The plate is its own grid, not the mark enlarged, and the two must not
-     converge. The three published pieces draw 49, 57 and 64 here against 17-18
-     for a mark, so 28 sits clear of both: below it the plate has collapsed
-     towards mark density, and it is low enough not to fail the day a sparse
-     slug comes out at the quiet end. */
-  assert.ok(
-    rectangles >= 28,
-    `the plate drew only ${rectangles} rectangles; it is not at plate density`,
-  );
+  assert.equal(covers.size, published.size, "two pieces open on the same picture");
 });

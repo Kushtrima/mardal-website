@@ -17,10 +17,10 @@ export function ServicePageEntry() {
     const hero = document.querySelector<HTMLElement>("[data-service-hero]");
     if (!hero) return;
 
-    /* Only the unwritten pages carry one — see PlaceholderPage. Every other
-       hero here is named by its own heading and has nothing to put above it, so
-       this is queried the way the blur and the fade below are: a hero without
-       one simply does not get the tween. */
+    /* Only the unwritten pages carried one, and they were deleted on
+       2026-10-08. A hero here is named by its own heading and has nothing to
+       put above it, so this is queried the way the blur and the fade below
+       are: a hero without one simply does not get the tween. */
     const eyebrow = hero.querySelector<HTMLElement>(
       "[data-service-hero-eyebrow]",
     );

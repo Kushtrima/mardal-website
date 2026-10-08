@@ -6,10 +6,10 @@
  * **Written from what the site does, and nothing else.** Checked in the code
  * the day it was written: the site sets no cookies and keeps nothing in the
  * browser except the cookie choice (lib/consent.ts); it runs no analytics or
- * advertising; its fonts are its own files. Two forms take personal data —
- * the letter on /contact (name, company, topic, email, message) and the
- * applications on /careers (name, email, role, CV, a note) — and neither is
- * connected to anything yet: each hands the visitor an email instead.
+ * advertising; its fonts are its own files. One form takes personal data —
+ * the letter on /contact (name, company, topic, email, message) — and it is
+ * not connected to anything yet: it hands the visitor an email instead.
+ * (The careers pages and their applications were deleted on 2026-10-08.)
  *
  * **Every bracket is a fact not on file**, and none may be guessed: the
  * company's registered name and number, the hosting and email providers, how
@@ -44,7 +44,7 @@ export const privacyPage = {
   title: "Privacy",
   description: "What Mardal collects through this website, why, and what you can ask of us.",
   intro:
-    "This policy covers mardal.co and its two forms: the letter on the contact page and the applications on the careers pages.",
+    "This policy covers mardal.co and the letter on its contact page.",
   sections: [
     {
       title: "Who is responsible",
@@ -56,7 +56,6 @@ export const privacyPage = {
       title: "What we collect",
       paragraphs: [
         "When you write to us with the letter on the contact page: your name, your company if you give it, the topic you choose, your email address and your message.",
-        "When you apply for a role: your name, your email address, the role, your CV and anything you add to it.",
         "When you open any page: the technical details every visit to a website carries — your IP address, your browser and the time — which our hosting provider [name] records to deliver the site and keep it secure.",
         "We do not use analytics or advertising tools, and we do not build profiles of the people who visit.",
       ],
@@ -65,7 +64,6 @@ export const privacyPage = {
       title: "Why we use it",
       paragraphs: [
         "To answer your message and talk about your project: this is needed to take the steps you ask for before any agreement.",
-        "To consider your application for the role you chose, and for nothing else.",
         "To run this website and keep it secure, which is our legitimate interest.",
       ],
     },
@@ -79,7 +77,7 @@ export const privacyPage = {
     {
       title: "How long we keep it",
       paragraphs: [
-        "Messages: [how long after the conversation ends]. Applications: [how long after the role is filled], unless you agree to a longer time. Server records: [how long the hosting provider keeps them].",
+        "Messages: [how long after the conversation ends]. Server records: [how long the hosting provider keeps them].",
       ],
     },
     {

@@ -18,7 +18,8 @@ export const metadata: Metadata = {
  * different text … then we will contiinue to work on body of this page"), on
  * the same hairlines. No longer an unwritten page, so it stopped calling
  * PlaceholderPage. Under it the homepage's products section in this page's
- * words, each product going to its own page (ProductsSection `page`).
+ * words (ProductsSection `page`); each product went to a page of its own
+ * until those were deleted, 2026-10-08.
  */
 export default function ProductsPage() {
   return (

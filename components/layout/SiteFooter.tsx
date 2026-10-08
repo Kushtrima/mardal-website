@@ -4,10 +4,7 @@ import { Container } from "./Container";
 import { FooterReveal } from "./FooterReveal";
 import { SocialIcon } from "./SocialIcon";
 import { RollingLabel } from "../ui/RollingLabel";
-import { contact, footer, menu } from "../../content/home";
-
-/** The services, the one menu group with pages of its own behind every entry. */
-const services = menu.find((group) => group.key === "services");
+import { contact, footer } from "../../content/home";
 
 /**
  * The footer closes the page rather than just ending it.
@@ -19,8 +16,10 @@ const services = menu.find((group) => group.key === "services");
  * information also the logo without icon". So, as it is drawn there, on the
  * page's own grid: white, black ink, one size of type.
  *
- *   - three lists from the second rule — Menu (the pages that are there),
- *     Services, and Contact — each a heading over its lines
+ *   - two lists from the second rule — Menu (the bar's pages, and Blog)
+ *     and Contact — each a heading over its lines. Services and Products
+ *     had lists of their own between them until their pages were deleted
+ *     (owner, 2026-10-08: "we dont have seperate pages for those links")
  *   - the wordmark, without the ring, from the second rule to the edge of the
  *     page, at the size of the page
  *   - one line under it: the year on the first rule, the legal links on the
@@ -70,26 +69,6 @@ export function SiteFooter({
               ))}
             </ul>
           </nav>
-
-          {services ? (
-            <nav
-              className="site-footer__group"
-              aria-labelledby="footer-group-services"
-            >
-              <h2 className="site-footer__group-title" id="footer-group-services">
-                {services.label}
-              </h2>
-              <ul className="site-footer__links">
-                {services.items.map((link) => (
-                  <li key={link.href}>
-                    <a className="site-footer__link" href={link.href}>
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ) : null}
 
           <div className="site-footer__detail">
             <h2 className="site-footer__group-title">Contact</h2>

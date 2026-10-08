@@ -53,6 +53,9 @@ export default function ContactPage() {
           className="contact"
           aria-labelledby="contact-title"
           data-service-hero
+          /* The bar says no "Operating from Kosova" over it — owner,
+             2026-10-08 (the stylesheet). */
+          data-contact-hero
         >
           <Container className="contact__inner">
             <div className="contact__intro">

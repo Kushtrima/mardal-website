@@ -185,63 +185,6 @@ test("the clients grid is the page's four columns, in rows of two and of one", (
   assert.match(phone, /grid-column: 1 \/ -1;/);
 });
 
-/**
- * The second fact written in two languages: how far down the screen the pinned
- * journey stands.
- *
- * `ServiceOfferingsScroll` pins the section with `start: "top-=<lead> top"`, so
- * for the whole of the run the section sits exactly `lead` below the top of the
- * screen. A section that is a full screen tall therefore ends `lead` past the
- * bottom of it — and a pinned section is the one thing a reader cannot scroll
- * within, so whatever is down there is not late, it is gone. It was the foot:
- * Skip and the link beside it, 32px under the edge at 375x600.
- *
- * So the stylesheet spends the lead out of the section's height, which means
- * both files need the number. CSS can export a custom property and JavaScript
- * can read one, so there is exactly one copy — and these two checks are what
- * keep it that way.
- */
-const SERVICE_RUN = read("components/services/ServiceOfferingsScroll.tsx");
-
-test("the pin lead is declared once, in the stylesheet", () => {
-  const declarations = [
-    ...code(CSS).matchAll(/--journey-pin-lead:\s*([^;]+);/g),
-  ];
-
-  assert.equal(
-    declarations.length,
-    1,
-    "the pin lead is declared in more than one place",
-  );
-  assert.match(declarations[0][1].trim(), /^\d+(\.\d+)?px$/);
-
-  /* And the height it is spent out of names it rather than a number of its
-     own. `100svh` alone here is the bug this pair was written for. */
-  assert.match(
-    code(CSS),
-    /height:\s*calc\(100svh - var\(--journey-pin-lead\)\)/,
-    "the journey's height no longer spends the pin lead",
-  );
-});
-
-test("the run reads the pin lead rather than repeating it", () => {
-  const source = code(SERVICE_RUN);
-
-  assert.match(
-    source,
-    /getPropertyValue\(\s*["']--journey-pin-lead["']\s*\)/,
-    "the run does not read the lead from the stylesheet",
-  );
-
-  /* The literal the fallback keeps is allowed, and only there. A `top-=60`
-     anywhere in the start string is the drift itself. */
-  assert.doesNotMatch(
-    source,
-    /start:\s*["'`]top-=\d/,
-    "the pin start names a number instead of the declared lead",
-  );
-});
-
 test("every width the stylesheet changes at is a step of the page's scale", () => {
   /* The responsive pass, 2026-10-06: a layout changes at a few widths, the
      same everywhere (lib/breakpoints.ts). A step's complement — a sixteenth
