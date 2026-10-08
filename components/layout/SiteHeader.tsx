@@ -64,27 +64,17 @@ type MenuEntry =
  * Services, Products, Clients, about … only as a text not with bacground",
  * then "when click inside to have all services and other not as a sublink".
  * Five words, each a page that holds everything under it: the services'
- * page lists all seven, the products' page all three. Read from `menu` and
- * the footer's pages, so no word or address is written twice.
+ * page lists all seven, the products' page all three. Home came out and
+ * Contact went in — owner, 2026-10-08: "remove HOME link from header add
+ * contact" (the wordmark still goes home). Read from `menu`, so no word or
+ * address is written twice.
  */
-const BAR_LINKS: readonly MenuLink[] = [
-  footer.pages[0],
-  ...menu
-    .filter((item) => item.key !== "company")
-    .map((item) => ({ label: item.label, href: item.href })),
-  footer.pages[1],
-];
+const BAR_LINKS: readonly MenuLink[] = menu.map((item) => ({
+  label: item.label,
+  href: item.href,
+}));
 
 const ENTRIES: readonly MenuEntry[] = menu.map((item): MenuEntry => {
-  if (item.key === "company") {
-    return {
-      kind: "parent",
-      key: "about",
-      label: item.items[0].label,
-      groups: [{ label: item.items[0].label, items: item.items }],
-      headed: false,
-    };
-  }
   if (item.panelOnly) {
     /* Headed halves where an entry has them — Services did, until it became a
        page of its own (2026-10-06); none does now. */
@@ -127,7 +117,7 @@ export function SiteHeader() {
   }
 
   /**
-   * **The wordmark and Home, on the homepage, go back to its beginning** —
+   * **The wordmark, on the homepage, goes back to its beginning** —
    * owner, 2026-10-05: "when Click logo or home page needs to move up at the
    * begining". A link to the page you are on goes nowhere, so on the homepage
    * the press scrolls it back to the top instead, through the smoother when
@@ -523,9 +513,7 @@ export function SiteHeader() {
                     className="bar-menu__link"
                     href={link.href}
                     aria-current={pathname === link.href ? "page" : undefined}
-                    onClick={
-                      link.href === "/" ? toHomeTop : () => setBarOpen(false)
-                    }
+                    onClick={() => setBarOpen(false)}
                     data-roll
                   >
                     <RollingLabel>{link.label}</RollingLabel>

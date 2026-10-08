@@ -13,6 +13,7 @@ import { crmSolution } from "../../../content/crm-solution";
 import { products } from "../../../content/home";
 import { crmSolutionPattern } from "../../../lib/crm-solution-pattern";
 import { buildServiceCards } from "../../../lib/service-cards";
+import { ServicesFooterRules } from "../../../components/services/ServicesFooterRules";
 
 export const metadata: Metadata = {
   title: crmSolution.title,
@@ -48,6 +49,9 @@ export default function CrmSolutionsPage() {
         id="main-content"
         data-service-page
       >
+        {/* The page's five lines, grey, from its top to its foot — owner,
+            2026-10-08: "add the vertical lines to the rest of the pages". */}
+        <ServicesFooterRules />
         <HeaderSpace />
 
         <section
@@ -271,7 +275,7 @@ export default function CrmSolutionsPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter rules={<ServicesFooterRules />} />
     </>
   );
 }

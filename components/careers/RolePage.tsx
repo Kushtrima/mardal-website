@@ -7,6 +7,7 @@ import { RollingLabel } from "../ui/RollingLabel";
 import { ApplyForm } from "./ApplyForm";
 import { RolePin } from "./RolePin";
 import { careers } from "../../content/careers";
+import { ServicesFooterRules } from "../services/ServicesFooterRules";
 
 type Role = (typeof careers.roles)[number];
 
@@ -36,6 +37,9 @@ export function RolePage({ role }: { role: Role }) {
         id="main-content"
         data-service-page
       >
+        {/* The page's five lines, grey, from its top to its foot — owner,
+            2026-10-08: "add the vertical lines to the rest of the pages". */}
+        <ServicesFooterRules />
         <HeaderSpace />
 
         <section className="role-page" aria-labelledby="role-title">
@@ -141,7 +145,7 @@ export function RolePage({ role }: { role: Role }) {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter rules={<ServicesFooterRules />} />
     </>
   );
 }

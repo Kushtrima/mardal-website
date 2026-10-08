@@ -7,6 +7,7 @@ import { ServicePageEntry } from "../../components/services/ServicePageEntry";
 import { PixelArrow } from "../../components/ui/PixelArrow";
 import { RollingLabel } from "../../components/ui/RollingLabel";
 import { careers } from "../../content/careers";
+import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
 
 export const metadata: Metadata = {
   title: careers.title,
@@ -36,6 +37,9 @@ export default function CareersPage() {
         id="main-content"
         data-service-page
       >
+        {/* The page's five lines, grey, from its top to its foot — owner,
+            2026-10-08: "add the vertical lines to the rest of the pages". */}
+        <ServicesFooterRules />
         <HeaderSpace />
 
         <section
@@ -204,7 +208,7 @@ export default function CareersPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter rules={<ServicesFooterRules />} />
     </>
   );
 }

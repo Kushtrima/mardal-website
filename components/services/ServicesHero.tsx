@@ -26,14 +26,14 @@ export type PageHeroContent = {
  * stylesheet sizes its heading by.
  *
  * **And the clients'** — owner, 2026-10-08: "change the hero of Client to be
- * same design as in product and service".
+ * same design as in product and service". **And About's**, the same day.
  */
 export function ServicesHero({
   hero,
   name,
 }: {
   hero: PageHeroContent;
-  name: "services" | "products" | "clients";
+  name: "services" | "products" | "clients" | "about";
 }) {
   return (
     <section

@@ -12,6 +12,7 @@ import {
   type Placeholder,
   type PlaceholderKey,
 } from "../../content/placeholders";
+import { ServicesFooterRules } from "../services/ServicesFooterRules";
 
 /**
  * A page that exists before its writing does.
@@ -91,6 +92,9 @@ export function PlaceholderPage({
         id="main-content"
         data-service-page
       >
+        {/* The page's five lines, grey, from its top to its foot — owner,
+            2026-10-08: "add the vertical lines to the rest of the pages". */}
+        <ServicesFooterRules />
         <HeaderSpace />
 
         <section
@@ -235,7 +239,7 @@ export function PlaceholderPage({
         ) : null}
       </main>
 
-      <SiteFooter />
+      <SiteFooter rules={<ServicesFooterRules />} />
     </>
   );
 }

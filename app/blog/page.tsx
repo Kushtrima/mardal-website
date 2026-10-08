@@ -9,6 +9,7 @@ import { PixelArrow } from "../../components/ui/PixelArrow";
 import { RollingLabel } from "../../components/ui/RollingLabel";
 import { blog, formatDate, readingMinutes } from "../../content/blog";
 import { products } from "../../content/home";
+import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
 
 export const metadata: Metadata = {
   title: blog.title,
@@ -47,6 +48,9 @@ export default function BlogPage() {
         id="main-content"
         data-service-page
       >
+        {/* The page's five lines, grey, from its top to its foot — owner,
+            2026-10-08: "add the vertical lines to the rest of the pages". */}
+        <ServicesFooterRules />
         <HeaderSpace />
 
         <section
@@ -214,7 +218,7 @@ export default function BlogPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter rules={<ServicesFooterRules />} />
     </>
   );
 }

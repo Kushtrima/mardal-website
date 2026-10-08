@@ -5,6 +5,7 @@ import { HeaderSpace } from "../../components/layout/HeaderSpace";
 import { ServicePageEntry } from "../../components/services/ServicePageEntry";
 import { LetterForm } from "../../components/contact/LetterForm";
 import { contactPage } from "../../content/contact";
+import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
 
 export const metadata: Metadata = {
   title: contactPage.title,
@@ -41,6 +42,9 @@ export default function ContactPage() {
         id="main-content"
         data-service-page
       >
+        {/* The page's five lines, grey, from its top to its foot — owner,
+            2026-10-08: "add the vertical lines to the rest of the pages". */}
+        <ServicesFooterRules />
         <HeaderSpace />
 
         <section
@@ -77,7 +81,7 @@ export default function ContactPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter rules={<ServicesFooterRules />} />
     </>
   );
 }

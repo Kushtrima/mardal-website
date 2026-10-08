@@ -9,6 +9,7 @@ import { PixelArrow } from "../../../components/ui/PixelArrow";
 import { RollingLabel } from "../../../components/ui/RollingLabel";
 import { blog, formatDate, readingMinutes } from "../../../content/blog";
 import { products } from "../../../content/home";
+import { ServicesFooterRules } from "../../../components/services/ServicesFooterRules";
 
 type Params = { slug: string };
 
@@ -72,6 +73,9 @@ export default async function BlogPostPage({
       <SectionEnter />
 
       <main className="service-page blog-post" id="main-content">
+        {/* The page's five lines, grey, from its top to its foot — owner,
+            2026-10-08: "add the vertical lines to the rest of the pages". */}
+        <ServicesFooterRules />
         <HeaderSpace />
 
         <article className="blog-article">
@@ -257,7 +261,7 @@ export default async function BlogPostPage({
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter rules={<ServicesFooterRules />} />
     </>
   );
 }

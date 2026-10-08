@@ -264,32 +264,29 @@ export const menu = [
        this menu still answers the same two questions. */
     items: [],
   },
+  /* **About is one page, and Contact a word of its own** — owner,
+     2026-10-08, of the menu's About (a parent holding About, Blog, Careers
+     and Contact): "i want to remain only one page about", and "add contact".
+     So both are plain links, as Clients is. Blog and Careers stay where they
+     are, reached from the About page and the footer, which already lists
+     both. (This entry was Company, a panel of those four.) */
   {
-    key: "company",
-    label: "Company",
+    key: "about",
+    label: "About",
     eyebrow: "Inside Mardal",
     description: "Meet the people, thinking, and culture behind our work.",
-    href: "/company",
-    panelOnly: true,
-    items: [
-      /* `Team` was here and is gone — owner's call, 2026-08-12: the people go
-         inside About rather than standing as an entry of their own. It is the
-         right way round for what there is to say. PRODUCT.md records a core of
-         roughly two to five with real roles that may be published, and no names
-         supplied — a page for that is a page with one paragraph on it, and a
-         menu entry pointing at it promises more than About would.
-
-         Nothing else moves. Both menus and the footer read this array, so the
-         entry leaves all three at once, and the assertions that count them are
-         followed down in the same commit. */
-      { label: "About", href: "/about" },
-      /* Blog is the one of the four that is written. About, Careers and
-         Contact are addresses with a placeholder behind them; so is the word
-         Company above them. See content/placeholders.ts. */
-      { label: "Blog", href: "/blog" },
-      { label: "Careers", href: "/careers" },
-      { label: "Contact", href: "/contact" },
-    ],
+    href: "/about",
+    panelOnly: false,
+    items: [],
+  },
+  {
+    key: "contact",
+    label: "Contact",
+    eyebrow: "Contact",
+    description: "Start a project with Mardal.",
+    href: "/contact",
+    panelOnly: false,
+    items: [],
   },
 ] as const;
 

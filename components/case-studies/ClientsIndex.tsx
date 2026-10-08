@@ -355,7 +355,21 @@ export function ClientsIndex() {
                         (Industry, services and country stood under it from
                         2026-09-30.) The heading tag stays: it is what puts
                         each card in the page's outline. */}
-                    <h3 className="clients-card__name">{entry.name}</h3>
+                    <h3 className="clients-card__name">
+                      {entry.name}
+                      {/* VIEW ALL's thin arrow, on a card that opens; it
+                          comes in beside the name under the pointer. */}
+                      {"story" in entry ? (
+                        <svg
+                          className="clients-card__arrow"
+                          viewBox="0 0 16 16"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <path d="M2 14 14 2M4.5 2H14v9.5" />
+                        </svg>
+                      ) : null}
+                    </h3>
                   </article>
                 </li>
               );

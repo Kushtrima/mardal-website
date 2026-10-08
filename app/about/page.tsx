@@ -10,10 +10,12 @@ import { AboutJourney } from "../../components/motion/AboutJourney";
 import { ProseReveal } from "../../components/motion/ProseReveal";
 import { SectionWash } from "../../components/motion/SectionWash";
 import { MediaReveal } from "../../components/motion/MediaReveal";
-import { ServicePageEntry } from "../../components/services/ServicePageEntry";
+import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
+import { ServicesHero } from "../../components/services/ServicesHero";
+import { ServicesRules } from "../../components/services/ServicesRules";
 import { PixelArrow } from "../../components/ui/PixelArrow";
 import { RollingLabel } from "../../components/ui/RollingLabel";
-import { about } from "../../content/about";
+import { about, aboutHero } from "../../content/about";
 
 /**
  * Which edge each photograph opens from, which is a composition decision rather
@@ -112,7 +114,6 @@ export default function AboutPage() {
   return (
     <>
       <SectionEnter />
-      <ServicePageEntry />
       <MediaReveal />
       <MediaCluster />
       <SectionWash />
@@ -124,69 +125,18 @@ export default function AboutPage() {
         id="main-content"
         data-service-page
       >
+        {/* The page's five lines, from its top to its foot in one piece, in
+            the red that turns grey as the opening is scrolled away, as the
+            services' and the clients' (ServicesRules) — owner, 2026-10-08:
+            "add the vertical lines". The colour the page itself turns to
+            further down (SectionWash) is untouched: the lines stand in the
+            page, over its ground. */}
+        <ServicesRules />
         <HeaderSpace />
 
-        <section
-          className="service-hero service-hero--bare"
-          aria-labelledby="about-title"
-          data-service-hero
-        >
-          <Container className="service-hero__inner">
-            <div className="service-hero__intro">
-              <h1
-                className="service-hero__title"
-                id="about-title"
-                data-service-hero-title
-              >
-                {/* The leading space matters and is invisible until it does.
-                    The spans are rendered adjacent with nothing between them,
-                    which is fine while they are blocks — and on a phone they
-                    are set inline so the sentence can be balanced at a size the
-                    authored break cannot reach, and without this it reads
-                    `Mardal,a`. Inside the span rather than between them, so no
-                    Fragment is needed, and it collapses to nothing when the
-                    span is a block again. */}
-                {about.titleLines.map((line, index) => (
-                  <span className="service-hero__title-line" key={line}>
-                    {index > 0 ? " " : null}
-                    {line}
-                  </span>
-                ))}
-              </h1>
-            </div>
-
-            <div className="service-hero__aside">
-              <p className="service-hero__support" data-service-hero-support>
-                {about.support}
-              </p>
-
-              <a
-                className="service-hero__cta"
-                data-roll
-                href={about.ctaHref}
-                data-service-hero-cta
-              >
-                <RollingLabel>{about.cta}</RollingLabel>
-                <PixelArrow
-                  className="service-hero__cta-arrow"
-                  direction="up-right"
-                  size="small"
-                />
-              </a>
-            </div>
-          </Container>
-
-          <div
-            className="service-hero__blur"
-            aria-hidden="true"
-            data-service-hero-blur
-          />
-          <div
-            className="service-hero__fade"
-            aria-hidden="true"
-            data-service-hero-fade
-          />
-        </section>
+        {/* The services', the products' and the clients' opening, in About's
+            words — owner, 2026-10-08: "in about change the hero banner". */}
+        <ServicesHero hero={aboutHero} name="about" />
 
         {/* **No heading, and it is a `data-route-section` all the same.** That
             attribute is what hands a block the site's entrance, and SectionEnter
@@ -441,7 +391,8 @@ export default function AboutPage() {
 
       </main>
 
-      <SiteFooter />
+      {/* The grey lines on to the foot of the page. */}
+      <SiteFooter rules={<ServicesFooterRules />} />
     </>
   );
 }

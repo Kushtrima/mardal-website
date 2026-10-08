@@ -131,32 +131,16 @@ test("About is a written page, not a placeholder any more", async () => {
 test("the heading is the owner's sentence, broken where he broke it", async () => {
   const html = await (await render("/about")).text();
 
-  /* React writes a `<!-- -->` separator between two adjacent text children, so
-     the span's content is not a run of non-`<`. Stripped rather than matched
-     around, because the marker is React's business and the words are the
-     assertion. */
-  const spans = [
-    ...html.matchAll(/<span class="service-hero__title-line">(.*?)<\/span>/g),
-  ].map((m) => m[1].replace(/<!-- -->/g, ""));
-
-  /* Sliced because the RSC payload repeats the markup. Order asserted, not just
-     presence: the two lines reversed still render, still contain every word, and
-     say something else. */
-  assert.deepEqual(spans.slice(0, 2), [
-    TITLE_LINES[0],
-    ` ${TITLE_LINES[1]}`,
-  ]);
-
-  /* **The leading space is load-bearing and invisible until it is not.** The
-     spans are adjacent in the markup with nothing between them, which is fine
-     while they are blocks — and at 48rem and under they are set inline so the
-     sentence can balance at a size the authored break cannot reach. Without it
-     that reads `people,ideas,`. Careers shipped `startswith` this way with every
-     measurement passing, because a `::after` is not in `textContent`. */
-  assert.match(
-    html,
-    /people,<\/span><span class="service-hero__title-line"> (<!-- -->)?ideas,/,
+  /* In the services' opening since 2026-10-08 ("in about change the hero
+     banner"): his two lines, in order, the full stop in the red. Sliced
+     because the RSC payload repeats the markup; `<!-- -->` stripped because
+     the marker is React's business and the words are the assertion. */
+  const opening = html.slice(html.indexOf('class="services-hero services-hero--about"'), html.indexOf("</section>"));
+  assert.deepEqual(
+    [...opening.replace(/<!-- -->/g, "").matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "")),
+    TITLE_LINES,
   );
+  assert.match(opening, /<span class="services-hero__stop">\.<\/span>/);
 });
 
 test("the sentence under the heading is his, and so is the history", async () => {
@@ -205,84 +189,37 @@ test("the only facts on the page are the ones the owner gave", async () => {
   assert.doesNotMatch(prose, /\b\d+\s*%|\bfounded\b|\bsince \d/i);
 });
 
-test("the hero carries the artwork-less arrangement, and adds nothing to it", async () => {
+test("About opens as the services, the products and the clients do", async () => {
+  /* Owner, 2026-10-08: "in about change the hero banner", and "add the
+     vertical lines". The services' opening in About's words — the label
+     beside its plus, his heading, his line as the note, four marks — on the
+     page's five lines from its top, and the footer's. The old opening (a bare
+     hero with a support line and a way in) is gone with it. */
   const html = await (await render("/about")).text();
+  const opening = html.slice(html.indexOf('class="services-hero services-hero--about"'), html.indexOf("</section>"));
+  assert.ok(opening.length > 0, "About does not open on the services' hero");
+  assert.match(opening, /aria-labelledby="about-hero-title" data-services-hero="true"/);
+  assert.match(opening, /<p class="services-hero__label" data-services-hero-first="true"><span class="services-hero__mark" aria-hidden="true"><\/span>About<\/p>/);
+  assert.match(opening, new RegExp(SUPPORT.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.equal((opening.match(/class="services-hero__mark/g) ?? []).length, 4);
+  assert.doesNotMatch(html, /class="service-hero[ "]|service-hero__aside|service-hero__cta/);
 
-  assert.match(html, /class="service-hero service-hero--bare"/);
-  assert.match(html, /class="service-page service-page--about"/);
-  assert.match(html, /class="service-hero__aside"/);
+  const main = html.slice(html.indexOf("<main"), html.indexOf('class="services-hero'));
+  assert.equal((main.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 5);
+  assert.equal((html.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 10);
 
-  /* ★ **And carries NOTHING of its own for the foot — owner, 2026-08-27:
-     About, Blog and Contact are to match Careers.**
-
-     This is asserted as an absence because the absence is the decision. Three
-     rules used to stand here: `display: contents` on the aside above 48rem,
-     which dissolved the wrapper so the sentence took column 1 and the link
-     column 9, plus the support measure and link placement that arrangement
-     needed, plus two more below 48rem undoing the first on a phone. They came
-     from the 2026-08-26 ask to put the link on the right "like the other pages",
-     where the other pages meant the five service pages — which stand their foot
-     on two edges around artwork. Careers has no artwork and gathers its foot
-     into one block in the corner, and that is the comparison now.
-
-     Measured before the removal: About's sentence sat 730px from the right edge
-     at a 1440 window, where Careers', Blog's and Contact's all sat at 40. After:
-     all four report an identical computed arrangement — same display, same
-     flex-direction, same align-items, same align-self on the link, same
-     text-align — at 390, 1024 and 1440. What still differs between them is the
-     WIDTH of the block, and only because the four sentences are 21, 43, 65 and
-     111 characters long.
-
-     Written against the whole prefix rather than a single property: any rule
-     scoped to this page and this class is the thing that is not wanted, whatever
-     it happens to declare. */
-  assert.doesNotMatch(
-    CSS,
-    /\.service-page--about \.service-hero--bare\b/,
-    "About has page-scoped foot rules again — the foot is `service-hero--bare` and nothing else, as it is on Careers, Blog, Contact and Clients",
-  );
-
-  /* No artwork. It is not a service and it has no drawing, so the hero must not
-     be reserving room for one. */
+  /* No artwork. */
   assert.doesNotMatch(html, /service-hero__pattern|data-pattern-bars/);
 });
 
-test("the heading sets its own measure and its own size", () => {
-  /* The base caps the heading at `min(21ch, 100cqw - 30rem - 2rem)`, and the
-     second term reserves 30rem for a drawing this page has not got. Left in, the
-     26-character line turned at every width measured except 1600.
-
-     The size DIVIDES rather than declares — the column over the width of the
-     longest authored line — because an authored line must never wrap and the
-     largest a page can be set is exactly that quotient. `--hero-line` is the one
-     measured fact the page contributes; the arithmetic is shared. */
-  const at = CSS.indexOf(".service-page--about .service-hero__title {");
-  assert.ok(at > 0, "About sets no title rule");
-  const rule = CSS.slice(at, CSS.indexOf("}", at));
-
-  assert.match(rule, /max-width:\s*none/);
-  assert.match(rule, /--hero-line:\s*9\.904/);
-
-  /* **Its own slope, not the shared token.** Owner, 2026-08-26: bigger.
-     `--text-heading-xl` caps at 72px and was the binding term from 1300 up,
-     while the quotient allowed 118 there and 240 at 2560 — the container has no
-     maximum, so the column kept growing and the heading did not. Measured after:
-     104px from 1300 up, 82 at 1024, 62 at 769.
-
-     Both halves asserted. Taking the token back caps it at 72 again; dropping
-     the quotient takes away the only thing stopping a longer line from turning,
-     and this page has already had one — the first heading here was 13.196em and
-     turned at every width but 1600 until the division went in. */
-  assert.match(rule, /font-size:\s*min\(clamp\(3rem, 8vw, 6\.5rem\), calc\(96cqi \/ var\(--hero-line\)\)\)/);
-  assert.doesNotMatch(rule, /--text-heading-xl/);
-
-  /* And the intro takes the whole row, without which the quotient is measuring a
-     column the heading has not got: placed `1 / span 8` it had 807px of a 1220px
-     row at 1300 and lines turned inside it. Row 1 is the intro's alone — the
-     bare aside sits at `2 / -1` — so this costs nothing. */
-  const intro = CSS.indexOf(".service-page--about .service-hero__intro {");
-  assert.ok(intro > 0);
-  assert.match(CSS.slice(intro, CSS.indexOf("}", intro)), /grid-column:\s*1 \/ -1/);
+test("the heading is sized to the columns, as the others are", () => {
+  /* "A studio shaped by people," is 11.75 of its size wide (measured): the
+     services' opening sizes a heading so its first line, set in to the
+     second rule, ends on the last — `--hero-fit` is that width. */
+  const at = CSS.indexOf(".services-hero--about {");
+  assert.ok(at > 0, "About sets no opening rule");
+  assert.match(CSS.slice(at, CSS.indexOf("}", at)), /--hero-fit:\s*11\.85;/);
+  assert.doesNotMatch(CSS, /\.service-page--about\b/);
 });
 
 test("the sentence takes the site's support scale, not one of its own", () => {

@@ -246,16 +246,18 @@ test("server-renders the Mardal homepage", async () => {
      hover to aper menu on the left … Home, Services, Products, Clients,
      about … only as a text", and "when click inside to have all services and
      other not as a sublink". Five plain links beside Menu, each to the page
-     that holds everything under it; no sub-links, and no Company or Hire us. */
+     that holds everything under it; no sub-links, and no Company or Hire us.
+     Home came out and Contact went in — owner, 2026-10-08: "remove HOME link
+     from header add contact". */
   const row = bar.match(/<ul class="bar-menu" id="bar-menu" aria-label="Pages">[\s\S]*?<\/ul>/)?.[0];
   assert.ok(row, "the bar has no row of pages");
   assert.deepEqual(
     [...row.matchAll(/<a [^>]*href="([^"]+)"[^>]*class="bar-menu__link"|<a [^>]*class="bar-menu__link"[^>]*href="([^"]+)"/g)].map((m) => m[1] ?? m[2]),
-    ["/", "/services", "/products", "/case-studies", "/about"],
+    ["/services", "/products", "/case-studies", "/about", "/contact"],
   );
   assert.deepEqual(
     [...row.matchAll(/<span class="roll__face">([^<]*)</g)].map((m) => m[1]),
-    ["Home", "Services", "Products", "Clients", "About"],
+    ["Services", "Products", "Clients", "About", "Contact"],
   );
   assert.doesNotMatch(bar, />(Company|Hire us)</);
   assert.doesNotMatch(html, /mega-menu|nav-trigger|site-nav__actions/);
@@ -278,11 +280,15 @@ test("server-renders the Mardal homepage", async () => {
   assert.ok(pages, "the menu has no entries");
   assert.deepEqual(
     [...pages.matchAll(/data-menu-word="true"><span class="roll"><span class="roll__face">([^<]*)</g)].map((m) => m[1]),
-    ["Services", "Products", "Clients", "About"],
+    ["Services", "Products", "Clients", "About", "Contact"],
   );
-  /* About is the company's four pages under the first one's name — owner,
-     2026-10-05: "maybe Blog carreers and contact to be under About". */
-  for (const key of ["products", "about"]) {
+  /* About was the company's four pages under the first one's name (owner,
+     2026-10-05: "maybe Blog carreers and contact to be under About"); since
+     2026-10-08 it is one page and Contact a word of its own ("i want to
+     remain only one page about", "add contact"). Products is the one parent
+     left. */
+  assert.doesNotMatch(pages, /mobile-menu-panel-about/);
+  for (const key of ["products"]) {
     assert.match(
       pages,
       new RegExp(`<button class="mobile-menu__page" type="button" aria-expanded="false" aria-controls="mobile-menu-panel-${key}"`),
@@ -292,7 +298,7 @@ test("server-renders the Mardal homepage", async () => {
   }
   assert.deepEqual(
     [...pages.matchAll(/<a href="([^"]+)" class="mobile-menu__page"/g)].map((m) => m[1]),
-    ["/services", "/case-studies"],
+    ["/services", "/case-studies", "/about", "/contact"],
   );
   /* No second screen to step into, and nothing to go back from. */
   assert.doesNotMatch(html, /mobile-menu__(index|detail|back|count|rows|num)/);
@@ -305,12 +311,11 @@ test("server-renders the Mardal homepage", async () => {
   );
   assert.deepEqual(lists, {
     Products: ["Arvena AI", "Ftesa.co"],
-    About: ["About", "Blog", "Careers", "Contact"],
   });
   /* Each page a ruled row: its name, and VIEW ALL's thin arrow (owner,
      2026-10-05: "i don like how sub links shows pls redesign that part"). */
-  assert.equal((pages.match(/<li class="mobile-menu__item">/g) ?? []).length, 6);
-  assert.equal((pages.match(/class="mobile-menu__link-arrow"/g) ?? []).length, 6);
+  assert.equal((pages.match(/<li class="mobile-menu__item">/g) ?? []).length, 2);
+  assert.equal((pages.match(/class="mobile-menu__link-arrow"/g) ?? []).length, 2);
 
   /* And the foot: the way in, then the ways to reach Mardal. */
   assert.match(html, /<div class="mobile-menu__foot"[^>]*>[\s\S]*?class="mobile-menu__cta" data-roll="true" href="\/contact"[\s\S]*?href="mailto:info@mardal\.co"[\s\S]*?href="tel:\+38349210999"/);
@@ -1191,7 +1196,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      company and servces", then "remove the service complete under the
      project". (Industry, services and country stood there from 2026-09-30.) */
   assert.equal(
-    [...cardMarkup.matchAll(/class="clients-card__name">[^<]*<\/h3><\/article>/g)].length,
+    [...cardMarkup.matchAll(/class="clients-card__name">[^<]*(?:<!-- -->)?(?:<svg class="clients-card__arrow"[\s\S]*?<\/svg>)?<\/h3><\/article>/g)].length,
     8,
   );
   assert.doesNotMatch(cardMarkup, /clients-card__fact/);
@@ -1253,6 +1258,16 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      page is the promise this site refuses to make. */
   assert.equal((cardMarkup.match(/data-opens="true"/g) ?? []).length, links.length);
   assert.equal((cardMarkup.match(/data-opens-mark/g) ?? []).length, 8);
+
+  /* **The hover — owner, 2026-10-08** ("i dont like it how it is right
+     now"): no wash and no cross laid over the picture; its frame draws in,
+     the photograph leans in, the name turns red and an arrow comes in beside
+     it — the arrow only on the card that opens. */
+  const CSSH = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(CSSH, /\[data-opens\]:hover \[data-opens-mark\] \{\s*clip-path: inset\(/);
+  assert.match(CSSH, /\[data-opens\]:hover \[data-opens-mark\] img \{\s*transform: scale\(1\.06\);/);
+  assert.doesNotMatch(CSSH, /\[data-opens-mark\]::(before|after)|rgb\(8 8 10 \/ 90%\)/);
+  assert.equal((cardMarkup.match(/class="clients-card__arrow"/g) ?? []).length, links.length);
 
   /* And it is on the card that has the link, not on some other one. */
   assert.match(

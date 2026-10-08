@@ -13,6 +13,7 @@ import { aiAutomation } from "../../../content/ai-automation";
 import { products } from "../../../content/home";
 import { aiAutomationPattern } from "../../../lib/ai-automation-pattern";
 import { buildServiceCards } from "../../../lib/service-cards";
+import { ServicesFooterRules } from "../../../components/services/ServicesFooterRules";
 
 export const metadata: Metadata = {
   title: aiAutomation.title,
@@ -54,6 +55,9 @@ export default function AiAutomationPage() {
         id="main-content"
         data-service-page
       >
+        {/* The page's five lines, grey, from its top to its foot — owner,
+            2026-10-08: "add the vertical lines to the rest of the pages". */}
+        <ServicesFooterRules />
         <HeaderSpace />
 
         <section
@@ -273,7 +277,7 @@ export default function AiAutomationPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter rules={<ServicesFooterRules />} />
     </>
   );
 }

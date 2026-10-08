@@ -2511,6 +2511,35 @@ video {
   isolation: isolate;
 }
 
+/* **Every page carries the lines** — owner, 2026-10-08: "add the vertical
+   lines to the rest of the pages". A page that draws them in itself (its
+   five spans the first thing in it) is the box they stand in, and they stand
+   under everything in it. */
+main:has(> .services-rules) {
+  position: relative;
+  isolation: isolate;
+}
+
+/* On such a page the sections give up the white ground they paint (the
+   page's own white, set when the service pages each had a tint) so the lines
+   show through them, as they do on the homepage, the services, the products
+   and Clients. Nothing else about them changes: the white under them is the
+   page's. Overlays that cover the page on purpose — the skip transition, a
+   phone's journey bar — keep theirs. */
+main:has(> .services-rules) :is(
+  .service-hero,
+  .service-offerings,
+  .service-cta,
+  .blog-index,
+  .blog-article,
+  .careers-roles,
+  .role-page,
+  .contact
+),
+main:has(> .services-rules) > .pin-spacer {
+  background: transparent;
+}
+
 .services-rules {
   position: absolute;
   z-index: -1;
@@ -2687,6 +2716,17 @@ video {
    the services' and the products' pages. */
 .service-page--case-studies .clients-index {
   background: none;
+}
+
+/* About's first line, "A studio shaped by people,", is 11.75 of its size
+   wide (measured): at this its heading is 6% smaller than the services' and
+   the line ends just short of the last rule. Its second line is the shorter.
+   The same foot as the products' and the clients' (owner, 2026-10-08: "in
+   about change the hero banner"). */
+.services-hero--about {
+  --hero-fit: 11.85;
+
+  margin-bottom: var(--section-space);
 }
 
 /* The full stop in the red (owner, 2026-10-06: "in the end the . to be in
@@ -7032,61 +7072,6 @@ video {
   opacity: 0.72;
 }
 
-/* ── About: the longest heading on the site, and the only one that is a
-   sentence ──
-
-   Owner, 2026-08-26: his sentence about the studio, as the big text in the hero.
-   The five service heroes hold two authored lines of about 20 characters; this
-   holds four of about 30, and it cannot simply take their size.
-
-   **The measure comes off first.** The base caps the heading at
-   `min(21ch, 100cqw - 30rem - 2rem)`, and the second term reserves 30rem for a
-   drawing this page has not got — the same correction Clients needed when its
-   plate came out.
-
-   **Then the column.** The intro is placed `1 / span 8` of twelve, which is
-   right beside artwork and wrong beside nothing: measured at a 1300px window it
-   gave the heading 807px of a 1220px row, and lines two and three turned inside
-   it. Row 1 is the intro's alone — the bare hero's aside sits at `2 / -1` — so
-   taking the full width costs nothing and is what stops the turn.
-
-   **Then the size, which divides rather than declares.** An authored line must
-   never wrap; where a heading turns is a decision about the copy. So the largest
-   this page can be set is its column over the width of its longest line. `A
-   studio shaped by people,` is 9.904em, measured with the real face rather than
-   estimated — see the note at `--hero-line` for how, and mind that the webfont
-   has to have loaded or the fallback's metrics answer instead.
-
-   **Its own slope, not `--text-heading-xl`.** Owner, 2026-08-26: bigger. The
-   shared token caps at 72px and was the binding term at every width from 1300
-   up, while the division would have allowed 118 there and 240 at 2560 — the
-   container has no maximum, so the column keeps growing and the heading was not.
-   Clients sets its own slope for the same reason and goes further, to 160px.
-
-   8vw and not 9: the division works out to about 9.11vw for a line this wide, so
-   a 9vw slope and the quotient are the same curve and the heading would run to
-   the gutters at every width. At 8 it fills about seven eighths of the column.
-
-   The quotient no longer binds at this ceiling, and is kept rather than dropped:
-   it is what makes a LONGER line safe, and this page has already had one. The
-   first heading here was 13.196em and turned at every width but 1600 until the
-   division went in.
-
-   Rendered at 320 through 2560: one line box per span at every width, and the
-   size lands at 104px from 1300 up, 82 at 1024 and 62 at 769 — where the phone
-   below it ends at 56, so the two now step the right way at the breakpoint. It
-   used to drop from 56 to 43 on the way out of the phone rule. */
-.service-page--about .service-hero__intro {
-  grid-column: 1 / -1;
-}
-
-.service-page--about .service-hero__title {
-  --hero-line: 9.904;
-
-  max-width: none;
-  font-size: min(clamp(3rem, 8vw, 6.5rem), calc(96cqi / var(--hero-line)));
-}
-
 /* **About was the odd one out, and is not any more — owner, 2026-08-27.**
 
    Three rules stood here: `display: contents` on the aside above 48rem, which
@@ -8709,136 +8694,82 @@ video {
   content: "";
 }
 
-/* The card answers, not a cursor decoration: the picture lifts out of the shade
-   it is read through and the panel comes up a step. Content responding to the
-   pointer is the one hover language this site has. */
-/* The hover was a fill on the card, which worked while the card was a panel
-   with a ground of its own. There is no panel now, so filling it would paint a
-   rectangle around three lines of text standing on the page — a box appearing
-   under the pointer where none exists at rest. The picture darkening below is
-   what the hover is; it is the only part of the card that has a surface. */
-.clients-card--linked:hover .clients-card__name {
-  color: var(--accent-strong);
+/* **The card under the pointer — owner, 2026-10-08**: "can you create a new
+   on hover effect i dont like it how it is right now" (it was the picture
+   washed to 90% ink with a thin white cross drawn on it). Now nothing is laid
+   over the picture; the picture itself answers: its frame draws in evenly on
+   every side, the page showing round it, while the photograph leans in a
+   little inside it — slowly, on the site's even curve. The name turns red
+   and VIEW ALL's thin arrow appears beside it, in place.
+
+   Written for cards in general: `[data-opens]` on the card and
+   `[data-opens-mark]` on its picture's box, so any card that opens something
+   adopts it by carrying the two. Only on a card that opens (`data-opens` is
+   set from the entry), and only where there is a pointer to hover with — on
+   a touch screen `:hover` sticks after a tap. */
+.clients-card__name {
+  --card-arrow: 0.8em;
 }
 
-/* **The picture darkens and a plus is drawn on it — owner's call, 2026-08-25.**
+.clients-card__arrow {
+  display: inline-block;
+  width: var(--card-arrow);
+  height: var(--card-arrow);
+  margin-left: 0.45em;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: square;
+  stroke-width: 1.25px;
+  /* It appears; it does not move — arrows on this site never change place
+     on hover (owner, 2026-08-27). */
+  opacity: 0;
+  vertical-align: baseline;
+}
 
-   It replaces a plain dim on the photograph. A dim says "something is
-   happening"; a plus says what: this one opens.
+.clients-card__arrow path {
+  vector-effect: non-scaling-stroke;
+}
 
-   ── Two pseudo-elements, and which paints over which ──
-   `::before` is the wash and `::after` is the mark, because `::after` paints
-   over `::before` when both are positioned siblings — so the plus needs no
-   z-index fight with the thing it stands on. The plate is already
-   `position: relative` and clips to the picture's corners, so both are held to
-   the frame without either being told its size.
-
-   ── Written for cards in general, not for this page ──
-   `[data-opens]` on the card and `[data-opens-mark]` on the box the treatment
-   paints in. Nothing here names Clients, so a blog card, a product card or a
-   service card adopts the whole thing by carrying those two attributes — no
-   CSS is written for the second one that wants it.
-
-   ── Only on the card that goes somewhere ──
-   `data-opens` is set from the entry, not by hand: a Clients card carries it
-   the moment a story exists behind it, which is the same condition that makes
-   it a link at all. So the other seven gain this when they are written, and
-   until then they do not — a plus appearing under the pointer on a card that
-   answers with an empty page is the promise this site refuses to make.
-
-   ── Behind a hover query ──
-   On a touch screen `:hover` sticks after a tap, so without this the plus would
-   arrive on the card someone last pressed and stay there. */
 @media (hover: hover) {
-  /* **Both arrive slowly and evenly — owner's call, 2026-08-25.**
+  [data-opens] [data-opens-mark] {
+    clip-path: inset(0);
+    transition: clip-path var(--duration-handover) var(--ease-handover);
+  }
 
-     It was `--duration-base` on `--ease-standard`, and the ease is the reason
-     it snapped rather than the duration: `cubic-bezier(0.22, 1, 0.36, 1)` puts
-     most of the movement in the first quarter of the time, which is right for
-     something answering a press and wrong for something appearing under a
-     pointer that has only just arrived.
+  [data-opens] [data-opens-mark] img {
+    transition: transform var(--duration-handover) var(--ease-handover);
+  }
 
-     `--ease-handover` is the site's even curve — the one the mobile index
-     unfolds on — and `--duration-slow` gives it room to be seen. Together they
-     read as the card noticing rather than reacting. */
-  [data-opens] [data-opens-mark]::before,
-  [data-opens] [data-opens-mark]::after {
-    position: absolute;
-    opacity: 0;
+  [data-opens] .clients-card__name,
+  [data-opens] .clients-card__arrow {
     transition:
-      opacity var(--duration-slow) var(--ease-handover),
-      background-size var(--duration-slow) var(--ease-handover);
-    content: "";
-    pointer-events: none;
+      color var(--duration-base) var(--ease-standard),
+      opacity var(--duration-base) var(--ease-standard);
   }
 
-  /* Ink rather than plain black, at 90% — owner's call, 2026-08-25, up from 45.
-     At 45 the photograph was still the thing being looked at and the mark was
-     over it; at 90 the frame is nearly the ink itself and the plus is the only
-     thing in the box. Which is the right way round for what the hover means:
-     the card has stopped being a picture and become a way in.
-
-     Still ink and still short of solid. `--ink` is the colour everything else
-     on this page is drawn in, and the last tenth is what keeps a trace of the
-     photograph under it — a flat black panel would read as the picture having
-     failed to load rather than as the card answering. */
-  [data-opens] [data-opens-mark]::before {
-    inset: 0;
-    background: rgb(8 8 10 / 90%);
+  [data-opens]:hover [data-opens-mark] {
+    clip-path: inset(clamp(0.6rem, 1.4vw, 1.25rem));
   }
 
-  /* Two hairlines crossing, drawn as backgrounds rather than as borders on a
-     box — a border would draw four sides and need three of them turned off.
-     Each gradient is a solid white painted into a strip one pixel wide or one
-     pixel tall, centred; together they are the cross.
-
-     Sized as a share of the picture with a floor and a ceiling, the way the
-     reference reads it: a little under half the frame across, square. */
-  [data-opens] [data-opens-mark]::after {
-    top: 50%;
-    left: 50%;
-    width: clamp(3.5rem, 40%, 11rem);
-    aspect-ratio: 1;
-    /* **A small cross that grows into a big one — owner's call, 2026-08-25.**
-
-       Each arm is a white gradient painted into a strip one pixel wide or one
-       pixel tall, and it starts SHORT rather than absent: `1px 22%` and
-       `22% 1px`. So what fades in is already a plus, a quarter of its final
-       size, and what follows is the two arms running out to full length.
-
-       Starting at zero was the version before this and it is a different
-       gesture — nothing, then a line drawing itself. Starting small means the
-       mark is whole from the first frame and only its scale changes, which is
-       what was asked for.
-
-       Both arms grow from the middle in both directions at once, because
-       `background-position` is `center`. That is also what keeps the cross
-       exactly centred for free: neither line ever moves, it only gets longer.
-       No second element and no SVG — `background-size` is animatable, so one
-       box draws both.
-
-       The transform is the centring and nothing else. A quarter turn was tried
-       here and taken out; the arms extending is the movement, and a rotation
-       under it was a second thing happening at the same time. */
-    transform: translate(-50%, -50%);
-    background:
-      linear-gradient(#ffffff, #ffffff) center / 1px 22% no-repeat,
-      linear-gradient(#ffffff, #ffffff) center / 22% 1px no-repeat;
+  [data-opens]:hover [data-opens-mark] img {
+    transform: scale(1.06);
   }
 
-  [data-opens]:hover [data-opens-mark]::before,
-  [data-opens]:hover [data-opens-mark]::after {
+  [data-opens]:hover .clients-card__name {
+    color: var(--accent);
+  }
+
+  [data-opens]:hover .clients-card__arrow {
     opacity: 1;
   }
+}
 
-  [data-opens]:hover [data-opens-mark]::after {
-    background-size: 1px 100%, 100% 1px;
-    /* The ground first, then the mark on it. A tenth of a second is enough to
-       be an order rather than a stagger — both still finish together, because
-       the delay is inside the slower duration. Only on the way IN: leaving,
-       this rule stops applying and the two go at once, which is what leaving
-       should feel like. */
-    transition-delay: 100ms;
+@media (prefers-reduced-motion: reduce) {
+  [data-opens] [data-opens-mark],
+  [data-opens] [data-opens-mark] img,
+  [data-opens] .clients-card__name,
+  [data-opens] .clients-card__arrow {
+    transition: none;
   }
 }
 
@@ -8988,34 +8919,9 @@ video {
     display: inline;
   }
 
-  /* **And About gives its break up for the same reason, at the same width.**
-     Four authored lines of thirty characters have no large setting on a 288px
-     column: holding them, the division above lands the heading at 21px, which
-     is smaller than this page's body text. So the spans go inline here too, the
-     browser balances the sentence, and the size is free of the break.
+  
 
-     What bounds it now is the longest unbreakable WORD — `innovation`, 4.011em,
-     which would allow 69px at 320. That is not the limit worth taking: 122
-     characters at 69px is fourteen lines. The ceiling below is set for the shape
-     instead, and lands the sentence in six lines at 320 and 390 and four at 768.
-
-     2.8rem rather than a round 3 so the two sides of the breakpoint MEET: the
-     division above lands at 45px at an 800px window, and a 48px ceiling here
-     stepped the heading up three pixels on the way down. Measured either side
-     rather than assumed — the same care `.service-page--case-studies` took where
-     its phone rule and its desktop clamp cross.
-
-     `balance` rather than `pretty`, matching Careers: it evens the lines rather
-     than filling each and orphaning the last, which is what keeps a break nobody
-     authored from reading as a break nobody noticed. */
-  .service-page--about .service-hero__title {
-    font-size: clamp(2.75rem, 13vw, 3.5rem);
-    text-wrap: balance;
-  }
-
-  .service-page--about .service-hero__title-line {
-    display: inline;
-  }
+  
 
   /* ── The foot of an artwork-less hero on a phone ──
 
