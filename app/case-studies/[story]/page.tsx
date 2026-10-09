@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../../lib/page-metadata";
 import { notFound } from "next/navigation";
 import { ClientsStory } from "../../../components/case-studies/ClientsStory";
 import { pilotStory } from "../../../content/case-studies";
@@ -26,10 +27,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { story } = await params;
   if (story !== pilotStory.slug) return {};
 
-  return {
-    title: pilotStory.title,
-    description: pilotStory.lede,
-  };
+  return pageMetadata(pilotStory.title, pilotStory.lede, "article");
 }
 
 export default async function ClientsStoryPage({ params }: Params) {

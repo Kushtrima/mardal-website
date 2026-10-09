@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../lib/page-metadata";
 import { Container } from "../../components/layout/Container";
 import { SiteFooter } from "../../components/layout/SiteFooter";
 import { HeaderSpace } from "../../components/layout/HeaderSpace";
@@ -10,10 +11,7 @@ import { ServicesHero } from "../../components/services/ServicesHero";
 import { ServicesRules } from "../../components/services/ServicesRules";
 import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
 
-export const metadata: Metadata = {
-  title: blog.title,
-  description: blog.lede,
-};
+export const metadata: Metadata = pageMetadata(blog.title, blog.lede);
 
 /**
  * The Blog page, hero only.

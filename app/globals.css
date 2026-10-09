@@ -8,25 +8,6 @@
   font-display: swap;
 }
 
-/* The h1 face. One weight only — the family ships Regular, Italic and a
-   Reverse Italic, and nothing else, so there is no bold to fall back on and
-   headings must not ask for one. */
-@font-face {
-  font-family: "CS Alistair";
-  src: url("/fonts/cs-alistair-regular.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "CS Alistair";
-  src: url("/fonts/cs-alistair-italic.woff2") format("woff2");
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-}
-
 /* -------------------------------------------------------------------------- */
 /* Design tokens — change the visual language here, not inside page components */
 /* -------------------------------------------------------------------------- */
@@ -256,13 +237,6 @@
   /* Typography */
   --type-body: var(--font-geist), Arial, Helvetica, sans-serif;
   --type-display: var(--font-geist), Arial, Helvetica, sans-serif;
-  /* The display face. It was "h1 only" when that line was written and has not
-     been true for a long time — twenty-one rules reach for it, including the
-     service CTA headings, the card titles and the Different boxes, all of which
-     are h2 and below. What it actually marks is the editorial voice rather than
-     a level: the sans carries anything a reader is meant to move through, this
-     carries the things they are meant to stop at. */
-  --type-title: "CS Alistair", var(--font-geist), Arial, Helvetica, sans-serif;
 
   /* Three sizes, and only three. Every piece of text on the site is one of
      them: the big headers that open a section, the headers inside it, and
@@ -668,6 +642,34 @@ video {
   outline-offset: 4px;
 }
 
+/* **Skip to content** (SkipLink) — out of sight above the window until the
+   keyboard reaches it, then in the top corner, over the bar, in ink. The page
+   it hands the focus to draws no ring of its own. */
+.skip-link {
+  position: fixed;
+  z-index: 80;
+  top: var(--page-gutter);
+  left: var(--page-gutter);
+  /* 14 + 16 + 14: a finger's 44px, as every other control here. */
+  padding: 14px 1rem;
+  background: var(--ink);
+  color: var(--canvas);
+  font-size: var(--text-body);
+  line-height: 1;
+  text-decoration: none;
+  transform: translateY(calc(-100% - var(--page-gutter) - 1rem));
+}
+
+.skip-link:focus-visible {
+  transform: none;
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+#main-content:focus {
+  outline: none;
+}
+
 /* ---------------------------- Between pages ------------------------------- */
 
 /* Nothing is drawn between two pages, and there used to be.
@@ -719,19 +721,6 @@ video {
   padding-block: var(--section-space);
 }
 
-/* ---------------------------- Type primitives ----------------------------- */
-
-/* The big header, and the shape every other one on the site follows. */
-.display-heading {
-  max-width: 11ch;
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading-xl);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading-xl);
-}
-
 .body-large {
   font-size: var(--text-body);
   line-height: var(--leading-body);
@@ -744,16 +733,6 @@ video {
   font-weight: var(--weight-strong);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
-}
-
-/* Shared by every section below the hero. */
-.section-title {
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading-xl);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading-xl);
 }
 
 .section-lede {
@@ -1412,11 +1391,24 @@ video {
    it stops fitting the bar under about 480px — measured, it broke onto two
    lines 10px off Menu and squeezed the wordmark from 144px to 80px at 320.
    Under it, it keeps one line and the wordmark keeps its size, and the pair
-   still ends inside the bar's own height (82px of the 93 the page leaves it). */
+   still ends inside the bar's own height (82px of the 93 the page leaves it).
+
+   **Hung under it, not stacked** — owner, 2026-10-09: Menu "is not in same
+   horisontal line with the logo". Stacked, the line made the wordmark's
+   group 57px tall even where it is hidden (it is, over nearly every
+   opening), and MENU, centred on the row, stood 11.5px below the
+   wordmark's middle. Out of the flow the group is the wordmark's height,
+   and the two share one middle; the line still shows in the same place. */
 @media (max-width: 30rem) {
   .site-nav__lead {
-    flex-direction: column;
-    gap: 0.45rem;
+    position: relative;
+  }
+
+  .site-nav__place {
+    position: absolute;
+    top: calc(100% + 0.45rem);
+    left: 0;
+    white-space: nowrap;
   }
 }
 
@@ -1443,6 +1435,9 @@ video {
    together. */
 @media (max-width: 64rem), (hover: none) {
   .site-header {
+    /* The band it returns on keeps the gutter under the wordmark too, so
+       the wordmark stands in its middle (2026-10-09). */
+    padding-bottom: var(--page-gutter);
     transition:
       transform var(--duration-base) var(--ease-standard),
       background-color var(--duration-base) var(--ease-standard);
@@ -1577,13 +1572,43 @@ video {
   color: var(--ink);
   cursor: pointer;
   font: inherit;
-  /* VIEW ALL's size and weight — owner, 2026-10-05: "same px As View all". The
-     size was already the same token; it was the medium weight that made the
-     word read larger, so it is the paragraph weight now, as VIEW ALL is. */
-  font-size: var(--text-body);
+  /* VIEW ALL's weight — owner, 2026-10-05: "same px As View all"; it was the
+     medium weight that made the word read larger, so it is the paragraph
+     weight, as VIEW ALL is. **A step above the paragraph's size** since
+     2026-10-09 — owner: "in mobile make Menu text little bigger", then "make
+     it also in desktop little bigger": 18px on a phone, about 20 on a
+     desktop. The plus is sized in em and grows with it. */
+  font-size: calc(var(--text-body) * 1.125);
   font-weight: var(--weight-body);
   line-height: 1;
   transition: color var(--duration-base) var(--ease-standard);
+}
+
+/* **The bar's top margin is the page's side margin, at every width** —
+   owner, 2026-10-09, of the desktop: "move little up both logo and menu so
+   to have same margin as other sides", then of phones and tablets: "here
+   whatever is best". It was 4.5% of the window's height plus the bar's own
+   padding — 52px down at 1440×900 against 40 at the side, 26 against 16 on
+   a phone, 76 against 40 on a tall tablet. Now the wordmark's top stands
+   the gutter from the top, as its left edge does from the side (or clear of
+   a notch, where there is one): the bar has no padding or floor of its own,
+   and MENU gives its finger room back with a negative margin — 13px each
+   way, 44px with the word — so the row is the wordmark's height and MENU
+   stands on its middle. The page under it keeps its room (`--header-space`),
+   so nothing below moves. */
+.site-header {
+  --header-pad: max(var(--page-gutter), env(safe-area-inset-top, 0px));
+}
+
+.site-nav {
+  min-height: 0;
+  padding-block: 0;
+}
+
+.mobile-menu-toggle {
+  height: auto;
+  padding-block: 13px;
+  margin-block: -13px;
 }
 
 /* Whole pixels throughout: an even box and a 2px stroke put every stroke on
@@ -5012,24 +5037,6 @@ main:has(> .services-rules) > .pin-spacer {
   justify-items: start;
 }
 
-.contact-title {
-  margin: 0;
-  font-family: var(--type-title);
-  font-size: var(--text-heading-xl);
-  font-weight: var(--weight-heading-xl);
-  letter-spacing: var(--tracking-display);
-  line-height: var(--leading-heading-xl);
-}
-
-.contact-title__mask {
-  display: block;
-  overflow: hidden;
-}
-
-.contact-title__mask > span {
-  display: block;
-}
-
 .contact-lede {
   max-width: 40ch;
 }
@@ -5136,6 +5143,25 @@ main:has(> .services-rules) > .pin-spacer {
   align-items: center;
   gap: 0.9rem;
   margin-top: 0.6em;
+}
+
+/* Each mark a link (owner gave the addresses, 2026-10-09): ink at rest, the
+   site's red under the pointer, as the footer's words are. */
+.site-footer__social-link {
+  display: inline-flex;
+  color: inherit;
+  transition: color var(--duration-base) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .site-footer__social-link:hover {
+    color: var(--accent);
+  }
+}
+
+.site-footer__social-link:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.3em;
 }
 
 .site-footer__link,
@@ -5305,8 +5331,9 @@ main:has(> .services-rules) > .pin-spacer {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.65rem;
     /* Left off, so the wordmark keeps the page column; one pixel on the
-       right, so MENU meets the last line. See the base rule. */
-    padding: 0.65rem 1px 0.65rem 0;
+       right, so MENU meets the last line; none above or below, so the
+       wordmark stands the gutter from the top. See the base rule. */
+    padding: 0 1px 0 0;
   }
 
   .services-intro,
@@ -5359,10 +5386,6 @@ main:has(> .services-rules) > .pin-spacer {
     --text-display: clamp(4rem, 18vw, 7rem);
   }
 
-  .site-header {
-    padding-top: 0.75rem;
-  }
-
   .service-page .site-header {
     background: var(--canvas);
   }
@@ -5373,10 +5396,9 @@ main:has(> .services-rules) > .pin-spacer {
 
   .site-nav {
     grid-template-columns: minmax(0, 1fr) auto;
-    min-height: 3.15rem;
-    /* Left off, so the wordmark keeps the page column; one pixel on the
-       right, so MENU meets the last line. See the base rule. */
-    padding: 0.55rem 1px 0.55rem 0;
+    /* As the tablet's: the page column on the left, one pixel on the right,
+       nothing above or below. See the base rule. */
+    padding: 0 1px 0 0;
   }
 
   .brand {
@@ -5390,11 +5412,6 @@ main:has(> .services-rules) > .pin-spacer {
        window the brand column comes out near 180px after the gutter, the bar's
        own padding, the gap and the burger. */
     width: 9rem;
-  }
-
-  /* The burger a step shorter, like the bar it stands in. */
-  .mobile-menu-toggle {
-    height: 2.75rem;
   }
 
   .services-section,
@@ -5475,11 +5492,6 @@ main:has(> .services-rules) > .pin-spacer {
   .process-steps {
     grid-template-columns: minmax(0, 1fr);
     gap: 2.5rem;
-  }
-
-  /* The lines are explicit and sit in overflow:hidden masks, so they cannot
-     wrap out of trouble — keep them inside the gutter at 390px. */
-  .contact-title {
   }
 
 }
@@ -8236,6 +8248,11 @@ a.project-live:focus-visible {
   width: clamp(4.5rem, 6.6vw, 7.5rem);
 }
 
+/* The small pages and their frame, which is placed along them. */
+.project-showcase__track {
+  position: relative;
+}
+
 .project-showcase__thumbs {
   display: grid;
   gap: 0.5rem;
@@ -8387,29 +8404,63 @@ a.project-live:focus-visible {
     margin-top: 1rem;
   }
 
-  .project-showcase {
-    height: auto;
-    padding-block: var(--section-space);
-  }
-
+  /* A phone holds the pages as a desktop does, the small ones in a row
+     along the foot of the screen — owner, 2026-10-09: "so that right that
+     we have in desktop here we have at the bottom". The pages take the
+     column above it; the row runs from the left line to the screen's edge
+     and slides along as the frame does (ProjectShowcase). */
   .container.project-showcase__inner {
-    display: block;
-    height: auto;
+    display: flex;
+    flex-direction: column;
   }
 
-  .project-showcase__nav,
-  .project-showcase__strip {
+  .project-showcase__nav {
     display: none;
   }
 
+  /* Sized by what the row leaves, so the first and the last page can stand
+     in its middle. */
   .project-showcase__stage {
+    flex: 1 1 auto;
+    min-height: 0;
     height: auto;
-    overflow: visible;
+    container-type: size;
   }
 
   .project-showcase__pages {
     gap: 1.5rem;
-    padding: 0;
+    padding: max(1rem, calc((100cqh - 62.5cqw) / 2)) 0;
+  }
+
+  .project-showcase__strip {
+    flex: none;
+    align-self: stretch;
+    width: auto;
+    margin-inline: calc(var(--page-gutter) * -1);
+    padding: 1rem var(--page-gutter) max(1.25rem, calc(env(safe-area-inset-bottom) + 0.75rem));
+    overflow: hidden;
+  }
+
+  .project-showcase__track {
+    width: max-content;
+  }
+
+  .project-showcase__thumbs {
+    display: flex;
+  }
+
+  .project-showcase__thumbs > li {
+    flex: none;
+    width: 6rem;
+  }
+
+  /* Along the row: its width and place are set as the pages pass. */
+  .project-showcase__window {
+    top: -0.3rem;
+    right: auto;
+    bottom: -0.3rem;
+    left: 0;
+    height: auto;
   }
 
   .project-out__link {
@@ -9167,7 +9218,10 @@ a.project-live:focus-visible {
   position: relative;
   display: block;
   padding-left: 1.1em;
-  color: var(--line-grid);
+  /* The site's quieter ink, not the lines' grey — that read at 3.36:1 on
+     white, under the 4.5 a line of text needs (site check, 2026-10-09).
+     The one being read still turns full ink, with its red mark. */
+  color: var(--ink-muted);
   font-size: var(--text-body);
   line-height: 1.35;
   text-decoration: none;
@@ -9546,9 +9600,19 @@ a.project-live,
 .consent__button--text,
 .blog-more__side,
 .project-showcase__step,
-.letter__send {
+.letter__send,
+.mobile-menu__cta {
     padding-block: 14px;
     margin-block: -14px;
+  }
+
+  /* The menu's own ways to reach Mardal, under Start a project — 21px tall
+     on a phone until the site check of 2026-10-09; the menu is closed while
+     the responsive check measures, so it never saw them. */
+  .mobile-menu__foot .mobile-menu__link {
+    display: inline-block;
+    padding-block: 12px;
+    margin-block: -12px;
   }
 
   /* FILTERS and its seven: a finger's height, the row level either way. */
@@ -9564,6 +9628,12 @@ a.project-live,
   .site-footer__top-link {
     padding: 0.75rem 6px;
     margin: -0.75rem -6px;
+  }
+
+  /* The marks are 22px: room around each, the row unmoved. */
+  .site-footer__social-link {
+    padding: 11px;
+    margin: -11px;
   }
 
   /* The letter's blanks: a finger's height, the bar a little deeper. */

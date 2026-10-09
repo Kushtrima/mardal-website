@@ -123,8 +123,9 @@ export function ClientsStory() {
               ))}
             </dl>
 
-            {/* No address is on file: it stands without a link until one
-                is, rather than linking anywhere. */}
+            {/* Only once an address is on file — until then it is not shown
+                (site check, 2026-10-09: a word and an arrow that looked like
+                a button and went nowhere). */}
             {pilotStory.live.href ? (
               <a
                 className="project-live"
@@ -136,12 +137,7 @@ export function ClientsStory() {
                 <RollingLabel>{pilotStory.live.label}</RollingLabel>
                 <ProjectArrow />
               </a>
-            ) : (
-              <p className="project-live" aria-disabled="true">
-                <span>{pilotStory.live.label}</span>
-                <ProjectArrow />
-              </p>
-            )}
+            ) : null}
           </Container>
         </section>
 
@@ -182,8 +178,8 @@ export function ClientsStory() {
             long arrows and no words on the page — owner, 2026-10-08: "remove
             text only leave it arrows but make longer arrows also when hover
             to tourn in red". The words stay for a screen reader. There is no
-            second story yet, so Next Project stands without a link until
-            there is one. */}
+            second story yet, so Next Project is not shown until there is one
+            (site check, 2026-10-09: an arrow that went nowhere). */}
         <nav className="project-out" aria-label={pilotStory.way.label}>
           <Container className="project-out__inner">
             <Link
@@ -201,15 +197,7 @@ export function ClientsStory() {
                 <span className="visually-hidden">{pilotStory.way.next}</span>
                 <LongArrow />
               </Link>
-            ) : (
-              <p
-                className="project-out__link project-out__link--next"
-                aria-disabled="true"
-              >
-                <span className="visually-hidden">{pilotStory.way.next}</span>
-                <LongArrow />
-              </p>
-            )}
+            ) : null}
           </Container>
         </nav>
       </main>

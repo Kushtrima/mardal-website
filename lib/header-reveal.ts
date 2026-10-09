@@ -1,10 +1,9 @@
 /**
  * Whether the bar is on screen, and why.
  *
- * The decision lives here rather than in the effect that applies it for the
- * same reason `lib/nav-keys.ts` does: it is the rule, it has edges worth
- * writing down, and none of it leaves a trace in markup that a render test
- * could read.
+ * The decision lives here rather than in the effect that applies it: it is
+ * the rule, it has edges worth writing down, and none of it leaves a trace in
+ * markup that a render test could read.
  *
  *   "top"    — the page has not been scrolled far enough for any of this to
  *              apply. The bar is where it has always been, on the page rather

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../lib/page-metadata";
 import { SiteFooter } from "../../components/layout/SiteFooter";
 import { HeaderSpace } from "../../components/layout/HeaderSpace";
 import { ProductsSection } from "../../components/home/ProductsSection";
@@ -7,10 +8,7 @@ import { ServicesHero } from "../../components/services/ServicesHero";
 import { ServicesRules } from "../../components/services/ServicesRules";
 import { productsHero, productsPage } from "../../content/products-index";
 
-export const metadata: Metadata = {
-  title: productsPage.title,
-  description: productsPage.description,
-};
+export const metadata: Metadata = pageMetadata(productsPage.title, productsPage.description);
 
 /**
  * The products: the services page's opening, in the products' own words

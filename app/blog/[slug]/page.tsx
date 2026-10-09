@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../../lib/page-metadata";
 import { notFound } from "next/navigation";
 import { Container } from "../../../components/layout/Container";
 import { SiteFooter } from "../../../components/layout/SiteFooter";
@@ -30,7 +31,7 @@ export async function generateMetadata({
   const post = blog.posts.find((entry) => entry.slug === slug);
   if (!post) return {};
 
-  return { title: post.title, description: post.thesis };
+  return pageMetadata(post.title, post.thesis, "article");
 }
 
 /**

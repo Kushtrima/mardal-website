@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SiteHeader } from "../components/layout/SiteHeader";
+import { SkipLink } from "../components/layout/SkipLink";
+import { previewImage } from "../lib/page-metadata";
 import { CookieConsent } from "../components/consent/CookieConsent";
 import { RouteTransition } from "../components/motion/RouteTransition";
 import { SmoothScroll } from "../components/motion/SmoothScroll";
@@ -23,6 +25,17 @@ export const metadata: Metadata = {
     template: "%s — Mardal",
   },
   description: "We build the technology behind your growth.",
+  openGraph: {
+    type: "website",
+    siteName: "Mardal",
+    locale: "en",
+    title: "Mardal — House of Creativity & Technology",
+    description: "We build the technology behind your growth.",
+    /* The homepage's preview, and the fallback for any page without its
+       own; the pages' come from lib/page-metadata (site check, 2026-10-09). */
+    images: [previewImage],
+  },
+  twitter: { card: "summary_large_image" },
   icons: {
     /* Not the -white one any more: it colours itself from the browser's own
        theme, which is a different setting from the page's. */
@@ -39,6 +52,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        {/* First in the page, so it is the first stop of Tab; fixed, so
+            outside the wrapper as the bar is. */}
+        <SkipLink />
+
         {/* **Outside the wrapper, and that is the whole reason it is here.**
             ScrollSmoother translates `#smooth-content` on every frame, and a
             transform makes its element the containing block for any `fixed`

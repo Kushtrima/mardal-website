@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { playOnArrival } from "../../lib/play-on-arrival";
 
 /**
  * "about", arriving as it comes into view — in the same hand as the sections
@@ -38,9 +39,8 @@ export function AboutIntroReveal() {
       if (!still) gsap.set(mark, { scaleY: 0, transformOrigin: "50% 100%" });
       gsap.set(copy, { opacity: 0, y: still ? 0 : 24 });
 
-      const timeline = gsap.timeline({
-        scrollTrigger: { trigger: section, start: START, once: true },
-      });
+      /* Played by lib/play-on-arrival, so coming Back past it still shows it. */
+      const timeline = gsap.timeline({ paused: true });
       timeline.to(
         line,
         still
@@ -56,6 +56,7 @@ export function AboutIntroReveal() {
         { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" },
         0.35,
       );
+      playOnArrival(timeline, section, START);
     });
 
     return () => context.revert();

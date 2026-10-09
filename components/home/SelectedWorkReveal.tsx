@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { playOnArrival } from "../../lib/play-on-arrival";
 
 /**
  * Selected Work, arriving as it comes into view — in the same hand as the
@@ -47,16 +48,20 @@ export function SelectedWorkReveal() {
     /* Reduced motion: the same order, nothing travels — fades only. */
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const once = (trigger: Element) => ({ trigger, start: START, once: true });
-
     const context = gsap.context(() => {
       gsap.set(lines, still ? { opacity: 0 } : { yPercent: 120 });
       gsap.set(all, { opacity: 0, y: still ? 0 : 12 });
 
-      gsap
-        .timeline({ scrollTrigger: once(head) })
-        .to(lines, still ? { opacity: 1, ...RISE } : { yPercent: 0, ...RISE }, 0)
-        .to(all, { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, 0.35);
+      /* Each entrance played by lib/play-on-arrival, so coming Back past
+         it still shows it. */
+      playOnArrival(
+        gsap
+          .timeline({ paused: true })
+          .to(lines, still ? { opacity: 1, ...RISE } : { yPercent: 0, ...RISE }, 0)
+          .to(all, { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, 0.35),
+        head,
+        START,
+      );
 
       items.forEach((item, index) => {
         const frame = item.querySelector<HTMLElement>("[data-selected-work-frame]");
@@ -77,7 +82,7 @@ export function SelectedWorkReveal() {
           delay: item.hasAttribute("data-selected-work-feature")
             ? 0
             : (index % 2) * 0.15,
-          scrollTrigger: once(item),
+          paused: true,
         });
         if (still) {
           timeline.to(frame, { opacity: 1, duration: 1, ease: "power2.out" }, 0);
@@ -95,6 +100,7 @@ export function SelectedWorkReveal() {
           { opacity: 1, y: 0, duration: 1, ease: "power3.out" },
           still ? 0.3 : 0.9,
         );
+        playOnArrival(timeline, item, START);
       });
     });
 

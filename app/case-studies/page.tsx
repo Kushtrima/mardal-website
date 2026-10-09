@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../lib/page-metadata";
 import { ClientsPage } from "../../components/case-studies/ClientsPage";
 import { caseStudies } from "../../content/case-studies";
 
-export const metadata: Metadata = {
-  title: caseStudies.title,
-  description: caseStudies.lede,
-};
+export const metadata: Metadata = pageMetadata(caseStudies.title, caseStudies.lede);
 
 /**
  * Clients — every entry, once.

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../lib/page-metadata";
 import { SiteFooter } from "../../components/layout/SiteFooter";
 import { HeaderSpace } from "../../components/layout/HeaderSpace";
 import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
@@ -12,10 +13,7 @@ import {
   servicesPage,
 } from "../../content/services-index";
 
-export const metadata: Metadata = {
-  title: servicesPage.title,
-  description: servicesPage.description,
-};
+export const metadata: Metadata = pageMetadata(servicesPage.title, servicesPage.description);
 
 /**
  * The services: the owner's opening (ServicesHero — his comp of 2026-10-06,

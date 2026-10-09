@@ -85,30 +85,6 @@ export const industries = [
 ] as const;
 
 /**
- * The organisations a descriptor names, as its own words.
- *
- * The seven sectors are the section's headings; these are its content. Read end
- * to end they are a portrait of everyone Mardal builds for — banks, pharmacies,
- * factories, warehouses, municipalities — and that breadth is the claim the
- * section is making. `IndustriesSection` sets them as one run.
- *
- * **Split from the descriptor rather than written out beside it.** A second copy
- * of the same words is a second thing to keep in step, and this one would drift
- * the first time a sector's line was edited. The split is safe on this copy
- * because no phrase contains its own `and` — checked, and pinned in
- * `rendered-html.test.mjs` by rejoining them and comparing against the
- * descriptor they came from, so a rewrite that breaks the rule fails rather
- * than quietly producing half a phrase.
- */
-function audiencesOf(descriptor: string): string[] {
-  return descriptor
-    .replace(/\.$/, "")
-    .split(/,\s*|\s+and\s+/)
-    .map((phrase) => phrase.trim())
-    .filter(Boolean);
-}
-
-/**
  * The services, in the two halves the owner split them into on 2026-10-03:
  * Development, then Creative.
  *
@@ -284,10 +260,20 @@ export const menu = [
 
 export const contactEmail = "info@mardal.co";
 
+/** The site's own address, as Privacy and Terms name it ("mardal.co") — for
+ *  the sitemap and robots.ts, which have to write it in full (site check,
+ *  2026-10-09). A link preview's picture is written against whatever address
+ *  the site is deployed at instead (lib/page-metadata.ts). */
+export const siteUrl = "https://mardal.co";
+
 /** The words beside the wordmark in the bar. "Kosova" from the owner's comp of
  *  2026-10-03; "Operating from Kosova" on his word of 2026-10-05. Mardal is a
  *  registered Kosovo company (PRODUCT.md). */
 export const brandPlace = "Operating from Kosova";
+
+/** The first thing the keyboard reaches on every page, and only it: past the
+ *  bar to the page (site check, 2026-10-09). */
+export const skipLink = "Skip to content";
 
 /** The menu button's word — owner, 2026-10-03: "instead of two horisontal for
  *  burger menu lets try MENU +". The same word open and shut; the mark beside
@@ -658,9 +644,10 @@ export const footer = {
   /**
    * Where and how to reach Mardal — all of it real, supplied by the owner.
    *
-   * The phone is written with the spaces it is read with and dialled without
-   * them; the address keeps its typographic quotes rather than the typewriter
-   * pair, the way every other apostrophe on the page is set.
+   * No phone: the owner took the number off the whole site, 2026-10-09
+   * ("Number of telephone need to be remove completley"). The address keeps
+   * its typographic quotes rather than the typewriter pair, the way every
+   * other apostrophe on the page is set.
    */
   details: [
     {
@@ -668,12 +655,6 @@ export const footer = {
       value: contactEmail,
       href: `mailto:${contactEmail}`,
       short: "EMAIL",
-    },
-    {
-      label: "Phone",
-      value: "+383 49 210 999",
-      href: "tel:+38349210999",
-      short: "TEL",
     },
     /* Street, then postcode and city — the order an address is written in,
        and the order that survives a phone.
@@ -713,7 +694,14 @@ export const footer = {
     ...menu.map(({ label, href }) => ({ label, href })),
     { label: "Blog", href: "/blog" },
   ],
-  social: ["instagram", "facebook", "linkedin"],
+  /* The accounts' addresses — owner, 2026-10-09. LinkedIn's without the
+     `?viewAsMember=true` he copied it with: that is a page admin's view of
+     the page, not the address a visitor opens. */
+  social: [
+    { name: "instagram", href: "https://www.instagram.com/mardal.co/" },
+    { name: "facebook", href: "https://www.facebook.com/mardallagency" },
+    { name: "linkedin", href: "https://www.linkedin.com/company/mardal-co/" },
+  ],
   /**
    * The three a company site is expected to carry, each a route rather than
    * a `#privacy` that resolved nowhere at all; written on 2026-10-08

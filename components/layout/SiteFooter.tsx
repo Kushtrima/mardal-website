@@ -84,12 +84,20 @@ export function SiteFooter({
                   )}
                 </li>
               ))}
-              {/* Marks, not links: the accounts exist but their addresses
-                  have not been given, and a guessed profile URL is worse
-                  than a mark that waits for one. */}
+              {/* Links since the owner gave the addresses, 2026-10-09; each
+                  named by its mark (SocialIcon's label), each opening the
+                  account in a tab of its own. */}
               <li className="site-footer__social">
-                {footer.social.map((name) => (
-                  <SocialIcon key={name} name={name} />
+                {footer.social.map((account) => (
+                  <a
+                    className="site-footer__social-link"
+                    href={account.href}
+                    key={account.name}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <SocialIcon name={account.name} />
+                  </a>
                 ))}
               </li>
             </ul>

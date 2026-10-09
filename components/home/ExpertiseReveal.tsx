@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { playOnArrival } from "../../lib/play-on-arrival";
 
 /**
  * "Our expertise": its arrival, and its two buttons.
@@ -45,12 +46,12 @@ export function ExpertiseReveal() {
     const context = gsap.context(() => {
       if (label) {
         gsap.set(label, { opacity: 0 });
-        gsap.to(label, {
-          opacity: 1,
-          duration: 1,
-          ease: "power2.out",
-          scrollTrigger: { trigger: section, start: START, once: true },
-        });
+        /* Played by lib/play-on-arrival, so coming Back past it still shows it. */
+        playOnArrival(
+          gsap.to(label, { opacity: 1, duration: 1, ease: "power2.out", paused: true }),
+          section,
+          START,
+        );
       }
 
       rows.forEach((row) => {
@@ -63,17 +64,21 @@ export function ExpertiseReveal() {
         gsap.set(across, { scaleX: 0, transformOrigin: "50% 50%" });
         gsap.set(word, still ? { opacity: 0 } : { yPercent: 120 });
 
-        gsap
-          .timeline({ scrollTrigger: { trigger: row, start: START, once: true } })
-          .to(up, { scaleY: 1, duration: 1, ease: "power3.inOut" }, 0)
-          .to(across, { scaleX: 1, duration: 0.9, ease: "power3.inOut" }, 0.3)
-          .to(
-            word,
-            still
-              ? { opacity: 1, duration: 1, ease: "power2.out" }
-              : { yPercent: 0, duration: 1.4, ease: "expo.out" },
-            0.2,
-          );
+        playOnArrival(
+          gsap
+            .timeline({ paused: true })
+            .to(up, { scaleY: 1, duration: 1, ease: "power3.inOut" }, 0)
+            .to(across, { scaleX: 1, duration: 0.9, ease: "power3.inOut" }, 0.3)
+            .to(
+              word,
+              still
+                ? { opacity: 1, duration: 1, ease: "power2.out" }
+                : { yPercent: 0, duration: 1.4, ease: "expo.out" },
+              0.2,
+            ),
+          row,
+          START,
+        );
       });
     });
 

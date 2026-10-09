@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { focusWords } from "../../lib/focus-words";
+import { playOnArrival } from "../../lib/play-on-arrival";
 
 /**
  * **How the pieces arrive** — owner, 2026-10-08: "i want to have also new
@@ -23,11 +24,10 @@ export function BlogEntriesReveal() {
       (entry) => {
         const title = entry.querySelector<HTMLElement>("[data-blog-entry-title]");
         const after = entry.querySelectorAll<HTMLElement>("[data-blog-entry-after]");
-        return ScrollTrigger.create({
-          trigger: entry,
-          start: "top 88%",
-          once: true,
-          onEnter: () => {
+        /* Started by lib/play-on-arrival, so coming Back past a piece
+           still shows it. */
+        return playOnArrival(
+          () => {
             if (!title) return;
             undo.push(
               focusWords(title, (timeline) => {
@@ -39,7 +39,9 @@ export function BlogEntriesReveal() {
               }),
             );
           },
-        });
+          entry,
+          "top 88%",
+        );
       },
     );
 

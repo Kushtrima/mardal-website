@@ -75,10 +75,12 @@ test("the file parses into rules at all", () => {
   /* If the walker above ever returns nothing the two tests below pass in
      silence, which is the one way this file could lie. */
   assert.ok(ALL.length > 400, `only ${ALL.length} rules parsed`);
-  /* A floor for the walker, not a count to hold: About's three headings left
-     the title face on 2026-10-08 ("title are in other font"), and the service
-     pages' with their pages the same day. */
-  assert.ok(titleFace.length > 2, `only ${titleFace.length} in the display face`);
+  /* **CS Alistair is gone** — About's headings left it on 2026-10-08
+     ("title are in other font"), the service pages' with their pages, and the
+     last three rules that named it styled nothing (site check, 2026-10-09):
+     the face, its token and its files went with them. One face, Geist. */
+  assert.equal(titleFace.length, 0, "a rule is set in the display face again");
+  assert.doesNotMatch(CSS, /--type-title:|font-family: "CS Alistair"/);
 });
 
 test("the display face is fitted by one token, everywhere", () => {

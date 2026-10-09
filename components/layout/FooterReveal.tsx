@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { playOnArrival } from "../../lib/play-on-arrival";
 
 /**
  * The footer, arriving — in the hand of the homepage's sections: the lists
@@ -32,28 +33,29 @@ export function FooterReveal() {
     /* Reduced motion: the same order, nothing travels — fades only. */
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const once = (trigger: Element) => ({ trigger, start: START, once: true });
-
     const context = gsap.context(() => {
       fades.forEach((block) => {
         gsap.set(block, { opacity: 0, y: still ? 0 : 24 });
-        gsap.to(block, {
-          opacity: 1,
-          y: 0,
-          duration: 1.1,
-          ease: "power3.out",
-          scrollTrigger: once(block),
-        });
+        /* Played by lib/play-on-arrival, so coming Back past it still shows it. */
+        playOnArrival(
+          gsap.to(block, { opacity: 1, y: 0, duration: 1.1, ease: "power3.out", paused: true }),
+          block,
+          START,
+        );
       });
 
       if (brand) {
         gsap.set(brand, still ? { opacity: 0 } : { yPercent: 105 });
-        gsap.to(brand, {
-          ...(still ? { opacity: 1 } : { yPercent: 0 }),
-          duration: still ? 1 : 1.6,
-          ease: still ? "power2.out" : "expo.out",
-          scrollTrigger: once(brand.parentElement ?? brand),
-        });
+        playOnArrival(
+          gsap.to(brand, {
+            ...(still ? { opacity: 1 } : { yPercent: 0 }),
+            duration: still ? 1 : 1.6,
+            ease: still ? "power2.out" : "expo.out",
+            paused: true,
+          }),
+          brand.parentElement ?? brand,
+          START,
+        );
       }
     });
 

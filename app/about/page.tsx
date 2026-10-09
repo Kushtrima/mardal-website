@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../lib/page-metadata";
 import type { CSSProperties } from "react";
 import { Fragment } from "react";
 import { Container } from "../../components/layout/Container";
@@ -13,8 +14,6 @@ import { MediaReveal } from "../../components/motion/MediaReveal";
 import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
 import { ServicesHero } from "../../components/services/ServicesHero";
 import { ServicesRules } from "../../components/services/ServicesRules";
-import { PixelArrow } from "../../components/ui/PixelArrow";
-import { RollingLabel } from "../../components/ui/RollingLabel";
 import { about, aboutHero } from "../../content/about";
 
 /**
@@ -33,10 +32,7 @@ const ROOM_OPENS_FROM: Record<string, "left" | "right"> = {
   window: "left",
 };
 
-export const metadata: Metadata = {
-  title: about.title,
-  description: about.description,
-};
+export const metadata: Metadata = pageMetadata(about.title, about.description);
 
 /**
  * About, and the third of the unwritten pages to be written.
@@ -180,6 +176,9 @@ export default function AboutPage() {
               data-enter
               data-enter-mode="none"
             >
+              {/* Its own widths and sizes, as the house hero's photograph;
+                  next/image would add a second resizing on top. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 className="about-plate__image"
                 src={about.photo.src}
@@ -248,6 +247,7 @@ export default function AboutPage() {
                   } as CSSProperties
                 }
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   className="about-rooms__image"
                   src={`/${room.file}-${room.widths[1]}.webp`}

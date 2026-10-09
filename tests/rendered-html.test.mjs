@@ -226,7 +226,9 @@ test("server-renders the Mardal homepage", async () => {
   const toggle = [...CSS.matchAll(/(?:^|\n)\.mobile-menu-toggle \{([^}]*)\}/g)]
     .map((match) => match[1])
     .find((body) => /font-size/.test(body)) ?? "";
-  assert.match(toggle, /font-size:\s*var\(--text-body\)/);
+  /* A step above the paragraph since 2026-10-09 ("make Menu text little
+     bigger", on a phone and then on a desktop); the paragraph's weight. */
+  assert.match(toggle, /font-size:\s*calc\(var\(--text-body\) \* 1\.125\)/);
   assert.match(toggle, /font-weight:\s*var\(--weight-body\)/);
   assert.doesNotMatch(CSS, /\.mobile-menu-toggle:hover \.mobile-menu-toggle__plus::after/);
   /* And under the pointer the whole button is the site's red — the owner's,
@@ -295,8 +297,10 @@ test("server-renders the Mardal homepage", async () => {
   /* No second screen to step into, and nothing to go back from. */
   assert.doesNotMatch(html, /mobile-menu__(index|detail|back|count|rows|num)/);
 
-  /* And the foot: the way in, then the ways to reach Mardal. */
-  assert.match(html, /<div class="mobile-menu__foot"[^>]*>[\s\S]*?class="mobile-menu__cta" data-roll="true" href="\/contact"[\s\S]*?href="mailto:info@mardal\.co"[\s\S]*?href="tel:\+38349210999"/);
+  /* And the foot: the way in, then the ways to reach Mardal — no phone since
+     2026-10-09 (owner: "Number of telephone need to be remove completley"). */
+  assert.match(html, /<div class="mobile-menu__foot"[^>]*>[\s\S]*?class="mobile-menu__cta" data-roll="true" href="\/contact"[\s\S]*?href="mailto:info@mardal\.co"/);
+  assert.doesNotMatch(html, /href="tel:|210 999|210999/);
 
   /* Names only — no line of description under any of them. The dropdown of
      the same day shipped with one and the owner took them out: "why
@@ -361,9 +365,9 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(footerPart, /site-footer__(title|cta|mark|lead|label|sign|bars|wordmark|email|body)\b/);
   assert.doesNotMatch(html, /Let’s build|Tell us what you want to improve|practical digital solution/);
 
-  // 6 pages, the email and the phone, and the 3 legal links. The address is
-  // not a link and the social marks are not links yet.
-  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 11);
+  // 6 pages, the email, and the 3 legal links. The address is not a link, and
+  // the social marks are links of their own (site-footer__social-link).
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 10);
   assert.doesNotMatch(html, /href="\/careers/);
   // **Team is gone from every menu, not just this one.**
   assert.doesNotMatch(html, />Team</);
@@ -381,19 +385,18 @@ test("server-renders the Mardal homepage", async () => {
     `footer bands out of order: ${bandOrder.join(", ")}`,
   );
 
-  // How to reach Mardal — all of it real, and the phone dialable.
+  // How to reach Mardal — all of it real; no phone since 2026-10-09.
   assert.equal((html.match(/class="site-footer__detail"/g) ?? []).length, 1);
   assert.match(html, /class="site-footer__detail-value">.{0,400}?href="mailto:info@mardal\.co"/s);
-  assert.match(html, /href="tel:\+38349210999"[^>]*>\+383 49 210 999</);
+  assert.doesNotMatch(html, /href="tel:|\+383 49/);
   // Street first, then postcode and city — the order it is written in,
   // and the one that breaks into two lines a phone can hold.
   assert.match(html, /Rr\.\u00a0\u201cIsa\u00a0Boletini\u201d, 6000\u00a0Gjilan/);
   assert.doesNotMatch(html, /site-footer__detail-short/);
   assert.doesNotMatch(html, /contact-icon/);
   assert.doesNotMatch(html, /\[Phone number\]|\[Street\]|\[City\]/);
-  // Three marks, drawn at the icon weight the rest of the site uses, and not
-  // links: the accounts exist but their addresses have not been given, and a
-  // guessed profile URL is worse than a mark that waits for one.
+  // Three marks, drawn at the icon weight the rest of the site uses, each a
+  // link to its account since the owner gave the addresses (2026-10-09).
   //
   // Counted inside the footer and across the document. The menu's foot carried
   // the same three from 2026-08-27 until the owner asked for a minimal one on
@@ -407,6 +410,17 @@ test("server-renders the Mardal homepage", async () => {
     assert.match(html, new RegExp(`aria-label="${name}"`), `missing ${name}`);
     assert.doesNotMatch(html, new RegExp(`<a[^>]*>${name}<`));
   }
+  for (const href of [
+    "https://www.instagram.com/mardal.co/",
+    "https://www.facebook.com/mardallagency",
+    "https://www.linkedin.com/company/mardal-co/",
+  ]) {
+    const link = footerHtml.match(new RegExp(`<a [^>]*href="${href.replace(/[.?/]/g, "\\$&")}"[^>]*>`))?.[0] ?? "";
+    assert.match(link, /class="site-footer__social-link"/, `${href} is not a footer link`);
+    assert.match(link, /target="_blank"/);
+    assert.match(link, /rel="noreferrer"/);
+  }
+  assert.doesNotMatch(html, /viewAsMember/);
   assert.match(html, /class="social-icon"[^>]*viewBox="0 0 24 24"/);
   // Short labels: the three of them fit one line on a 320 screen this way.
   assert.match(html, />Privacy</);
@@ -879,7 +893,10 @@ test("server-renders the one customer story", async () => {
   );
   assert.match(intro, /class="project-intro__value">Healthcare</);
   assert.match(intro, /class="project-intro__value">UX\/UI Design, Websites</);
-  assert.match(intro, /<p class="project-live" aria-disabled="true"><span>LIVE WEBSITE<\/span>/);
+  /* No address on file, so no LIVE WEBSITE at all (site check, 2026-10-09:
+     it looked like a button and went nowhere); its rule stays for the day
+     there is one. */
+  assert.doesNotMatch(intro, /project-live|LIVE WEBSITE/);
   /* The site's word-and-arrow button (VIEW ALL's), not a box; labels black. */
   const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
   const live = CSS.slice(CSS.indexOf("\n.project-live {"), CSS.indexOf("\n}", CSS.indexOf("\n.project-live {")));
@@ -931,7 +948,9 @@ test("server-renders the one customer story", async () => {
   /* Arrows only on the page ("remove text only leave it arrows"), the words
      kept for a screen reader. */
   assert.match(back, /<svg class="project-out__arrow"[\s\S]*?<span class="visually-hidden">Back<\/span>/);
-  assert.match(page, /<p class="project-out__link project-out__link--next" aria-disabled="true"><span class="visually-hidden">Next Project<\/span><svg class="project-out__arrow"/);
+  /* No second story yet, so no Next Project arrow at all (site check,
+     2026-10-09). */
+  assert.doesNotMatch(page, /project-out__link--next|Next Project/);
   assert.doesNotMatch(page.slice(page.indexOf('<nav class="project-out"')), /class="roll__face"/);
   assert.doesNotMatch(page, /All customer stories/);
 
@@ -957,26 +976,6 @@ test("server-renders the one customer story", async () => {
   assert.match(html, /class="site-nav"/);
   assert.match(html, /<footer class="site-footer"/);
 });
-
-/** The four boxes under "Why Mardal?", rebuilt 2026-08-26 from a reference the
- *  owner sent: a number, a short title, a lot of air, a plus in the corner.
- *
- *  Written out here rather than imported. The section this replaced had NO test
- *  at all — the whole of it could be swapped, drawings and copy together, and
- *  the suite stayed green, which is how a change this size arrives unnoticed. */
-const WHY_COPY = [
-  "We start from how your business actually works",
-  "AI and automation, CRM, custom software, web platforms and apps.",
-  "We use technology where it makes work faster",
-  "We stay involved beyond launch",
-];
-
-const WHY_TITLES = [
-  "We think strategically",
-  "Technology",
-  "We understand business",
-  "Engagement",
-];
 
 test("the fusion mark is two strokes, and still says nothing", async () => {
   const html = await (await render("/")).text();
@@ -1043,7 +1042,8 @@ test("the fusion reveal draws the rules and the mark, and raises the lines", () 
      effect put a normal effect from gsap". No pin holds the page and no scrub
      ties the beats to the scroll: each trigger only says when, and plays once. */
   assert.doesNotMatch(code, /pin:|scrub:|HOLD/);
-  assert.match(code, /once: true/);
+  /* (Once, in the helper every entrance of this kind uses since 2026-10-09.) */
+  assert.match(readFileSync(new URL("../lib/play-on-arrival.ts", import.meta.url), "utf8"), /once: true/);
   assert.match(code, /const START = "top 85%";/);
 
   /* **Smoother, more elegant** — the same day. Each block arrives as it comes
@@ -1052,8 +1052,34 @@ test("the fusion reveal draws the rules and the mark, and raises the lines", () 
   assert.doesNotMatch(code, /back\.out|scale: 0\.72|y: still \? 0 : 90/);
   /* (The section's own trigger drew its rules until 2026-10-06; they simply
      stand now.) */
-  for (const block of ["once(left)", "once(right)", 'once(copy, "top 92%")']) {
-    assert.ok(code.includes(block), `${block} has no trigger of its own`);
+  for (const block of [/RISE, paused: true \}\), left, START\);/, /\.to\(rightLines, \{ \.\.\.shown, \.\.\.RISE \}, 0\.2\),\s*right,\s*START,\s*\);/, /copy,\s*"top 92%",\s*\);/]) {
+    assert.match(code, block, `${block} has no trigger of its own`);
+  }
+
+  /* **A block the page arrives at, or past, still plays** — owner,
+     2026-10-09: "sometimes when i scroll in mobile version i dont se at all
+     Human Creativity". Back to a page jumps the scroll past a block while
+     the page is measured, and a jump seen during a measure takes no action;
+     so every entrance of this kind waits paused and lib/play-on-arrival
+     plays it on the way in from either side, or from a measure that finds
+     the page at or past it — once. The same fix in all seven, from the
+     site check of the same day. */
+  const helper = readFileSync(new URL("../lib/play-on-arrival.ts", import.meta.url), "utf8");
+  assert.match(helper, /onEnter: play,\s*onEnterBack: play,\s*onRefresh: \(self\) => \{\s*if \(self\.progress > 0\) play\(\);/);
+  assert.match(helper, /if \(played\) return;\s*played = true;/);
+  assert.match(helper, /entrance\.restart\(true\)/);
+  for (const file of [
+    "components/home/FusionReveal.tsx",
+    "components/home/AboutIntroReveal.tsx",
+    "components/home/ExpertiseReveal.tsx",
+    "components/home/ProductsReveal.tsx",
+    "components/home/SelectedWorkReveal.tsx",
+    "components/layout/FooterReveal.tsx",
+    "components/blog/BlogEntriesReveal.tsx",
+  ]) {
+    const source = readFileSync(new URL(`../${file}`, import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    assert.match(source, /import \{ playOnArrival \} from "\.\.\/\.\.\/lib\/play-on-arrival";/, `${file} does not use the arrival helper`);
+    assert.doesNotMatch(source, /scrollTrigger: |once: true/, `${file} still ties an entrance to a play-once trigger`);
   }
 
   /* **Each heading line rises out of its own mask**, the menu's motion: the
@@ -1537,16 +1563,23 @@ test("the three legal pages are written as documents, and guess nothing", async 
     assert.equal((main.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 5, `${path} has not got the page's lines`);
     assert.match(main, new RegExp(`<h2 class="legal__title">${page.first}</h2>`));
 
-    /* Nothing invented: the company is named as what is on file, and what is
-       not on file stays a bracket. */
+    /* Nothing invented: the company is named as what is on file — no legal
+       form, no registration number, since none is on file — and the only
+       provider named is the one Mardal uses (Namecheap: the owner's word and
+       mardal.co's own mail servers, 2026-10-09). No bracket left. */
     const prose = main.replace(/<[^>]*>/g, " ");
     assert.doesNotMatch(prose, /\b(L\.?L\.?C|SH\.?P\.?K|GmbH|Ltd)\b/, `${path} names a legal form nobody gave`);
     assert.doesNotMatch(prose, /\b(Google Analytics|Vercel|Cloudflare|Netlify|AWS|Mailchimp)\b/, `${path} names a provider nobody chose`);
+    assert.doesNotMatch(prose, /\[[A-Za-z][^\]]{1,90}\]/, `${path} still has a bracket`);
+    assert.match(prose, /Last updated: 9 October 2026\./);
   }
 
   const privacy = await (await render("/privacy")).text();
-  assert.match(privacy, /\[registered name and number\]/);
-  assert.match(privacy, /\[hosting provider\]/);
+  assert.match(privacy, /our hosting provider, Namecheap, records/);
+  assert.match(privacy, /Namecheap hosts both/);
+  assert.match(privacy, /no longer than 12 months after it ends/);
+  const terms = await (await render("/terms")).text();
+  assert.match(terms, /governed by the law of the Republic of Kosovo/);
   assert.match(privacy, /We do not use analytics or advertising tools/);
 
   /* The Cookies page says what the site keeps today — one choice — and has
@@ -1657,4 +1690,116 @@ test("Menu draws no ring after a click unless Tab is pressed, and ends on the la
   const pads = [...CSS.matchAll(/\.site-nav \{[^}]*?padding: ([^;]+);/g)].map((m) => m[1]);
   assert.equal(pads.length, 3, `the bar is padded in ${pads.length} places`);
   for (const pad of pads) assert.match(pad, /^\S+ 1px \S+ 0$/, `the bar keeps a right padding: ${pad}`);
+});
+
+/* Owner, 2026-10-09: "in mobile i want a project to show like this so that
+   right that we have in desktop here we have at the bottom". */
+test("a phone holds the project's pages too, the small ones in a row along the foot", async () => {
+  const page = await (await render("/case-studies/healthcare-office-website")).text();
+  const showcase = page.match(/<section class="project-showcase"[\s\S]*?<\/section>/)?.[0] ?? "";
+  /* The frame is placed along the small pages, and slides with them. */
+  assert.match(showcase, /<div class="project-showcase__strip"><div class="project-showcase__track"><ol class="project-showcase__thumbs">[\s\S]*<\/ol><span class="project-showcase__window" aria-hidden="true"><\/span><\/div><\/div>/);
+
+  const source = readFileSync(new URL("../components/case-studies/ProjectShowcase.tsx", import.meta.url), "utf8");
+  assert.match(source, /media\.add\(\{ wide: WIDE, phone: PHONE \}/);
+  assert.match(source, /const PHONE = "\(max-width: 40rem\)";/);
+
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  const phone = CSS.slice(CSS.indexOf("/* A phone holds the pages as a desktop does"));
+  const block = phone.slice(0, phone.indexOf("\n  .project-out__link {"));
+  assert.match(block, /\.project-showcase__stage \{[^}]*container-type: size;/);
+  assert.match(block, /\.project-showcase__thumbs \{\s*display: flex;/);
+  assert.match(block, /\.project-showcase__strip \{[^}]*overflow: hidden;/);
+  assert.doesNotMatch(block, /\.project-showcase__strip \{\s*display: none/);
+  assert.doesNotMatch(block, /\.project-showcase \{\s*height: auto/);
+});
+
+/* Owner, 2026-10-09: "in mobile make Menu text little bigger and move up
+   little because is not in same horisontal line with the logo", then "make
+   it also in desktop little bigger and then move little up both logo and
+   menu so to have same margin as other sides". */
+test("MENU is a step larger and shares the wordmark's middle; the bar's top margin is the side margin", () => {
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  /* One size rule for every width: 18px on a phone, about 20 on a desktop. */
+  assert.doesNotMatch(CSS, /\.mobile-menu-toggle \{\s*font-size: 1\.125rem;/);
+  /* "Operating from Kosova" hangs under the wordmark on a phone rather than
+     stacking: stacked, it made the group taller than the wordmark and MENU,
+     centred on the row, stood 11.5px below it. */
+  assert.match(CSS, /@media \(max-width: 30rem\) \{\s*\.site-nav__lead \{\s*position: relative;\s*\}\s*\.site-nav__place \{\s*position: absolute;/);
+  assert.doesNotMatch(CSS, /\.site-nav__lead \{\s*flex-direction: column;/);
+  /* Every width since 2026-10-09 ("here whatever is best", of phones and
+     tablets): the gutter above the bar (or the notch's room), no padding or
+     floor in the bar, MENU's 44px of finger room given back. */
+  assert.match(CSS, /\n\.site-header \{\s*--header-pad: max\(var\(--page-gutter\), env\(safe-area-inset-top, 0px\)\);/);
+  assert.match(CSS, /\n\.site-nav \{\s*min-height: 0;\s*padding-block: 0;/);
+  assert.match(CSS, /\n\.mobile-menu-toggle \{\s*height: auto;\s*padding-block: 13px;\s*margin-block: -13px;/);
+  assert.doesNotMatch(CSS, /\.site-header \{\s*padding-top: 0\.75rem;/);
+  assert.doesNotMatch(CSS, /\.mobile-menu-toggle \{\s*height: 2\.75rem;/);
+  /* On touch the band the bar returns on keeps the gutter under the
+     wordmark as well. */
+  assert.match(CSS, /@media \(max-width: 64rem\), \(hover: none\) \{\s*\.site-header \{\s*padding-bottom: var\(--page-gutter\);/);
+  /* The page keeps its room under the bar. */
+  assert.match(CSS, /--header-space: calc\(var\(--header-pad-top\) \+ var\(--header-bar\)\);/);
+});
+
+/* Site check, 2026-10-09: the phone menu's Start a project, email and phone
+   were 21px tall on a touch screen. */
+test("the phone menu's foot links have a finger's height on a touch screen", () => {
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  const coarse = CSS.slice(CSS.indexOf("@media (pointer: coarse) {"));
+  assert.match(coarse, /\.mobile-menu__cta \{\s*padding-block: 14px;\s*margin-block: -14px;/);
+  assert.match(coarse, /\.mobile-menu__foot \.mobile-menu__link \{\s*display: inline-block;\s*padding-block: 12px;\s*margin-block: -12px;/);
+});
+
+/* ── The site check of 2026-10-09: steps 3, 4, 5, 9 and 10 ── */
+
+test("a wrong address has a page of the site's own, light, with a way home", async () => {
+  const response = await render("/no-such-page");
+  assert.equal(response.status, 404);
+  const html = await response.text();
+  assert.match(html, /<h1 class="legal__page-title" id="not-found-title">Page not found<\/h1>/);
+  const home = html.match(/<a [^>]*class="legal__button"[^>]*>/)?.[0] ?? "";
+  assert.match(home, /href="\/"/, "the 404 has no way home");
+  assert.match(html, /<footer class="site-footer"/);
+  assert.doesNotMatch(html, /This page could not be found/);
+});
+
+test("the Contents list's other headings are readable, the one being read in ink", () => {
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.match(CSS, /\.article-contents__link \{[^}]*color: var\(--ink-muted\);/);
+  assert.match(CSS, /--ink-muted: #5e5a69;/);
+});
+
+test("the keyboard's first stop on every page skips the bar", async () => {
+  const html = await (await render("/about")).text();
+  const body = html.slice(html.indexOf("<body"));
+  assert.match(body, /^<body[^>]*><a class="skip-link" href="#main-content">Skip to content<\/a>/);
+  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.match(CSS, /\.skip-link \{[^}]*transform: translateY\(/);
+  assert.match(CSS, /\.skip-link:focus-visible \{\s*transform: none;/);
+  const link = readFileSync(new URL("../components/layout/SkipLink.tsx", import.meta.url), "utf8");
+  assert.match(link, /main\.focus\(\{ preventScroll: true \}\)/);
+});
+
+test("search engines are kept out until launch, and have a sitemap of every page", () => {
+  const robots = readFileSync(new URL("../app/robots.ts", import.meta.url), "utf8");
+  assert.match(robots, /rules: \{ userAgent: "\*", disallow: "\/" \}/);
+  assert.match(robots, /sitemap: `\$\{siteUrl\}\/sitemap\.xml`/);
+  const sitemap = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");
+  for (const path of ['"/services"', '"/products"', '"/case-studies"', '"/about"', '"/blog"', '"/contact"', '"/privacy"', '"/terms"', '"/cookies"']) {
+    assert.ok(sitemap.includes(path), `${path} is not in the sitemap`);
+  }
+  assert.match(sitemap, /blog\.posts\.map/);
+});
+
+test("every page has a link preview of its own, with the picture", async () => {
+  for (const [path, title] of [["/services", "Services — Mardal"], ["/blog/between-systems", "Most failures happen between systems — Mardal"]]) {
+    const html = await (await render(path)).text();
+    assert.match(html, new RegExp(`<meta property="og:title" content="${title}"`), `${path} has no preview title`);
+    assert.match(html, /<meta property="og:image" content="[^"]*\/og-image\.png"/, `${path} has no preview picture`);
+  }
+  assert.ok(readFileSync(new URL("../public/og-image.png", import.meta.url)).length > 1000);
+  const layout = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(layout, /metadataBase/);
+  assert.match(layout, /twitter: \{ card: "summary_large_image" \}/);
 });

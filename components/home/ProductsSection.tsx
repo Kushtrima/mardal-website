@@ -103,6 +103,8 @@ export function ProductsSection({ page = false }: { page?: boolean }) {
               {/* What opens on arrival: the frame from its foot, the
                   photograph inside settling to its size. */}
               <div className="product__frame" data-product-frame>
+                {/* The photograph service resizes it itself (srcSet below). */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   className="product__image"
                   src={product.image}

@@ -247,8 +247,13 @@ export function SiteHeader() {
     const queries = [phone, stacked, mouse];
 
     function sync() {
+      const hover = mouse.matches && !stacked.matches;
       setCompact(phone.matches);
-      setHoverOpen(mouse.matches && !stacked.matches);
+      setHoverOpen(hover);
+      /* Wherever the bar stops opening its row (a window narrowed to a
+         phone's), an open row closes — here, where that is learnt, rather
+         than in an effect watching for it. */
+      if (!hover) setBarOpen(false);
     }
 
     sync();
@@ -261,13 +266,9 @@ export function SiteHeader() {
 
   /* The open row closes on Escape, on a press anywhere else, on scrolling
      down (owner, 2026-10-05: "it can close when scrolling down"), and
-     wherever the bar stops opening it (a window narrowed to a phone's). */
+     wherever the bar stops opening it (the media sync above). */
   useEffect(() => {
     if (!barOpen) return;
-    if (!hoverOpen) {
-      setBarOpen(false);
-      return;
-    }
 
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") setBarOpen(false);
@@ -292,7 +293,7 @@ export function SiteHeader() {
       document.removeEventListener("pointerdown", onPress);
       window.removeEventListener("scroll", onScroll);
     };
-  }, [barOpen, hoverOpen]);
+  }, [barOpen]);
 
   /* **No ring after a press** — owner, 2026-10-06: "why sometines we have
      that outline red in menu". The ring is for the keyboard, but a phone can

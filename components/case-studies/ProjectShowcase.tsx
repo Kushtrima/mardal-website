@@ -18,11 +18,17 @@ import { Container } from "../layout/Container";
  * middle, the frame down the small ones, and the page nearest the middle is
  * the current one. Previous, Next and a small page each scroll to a page.
  *
- * A phone: no hold — the pages one under the next across the page, the left
- * and right columns gone; there is no room beside them.
+ * **A phone holds it too** — owner, 2026-10-09, with a reference: "in mobile
+ * i want a project to show like this so that right that we have in desktop
+ * here we have at the bottom". The pages pass through the screen across the
+ * column, and the small pages run in a row along its foot with the frame over
+ * the ones in view; the row is wider than the screen, so it slides along as
+ * the frame does, the last small page ending on the right line. Previous and
+ * Next are not shown there: a small page is pressed instead.
  */
 
 const WIDE = "(min-width: 40.0625rem)";
+const PHONE = "(max-width: 40rem)";
 
 export function ProjectShowcase({
   title,
@@ -41,6 +47,7 @@ export function ProjectShowcase({
   const stageRef = useRef<HTMLDivElement>(null);
   const pagesRef = useRef<HTMLOListElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const windowRef = useRef<HTMLSpanElement>(null);
   const triggerRef = useRef<ScrollTrigger | null>(null);
   const currentRef = useRef(0);
@@ -51,21 +58,35 @@ export function ProjectShowcase({
     const stage = stageRef.current;
     const list = pagesRef.current;
     const strip = stripRef.current;
+    const track = trackRef.current;
     const frame = windowRef.current;
-    if (!section || !stage || !list || !strip || !frame) return;
+    if (!section || !stage || !list || !strip || !track || !frame) return;
 
     gsap.registerPlugin(ScrollTrigger);
     ScrollTrigger.config({ ignoreMobileResize: true });
 
     const distance = () => Math.max(0, list.scrollHeight - stage.clientHeight);
 
-    /* The frame over the small pages: as tall as the share of the pages in
-       view, as far down as the scroll has come. The current page: the one
-       whose middle is nearest the middle of the screen. */
-    function place(progress: number) {
+    /* The frame over the small pages: as long as the share of the pages in
+       view, as far along as the scroll has come — down the column on a
+       desktop, across the row on a phone, where the row itself slides by
+       what does not fit. The current page: the one whose middle is nearest
+       the middle of the screen. */
+    function place(progress: number, across: boolean) {
       const share = Math.min(1, stage!.clientHeight / list!.scrollHeight);
-      const height = strip!.clientHeight * share;
-      gsap.set(frame, { height, y: progress * (strip!.clientHeight - height) });
+      if (across) {
+        const style = getComputedStyle(strip!);
+        const room =
+          strip!.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        const row = track!.scrollWidth;
+        const width = row * share;
+        gsap.set(track, { x: -progress * Math.max(0, row - room) });
+        gsap.set(frame, { width, height: "", x: progress * (row - width), y: 0 });
+      } else {
+        const height = strip!.clientHeight * share;
+        gsap.set(track, { x: 0 });
+        gsap.set(frame, { height, width: "", x: 0, y: progress * (strip!.clientHeight - height) });
+      }
 
       const middle = progress * distance() + stage!.clientHeight / 2;
       let nearest = 0;
@@ -85,7 +106,8 @@ export function ProjectShowcase({
     }
 
     const media = gsap.matchMedia();
-    media.add(WIDE, () => {
+    media.add({ wide: WIDE, phone: PHONE }, (context) => {
+      const across = Boolean(context.conditions?.phone);
       const travel = gsap.to(list, { y: () => -distance(), ease: "none" });
       triggerRef.current = ScrollTrigger.create({
         trigger: section,
@@ -95,10 +117,10 @@ export function ProjectShowcase({
         scrub: true,
         animation: travel,
         invalidateOnRefresh: true,
-        onUpdate: (self) => place(self.progress),
-        onRefresh: (self) => place(self.progress),
+        onUpdate: (self) => place(self.progress, across),
+        onRefresh: (self) => place(self.progress, across),
       });
-      place(0);
+      place(0, across);
 
       return () => {
         triggerRef.current = null;
@@ -183,34 +205,38 @@ export function ProjectShowcase({
         </div>
 
         <div className="project-showcase__strip" ref={stripRef}>
-          <ol className="project-showcase__thumbs">
-            {pages.map((src, index) => (
-              <li key={src}>
-                <button
-                  className="project-showcase__thumb"
-                  type="button"
-                  aria-label={`${page} ${index + 1}`}
-                  aria-current={current === index ? "true" : undefined}
-                  onClick={() => goTo(index)}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={src.replace("/1600/1000", "/320/200")}
-                    alt=""
-                    width="320"
-                    height="200"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </button>
-              </li>
-            ))}
-          </ol>
-          <span
-            className="project-showcase__window"
-            ref={windowRef}
-            aria-hidden="true"
-          />
+          {/* The small pages and the frame move together: the frame is
+              placed along them, and on a phone the two slide as one. */}
+          <div className="project-showcase__track" ref={trackRef}>
+            <ol className="project-showcase__thumbs">
+              {pages.map((src, index) => (
+                <li key={src}>
+                  <button
+                    className="project-showcase__thumb"
+                    type="button"
+                    aria-label={`${page} ${index + 1}`}
+                    aria-current={current === index ? "true" : undefined}
+                    onClick={() => goTo(index)}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src.replace("/1600/1000", "/320/200")}
+                      alt=""
+                      width="320"
+                      height="200"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                </li>
+              ))}
+            </ol>
+            <span
+              className="project-showcase__window"
+              ref={windowRef}
+              aria-hidden="true"
+            />
+          </div>
         </div>
       </Container>
     </section>

@@ -35,10 +35,20 @@ export type LegalPageContent = {
   readonly sections: readonly LegalSection[];
 };
 
+/* **The brackets filled, 2026-10-09** — owner: "you can write something
+   that is right hosting is namecheap an other you can write it down by
+   yourself". Only what is true and on file: the company and its address as
+   the footer has them (no registration number is on file, so none is
+   written); Namecheap for the hosting, as he said, and for the email too —
+   mardal.co's own mail servers are Namecheap's (its MX records,
+   jellyfish.systems, and its name servers, namecheaphosting.com, checked the
+   same day); the law of Kosovo, where Mardal is; and how long letters are
+   kept, which was his to set and he left to us. To be read by a lawyer
+   before launch. */
 const company =
-  "Mardal, a company registered in Kosovo [registered name and number], Rr. “Isa Boletini”, 6000 Gjilan, Kosovo";
+  "Mardal, a company registered in Kosovo, Rr. “Isa Boletini”, 6000 Gjilan, Kosovo";
 
-const updated = "Last updated: [date of publication].";
+const updated = "Last updated: 9 October 2026.";
 
 export const privacyPage = {
   title: "Privacy",
@@ -56,7 +66,7 @@ export const privacyPage = {
       title: "What we collect",
       paragraphs: [
         "When you write to us with the letter on the contact page: your name, your company if you give it, the topic you choose, your email address and your message.",
-        "When you open any page: the technical details every visit to a website carries — your IP address, your browser and the time — which our hosting provider [name] records to deliver the site and keep it secure.",
+        "When you open any page: the technical details every visit to a website carries — your IP address, your browser and the time — which our hosting provider, Namecheap, records to deliver the site and keep it secure.",
         "We do not use analytics or advertising tools, and we do not build profiles of the people who visit.",
       ],
     },
@@ -70,14 +80,15 @@ export const privacyPage = {
     {
       title: "Who else sees it",
       paragraphs: [
-        "Only the services we need to run the website and to send and receive email: [hosting provider] and [email provider]. We do not sell personal data, and we do not share it for marketing.",
-        "[Where those providers keep data, and the safeguards for any transfer outside Kosovo, the EU or Switzerland.]",
+        "Only the services we need to run the website and to send and receive email: Namecheap hosts both. We do not sell personal data, and we do not share it for marketing.",
+        "Namecheap is a company based in the United States, so what it keeps for us may be stored outside Kosovo. It protects that data under its own privacy policy and security measures.",
       ],
     },
     {
       title: "How long we keep it",
       paragraphs: [
-        "Messages: [how long after the conversation ends]. Server records: [how long the hosting provider keeps them].",
+        "Messages: for as long as the conversation needs them, and no longer than 12 months after it ends — unless it leads to work together, when they are kept with the records of that work.",
+        "Server records: for as long as Namecheap keeps its server logs, under its own policy.",
       ],
     },
     {
@@ -106,7 +117,7 @@ export const termsPage = {
     {
       title: "Who we are",
       paragraphs: [
-        `This website is run by ${company}. Email info@mardal.co or call +383 49 210 999.`,
+        `This website is run by ${company}. Email info@mardal.co.`,
       ],
     },
     {
@@ -142,7 +153,7 @@ export const termsPage = {
     {
       title: "Law and changes",
       paragraphs: [
-        "[The law that governs these terms, and the courts that hear disputes.]",
+        "These terms are governed by the law of the Republic of Kosovo. Any dispute about them is heard by the competent courts of Kosovo.",
         "We may change these terms; the version on this page is the one that applies.",
         updated,
       ],

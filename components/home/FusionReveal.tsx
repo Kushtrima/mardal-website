@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { playOnArrival } from "../../lib/play-on-arrival";
 
 /**
  * Human Creativity + Artificial Intelligence, arriving as it comes into view.
@@ -42,6 +43,16 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
  * "before" has to be the hidden state or a block would show and then vanish as
  * it played (measured 2026-10-05). Nothing is hidden by the stylesheet, so a
  * page with this script blocked shows the section whole.
+ *
+ * **And a block the page arrives at, or past, still plays** — owner,
+ * 2026-10-09: "sometimes when i scroll in mobile version i dont se at all
+ * Human Creativity". Coming Back to the homepage puts the scroll below this
+ * section in one jump while the page is still being measured, and a jump
+ * seen during a measure takes no action, so Human Creativity stayed in its
+ * mask (reproduced: back from Clients, the left half 52px down, the right
+ * risen). So each block's tween waits paused and is played on the way in
+ * from either side, or as soon as a measure finds the page at or past it
+ * (lib/play-on-arrival.ts, which every entrance of this kind now uses).
  */
 
 /** How far up the screen a block has to come before it arrives: far enough in
@@ -79,12 +90,6 @@ export function FusionReveal() {
     const hidden = still ? { opacity: 0 } : { yPercent: 120 };
     const shown = still ? { opacity: 1 } : { yPercent: 0 };
 
-    const once = (trigger: Element, start = START) => ({
-      trigger,
-      start,
-      once: true,
-    });
-
     const context = gsap.context(() => {
       gsap.set(up, { scaleY: 0, transformOrigin: "50% 100%" });
       gsap.set(across, { scaleX: 0, transformOrigin: "50% 50%" });
@@ -92,28 +97,32 @@ export function FusionReveal() {
       gsap.set(copy, { opacity: 0, y: still ? 0 : 24 });
 
       /* Human Creativity. */
-      gsap.to(leftLines, {
-        ...shown,
-        ...RISE,
-        scrollTrigger: once(left),
-      });
+      playOnArrival(gsap.to(leftLines, { ...shown, ...RISE, paused: true }), left, START);
 
       /* The mark, then Artificial Intelligence rising beside it while the
          crossbar is still opening. */
-      gsap
-        .timeline({ scrollTrigger: once(right) })
-        .to(up, { scaleY: 1, duration: 1.1, ease: DRAW }, 0)
-        .to(across, { scaleX: 1, duration: 1, ease: DRAW }, 0.35)
-        .to(rightLines, { ...shown, ...RISE }, 0.2);
+      playOnArrival(
+        gsap
+          .timeline({ paused: true })
+          .to(up, { scaleY: 1, duration: 1.1, ease: DRAW }, 0)
+          .to(across, { scaleX: 1, duration: 1, ease: DRAW }, 0.35)
+          .to(rightLines, { ...shown, ...RISE }, 0.2),
+        right,
+        START,
+      );
 
       /* The sentence, once its own top is on the screen. */
-      gsap.to(copy, {
-        opacity: 1,
-        y: 0,
-        duration: 1.2,
-        ease: "power3.out",
-        scrollTrigger: once(copy, "top 92%"),
-      });
+      playOnArrival(
+        gsap.to(copy, {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          ease: "power3.out",
+          paused: true,
+        }),
+        copy,
+        "top 92%",
+      );
     });
 
     return () => context.revert();

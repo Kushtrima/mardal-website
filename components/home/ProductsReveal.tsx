@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { playOnArrival } from "../../lib/play-on-arrival";
 
 /**
  * The products, arriving as they come into view — in the hand of the sections
@@ -40,15 +41,15 @@ export function ProductsReveal() {
     /* Reduced motion: the same order, nothing travels — fades only. */
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const once = (trigger: Element) => ({ trigger, start: START, once: true });
-
     const context = gsap.context(() => {
       gsap.set(label, { opacity: 0 });
       gsap.set(lines, still ? { opacity: 0 } : { yPercent: 120 });
       gsap.set(summary, { opacity: 0, y: still ? 0 : 24 });
       if (stop && !still) gsap.set(stop, { scaleY: 0, transformOrigin: "50% 100%" });
 
-      const head = gsap.timeline({ scrollTrigger: once(section) });
+      /* Each entrance played by lib/play-on-arrival, so coming Back past
+         it still shows it. */
+      const head = gsap.timeline({ paused: true });
       head
         .to(label, { opacity: 1, duration: 1, ease: "power2.out" }, 0)
         .to(
@@ -62,6 +63,7 @@ export function ProductsReveal() {
       if (stop && !still) {
         head.to(stop, { scaleY: 1, duration: 0.9, ease: "power3.inOut" }, 0.75);
       }
+      playOnArrival(head, section, START);
 
       /* One column on a phone, and one band under the next on the products
          page: each comes in as it is reached, no beat. */
@@ -84,7 +86,7 @@ export function ProductsReveal() {
 
         const timeline = gsap.timeline({
           delay: single ? 0 : index * 0.15,
-          scrollTrigger: once(row),
+          paused: true,
         });
         if (still) {
           timeline.to(frame, { opacity: 1, duration: 1, ease: "power2.out" }, 0);
@@ -102,6 +104,7 @@ export function ProductsReveal() {
           { opacity: 1, y: 0, duration: 1, ease: "power3.out", stagger: 0.08 },
           still ? 0.3 : 0.9,
         );
+        playOnArrival(timeline, row, START);
       });
     });
 
