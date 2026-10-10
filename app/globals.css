@@ -2680,19 +2680,21 @@ main:has(> .services-rules) > .pin-spacer {
 }
 
 /* **The heading runs the column's width**, as the comp's does: its first
-   line, set in to the second rule, ends on the last, and its second — the
-   longest from the first rule — just short of it. Sized to the column rather
-   than set: "Mardal is a results-driven" is 11.0 of its own size wide in this
-   face and tracking (measured), and has three quarters of the column, so a
-   size of 75cqw / 11.05 fits it at any width. Another page's opening sets
-   its own `--hero-fit`, its first line's width. */
+   line, set in to the second rule, ends on the last. Sized to the column
+   rather than set: the services' first line, "Mardal, a house of design,"
+   (the owner's words, 2026-10-10; "Mardal is a results-driven", 11.0, before
+   them), is 11.36 of its own size wide in this face and tracking (measured),
+   and has three quarters of the column, so a size of 75cqw / 11.41 fits it
+   at any width; its second, "engineering & AI solution." (10.99), ends just
+   short of the fourth rule. Another page's opening sets its own
+   `--hero-fit`, its first line's width. */
 .services-hero__title {
   grid-row: 2;
   grid-column: 1 / -1;
   align-self: center;
   margin: 0;
   font-family: var(--type-display);
-  font-size: calc(75cqw / var(--hero-fit, 11.05));
+  font-size: calc(75cqw / var(--hero-fit, 11.41));
   font-weight: var(--weight-body);
   letter-spacing: -0.02em;
   line-height: 1.18;
@@ -2703,12 +2705,14 @@ main:has(> .services-rules) > .pin-spacer {
   white-space: nowrap;
 }
 
-/* The products' first line, "Mardal also builds its own", is 11.28 of its
-   size wide (measured), a hair wider than the services': at this its
-   heading is 3% smaller than theirs and its first two lines end a few
-   pixels short of the last rule, as theirs do. */
+/* The products' heading is sized from its SECOND line, as the clients' is —
+   the owner's words, 2026-10-10, in three lines broken where the sentence
+   turns. "continuously developed and improved" is 16.56 of its size wide
+   (measured) and runs from the first rule, so at 75cqw / 12.62 it ends a few
+   pixels short of the edge; the first ("Our own digital products,", 10.89)
+   stops short of the last rule. */
 .services-hero--products {
-  --hero-fit: 11.38;
+  --hero-fit: 12.62;
 
   /* What the other pages' openings pay at their foot (.service-hero), so the
      products stand the homepage's distance under it. */
@@ -5616,6 +5620,16 @@ main:has(> .services-rules) > .pin-spacer {
   line-height: 1.2;
 }
 
+/* Its paragraphs, spaced as the site's other runs of them are (the legal
+   pages', a project's passage). */
+.products__lede p {
+  margin: 0;
+}
+
+.products__lede p + p {
+  margin-top: 1em;
+}
+
 /* Three columns that are the page's own: the list runs from the second rule
    to the edge, so each third of it is one of the page's quarters. */
 .products__list {
@@ -5663,11 +5677,15 @@ main:has(> .services-rules) > .pin-spacer {
   margin: 0;
   font: inherit;
   letter-spacing: inherit;
-  transition: color var(--duration-base) var(--ease-standard);
 }
 
+/* In the site's red and italic — owner, 2026-10-10: "make in development in
+   red and italik" (grey before that, the same day). Geist has no italic of
+   its own, so the browser slants it, as the contact letter's blanks are. */
 .product__line {
   margin: 0;
+  color: var(--accent);
+  font-style: italic;
 }
 
 .product__copy {
@@ -5712,27 +5730,11 @@ main:has(> .services-rules) > .pin-spacer {
   vector-effect: non-scaling-stroke;
 }
 
-/* **Under the pointer the name answers** — the site's red, and it rolls
-   (`.roll`), the expertise words' answer; the link under it rolls on its own
-   hover. Not on the products page — owner, 2026-10-07: "i dont want titles
-   to turn in red to have effect onnly buttons"; there only the link answers. */
-@media (hover: hover) {
-  .products:not(.products--page) .product:hover .product__name {
-    color: var(--accent);
-  }
-
-  .product:hover .product__name .roll__face {
-    transform: rotateX(90deg);
-  }
-
-  .product:hover .product__name .roll__face--next {
-    transform: rotateX(0deg);
-  }
-}
-
-.products:not(.products--page) .product:has(:focus-visible) .product__name {
-  color: var(--accent);
-}
+/* **Under the pointer only the link answers** — it rolls and turns red on its
+   own hover; the name stays still, on the homepage as on the products page.
+   Owner, 2026-10-07 for that page: "i dont want titles to turn in red to have
+   effect onnly buttons"; 2026-10-10 for the homepage: "only button explore
+   more to have animation not name". */
 
 /* **On the products page** (ProductsSection `page`, owner, 2026-10-07: "put
    those two products in this page below") — no ground, so the page's

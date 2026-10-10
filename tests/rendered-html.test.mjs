@@ -83,20 +83,22 @@ test("server-renders the Mardal homepage", async () => {
   );
   assert.doesNotMatch(html, /button--flat|shape-flat/);
   /* Each product's lines under its picture, as Selected Work sets a piece's —
-     where it stands and its year; no term labels, since the
-     owner's "use our new concept" (2026-10-05). The years are the owner's. */
+     where it stands; no term labels, since the owner's "use our new concept"
+     (2026-10-05). Since 2026-10-10 it says "Coming soon", no year, in the
+     site's red and italic; and the name stays still under the pointer — only
+     the link answers ("only button explore more to have animation not
+     name"). */
   assert.doesNotMatch(html, /product-fact/);
-  assert.equal((html.match(/<p class="product__line">/g) ?? []).length, 2);
-  for (const year of ["2025", "2026"]) {
-    assert.match(
-      html,
-      new RegExp(`<p class="product__line">In development, ${year}</p>`),
-      `missing ${year}`,
-    );
-  }
-  /* The heading's full stop is the red square, the character kept for a
-     screen reader. */
-  assert.match(html, /should exist<span class="products__stop" data-products-stop="true"><span class="visually-hidden">\.<\/span><\/span>/);
+  assert.equal((html.match(/<p class="product__line">Coming soon<\/p>/g) ?? []).length, 2);
+  assert.doesNotMatch(html, /In development/);
+  assert.doesNotMatch(html, /<p class="product__line">[^<]*20\d\d/);
+  const productCss = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.match(productCss, /\.product__line \{[^}]*color: var\(--accent\);[^}]*font-style: italic;/);
+  assert.match(html, /<h3 class="product__name">Arvena AI<\/h3>/);
+  assert.doesNotMatch(productCss, /\.product:hover \.product__name|\.product:has\(:focus-visible\) \.product__name/);
+  /* The owner's heading (2026-10-10); its full stop is the red square, the
+     character kept for a screen reader. */
+  assert.match(html, /Discover Mardal’s<\/span><\/span><span class="products__title-line"><span class="products__rise" data-products-line="true">Own Products<span class="products__stop" data-products-stop="true"><span class="visually-hidden">\.<\/span><\/span>/);
   assert.doesNotMatch(html, /\[Year\]/);
   /* No field under the name (owner, 2026-10-07: "delete under name the
      section like Mental Health and Evends"). */
@@ -582,7 +584,7 @@ test("server-renders the Clients hero", async () => {
   );
   assert.match(opening, /<h1 class="services-hero__title" id="clients-hero-title" data-services-hero-title="true">/);
   assert.match(opening, /<span class="services-hero__stop">\.<\/span>/);
-  assert.match(opening, /We don’t show work to impress\. We show it to prove a point — that strategy, design, and execution working together produce real outcomes most agencies only pitch about, but rarely deliver\./);
+  assert.match(opening, /We don’t show work to impress\. We show it to demonstrate how strategy, design, and execution come together to deliver real results, not just promises\./);
   assert.equal((opening.match(/class="services-hero__mark/g) ?? []).length, 4);
   assert.doesNotMatch(html, /class="service-hero[ "]|service-hero__title-line|Customer|data-service-hero-cta/);
 
@@ -1426,15 +1428,15 @@ test("the services' page turns its services on a wheel, each one's content besid
   assert.match(opening, /<p class="services-hero__label" data-services-hero-first="true"><span class="services-hero__mark" aria-hidden="true"><\/span>Service<\/p>/);
   assert.deepEqual(
     [...opening.matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/span><\/h1>|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "")),
-    ["Mardal is a results-driven", "agency built for ambitious brands", "that refuse to settle", "for average."],
+    /* The owner's own words since 2026-10-10 (the comp's four lines before). */
+    ["Mardal, a house of design,", "engineering &amp; AI solution."],
   );
   /* GSAP's SplitText splits it on arrival (ServicesHeroReveal), so the markup
      is the plain lines; the full stop is the red (owner, 2026-10-06). */
   assert.match(opening, /data-services-hero-title="true"/);
-  /* The words are written one by one (a hyphenated one kept whole), so React
-     may set its empty comments between them. */
-  assert.match(opening.replace(/<!-- -->/g, ""), /<span class="services-hero__title-line">for average<span class="services-hero__stop">\.<\/span><\/span>/);
-  assert.match(opening, /<span class="services-hero__whole">results-driven<\/span>/);
+  /* The words are written one by one, so React may set its empty comments
+     between them. */
+  assert.match(opening.replace(/<!-- -->/g, ""), /<span class="services-hero__title-line">engineering &amp; AI solution<span class="services-hero__stop">\.<\/span><\/span>/);
   assert.match(opening, /<h1 class="services-hero__title" id="services-hero-title" data-services-hero-title="true">/);
   assert.match(opening, /We don’t measure success in deliverables\. We measure it in revenue grown, leads doubled, and brands that became impossible to ignore\./);
   assert.equal((opening.match(/class="services-hero__mark/g) ?? []).length, 4);
@@ -1526,17 +1528,30 @@ test("the products' page opens as the services' does, in its own words", async (
   assert.match(opening, /<p class="services-hero__label" data-services-hero-first="true"><span class="services-hero__mark" aria-hidden="true"><\/span>Products<\/p>/);
   assert.deepEqual(
     [...opening.replace(/<!-- -->/g, "").matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "")),
-    ["Mardal also builds its own", "products to test its thinking before", "it goes into the work", "for clients."],
+    /* The owner's own words since 2026-10-10. */
+    ["Our own digital products,", "continuously developed and improved", "by the Mardal team."],
   );
   assert.match(opening, /<h1 class="services-hero__title" id="products-hero-title" data-services-hero-title="true">/);
   assert.match(opening, /<span class="services-hero__stop">\.<\/span>/);
-  assert.match(opening, /Each one starts from a real need, not a trend\. We explore, build, test and refine it, then bring what we learn into every project we take on\./);
+  assert.match(opening, /<span>We try new technologies and approaches while continuing to update and improve the products we’ve built\.<\/span>/);
   assert.equal((opening.match(/class="services-hero__mark/g) ?? []).length, 4);
 
   /* On the same hairlines: the page's five, from its top, and the footer's. */
   const main = html.slice(html.indexOf('<main class="service-page service-page--products"'), html.indexOf('class="services-hero'));
   assert.equal((main.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 5);
   assert.equal((html.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 10);
+
+  /* Before the products, the owner's heading and his two paragraphs
+     (2026-10-10), each its own paragraph. */
+  const intro = html.slice(html.indexOf('id="products-list-title"'), html.indexOf('class="products__list"'));
+  assert.deepEqual(
+    [...intro.matchAll(/data-products-line="true">(.*?)<(?:span|\/span)/g)].map((m) => m[1]),
+    ["The Philosophy", "Behind Our Products"],
+  );
+  const paragraphs = [...(intro.match(/<div class="products__lede" data-products-summary="true">([\s\S]*?)<\/div>/)?.[1] ?? "").matchAll(/<p>([^<]*)<\/p>/g)].map((m) => m[1]);
+  assert.equal(paragraphs.length, 2);
+  assert.match(paragraphs[0], /^We create products that address different needs\. One is an AI-powered mental health platform/);
+  assert.match(paragraphs[1], /^Before developing a product, we spend time researching the problem.*relevant to the people who use them\.$/);
 });
 
 /* **Privacy, Terms and Cookies — owner, 2026-10-08**: "now we have to work on

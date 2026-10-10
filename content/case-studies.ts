@@ -45,7 +45,8 @@ export const clientsHero = {
     "ended with a measurable result",
   ],
   titleStop: ".",
-  note: "We don’t show work to impress. We show it to prove a point — that strategy, design, and execution working together produce real outcomes most agencies only pitch about, but rarely deliver.",
+  /* His new words for it, 2026-10-10, as he wrote them. */
+  note: "We don’t show work to impress. We show it to demonstrate how strategy, design, and execution come together to deliver real results, not just promises.",
 } as const satisfies PageHeroContent;
 
 export const caseStudies = {

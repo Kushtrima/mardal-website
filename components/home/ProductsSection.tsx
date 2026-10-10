@@ -18,7 +18,9 @@ const PRODUCT_WIDTHS = [480, 800, 1200, 1600];
  * under it at the paragraphs' size. Then the products, one to a column from
  * the second rule to the fourth, each a picture with its lines under it as
  * Selected Work's are, black on white; its words, and the link with VIEW
- * ALL's thin arrow. Under the pointer the name turns red and rolls.
+ * ALL's thin arrow. Under the pointer only the link answers, as on the
+ * products page — owner, 2026-10-10: "only button explore more to have
+ * animation not name"; the name turned red and rolled until then.
  *
  * It also carries the ids the header menu and the footer link to — #products
  * and one per product.
@@ -83,9 +85,13 @@ export function ProductsSection({ page = false }: { page?: boolean }) {
           ))}
         </h2>
 
-        <p className="products__lede" data-products-summary>
-          {intro.summary}
-        </p>
+        {/* One paragraph or several: the products page's are the owner's
+            two (2026-10-10). */}
+        <div className="products__lede" data-products-summary>
+          {(typeof intro.summary === "string" ? [intro.summary] : intro.summary).map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </div>
 
         <ul className="products__list">
           {products.items.map((product) => (
@@ -134,16 +140,19 @@ export function ProductsSection({ page = false }: { page?: boolean }) {
                   Health and Evends". */}
               {page ? (
                 /* Where it stands, on the site's redaction bar: both are
-                   unfinished, and the bar says so. */
+                   unfinished, and the bar says so. No year since it says
+                   "Coming soon" (2026-10-10) — "Coming soon, 2025" reads
+                   wrong. */
                 <p className="product__status" data-product-fade>
-                  <span className="product__bar">{`${product.status}, ${product.year}`}</span>
+                  <span className="product__bar">{product.status}</span>
                 </p>
               ) : (
                 <div className="product__meta" data-product-fade>
-                  <h3 className="product__name">
-                    <RollingLabel>{product.title}</RollingLabel>
-                  </h3>
-                  <p className="product__line">{`${product.status}, ${product.year}`}</p>
+                  {/* Still under the pointer: only the link answers. */}
+                  <h3 className="product__name">{product.title}</h3>
+                  {/* Where it stands, without the year — owner, 2026-10-10:
+                      "make it only: In development", then "Coming soon". */}
+                  <p className="product__line">{product.status}</p>
                 </div>
               )}
 

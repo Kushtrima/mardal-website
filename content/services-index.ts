@@ -24,16 +24,14 @@ export const servicesPage = {
 
 /**
  * The page's opening — the owner's comp of 2026-10-06 ("this is what we
- * need"): his words, and his breaks between the heading's lines.
+ * need"): his words, and his breaks between the heading's lines. The heading
+ * replaced by his own new words, 2026-10-10, set as he wrote them, in two
+ * lines broken after the first phrase; the stylesheet sizes it from the
+ * first (`--hero-fit`'s default in globals.css).
  */
 export const servicesHero = {
   label: "Service",
-  titleLines: [
-    "Mardal is a results-driven",
-    "agency built for ambitious brands",
-    "that refuse to settle",
-    "for average",
-  ],
+  titleLines: ["Mardal, a house of design,", "engineering & AI solution"],
   /* The heading's full stop, in the red — owner, 2026-10-06: "in the end
      the . to be in red". */
   titleStop: ".",

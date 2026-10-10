@@ -585,18 +585,23 @@ export const products = {
    *  width and the step below it is a decision rather than a wrap. The full
    *  stop is drawn as a square of the site's red, as about's "o" is; the
    *  character itself stays for a screen reader and for anyone who copies it. */
-  titleLines: ["We build what", "should exist"],
+  /* The owner's own words, 2026-10-10 — the heading and the paragraph, set
+     as he wrote them. */
+  titleLines: ["Discover Mardal’s", "Own Products"],
   titleStop: ".",
   summary:
-    "Our products begin with a real need, not a trend. We explore, build, test, and refine each idea into a useful digital experience, then bring that knowledge into every solution and partnership we create.",
+    "Alongside our work with clients, we also create and develop our own digital products. Our team manages the entire process, from research and design to development, launch, and ongoing improvements. We continue to expand their capabilities, introduce new features, and refine the user experience based on real needs and feedback. We’re also developing new products and look forward to introducing another one soon.",
   /** Photographs, not screenshots: neither has an interface worth showing
    *  yet, so each image stands for what the product is about rather
-   *  than claiming to be the product. */
+   *  than claiming to be the product.
+   *
+   *  Where each stands says "Coming soon" — owner, 2026-10-10: "change the
+   *  name to coming soon - not in development". */
   items: [
     {
       id: "arvena-ai",
       title: "Arvena AI",
-      status: "In development",
+      status: "Coming soon",
       description:
         "Applied AI for mental-health support, built around safety and consent. The hard part was never the conversation — it is knowing what not to say, when to step back, and how to hand someone on to real help.",
       image:
@@ -607,7 +612,7 @@ export const products = {
     {
       id: "ftesa",
       title: "Ftesa.co",
-      status: "In development",
+      status: "Coming soon",
       description:
         "Self-service digital invitations, personalised for every guest. Everyone invited gets their own invitation and their own link, and the replies come back to one place instead of scattered across a dozen chats.",
       image:
