@@ -4144,18 +4144,47 @@ main:has(> .services-rules) > .pin-spacer {
    not the plain fade ("i dont like the opening"), and not colour ("i dont
    like colorfull make something else"). The grey hairline that was drawn
    under each one came off on 2026-10-06 ("on hover remove those horisontal
-   line in sub section"); the words still rise out of their own lines, one
-   after the next. */
+   line in sub section"); the words still rise, one after the next.
+
+   **Softly since 2026-10-10** — owner: "i dont like the apearane of this
+   section of the text on the right … make it more sotthly in all three".
+   Each word no longer slides out of a hidden slot (it showed cut in half on
+   the way); it drifts up a little out of a soft blur as it fades in. All
+   five a row now take their turn, 70ms apart — the fifth had no delay of its
+   own and came up together with the first. Closing is a quick quiet fade,
+   all at once, so a list leaving never competes with the next one arriving. */
 .expertise__sub {
   position: relative;
   padding-block: 0.5em 0.55em;
-  overflow: hidden;
 }
 
+.expertise__sub:nth-child(2) {
+  --sub-step: 1;
+}
+
+.expertise__sub:nth-child(3) {
+  --sub-step: 2;
+}
+
+.expertise__sub:nth-child(4) {
+  --sub-step: 3;
+}
+
+.expertise__sub:nth-child(5) {
+  --sub-step: 4;
+}
+
+/* The closed state's timing; the open state swaps in its own through the
+   custom properties, so the reduced-motion rule below still wins. */
 .expertise__sub-word {
   display: block;
-  transform: translateY(110%);
-  transition: transform var(--duration-handover) var(--ease-standard);
+  opacity: 0;
+  filter: blur(4px);
+  transform: translateY(0.6em);
+  transition:
+    opacity var(--sub-fade, var(--duration-fast)) var(--ease-standard) var(--sub-delay, 0ms),
+    filter var(--sub-fade, var(--duration-fast)) var(--ease-standard) var(--sub-delay, 0ms),
+    transform var(--sub-rise, var(--duration-fast)) var(--ease-standard) var(--sub-delay, 0ms);
 }
 
 .expertise__row:has([aria-expanded="true"]) .expertise__panel {
@@ -4167,6 +4196,12 @@ main:has(> .services-rules) > .pin-spacer {
 }
 
 .expertise__row:has([aria-expanded="true"]) .expertise__sub-word {
+  --sub-fade: var(--duration-slow);
+  --sub-rise: var(--duration-handover);
+  --sub-delay: calc(80ms + var(--sub-step, 0) * 70ms);
+
+  opacity: 1;
+  filter: none;
   transform: none;
 }
 
@@ -4180,25 +4215,14 @@ main:has(> .services-rules) > .pin-spacer {
   }
 
   .expertise__row:hover .expertise__sub-word {
+    --sub-fade: var(--duration-slow);
+    --sub-rise: var(--duration-handover);
+    --sub-delay: calc(80ms + var(--sub-step, 0) * 70ms);
+
+    opacity: 1;
+    filter: none;
     transform: none;
   }
-}
-
-/* One after the next as the panel opens, 90ms apart. */
-.expertise__sub-word {
-  transition-delay: 120ms;
-}
-
-.expertise__sub:nth-child(2) .expertise__sub-word {
-  transition-delay: 210ms;
-}
-
-.expertise__sub:nth-child(3) .expertise__sub-word {
-  transition-delay: 300ms;
-}
-
-.expertise__sub:nth-child(4) .expertise__sub-word {
-  transition-delay: 390ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
