@@ -46,7 +46,7 @@ export type LegalPageContent = {
    kept, which was his to set and he left to us. To be read by a lawyer
    before launch. */
 const company =
-  "Mardal, a company registered in Kosovo, Rr. “Isa Boletini”, 6000 Gjilan, Kosovo";
+  "Mardal, a company registered in Kosovo, Rr. “Isa Boletini”, 60000 Gjilan, Kosovo";
 
 const updated = "Last updated: 9 October 2026.";
 

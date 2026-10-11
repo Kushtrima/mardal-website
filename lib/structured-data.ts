@@ -10,10 +10,9 @@ import type { Story } from "../content/case-studies";
  * Absolute addresses on mardal.co, the canonical home of everything here,
  * even while the site is a preview — which no crawler is let into.
  *
- * Left out until the owner gives them (SEO-PLAN.md, 0.5): the registered
- * legal name, the founding year, the team, and the postcode — the footer's
- * "6000" is one digit short of Gjilan's 60000, so no postcode is claimed at
- * all until it is settled.
+ * The founding year (2026) and the postcode (60000, the footer's "6000"
+ * corrected) are the owner's, 2026-10-11. Left out until he has them: the
+ * registered legal name and number, and the team.
  */
 
 const ORG_ID = `${siteUrl}/#organization`;
@@ -46,9 +45,11 @@ export function organization() {
     logo: `${siteUrl}/mardal-mark.svg`,
     description: companyDescription,
     email: contactEmail,
+    foundingDate: "2026",
     address: {
       "@type": "PostalAddress",
       streetAddress: "Rr. “Isa Boletini”",
+      postalCode: "60000",
       addressLocality: "Gjilan",
       addressCountry: "XK",
     },

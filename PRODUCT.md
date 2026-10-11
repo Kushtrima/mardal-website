@@ -126,7 +126,7 @@ author (Kushtrim Arifi), 2026-07-24 to 2026-08-05.
 
 - `info@mardal.co`
 - `+383 49 210 999`
-- Rr. "Isa Boletini", 6000 Gjilan, Kosovo
+- Rr. "Isa Boletini", 60000 Gjilan, Kosovo
 
 **Language: English only, and deliberately so** (owner decision, 2026-08-05).
 There is no i18n layer, no locale routing, no hreflang and no language switcher;

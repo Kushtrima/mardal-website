@@ -670,11 +670,11 @@ export const footer = {
      * `Boletini”` on the next; hard spaces inside the name fix that but leave
      * `Gjilan,` alone on a line, because the name will not fit beside it.
      * This way it breaks once, at the comma, into two lines that each say
-     * something. It also puts 6000 next to the city, where it reads as a
+     * something. It also puts 60000 next to the city, where it reads as a
      * postcode rather than as a number left over from the street. */
     {
       label: "Address",
-      value: "Rr. “Isa Boletini”, 6000 Gjilan",
+      value: "Rr. “Isa Boletini”, 60000 Gjilan",
       href: "",
       short: "STR",
     },

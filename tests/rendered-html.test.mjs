@@ -395,7 +395,7 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /href="tel:|\+383 49/);
   // Street first, then postcode and city — the order it is written in,
   // and the one that breaks into two lines a phone can hold.
-  assert.match(html, /Rr\.\u00a0\u201cIsa\u00a0Boletini\u201d, 6000\u00a0Gjilan/);
+  assert.match(html, /Rr\.\u00a0\u201cIsa\u00a0Boletini\u201d, 60000\u00a0Gjilan/);
   assert.doesNotMatch(html, /site-footer__detail-short/);
   assert.doesNotMatch(html, /contact-icon/);
   assert.doesNotMatch(html, /\[Phone number\]|\[Street\]|\[City\]/);
@@ -2110,8 +2110,9 @@ test("search engines are kept out until launch, and have a sitemap of every page
    schema.org JSON-LD in each page's HTML, built only from what the page
    says. The company and the site on the homepage; a breadcrumb on every
    inner page; an article about each real client; each post with its author
-   and date; the services by name. No postcode until the owner settles it,
-   and no article about the sample project's invented client. */
+   and date; the services by name. The founding year and the postcode are
+   the owner's (2026-10-11); no article about the sample project's invented
+   client. */
 test("every page tells search engines what it is", async () => {
   const nodes = async (path) => {
     const html = await (await render(path)).text();
@@ -2129,7 +2130,8 @@ test("every page tells search engines what it is", async () => {
   assert.equal(org.email, "info@mardal.co");
   assert.equal(org.address.addressLocality, "Gjilan");
   assert.equal(org.address.addressCountry, "XK");
-  assert.equal(org.address.postalCode, undefined);
+  assert.equal(org.address.postalCode, "60000");
+  assert.equal(org.foundingDate, "2026");
   assert.deepEqual(org.areaServed.map((country) => country.name), ["Switzerland", "Germany", "Kosovo"]);
   assert.ok(org.sameAs.some((url) => url.startsWith("https://www.linkedin.com/company/")));
   assert.equal(byType(home, "WebSite").name, "Mardal");
