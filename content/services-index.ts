@@ -42,6 +42,9 @@ export const servicesHero = {
 export type ServiceIndexEntry = {
   readonly group: string;
   readonly label: string;
+  /** Its place on its own service page, where the wheel's "Explore more"
+   *  goes (content/service-pages.ts, set by app/services/page.tsx). */
+  readonly href?: string;
   readonly summary?: string;
   readonly lists: readonly {
     readonly title?: string;

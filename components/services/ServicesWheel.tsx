@@ -288,8 +288,22 @@ export function ServicesWheel({
               ) : null}
 
               {/* Two ways in — owner, 2026-10-06: "write to us and other
-                  Book a meeting so two buttons". */}
+                  Book a meeting so two buttons" — after the way to the
+                  service's own page, since 2026-10-11 (SEO-PLAN.md, 2.1). */}
               <div className="services-wheel__actions">
+                {entry.href ? (
+                  <a className="services-wheel__cta" href={entry.href} data-roll>
+                    <RollingLabel>Explore more</RollingLabel>
+                    <svg
+                      className="services-wheel__arrow"
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <path d="M2 14 14 2M4.5 2H14v9.5" />
+                    </svg>
+                  </a>
+                ) : null}
                 {actions.map((action) => (
                   <a
                     className="services-wheel__cta"

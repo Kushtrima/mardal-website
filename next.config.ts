@@ -50,11 +50,19 @@ const nextConfig: NextConfig = {
          address goes to where its words are now rather than to a 404.
          Temporary, so a page written at one of these addresses later is not
          hidden behind a redirect a browser has kept. */
+      /* Since 2026-10-11 the kinds of work have pages of their own again
+         (SEO-PLAN.md, step 2.1): /services/websites, /software and
+         /ai-automation are pages, so they are not redirected; the others
+         go to the page their work is on now. */
       {
-        source:
-          "/services/:service(websites|software|crm-solution|ai-automation|branding|ux-ui-design|print-design)",
-        destination: "/services",
-        permanent: false,
+        source: "/services/crm-solution",
+        destination: "/services/crm",
+        permanent: true,
+      },
+      {
+        source: "/services/:service(branding|ux-ui-design|print-design)",
+        destination: "/services/branding-design",
+        permanent: true,
       },
       {
         source: "/products/:product(arvena-ai|ftesa)",
@@ -74,27 +82,27 @@ const nextConfig: NextConfig = {
          silently the day a middle link is tidied away. */
       {
         source: "/services/web-platforms-apps",
-        destination: "/services",
+        destination: "/services/software",
         permanent: true,
       },
       {
         source: "/services/website-apps",
-        destination: "/services",
+        destination: "/services/websites",
         permanent: true,
       },
       {
         source: "/services/ux-ui-branding",
-        destination: "/services",
+        destination: "/services/branding-design",
         permanent: true,
       },
       {
         source: "/services/custom-software",
-        destination: "/services",
+        destination: "/services/software",
         permanent: true,
       },
       {
         source: "/services/crm-solutions",
-        destination: "/services",
+        destination: "/services/crm",
         permanent: true,
       },
       /* The industry taxonomy came off Clients on 2026-08-25 — seven

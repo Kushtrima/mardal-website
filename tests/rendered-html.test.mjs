@@ -1775,12 +1775,16 @@ test("the services' page turns its services on a wheel, each one's content besid
   }
   assert.doesNotMatch(wheel, /services-wheel__panel-group|Build a clear foundation for your brand|>Includes</);
   /* **Two ways in under every service** (owner, 2026-10-06: "write to us and
-     other Book a meeting so two buttons"). */
+     other Book a meeting so two buttons"), after the way to the service's
+     own page since 2026-10-11 (SEO-PLAN.md, step 2.1). */
   const panels = [...wheel.matchAll(/<article class="services-wheel__panel"[\s\S]*?<\/article>/g)].map((m) => m[0]);
   assert.equal(panels.length, 19);
   for (const panel of panels) {
+    const ctas = [...panel.matchAll(/class="services-wheel__cta" href="([^"]+)"[\s\S]*?roll__face">([^<]+)</g)].map((m) => [m[1], m[2]]);
+    assert.match(ctas[0][0], /^\/services\/(websites|software|crm|ai-automation|branding-design)#[a-z0-9-]+$/);
+    assert.equal(ctas[0][1], "Explore more");
     assert.deepEqual(
-      [...panel.matchAll(/class="services-wheel__cta" href="([^"]+)"[\s\S]*?roll__face">([^<]+)</g)].map((m) => [m[1], m[2]]),
+      ctas.slice(1),
       [["/contact", "Write to us"], ["mailto:info@mardal.co?subject=Book%20a%20meeting", "Book a meeting"]],
     );
   }
@@ -2104,6 +2108,72 @@ test("search engines are kept out until launch, and have a sitemap of every page
     assert.ok(sitemap.includes(path), `${path} is not in the sitemap`);
   }
   assert.match(sitemap, /blog\.posts\.map/);
+});
+
+/* **A page for each kind of work people search for** — SEO-PLAN.md, step
+   2.1; owner, 2026-10-11 ("make it what is best"). Five pages; every one of
+   the nineteen services on exactly one of them, in the owner's own words
+   from content/services-index.ts; the wheel on /services sends each service
+   to its place; the old addresses land on the right page. */
+test("each kind of work has a page of its own, in the owner's words", async () => {
+  const hubs = {
+    websites: ["Websites", "Web Design", "E-commerce"],
+    software: ["Custom Software", "Web Platforms", "Mobile Apps", "API &amp; Integrations"],
+    crm: ["CRM Solutions", "Sales &amp; CRM Automation"],
+    "ai-automation": ["AI Assistants", "AI Integrations", "Workflow Automation", "Customer Service Automation"],
+    "branding-design": ["Branding", "Visual Identity", "UX/UI Design", "Product Design", "Print Design", "Social Media Design"],
+  };
+  assert.equal(Object.values(hubs).flat().length, 19);
+
+  /* The owner's paragraph for every service, as content/services-index.ts holds it. */
+  const index = readFileSync(new URL("../content/services-index.ts", import.meta.url), "utf8");
+  const summaries = [...index.matchAll(/written\(\s*"([^"]+)"/g)].map((m) => m[1]);
+  assert.equal(summaries.length, 19);
+  const unescape = (text) => text.replace(/&amp;/g, "&").replace(/&#x27;/g, "'").replace(/&quot;/g, '"');
+  const found = new Set();
+
+  for (const [slug, names] of Object.entries(hubs)) {
+    const response = await render(`/services/${slug}`);
+    assert.equal(response.status, 200, `/services/${slug} does not answer`);
+    const html = await response.text();
+    const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+    assert.equal((main.match(/<h1[\s>]/g) ?? []).length, 1);
+    assert.match(html, new RegExp(`<link rel="canonical" href="(https?://[^"/]+)?/services/${slug}"`));
+    assert.deepEqual(
+      [...main.matchAll(/<article class="project-passage service-hub__service" id="([^"]+)"><h2 class="project-passage__title">([^<]+)<\/h2>/g)].map((m) => m[2]),
+      names,
+    );
+    for (const summary of summaries) if (unescape(main).includes(summary)) found.add(summary);
+    /* The other four, and the way back to all of them. */
+    assert.equal((main.match(/href="\/services\/(websites|software|crm|ai-automation|branding-design)"/g) ?? []).length, 4);
+    assert.match(main, /href="\/services"/);
+    const graph = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])["@graph"];
+    assert.equal(graph.filter((node) => node["@type"] === "Service").length, names.length);
+    assert.deepEqual(graph.find((node) => node["@type"] === "BreadcrumbList").itemListElement.map((step) => step.name).slice(0, 2), ["Home", "Services"]);
+  }
+  assert.equal(found.size, 19, "a service's own words are missing from its page");
+  assert.equal((await render("/services/nope")).status, 404);
+
+  /* Real work where there is some: websites shows Spitex and Jetonikeramika. */
+  const websites = await (await render("/services/websites")).text();
+  assert.match(websites, /href="\/case-studies\/spitex-schwab"/);
+  assert.match(websites, /href="\/case-studies\/jetonikeramika"/);
+
+  /* The wheel sends every service to its place on its page. */
+  const wheel = await (await render("/services")).text();
+  const explore = [...wheel.matchAll(/<a class="services-wheel__cta" href="(\/services\/[a-z-]+#[a-z0-9-]+)" data-roll="true"><span class="roll"><span class="roll__face">Explore more</g)].map((m) => m[1]);
+  assert.equal(explore.length, 19);
+  assert.ok(explore.includes("/services/websites#web-design"));
+  assert.ok(explore.includes("/services/branding-design#ux-ui-design"));
+
+  /* In the sitemap, and the old addresses land on the right page. */
+  const sitemap = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");
+  assert.match(sitemap, /serviceHubs\.map\(\(hub\) => `\/services\/\$\{hub\.slug\}`\)/);
+  for (const [from, to] of [["/services/crm-solution", "/services/crm"], ["/services/branding", "/services/branding-design"], ["/services/website-apps", "/services/websites"], ["/services/custom-software", "/services/software"]]) {
+    const moved = await render(from);
+    assert.equal(moved.status, 308, `${from} does not redirect`);
+    assert.equal(moved.headers.get("location"), to);
+  }
 });
 
 /* **What search engines and AI answers read** — SEO-PLAN.md, step 1.5:

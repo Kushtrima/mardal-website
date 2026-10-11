@@ -105,6 +105,23 @@ export function servicesList() {
   };
 }
 
+/** A service page: each of its services, by name and in the owner's words,
+ *  from Mardal, at its place on the page. */
+export function serviceHubServices(
+  slug: string,
+  services: readonly { label: string; summary?: string }[],
+  anchor: (label: string) => string,
+) {
+  return services.map((service) => ({
+    "@type": "Service",
+    name: service.label,
+    ...(service.summary ? { description: service.summary } : {}),
+    url: absolute(`/services/${slug}#${anchor(service.label)}`),
+    provider: organizationRef,
+    areaServed: MARKETS,
+  }));
+}
+
 /** A case study: an article by Mardal about one real client. Only for a
  *  story whose client is real and live — the sample's would describe a
  *  company that does not exist. */
@@ -158,6 +175,6 @@ export function pageAbout(type: "AboutPage" | "ContactPage", path: string, name:
 }
 
 /** One page's nodes, as one JSON-LD document. */
-export function graph(...nodes: readonly (object | null)[]) {
-  return { "@context": "https://schema.org", "@graph": nodes.filter(Boolean) };
+export function graph(...nodes: readonly (object | readonly object[] | null)[]) {
+  return { "@context": "https://schema.org", "@graph": nodes.flat().filter(Boolean) };
 }

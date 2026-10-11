@@ -8171,6 +8171,23 @@ a.project-live:focus-visible {
   margin-top: 1em;
 }
 
+/* ── A service page (ServiceHubPage, SEO-PLAN.md step 2.1) ──
+   Each service told as a case study's account (the classes above), its
+   list in the services' own red plus (.services-wheel__items); then the
+   real projects that show the work, one under the next, and the two ways
+   in, on the same lines as the words above them. */
+.service-hub__related-list {
+  display: grid;
+  row-gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.service-hub__actions {
+  margin-top: 0;
+}
+
 /* ── The pages (ProjectShowcase) ──
    A screen tall and held while the pages pass through the middle columns;
    Previous and Next on the left; every page in small at the right edge, a
