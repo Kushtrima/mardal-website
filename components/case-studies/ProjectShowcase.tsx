@@ -38,7 +38,7 @@ export function ProjectShowcase({
   page,
 }: {
   title: string;
-  pages: readonly string[];
+  pages: readonly { src: string; alt: string }[];
   previous: string;
   next: string;
   page: string;
@@ -184,12 +184,12 @@ export function ProjectShowcase({
 
         <div className="project-showcase__stage" ref={stageRef}>
           <ol className="project-showcase__pages" ref={pagesRef}>
-            {pages.map((src, index) => (
+            {pages.map(({ src, alt }, index) => (
               <li className="project-showcase__page" key={src}>
-                {/* Screenshots of the delivered work (stock frames where
-                    none are in yet): decorative, so alt is empty. A stock
-                    frame is offered at two widths; a screenshot of our own
-                    is one file (En-Nur's, 2026-10-11). */}
+                {/* Screenshots of the delivered work, each saying what it
+                    shows (SEO-PLAN.md, step 1.6) — a stock frame where none
+                    is in yet says nothing. A stock frame is offered at two
+                    widths; a screenshot of our own is one file. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={src}
@@ -199,7 +199,7 @@ export function ProjectShowcase({
                       : undefined
                   }
                   sizes="(max-width: 40rem) 100vw, 50vw"
-                  alt=""
+                  alt={alt}
                   width="1600"
                   height="1000"
                   loading={index === 0 ? "eager" : "lazy"}
@@ -215,7 +215,7 @@ export function ProjectShowcase({
               placed along them, and on a phone the two slide as one. */}
           <div className="project-showcase__track" ref={trackRef}>
             <ol className="project-showcase__thumbs">
-              {pages.map((src, index) => (
+              {pages.map(({ src }, index) => (
                 <li key={src}>
                   <button
                     className="project-showcase__thumb"

@@ -1088,6 +1088,10 @@ test("server-renders En-Nur's story from the owner's own case study", async () =
     [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/en-nur-${n}.avif`),
   );
   assert.doesNotMatch(showcase, /srcSet|srcset|picsum/i);
+  /* Each screenshot says what it shows (SEO-PLAN.md, step 1.6). */
+  const alts = [...showcase.matchAll(/<img [^>]*alt="([^"]*)"/g)].map((m) => m[1]);
+  assert.equal(alts.length, 8);
+  assert.ok(alts.every((alt) => alt.startsWith("En-Nur ") && alt.length > 30), "a screenshot says nothing of what it shows");
   for (let n = 1; n <= 8; n += 1) {
     assert.ok(existsSync(new URL(`../public/en-nur-${n}.avif`, import.meta.url)), `en-nur-${n}.avif is missing`);
   }
@@ -1163,6 +1167,10 @@ test("server-renders Jetonikeramika's story from the owner's own case study", as
     [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/jetonikeramika-${n}.avif`),
   );
   assert.doesNotMatch(showcase, /srcSet|srcset|picsum/i);
+  /* Each screenshot says what it shows (SEO-PLAN.md, step 1.6). */
+  const alts = [...showcase.matchAll(/<img [^>]*alt="([^"]*)"/g)].map((m) => m[1]);
+  assert.equal(alts.length, 8);
+  assert.ok(alts.every((alt) => alt.startsWith("Jetonikeramika ") && alt.length > 30), "a screenshot says nothing of what it shows");
   for (let n = 1; n <= 8; n += 1) {
     assert.ok(existsSync(new URL(`../public/jetonikeramika-${n}.avif`, import.meta.url)), `jetonikeramika-${n}.avif is missing`);
   }
@@ -1238,6 +1246,10 @@ test("server-renders Spitex Schwab AG's story from the owner's own case study", 
     [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/spitex-schwab-${n}.avif`),
   );
   assert.doesNotMatch(showcase, /srcSet|srcset|picsum/i);
+  /* Each screenshot says what it shows (SEO-PLAN.md, step 1.6). */
+  const alts = [...showcase.matchAll(/<img [^>]*alt="([^"]*)"/g)].map((m) => m[1]);
+  assert.equal(alts.length, 8);
+  assert.ok(alts.every((alt) => alt.startsWith("Spitex Schwab AG ") && alt.length > 30), "a screenshot says nothing of what it shows");
   for (let n = 1; n <= 8; n += 1) {
     assert.ok(existsSync(new URL(`../public/spitex-schwab-${n}.avif`, import.meta.url)), `spitex-schwab-${n}.avif is missing`);
   }

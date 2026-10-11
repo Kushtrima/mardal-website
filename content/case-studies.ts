@@ -362,7 +362,10 @@ export type Story = {
     readonly previous: string;
     readonly next: string;
     readonly page: string;
-    readonly pages: readonly string[];
+    /** Each page and what it shows. A screenshot of our own says what is on
+     *  it, for Google Images and a screen reader; a stock frame says nothing
+     *  (SEO-PLAN.md, step 1.6). */
+    readonly pages: readonly { readonly src: string; readonly alt: string }[];
   };
   readonly way: {
     readonly label: string;
@@ -491,14 +494,10 @@ export const pilotStory = {
     previous: "Previous",
     next: "Next",
     page: "Page",
-    pages: [
-      "https://picsum.photos/seed/mardal-healthcare-page-1/1600/1000",
-      "https://picsum.photos/seed/mardal-healthcare-page-2/1600/1000",
-      "https://picsum.photos/seed/mardal-healthcare-page-3/1600/1000",
-      "https://picsum.photos/seed/mardal-healthcare-page-4/1600/1000",
-      "https://picsum.photos/seed/mardal-healthcare-page-5/1600/1000",
-      "https://picsum.photos/seed/mardal-healthcare-page-6/1600/1000",
-    ],
+    pages: [1, 2, 3, 4, 5, 6].map((n) => ({
+      src: `https://picsum.photos/seed/mardal-healthcare-page-${n}/1600/1000`,
+      alt: "",
+    })),
   },
 
   /* The page's foot: Back on the left, Next Project on the right — owner,
@@ -598,7 +597,16 @@ export const ennurStory = {
   showcase: {
     ...pilotStory.showcase,
     title: "The platform, page by page",
-    pages: [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/en-nur-${n}.avif`),
+    pages: [
+      { src: "/en-nur-1.avif", alt: "En-Nur membership app on a laptop: the administrator panel with quick actions and community totals" },
+      { src: "/en-nur-2.avif", alt: "En-Nur administrator panel: quick actions and the community overview of members, revenue, donations and pending payments" },
+      { src: "/en-nur-3.avif", alt: "En-Nur payment, step one: choose a membership amount in CHF and pay by TWINT, Stripe or cash" },
+      { src: "/en-nur-4.avif", alt: "En-Nur TWINT payment: a QR code to scan with the TWINT app, beside the payment summary" },
+      { src: "/en-nur-5.avif", alt: "En-Nur payment management: totals by status, search and filters, and the list of payments" },
+      { src: "/en-nur-6.avif", alt: "En-Nur user management: members with their roles, verified email and registration date" },
+      { src: "/en-nur-7.avif", alt: "En-Nur administrator form for creating a member account with a username" },
+      { src: "/en-nur-8.avif", alt: "En-Nur member profile: the account summary of contributions, donations, payments and email status" },
+    ],
   },
   way: pilotStory.way,
 } as const satisfies Story;
@@ -689,7 +697,16 @@ export const jetonikeramikaStory = {
      1.52 ones top and foot, and off the laptop shot's sides). */
   showcase: {
     ...pilotStory.showcase,
-    pages: [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/jetonikeramika-${n}.avif`),
+    pages: [
+      { src: "/jetonikeramika-1.avif", alt: "Jetonikeramika website on a laptop: the dark homepage opening with the headline “Tile with style”" },
+      { src: "/jetonikeramika-2.avif", alt: "Jetonikeramika homepage: the showroom, unique tile models, sanitary ware, planning and professional installation" },
+      { src: "/jetonikeramika-3.avif", alt: "Jetonikeramika “Our inspiration” section, about tiles for kitchens, bathrooms and living rooms" },
+      { src: "/jetonikeramika-4.avif", alt: "Jetonikeramika page on new ceramic models, opening on green wall tiles in a shower" },
+      { src: "/jetonikeramika-5.avif", alt: "Jetonikeramika product categories: bathroom, floor, porcelain and terrace tiles, mosaic, decor and travertine" },
+      { src: "/jetonikeramika-6.avif", alt: "Jetonikeramika projects page: residential developments and venues fitted with its tiles" },
+      { src: "/jetonikeramika-7.avif", alt: "Jetonikeramika showroom page: views of the showroom" },
+      { src: "/jetonikeramika-8.avif", alt: "Jetonikeramika “Our exclusive showroom” page: the story of its showroom in Gjilan" },
+    ],
   },
   way: pilotStory.way,
 } as const satisfies Story;
@@ -775,7 +792,16 @@ export const spitexSchwabStory = {
      1.52 ones top and foot, and off the laptop shot's sides). */
   showcase: {
     ...pilotStory.showcase,
-    pages: [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/spitex-schwab-${n}.avif`),
+    pages: [
+      { src: "/spitex-schwab-1.avif", alt: "Spitex Schwab AG website on a laptop: the teal homepage, “Pflege und Unterstützung für Seniorinnen und Familien”" },
+      { src: "/spitex-schwab-2.avif", alt: "Spitex Schwab AG homepage: five large navigation boxes over a teal-washed photo" },
+      { src: "/spitex-schwab-3.avif", alt: "Spitex Schwab AG care introduction, with the phone button “Beratung und Anmeldung” in the header" },
+      { src: "/spitex-schwab-4.avif", alt: "Spitex Schwab AG household help page, its services listed in everyday words" },
+      { src: "/spitex-schwab-5.avif", alt: "Spitex Schwab AG section on needs-based care in Bern, with the heart logo" },
+      { src: "/spitex-schwab-6.avif", alt: "Spitex Schwab AG “Pflege & Betreuung in vertrauter Umgebung”: text in a solid teal panel over a photo" },
+      { src: "/spitex-schwab-7.avif", alt: "Spitex Schwab AG “Warum uns wählen?” section with expandable reasons beside a care photo" },
+      { src: "/spitex-schwab-8.avif", alt: "Spitex Schwab AG services menu open: dementia, psychiatry, palliative and oncology care, wound care and transport" },
+    ],
   },
   way: pilotStory.way,
 } as const satisfies Story;
