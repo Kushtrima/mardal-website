@@ -32,7 +32,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const story = storyAt((await params).story);
   if (!story) return {};
 
-  return pageMetadata(story.title, story.lede, "article");
+  return pageMetadata(
+    story.title,
+    story.lede,
+    `/case-studies/${story.slug}`,
+    "article",
+    story.ogImage
+      ? { url: story.ogImage, width: 1200, height: 630, alt: story.title }
+      : undefined,
+  );
 }
 
 export default async function ClientsStoryPage({ params }: Params) {

@@ -345,6 +345,9 @@ export type Story = {
   /** A picture of our own at its widths; a stock frame is offered at two
    *  widths from its address, so it needs none. */
   readonly heroSrcSet?: string;
+  /** Its link-preview picture, 1200×630 JPEG cut from the cover — what
+   *  WhatsApp, LinkedIn and Facebook show (SEO-PLAN.md, step 1.4). */
+  readonly ogImage?: string;
   readonly summary: string;
   readonly record: readonly { readonly label: string; readonly value: string }[];
   readonly live: { readonly label: string; readonly href: string | null };
@@ -539,6 +542,7 @@ export const ennurStory = {
      Desktop, 2376×1584, as WebP at 1200 and at its full width). */
   heroImage: "/en-nur-hero-2376.webp",
   heroSrcSet: "/en-nur-hero-1200.webp 1200w, /en-nur-hero-2376.webp 2376w",
+  ogImage: "/og-en-nur.jpg",
   summary:
     "En-Nur is a mosque community in Switzerland. Its members, people of every age who live in the community, pay a monthly membership fee and also give donations, and the community depends on both to operate. Membership is not a one-off sign-up but an ongoing relationship, which means the system behind it is used constantly rather than occasionally. We designed and built that system in 2025.",
   record: [
@@ -631,6 +635,7 @@ export const jetonikeramikaStory = {
      and at its full width; a wide screen draws it larger than that). */
   heroImage: "/jetonikeramika-hero-1501.webp",
   heroSrcSet: "/jetonikeramika-hero-1200.webp 1200w, /jetonikeramika-hero-1501.webp 1501w",
+  ogImage: "/og-jetonikeramika.jpg",
   summary:
     "Jetonikeramika’s business happens in a 2,500 m² showroom, where customers see, touch and choose premium ceramics and tiles for bathrooms and living spaces. It sells to private clients and contractors alike. The project came to Mardal in 2026, and we led the research, design and build.",
   record: [
@@ -718,6 +723,7 @@ export const spitexSchwabStory = {
      WebP at 1200 and at its full width). */
   heroImage: "/spitex-schwab-hero-2000.webp",
   heroSrcSet: "/spitex-schwab-hero-1200.webp 1200w, /spitex-schwab-hero-2000.webp 2000w",
+  ogImage: "/og-spitex-schwab.jpg",
   summary:
     "Spitex Schwab AG is an independent home-care provider based in Bern. Its nurses and carers support people of all ages in their own homes, so they can keep their independence there, with services ranging from basic and medical care to psychiatric, palliative and oncology care, dementia support, a children’s Spitex and Spitexpress, a 24-hour emergency service. Spitex Schwab came to us directly in 2025.",
   record: [

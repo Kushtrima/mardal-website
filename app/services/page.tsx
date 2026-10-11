@@ -13,7 +13,7 @@ import {
   servicesPage,
 } from "../../content/services-index";
 
-export const metadata: Metadata = pageMetadata(servicesPage.title, servicesPage.description);
+export const metadata: Metadata = pageMetadata(servicesPage.title, servicesPage.description, "/services");
 
 /**
  * The services: the owner's opening (ServicesHero — his comp of 2026-10-06,

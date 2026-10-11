@@ -6,6 +6,11 @@ import { ProductsSection } from "../components/home/ProductsSection";
 import { SelectedWorkSection } from "../components/home/SelectedWorkSection";
 import { SiteFooter } from "../components/layout/SiteFooter";
 import { SectionEnter } from "../components/motion/SectionEnter";
+import type { Metadata } from "next";
+
+/* Its one address (SEO-PLAN.md, step 1.3); the title, description and
+   preview are the layout's. */
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default function Home() {
   return (

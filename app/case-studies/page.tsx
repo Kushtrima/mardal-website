@@ -3,7 +3,7 @@ import { pageMetadata } from "../../lib/page-metadata";
 import { ClientsPage } from "../../components/case-studies/ClientsPage";
 import { caseStudies } from "../../content/case-studies";
 
-export const metadata: Metadata = pageMetadata(caseStudies.title, caseStudies.lede);
+export const metadata: Metadata = pageMetadata(caseStudies.title, caseStudies.lede, "/case-studies");
 
 /**
  * Clients — every entry, once.

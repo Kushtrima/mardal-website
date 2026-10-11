@@ -8,7 +8,7 @@ import { ServicesHero } from "../../components/services/ServicesHero";
 import { ServicesRules } from "../../components/services/ServicesRules";
 import { productsHero, productsPage } from "../../content/products-index";
 
-export const metadata: Metadata = pageMetadata(productsPage.title, productsPage.description);
+export const metadata: Metadata = pageMetadata(productsPage.title, productsPage.description, "/products");
 
 /**
  * The products: the services page's opening, in the products' own words

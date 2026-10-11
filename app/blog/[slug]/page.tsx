@@ -31,7 +31,7 @@ export async function generateMetadata({
   const post = blog.posts.find((entry) => entry.slug === slug);
   if (!post) return {};
 
-  return pageMetadata(post.title, post.thesis, "article");
+  return pageMetadata(post.title, post.thesis, `/blog/${post.slug}`, "article");
 }
 
 /**

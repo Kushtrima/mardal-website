@@ -32,7 +32,7 @@ const ROOM_OPENS_FROM: Record<string, "left" | "right"> = {
   window: "left",
 };
 
-export const metadata: Metadata = pageMetadata(about.title, about.description);
+export const metadata: Metadata = pageMetadata(about.title, about.description, "/about");
 
 /**
  * About, and the third of the unwritten pages to be written.

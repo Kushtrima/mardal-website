@@ -9,7 +9,7 @@ import { contactPage } from "../../content/contact";
 import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
 import { ServicesRules } from "../../components/services/ServicesRules";
 
-export const metadata: Metadata = pageMetadata(contactPage.title, contactPage.description);
+export const metadata: Metadata = pageMetadata(contactPage.title, contactPage.description, "/contact");
 
 /**
  * Contact.

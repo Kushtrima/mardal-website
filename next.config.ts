@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { siteIsLive } from "./lib/launch";
 
 const nextConfig: NextConfig = {
   /**
@@ -28,6 +29,20 @@ const nextConfig: NextConfig = {
    */
   async redirects() {
     return [
+      /* ── Launch: the Vercel address hands over to mardal.co ── one address
+         per page for search (SEO-PLAN.md, step 1.1). Only once the site is
+         live (lib/launch.ts): until then the Vercel address IS the preview
+         the owner checks on his phone, and this would send it nowhere. */
+      ...(siteIsLive
+        ? [
+            {
+              source: "/:path*",
+              has: [{ type: "host" as const, value: "mardal.vercel.app" }],
+              destination: "https://mardal.co/:path*",
+              permanent: true,
+            },
+          ]
+        : []),
       /* ── The old design's own pages, deleted on 2026-10-08 ── owner, of
          every service's and product's page: "delete it all", "we dont have
          seperate pages for those links". Every service is on the services

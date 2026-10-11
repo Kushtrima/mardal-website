@@ -518,8 +518,11 @@ test("a piece ends with the piece behind on the left and the piece ahead on the 
   assert.match(row, /<span class="visually-hidden">Most failures happen between systems<\/span>/);
   assert.match(row, /<span class="visually-hidden">Migration is the project<\/span>/);
   assert.doesNotMatch(row, /blog-more__all|blog-more__name|All writing/);
-  /* The piece never offers itself. */
-  assert.doesNotMatch(html, /href="\/blog\/what-phase-one-does-not-include"/);
+  /* The piece never offers itself — on the page, that is: the head names its
+     own address as the canonical (SEO-PLAN.md, step 1.3). */
+  const pageBody = html.slice(html.indexOf("<body"));
+  assert.doesNotMatch(pageBody, /<a [^>]*href="\/blog\/what-phase-one-does-not-include"/);
+  assert.match(html, /<link rel="canonical" href="[^"]*\/blog\/what-phase-one-does-not-include"/);
   /* The arrows are the last thing before the footer: no "Let’s build what
      your business needs next." (owner, 2026-10-08: "remove this section"),
      and no "Operating from Kosova" in the bar over the opening. */
@@ -2055,10 +2058,33 @@ test("the keyboard's first stop on every page skips the bar", async () => {
   assert.match(link, /main\.focus\(\{ preventScroll: true \}\)/);
 });
 
-test("search engines are kept out until launch, and have a sitemap of every page", () => {
+test("search engines are kept out until launch, and have a sitemap of every page", async () => {
+  /* **One switch for launch** (SEO-PLAN.md, step 1.1): off, robots.txt keeps
+     every crawler out and the Vercel address serves the pages; on, every
+     crawler is let in, mardal.vercel.app redirects to mardal.co and every
+     canonical and preview address is written against mardal.co. */
+  const launch = readFileSync(new URL("../lib/launch.ts", import.meta.url), "utf8");
+  assert.match(launch, /^export const siteIsLive = false;$/m);
   const robots = readFileSync(new URL("../app/robots.ts", import.meta.url), "utf8");
-  assert.match(robots, /rules: \{ userAgent: "\*", disallow: "\/" \}/);
+  assert.match(robots, /rules: siteIsLive\s*\?\s*\{ userAgent: "\*", allow: "\/" \}\s*:\s*\{ userAgent: "\*", disallow: "\/" \}/);
   assert.match(robots, /sitemap: `\$\{siteUrl\}\/sitemap\.xml`/);
+  const robotsTxt = await (await render("/robots.txt")).text();
+  assert.match(robotsTxt, /Disallow: \//);
+  const config = readFileSync(new URL("../next.config.ts", import.meta.url), "utf8");
+  assert.match(config, /\.\.\.\(siteIsLive\s*\?\s*\[\s*\{\s*source: "\/:path\*",\s*has: \[\{ type: "host" as const, value: "mardal\.vercel\.app" \}\],\s*destination: "https:\/\/mardal\.co\/:path\*",\s*permanent: true,/);
+  const layout = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
+  assert.match(layout, /metadataBase: siteIsLive \? new URL\(siteUrl\) : undefined,/);
+
+  /* Every page names its own canonical, and a case study its own preview. */
+  for (const path of ["/", "/services", "/case-studies", "/case-studies/en-nur", "/blog/between-systems", "/contact"]) {
+    const html = await (await render(path)).text();
+    assert.match(html, new RegExp(`<link rel="canonical" href="(https?://[^"/]+)?${path}"`), `${path} has no canonical of its own`);
+  }
+  const story = await (await render("/case-studies/spitex-schwab")).text();
+  assert.match(story, /<meta property="og:image" content="[^"]*\/og-spitex-schwab\.jpg"/);
+  for (const name of ["en-nur", "jetonikeramika", "spitex-schwab"]) {
+    assert.ok(existsSync(new URL(`../public/og-${name}.jpg`, import.meta.url)), `og-${name}.jpg is missing`);
+  }
   const sitemap = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");
   for (const path of ['"/services"', '"/products"', '"/case-studies"', '"/about"', '"/blog"', '"/contact"', '"/privacy"', '"/terms"', '"/cookies"']) {
     assert.ok(sitemap.includes(path), `${path} is not in the sitemap`);
@@ -2073,7 +2099,9 @@ test("every page has a link preview of its own, with the picture", async () => {
     assert.match(html, /<meta property="og:image" content="[^"]*\/og-image\.png"/, `${path} has no preview picture`);
   }
   assert.ok(readFileSync(new URL("../public/og-image.png", import.meta.url)).length > 1000);
+  /* The address they are written against is set by hand only from launch
+     (lib/launch.ts): until then a preview's links stay on the preview. */
   const layout = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
-  assert.doesNotMatch(layout, /metadataBase/);
+  assert.match(layout, /metadataBase: siteIsLive \? new URL\(siteUrl\) : undefined,/);
   assert.match(layout, /twitter: \{ card: "summary_large_image" \}/);
 });

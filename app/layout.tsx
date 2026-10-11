@@ -3,6 +3,8 @@ import "./globals.css";
 import { SiteHeader } from "../components/layout/SiteHeader";
 import { SkipLink } from "../components/layout/SkipLink";
 import { previewImage } from "../lib/page-metadata";
+import { siteIsLive } from "../lib/launch";
+import { siteUrl } from "../content/home";
 import { CookieConsent } from "../components/consent/CookieConsent";
 import { RouteTransition } from "../components/motion/RouteTransition";
 import { SmoothScroll } from "../components/motion/SmoothScroll";
@@ -20,6 +22,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  /* Every canonical and preview address is written against this: mardal.co
+     from launch (SEO-PLAN.md, step 1.3). Until then Next.js uses the
+     deployment's own address, so a preview's links do not point at a domain
+     that is not serving yet. */
+  metadataBase: siteIsLive ? new URL(siteUrl) : undefined,
   title: {
     default: "Mardal — House of Creativity & Technology",
     template: "%s — Mardal",
@@ -29,6 +36,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Mardal",
     locale: "en",
+    url: "/",
     title: "Mardal — House of Creativity & Technology",
     description: "We build the technology behind your growth.",
     /* The homepage's preview, and the fallback for any page without its

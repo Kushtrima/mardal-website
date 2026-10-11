@@ -11,7 +11,7 @@ import { ServicesHero } from "../../components/services/ServicesHero";
 import { ServicesRules } from "../../components/services/ServicesRules";
 import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
 
-export const metadata: Metadata = pageMetadata(blog.title, blog.lede);
+export const metadata: Metadata = pageMetadata(blog.title, blog.lede, "/blog");
 
 /**
  * The Blog page, hero only.
