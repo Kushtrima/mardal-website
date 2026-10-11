@@ -715,6 +715,11 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   assert.match(CSS, /\.clients-filters__option::after \{[^}]*background: var\(--accent\)/);
   /* The plus red all the time; the word red while open. */
   assert.match(CSS, /\.clients-filters__plus,\s*\.clients-filters\[data-open="true"\] \.clients-filters__toggle \{\s*color: var\(--accent\);/);
+  /* Scrolling down shuts it, past a trackpad's drift (owner, 2026-10-11:
+     "when filter is open and then scroll down automaticly to close"). */
+  const filtersCode = readFileSync(new URL("../components/case-studies/ClientsIndex.tsx", import.meta.url), "utf8");
+  assert.match(filtersCode, /const CLOSE_AFTER = 48;\s*const from = window\.scrollY;\s*const onScroll = \(\) => \{\s*if \(window\.scrollY - from > CLOSE_AFTER\) setOpen\(false\);/);
+  assert.match(filtersCode, /window\.addEventListener\("scroll", onScroll, \{ passive: true \}\);/);
 
   /* And with All chosen the grid is every entry — which is what makes the
      default meaningful rather than just marked. */

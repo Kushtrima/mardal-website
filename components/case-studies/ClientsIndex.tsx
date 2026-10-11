@@ -156,6 +156,21 @@ export function ClientsIndex() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  /* **Scrolling down shuts it**, with the same motion as a press on FILTERS
+     — owner, 2026-10-11: "when filter is open and then scroll down
+     automaticly to close like menu effect". A few pixels of a trackpad's
+     drift do not count; the focus stays where it is. */
+  useEffect(() => {
+    if (!open) return;
+    const CLOSE_AFTER = 48;
+    const from = window.scrollY;
+    const onScroll = () => {
+      if (window.scrollY - from > CLOSE_AFTER) setOpen(false);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [open]);
+
   useEffect(() => () => window.clearTimeout(swapRef.current), []);
 
   /* The new list arriving. `useLayoutEffect` so it is hidden before the
