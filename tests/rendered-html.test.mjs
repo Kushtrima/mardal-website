@@ -359,7 +359,6 @@ test("server-renders the Mardal homepage", async () => {
       ["About", "/about"],
       ["Contact", "/contact"],
       ["Blog", "/blog"],
-      ["Nearshoring", "/nearshoring-kosovo"],
     ],
   );
   assert.doesNotMatch(footerPart, /<a class="site-footer__link" href="\/">/);
@@ -370,10 +369,9 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(footerPart, /site-footer__(title|cta|mark|lead|label|sign|bars|wordmark|email|body)\b/);
   assert.doesNotMatch(html, /Let’s build|Tell us what you want to improve|practical digital solution/);
 
-  // 7 pages (Nearshoring since 2026-10-11), the email, and the 3 legal links.
-  // The address is not a link, and the social marks are links of their own
-  // (site-footer__social-link).
-  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 11);
+  // 6 pages, the email, and the 3 legal links. The address is not a link, and
+  // the social marks are links of their own (site-footer__social-link).
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 10);
   assert.doesNotMatch(html, /href="\/careers/);
   // **Team is gone from every menu, not just this one.**
   assert.doesNotMatch(html, />Team</);
@@ -1061,8 +1059,7 @@ test("server-renders En-Nur's story from the owner's own case study", async () =
      (first paragraph, then the other two), "Discovery" and "Solution". */
   assert.deepEqual(
     [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
-    /* Then the pages of its work, since 2026-10-11 (SEO-PLAN.md, 2.4). */
-    ["Situation", "Challenge", "Research", "Solution", "Services"],
+    ["Situation", "Challenge", "Research", "Solution"],
   );
   const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
   assert.deepEqual(
@@ -1143,8 +1140,7 @@ test("server-renders Jetonikeramika's story from the owner's own case study", as
      the Challenge its last; then "Research" and "Solution". */
   assert.deepEqual(
     [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
-    /* Then the pages of its work, since 2026-10-11 (SEO-PLAN.md, 2.4). */
-    ["Situation", "Challenge", "Research", "Solution", "Services"],
+    ["Situation", "Challenge", "Research", "Solution"],
   );
   const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
   assert.deepEqual(
@@ -1220,8 +1216,7 @@ test("server-renders Spitex Schwab AG's story from the owner's own case study", 
      "Research", his "I" as "we", and "Solution". */
   assert.deepEqual(
     [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
-    /* Then the pages of its work, since 2026-10-11 (SEO-PLAN.md, 2.4). */
-    ["Situation", "Challenge", "Research", "Solution", "Services"],
+    ["Situation", "Challenge", "Research", "Solution"],
   );
   const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
   assert.deepEqual(
@@ -1530,10 +1525,7 @@ test("Our expertise stands under about, and each word opens its services", async
   assert.doesNotMatch(section, /expertise__plus/);
   assert.equal((section.match(/class="expertise__row" data-expertise-row="true" data-roll="true"/g) ?? []).length, 3);
   const subs = (key) =>
-    [...(section.match(new RegExp(`id="expertise-${key}"[\\s\\S]*?</ul>`))?.[0] ?? "").matchAll(/<li class="expertise__sub"><a class="expertise__sub-word" href="\/services\/[a-z-]+#[a-z0-9-]+">([^<]+)<\/a><\/li>/g)].map((m) => m[1]);
-  /* Each name a link to its place on its service page (SEO-PLAN.md, 2.4). */
-  assert.match(section, /<a class="expertise__sub-word" href="\/services\/websites#web-design">Web Design<\/a>/);
-  assert.match(section, /<a class="expertise__sub-word" href="\/services\/crm#sales-crm-automation">Sales &amp; CRM Automation<\/a>/);
+    [...(section.match(new RegExp(`id="expertise-${key}"[\\s\\S]*?</ul>`))?.[0] ?? "").matchAll(/<li class="expertise__sub"><span class="expertise__sub-word">([^<]+)<\/span><\/li>/g)].map((m) => m[1]);
   /* His five a row (owner, 2026-10-06). */
   assert.deepEqual(subs("creative"), ["Branding", "UX/UI Design", "Web Design", "Product Design", "Social Media Design"]);
   assert.deepEqual(subs("development"), ["Websites", "Web Platforms", "Mobile Apps", "Custom Software", "CRM Solutions"]);
@@ -1783,16 +1775,12 @@ test("the services' page turns its services on a wheel, each one's content besid
   }
   assert.doesNotMatch(wheel, /services-wheel__panel-group|Build a clear foundation for your brand|>Includes</);
   /* **Two ways in under every service** (owner, 2026-10-06: "write to us and
-     other Book a meeting so two buttons"), after the way to the service's
-     own page since 2026-10-11 (SEO-PLAN.md, step 2.1). */
+     other Book a meeting so two buttons"). */
   const panels = [...wheel.matchAll(/<article class="services-wheel__panel"[\s\S]*?<\/article>/g)].map((m) => m[0]);
   assert.equal(panels.length, 19);
   for (const panel of panels) {
-    const ctas = [...panel.matchAll(/class="services-wheel__cta" href="([^"]+)"[\s\S]*?roll__face">([^<]+)</g)].map((m) => [m[1], m[2]]);
-    assert.match(ctas[0][0], /^\/services\/(websites|software|crm|ai-automation|branding-design)#[a-z0-9-]+$/);
-    assert.equal(ctas[0][1], "Explore more");
     assert.deepEqual(
-      ctas.slice(1),
+      [...panel.matchAll(/class="services-wheel__cta" href="([^"]+)"[\s\S]*?roll__face">([^<]+)</g)].map((m) => [m[1], m[2]]),
       [["/contact", "Write to us"], ["mailto:info@mardal.co?subject=Book%20a%20meeting", "Book a meeting"]],
     );
   }
@@ -2116,116 +2104,6 @@ test("search engines are kept out until launch, and have a sitemap of every page
     assert.ok(sitemap.includes(path), `${path} is not in the sitemap`);
   }
   assert.match(sitemap, /blog\.posts\.map/);
-});
-
-/* **A page for each kind of work people search for** — SEO-PLAN.md, step
-   2.1; owner, 2026-10-11 ("make it what is best"). Five pages; every one of
-   the nineteen services on exactly one of them, in the owner's own words
-   from content/services-index.ts; the wheel on /services sends each service
-   to its place; the old addresses land on the right page. */
-test("each kind of work has a page of its own, in the owner's words", async () => {
-  const hubs = {
-    websites: ["Websites", "Web Design", "E-commerce"],
-    software: ["Custom Software", "Web Platforms", "Mobile Apps", "API &amp; Integrations"],
-    crm: ["CRM Solutions", "Sales &amp; CRM Automation"],
-    "ai-automation": ["AI Assistants", "AI Integrations", "Workflow Automation", "Customer Service Automation"],
-    "branding-design": ["Branding", "Visual Identity", "UX/UI Design", "Product Design", "Print Design", "Social Media Design"],
-  };
-  assert.equal(Object.values(hubs).flat().length, 19);
-
-  /* The owner's paragraph for every service, as content/services-index.ts holds it. */
-  const index = readFileSync(new URL("../content/services-index.ts", import.meta.url), "utf8");
-  const summaries = [...index.matchAll(/written\(\s*"([^"]+)"/g)].map((m) => m[1]);
-  assert.equal(summaries.length, 19);
-  const unescape = (text) => text.replace(/&amp;/g, "&").replace(/&#x27;/g, "'").replace(/&quot;/g, '"');
-  const found = new Set();
-
-  for (const [slug, names] of Object.entries(hubs)) {
-    const response = await render(`/services/${slug}`);
-    assert.equal(response.status, 200, `/services/${slug} does not answer`);
-    const html = await response.text();
-    const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
-    assert.equal((main.match(/<h1[\s>]/g) ?? []).length, 1);
-    assert.match(html, new RegExp(`<link rel="canonical" href="(https?://[^"/]+)?/services/${slug}"`));
-    assert.deepEqual(
-      [...main.matchAll(/<article class="project-passage service-hub__service" id="([^"]+)"><h2 class="project-passage__title">([^<]+)<\/h2>/g)].map((m) => m[2]),
-      names,
-    );
-    for (const summary of summaries) if (unescape(main).includes(summary)) found.add(summary);
-    /* The other four, and the way back to all of them. */
-    assert.equal((main.match(/href="\/services\/(websites|software|crm|ai-automation|branding-design)"/g) ?? []).length, 4);
-    assert.match(main, /href="\/services"/);
-    const graph = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])["@graph"];
-    assert.equal(graph.filter((node) => node["@type"] === "Service").length, names.length);
-    assert.deepEqual(graph.find((node) => node["@type"] === "BreadcrumbList").itemListElement.map((step) => step.name).slice(0, 2), ["Home", "Services"]);
-  }
-  assert.equal(found.size, 19, "a service's own words are missing from its page");
-  assert.equal((await render("/services/nope")).status, 404);
-
-  /* And each real project links back to the pages of its work; the sample
-     links none. */
-  for (const [story, pages] of [["en-nur", ["software", "crm", "branding-design"]], ["jetonikeramika", ["websites", "branding-design"]], ["spitex-schwab", ["websites", "branding-design"]], ["healthcare-office-website", []]]) {
-    const page = await (await render(`/case-studies/${story}`)).text();
-    const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
-    assert.deepEqual([...account.matchAll(/href="\/services\/([a-z-]+)"/g)].map((m) => m[1]), pages, `${story} links the wrong services`);
-  }
-
-  /* Real work where there is some: websites shows Spitex and Jetonikeramika. */
-  const websites = await (await render("/services/websites")).text();
-  assert.match(websites, /href="\/case-studies\/spitex-schwab"/);
-  assert.match(websites, /href="\/case-studies\/jetonikeramika"/);
-
-  /* The wheel sends every service to its place on its page. */
-  const wheel = await (await render("/services")).text();
-  const explore = [...wheel.matchAll(/<a class="services-wheel__cta" href="(\/services\/[a-z-]+#[a-z0-9-]+)" data-roll="true"><span class="roll"><span class="roll__face">Explore more</g)].map((m) => m[1]);
-  assert.equal(explore.length, 19);
-  assert.ok(explore.includes("/services/websites#web-design"));
-  assert.ok(explore.includes("/services/branding-design#ux-ui-design"));
-
-  /* In the sitemap, and the old addresses land on the right page. */
-  const sitemap = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");
-  assert.match(sitemap, /serviceHubs\.map\(\(hub\) => `\/services\/\$\{hub\.slug\}`\)/);
-  for (const [from, to] of [["/services/crm-solution", "/services/crm"], ["/services/branding", "/services/branding-design"], ["/services/website-apps", "/services/websites"], ["/services/custom-software", "/services/software"]]) {
-    const moved = await render(from);
-    assert.equal(moved.status, 308, `${from} does not redirect`);
-    assert.equal(moved.headers.get("location"), to);
-  }
-});
-
-/* **Nearshoring from Kosovo** — SEO-PLAN.md, step 2.5; owner, 2026-10-11:
-   "English first then De and AL". Its facts about Kosovo only from the
-   Swiss foreign ministry, STIKK and the ministry's study, each linked out;
-   about Mardal only what the site already says; linked from every page's
-   footer and in the sitemap. */
-test("nearshoring from Kosovo has a page, its facts sourced", async () => {
-  const response = await render("/nearshoring-kosovo");
-  assert.equal(response.status, 200);
-  const html = await response.text();
-  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
-  assert.match(html, /<title>Nearshoring from Kosovo: Software and Web Development — Mardal<\/title>/);
-  assert.match(html, /<link rel="canonical" href="(https?:\/\/[^"\/]+)?\/nearshoring-kosovo"/);
-  assert.equal((main.match(/<h1[\s>]/g) ?? []).length, 1);
-  assert.deepEqual(
-    [...main.matchAll(/<h2 class="project-passage__title">([^<]+)<\/h2>/g)].map((m) => m[1]),
-    ["Why Kosovo", "What we build", "Work for Swiss clients", "Who you work with", "Sources"],
-  );
-  /* The facts, as their sources state them. */
-  assert.match(main, /Kosovo has become a nearshoring destination for Swiss companies/);
-  assert.match(main, /about 68% of the 115 companies surveyed operate internationally/);
-  assert.match(main, /named by 52% of them/);
-  assert.match(main, /more than 1,200 companies and 11,500 jobs/);
-  const sources = [...main.matchAll(/<a class="services-wheel__cta nearshoring__source" href="(https:\/\/[^"]+)" target="_blank" rel="noopener noreferrer"/g)].map((m) => m[1]);
-  assert.deepEqual(sources.map((url) => new URL(url).hostname), ["www.eda.admin.ch", "stikk.org", "minti.rks-gov.net"]);
-  /* Each kind of work and each real project, by link. */
-  for (const href of ["/services/websites", "/services/software", "/services/crm", "/services/ai-automation", "/services/branding-design", "/case-studies/spitex-schwab", "/case-studies/en-nur", "/case-studies/jetonikeramika", "/about"]) {
-    assert.match(main, new RegExp(`href="${href}"`), `${href} is not linked`);
-  }
-  /* No claim the site does not make elsewhere. */
-  assert.doesNotMatch(main, /\b\d+\s*%\s*(cheaper|savings|lower)|German-speaking|native German|ISO|24 ?h/i);
-  const sitemap = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");
-  assert.match(sitemap, /"\/nearshoring-kosovo"/);
-  const graph = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])["@graph"];
-  assert.deepEqual(graph[0].itemListElement.map((step) => step.name), ["Home", "Nearshoring from Kosovo"]);
 });
 
 /* **What search engines and AI answers read** — SEO-PLAN.md, step 1.5:

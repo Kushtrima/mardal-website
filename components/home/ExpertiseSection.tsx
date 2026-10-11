@@ -3,7 +3,6 @@ import { Container } from "../layout/Container";
 import { expertise } from "../../content/home";
 import { ExpertiseReveal } from "./ExpertiseReveal";
 import { RollingLabel } from "../ui/RollingLabel";
-import { serviceHref } from "../../content/service-pages";
 
 /**
  * "Our expertise" — the owner's comp of 2026-10-05, under "about".
@@ -89,12 +88,7 @@ export function ExpertiseSection() {
                     {group.items.map((item) => (
                       <li className="expertise__sub" key={item}>
                         {/* The word, on its own redaction bar. */}
-                        {/* Each one to its place on its service page
-                            (SEO-PLAN.md, 2.4): the homepage's own links to
-                            the pages where the work is told in full. */}
-                        <a className="expertise__sub-word" href={serviceHref(item)}>
-                          {item}
-                        </a>
+                        <span className="expertise__sub-word">{item}</span>
                       </li>
                     ))}
                     {/* Unseen and of no height: every row's services, so

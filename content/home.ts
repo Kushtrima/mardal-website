@@ -703,10 +703,6 @@ export const footer = {
   pages: [
     ...menu.map(({ label, href }) => ({ label, href })),
     { label: "Blog", href: "/blog" },
-    /* The footer's too: a page for companies in Switzerland and Germany
-       looking to build in Kosovo, reached from every page (SEO-PLAN.md,
-       step 2.5, 2026-10-11). */
-    { label: "Nearshoring", href: "/nearshoring-kosovo" },
   ],
   /* The accounts' addresses — owner, 2026-10-09. LinkedIn's without the
      `?viewAsMember=true` he copied it with: that is a page admin's view of

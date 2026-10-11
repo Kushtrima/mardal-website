@@ -7,7 +7,6 @@ import { RollingLabel } from "../ui/RollingLabel";
 import { ProjectHeroReveal } from "./ProjectHeroReveal";
 import { ProjectShowcase } from "./ProjectShowcase";
 import type { Story } from "../../content/case-studies";
-import { hubsForStory } from "../../content/service-pages";
 
 /**
  * One customer's story — the page a card on the index opens. Whichever story
@@ -34,7 +33,6 @@ import { hubsForStory } from "../../content/service-pages";
  * bodies before it) are in the history.
  */
 export function ClientsStory({ story }: { story: Story }) {
-  const services = hubsForStory(story.slug);
   return (
     <>
       <SectionEnter />
@@ -168,34 +166,6 @@ export function ClientsStory({ story }: { story: Story }) {
                 </div>
               </article>
             ))}
-            {/* The services this work shows, each to its page — the other
-                half of the service pages' related work (SEO-PLAN.md, 2.4). */}
-            {services.length ? (
-              <div className="project-passage">
-                <h3 className="project-passage__title">Services</h3>
-                <ul className="project-passage__copy service-hub__related-list">
-                  {services.map((hub) => (
-                    <li key={hub.slug}>
-                      <a
-                        className="services-wheel__cta"
-                        href={`/services/${hub.slug}`}
-                        data-roll
-                      >
-                        <RollingLabel>{hub.name}</RollingLabel>
-                        <svg
-                          className="services-wheel__arrow"
-                          viewBox="0 0 16 16"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path d="M2 14 14 2M4.5 2H14v9.5" />
-                        </svg>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
           </Container>
         </section>
 

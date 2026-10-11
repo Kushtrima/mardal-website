@@ -9,22 +9,21 @@ Sources are listed at the end. No search-volume tool was used, so demand is show
 
 In every step, **You** = the owner and **Me** = the developer (Claude). Nothing below is built until you approve section 0.
 
-**Status, 11 Oct 2026** (owner: "execute the plan", then "make it what is best", "English first then De and AL", "i just want to be SEO PERFECT"):
+**Status, 11 Oct 2026:**
 - **Done and committed** (local only, not deployed):
-  - `fae271d`: canonicals, share pictures and the launch switch (1.1, 1.3)
-  - `90d4b8b`: titles and descriptions (1.4)
-  - `6be27c6`: structured data (1.5)
-  - `e3f4cac`: screenshot descriptions (1.6)
-  - `1edcac1` and `4043666`: speed (1.7). On a throttled phone the main content of most pages shows in 0.8–0.9 s, the homepage in 2.6 s.
+  - `fae271d`: canonicals, share pictures and the launch switch
+  - `90d4b8b`: titles and descriptions
+  - `6be27c6`: structured data
+  - `e3f4cac`: screenshot descriptions
+  - `1edcac1` and `4043666`: speed, plus the blog author's link
   - `b6f89d5`: postcode 60000 and founding year 2026
-  - `d159ca8`: five service pages (2.1)
-  - `a98ffc7`: Nearshoring from Kosovo in English (2.5)
-  - `11849d8`: internal links (2.4)
+- **Removed on the owner's word** ("i dind ask for that … delete all of those"): the five service pages, the Nearshoring from Kosovo page, the "Services" links on project pages, and the homepage expertise names as links (they pointed at those pages).
+  - **Do not build new pages or sections the owner has not asked for.** Steps 2.1, 2.4 and 2.5 below are cancelled. SEO work stays on the existing pages.
 - **Waiting on you:**
-  - German and Albanian reviewers (Phase 3–4)
-  - the legal name and registration for the legal notice
+  - German and Albanian reviewers
+  - the legal name for the legal notice
   - the data-protection position
-  - DNS for launch, then the accounts: Search Console, Bing, Google Business Profile, directories
+  - DNS for launch, then the accounts
 - **Sample projects:** they come out on launch day, together with turning the switch in `lib/launch.ts`.
 ---
 
@@ -279,7 +278,7 @@ All validated in Google's Rich Results Test.
 - categories such as website designer and software company
 
 ### Phase 2: trust and depth, in English (weeks 2–6)
-**2.1 Me:** split /services into 6–7 service pages, keeping /services as their overview page (keyword map above). Each page has:
+**2.1 (cancelled: owner, 2026-10-11, did not want new service pages) Me:** split /services into 6–7 service pages, keeping /services as their overview page (keyword map above). Each page has:
 - who it is for and the problems it solves
 - deliverables, process, timeline and tech stack
 - the pricing model (after 0.7)
@@ -293,9 +292,9 @@ I build these from your existing service texts, and you approve the additions.
 - **You:** send dated results and a client quote for each.
 - **Me:** add a "Result" section, links to the services used, and links between case studies.
 
-**2.4 Me:** link services, case studies and posts to each other, with descriptive link text.
+**2.4 (cancelled: owner, 2026-10-11) Me:** link services, case studies and posts to each other, with descriptive link text.
 
-**2.5 Me:** build the nearshoring page in English, citing only official sources: the Swiss foreign ministry (EDA), the STIKK IT Barometer and the ministry/GIZ ICT study.
+**2.5 (cancelled: owner, 2026-10-11, did not want a nearshoring page) Me:** build the nearshoring page in English, citing only official sources: the Swiss foreign ministry (EDA), the STIKK IT Barometer and the ministry/GIZ ICT study.
 
 **2.6 You and me:** one post a month drawn from a real project (you give the facts, I draft, you approve).
 

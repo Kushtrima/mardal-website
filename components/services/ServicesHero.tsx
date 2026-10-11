@@ -27,15 +27,13 @@ export type PageHeroContent = {
  *
  * **And the clients'** — owner, 2026-10-08: "change the hero of Client to be
  * same design as in product and service". **And About's**, the same day.
- * **And each service page's** (`service-hub`, SEO-PLAN.md step 2.1), at the
- * services' own size.
  */
 export function ServicesHero({
   hero,
   name,
 }: {
   hero: PageHeroContent;
-  name: "services" | "products" | "clients" | "about" | "blog" | "service-hub" | "nearshoring";
+  name: "services" | "products" | "clients" | "about" | "blog";
 }) {
   return (
     <section

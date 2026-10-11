@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { blog } from "../content/blog";
 import { stories } from "../content/case-studies";
-import { serviceHubs } from "../content/service-pages";
 import { siteUrl } from "../content/home";
 
 /**
@@ -13,11 +12,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const pages = [
     "/",
     "/services",
-    ...serviceHubs.map((hub) => `/services/${hub.slug}`),
     "/products",
     "/case-studies",
     ...stories.map((story) => `/case-studies/${story.slug}`),
-    "/nearshoring-kosovo",
     "/about",
     "/blog",
     "/contact",

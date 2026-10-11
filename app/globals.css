@@ -4196,12 +4196,8 @@ main:has(> .services-rules) > .pin-spacer {
 
 /* The closed state's timing; the open state swaps in its own through the
    custom properties, so the reduced-motion rule below still wins. */
-/* A link to its service page since 2026-10-11 (SEO-PLAN.md, 2.4), and it
-   looks as the word always has: no colour or line of its own. */
 .expertise__sub-word {
   display: block;
-  color: inherit;
-  text-decoration: none;
   opacity: 0;
   filter: blur(4px);
   transform: translateY(0.6em);
@@ -8179,34 +8175,6 @@ a.project-live:focus-visible {
 
 .project-passage__copy p + p {
   margin-top: 1em;
-}
-
-/* ── A service page (ServiceHubPage, SEO-PLAN.md step 2.1) ──
-   Each service told as a case study's account (the classes above), its
-   list in the services' own red plus (.services-wheel__items); then the
-   real projects that show the work, one under the next, and the two ways
-   in, on the same lines as the words above them. */
-.service-hub__related-list {
-  display: grid;
-  row-gap: 1.25rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.service-hub__actions {
-  margin-top: 0;
-}
-
-/* Nearshoring from Kosovo (NearshoringPage): a part's links a step under
-   its words; a source's long name wraps beside its arrow. */
-.nearshoring__links {
-  margin-top: 1.75rem;
-}
-
-.nearshoring__source {
-  align-items: flex-start;
-  line-height: 1.3;
 }
 
 /* ── The pages (ProjectShowcase) ──

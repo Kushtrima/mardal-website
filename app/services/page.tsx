@@ -13,7 +13,6 @@ import {
   servicesPage,
 } from "../../content/services-index";
 import { JsonLd } from "../../components/seo/JsonLd";
-import { serviceHref } from "../../content/service-pages";
 import { breadcrumbs, graph, servicesList } from "../../lib/structured-data";
 
 export const metadata: Metadata = pageMetadata(servicesPage.title, servicesPage.description, "/services");
@@ -39,12 +38,7 @@ export default function ServicesPage() {
         <ServicesRules />
         <HeaderSpace />
         <ServicesHero hero={servicesHero} name="services" />
-        {/* Each service with the address of its place on its own page,
-            for its "Explore more" (SEO-PLAN.md, step 2.1). */}
-        <ServicesWheel
-          entries={servicesIndex.map((entry) => ({ ...entry, href: serviceHref(entry.label) }))}
-          actions={servicesIndexActions}
-        />
+        <ServicesWheel entries={servicesIndex} actions={servicesIndexActions} />
       </main>
 
       {/* The grey hairlines run on to the foot of the page (owner,
