@@ -1149,12 +1149,17 @@ video {
   display: block;
 }
 
-/* It waits hidden until its words are split to come into focus
+/* It waits faint and blurred until its words are split to come into focus
    (HouseHeroReveal) — only with script, and not for a reader who asked for
    less motion. */
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   .house-hero__title {
-    visibility: hidden;
+    /* The first frame of its focus (lib/focus-words.ts FROM), not nothing:
+       text at no opacity does not count as painted, so the page's main
+       content would be timed from when the script runs (SEO-PLAN.md,
+       step 1.7). */
+    opacity: 0.1;
+    filter: blur(12px);
   }
 }
 
@@ -2757,13 +2762,18 @@ main:has(> .services-rules) > .pin-spacer {
 }
 
 /* **Where the opening's entrance starts** (ServicesHeroReveal), here rather
-   than in script so nothing is seen in place first: the heading hidden until
-   SplitText has split it into its words, "Service", the note and their
+   than in script so nothing is seen in place first: the heading faint and
+   blurred until SplitText has split it into its words, "Service", the note and their
    pluses not yet there. Only with script — without it they stand — and not
    for a reader who asked for less motion. */
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   .services-hero__title {
-    visibility: hidden;
+    /* The first frame of its focus (lib/focus-words.ts FROM), not nothing:
+       text at no opacity does not count as painted, so the page's main
+       content would be timed from when the script runs (SEO-PLAN.md,
+       step 1.7). */
+    opacity: 0.1;
+    filter: blur(12px);
   }
 
   [data-services-hero-first],
@@ -7994,12 +8004,17 @@ main:has(> .services-rules) > .pin-spacer {
   line-height: var(--leading-heading);
 }
 
-/* Where the opening's entrance starts (ProjectHeroReveal): the name hidden
-   until its words are split, the industry not yet there. Only with script,
+/* Where the opening's entrance starts (ProjectHeroReveal): the name faint
+   and blurred until its words are split, the industry not yet there. Only with script,
    and not for a reader who asked for less motion. */
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   .project-hero__title {
-    visibility: hidden;
+    /* The first frame of its focus (lib/focus-words.ts FROM), not nothing:
+       text at no opacity does not count as painted, so the page's main
+       content would be timed from when the script runs (SEO-PLAN.md,
+       step 1.7). */
+    opacity: 0.1;
+    filter: blur(12px);
   }
 
   [data-project-hero-meta] {
@@ -9017,12 +9032,17 @@ a.project-live:focus-visible {
   outline-offset: 0.5rem;
 }
 
-/* Where the entrance starts (BlogEntriesReveal): the title hidden until its
-   words are split, the facts and the field not yet up. Only with script,
+/* Where the entrance starts (BlogEntriesReveal): the title faint and
+   blurred until its words are split, the facts and the field not yet up. Only with script,
    and not for a reader who asked for less motion. */
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   .blog-card__title {
-    visibility: hidden;
+    /* The first frame of its focus (lib/focus-words.ts FROM), not nothing:
+       text at no opacity does not count as painted, so the page's main
+       content would be timed from when the script runs (SEO-PLAN.md,
+       step 1.7). */
+    opacity: 0.1;
+    filter: blur(12px);
   }
 
   [data-blog-entry-after] {

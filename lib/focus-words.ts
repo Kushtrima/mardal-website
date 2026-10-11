@@ -13,12 +13,15 @@ import { SplitText } from "gsap/SplitText";
  * would clip the blur. When it is done the split is undone, so the heading
  * is its own text again, its letter-spacing as it was.
  *
- * The heading waits hidden in the stylesheet (with script, and only for a
- * reader who has not asked for less motion) until it is split; this shows
- * it. `then` adds what follows to the same timeline. Returns the undoing.
+ * The heading waits faint and blurred in the stylesheet (with script, and
+ * only for a reader who has not asked for less motion) until it is split;
+ * this hands it to its words. `then` adds what follows to the same timeline. Returns the undoing.
  */
 
-const FROM = { opacity: 0, filter: "blur(12px)", yPercent: 18 };
+/* Faint rather than gone: the stylesheet holds the unsplit heading at this
+   same opacity and blur, so the page counts it as painted from its first
+   frame (SEO-PLAN.md, step 1.7) and the words take over where it stood. */
+const FROM = { opacity: 0.1, filter: "blur(12px)", yPercent: 18 };
 const TO = {
   opacity: 1,
   filter: "blur(0px)",
@@ -41,7 +44,7 @@ export function focusWords(
     if (gone) return;
     split = SplitText.create(heading, { type: "words" });
     gsap.set(split.words, FROM);
-    gsap.set(heading, { visibility: "visible" });
+    gsap.set(heading, { opacity: 1, filter: "none" });
 
     timeline = gsap
       .timeline({ delay: 0.1, onComplete: () => split?.revert() })
@@ -53,6 +56,6 @@ export function focusWords(
     gone = true;
     timeline?.kill();
     split?.revert();
-    gsap.set(heading, { clearProps: "visibility" });
+    gsap.set(heading, { clearProps: "opacity,filter" });
   };
 }
