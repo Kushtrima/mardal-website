@@ -9,6 +9,16 @@ Sources are listed at the end. No search-volume tool was used, so demand is show
 
 In every step, **You** = the owner and **Me** = the developer (Claude). Nothing below is built until you approve section 0.
 
+**Status, 11 Oct 2026** (owner: "execute the plan"):
+- **Done and committed** (local only, not deployed), Phase 1 work that needs no input from you:
+  - `fae271d`: canonicals, share pictures and the launch switch (1.1 code, 1.3)
+  - `90d4b8b`: titles and descriptions (1.4)
+  - `6be27c6`: structured data (1.5)
+  - `e3f4cac`: screenshot descriptions (1.6)
+  - `1edcac1`: headings painted from the first frame (1.7)
+- **Waiting on you:** DNS, accounts and the facts in section 0.
+- **Sample projects:** they stay while the site is unfinished (owner: "other are just samples"). They come out on launch day, together with turning the switch in `lib/launch.ts`.
+
 ---
 
 ## 0. Your decisions, needed before we start
