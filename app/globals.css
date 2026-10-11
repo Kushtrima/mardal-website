@@ -1206,6 +1206,12 @@ video {
 
 /* Cover, so the band shows the middle of the photograph — the red square and
    the two figures between it — and the whole screen shows all of it. */
+/* The AVIF's wrapper takes no box of its own: the photograph sizes itself
+   against the frame as it always has. */
+.house-hero__picture {
+  display: contents;
+}
+
 .house-hero__image {
   display: block;
   width: 100%;

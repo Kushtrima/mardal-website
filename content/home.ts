@@ -303,6 +303,11 @@ export const houseHero = {
   ],
   image: {
     src: "/house-hero-1540-ff3300.webp",
+    /* The same picture as AVIF, half the weight (131 KB to the WebP's 250):
+       the page's largest thing, so on a phone it is what the page waits for
+       (SEO-PLAN.md, step 1.7). Compared at 1:1, the grain a touch softer,
+       the red unchanged. Browsers without AVIF take the WebP. */
+    avif: "/house-hero-1540-ff3300.avif",
     width: 1540,
     height: 1021,
     alt: "A woman and a man in traditional dress walking past, blurred by their movement, with a red square between them.",

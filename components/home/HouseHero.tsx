@@ -43,16 +43,19 @@ export function HouseHero() {
         <div className="house-hero__slot" data-house-slot>
           <div className="house-hero__frame" data-house-frame data-bar-dark>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="house-hero__image"
-              src={houseHero.image.src}
-              alt={houseHero.image.alt}
-              width={houseHero.image.width}
-              height={houseHero.image.height}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-            />
+            <picture className="house-hero__picture">
+              <source type="image/avif" srcSet={houseHero.image.avif} />
+              <img
+                className="house-hero__image"
+                src={houseHero.image.src}
+                alt={houseHero.image.alt}
+                width={houseHero.image.width}
+                height={houseHero.image.height}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+              />
+            </picture>
           </div>
 
           {/* Where Mardal is, standing at the band's right end just above it

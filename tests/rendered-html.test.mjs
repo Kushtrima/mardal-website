@@ -2267,6 +2267,7 @@ test("every page tells search engines what it is", async () => {
 
   const post = byType(await nodes("/blog/between-systems"), "BlogPosting");
   assert.equal(post.author.name, "Kushtrim Arifi");
+  assert.equal(post.author.url, "https://kushtrimarifi.com/");
   assert.match(post.datePublished, /^\d{4}-\d{2}-\d{2}$/);
 
   const services = byType(await nodes("/services"), "ItemList");
