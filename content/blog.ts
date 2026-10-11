@@ -115,8 +115,10 @@ export const blogHero = {
 
 export const blog = {
   slug: "blog",
-  title: "Blog",
-  lede: "What we learn, written down.",
+  /* The tab and the line for search results: the menu word first, then
+     what the pieces are about (SEO-PLAN.md, step 1.4). */
+  title: "Blog: Notes on Software, Websites and AI",
+  lede: "Notes from Mardal on building software and websites: where systems meet, why migration is the project, and what a first phase leaves out.",
   /* The label on the first line beside the pieces. */
   indexLabel: "Writing",
   /* Over the piece's headings, down the right of a piece. */

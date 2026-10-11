@@ -56,11 +56,12 @@ export const caseStudies = {
      a URL. */
   slug: "case-studies",
 
-  /* What the tab says, and it has to be the word that was clicked to get here.
-     The menu entry is "Clients" now — one link straight to this page. */
-  title: "Clients",
+  /* What the tab says: the word that was clicked to get here first — the
+     menu entry is "Clients" — then what is here, as people search for it
+     (SEO-PLAN.md, step 1.4). The line for search results names the real projects. */
+  title: "Clients: Case Studies in Websites and Software",
   lede:
-    "Delivered work: what each system replaced, what it does now, and what the client owns.",
+    "Case studies of websites and software Mardal built for clients in Switzerland and Kosovo: Spitex Schwab AG in Bern, En-Nur and Jetonikeramika.",
 
   /* What a card's two lines are called.
      They were three — Replaced, Does now, Client owns — set to answer the hero's

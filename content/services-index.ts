@@ -15,11 +15,12 @@
 
 import { contactEmail } from "./home";
 
-/** The page's name in the tab, and its line for search results — what the
- *  placeholder said, without its count of seven (there are nineteen now). */
+/** The page's name in the tab, and its line for search results — the menu
+ *  word first, then what people search for (SEO-PLAN.md, step 1.4). */
 export const servicesPage = {
-  title: "Services",
-  description: "The services Mardal offers, in one place.",
+  title: "Services: Websites, Software, Apps & AI Automation",
+  description:
+    "Web design, web platforms, mobile apps, custom software, CRM, e-commerce, UX/UI, branding and AI automation: what Mardal designs and builds.",
 } as const;
 
 /**

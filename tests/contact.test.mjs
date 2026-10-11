@@ -66,7 +66,7 @@ test("Contact is a written page", async () => {
   const { status, html } = await render("/contact");
   assert.equal(status, 200);
 
-  assert.match(html, /<title>Contact — Mardal<\/title>/i);
+  assert.match(html, /<title>Contact: Start a Website or Software Project — Mardal<\/title>/i);
   assert.doesNotMatch(html, /Working[\s\S]{0,40}on it\./);
   assert.match(html, /class="site-nav"/);
   assert.match(html, /<footer class="site-footer"/);

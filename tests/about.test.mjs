@@ -119,7 +119,7 @@ test("About is a written page, not a placeholder any more", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
 
-  assert.match(html, /<title>About — Mardal<\/title>/i);
+  assert.match(html, /<title>About: A Kosovo Studio for Web, Software &amp; AI — Mardal<\/title>/i);
 
   /* Both halves. A half-converted route would still render and still say About:
      the shared heading is gone, and so is the eyebrow that told the unwritten

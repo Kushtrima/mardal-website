@@ -111,9 +111,11 @@ export const aboutHero = {
 } as const satisfies PageHeroContent;
 
 export const about = {
-  title: "About",
+  /* The tab and the line for search results — the menu word first, then
+     who Mardal is and for whom (SEO-PLAN.md, step 1.4). */
+  title: "About: A Kosovo Studio for Web, Software & AI",
   description:
-    "Mardal is a Kosovo-based innovation studio working across branding, websites, software and AI.",
+    "Mardal is a Kosovo-based innovation studio working across branding, websites, software and AI for companies in Switzerland, Germany and Kosovo.",
 
   /**
    * The photograph under the hero, and what is said about it.

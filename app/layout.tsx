@@ -27,18 +27,23 @@ export const metadata: Metadata = {
      deployment's own address, so a preview's links do not point at a domain
      that is not serving yet. */
   metadataBase: siteIsLive ? new URL(siteUrl) : undefined,
+  /* The homepage's own title and line for search results, around what
+     people search for (SEO-PLAN.md, step 1.4); the hero keeps "House of Creativity &
+     Technology". */
   title: {
-    default: "Mardal — House of Creativity & Technology",
+    default: "Mardal — Web Design, Custom Software & AI Automation",
     template: "%s — Mardal",
   },
-  description: "We build the technology behind your growth.",
+  description:
+    "Mardal designs and builds websites, custom software and AI automation for companies in Switzerland, Germany and Kosovo, from its studio in Gjilan.",
   openGraph: {
     type: "website",
     siteName: "Mardal",
     locale: "en",
     url: "/",
-    title: "Mardal — House of Creativity & Technology",
-    description: "We build the technology behind your growth.",
+    title: "Mardal — Web Design, Custom Software & AI Automation",
+    description:
+      "Mardal designs and builds websites, custom software and AI automation for companies in Switzerland, Germany and Kosovo, from its studio in Gjilan.",
     /* The homepage's preview, and the fallback for any page without its
        own; the pages' come from lib/page-metadata (site check, 2026-10-09). */
     images: [previewImage],

@@ -41,7 +41,9 @@ test("server-renders the Mardal homepage", async () => {
 
   const html = await response.text();
   /* The old tagline left with the hero it was the heading of (2026-10-03). */
-  assert.match(html, /<title>Mardal — House of Creativity &amp; Technology<\/title>/i);
+  /* Its title around what people search for (SEO-PLAN.md, step 1.4); the
+     hero keeps "House of Creativity & Technology". */
+  assert.match(html, /<title>Mardal — Web Design, Custom Software &amp; AI Automation<\/title>/i);
 
   /* Hero — the owner's concept of 2026-10-03: his heading and sentence, line
      for line, over his photograph. Served in its first state (heading over a
@@ -570,7 +572,7 @@ test("server-renders the Clients hero", async () => {
 
   const html = await response.text();
   /* The tab has to say what was clicked to get here. */
-  assert.match(html, /<title>Clients — Mardal<\/title>/i);
+  assert.match(html, /<title>Clients: Case Studies in Websites and Software — Mardal<\/title>/i);
   assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);
 
   /* The services' opening, in the clients' words: the label beside its plus,
@@ -1780,7 +1782,7 @@ test("the products' page opens as the services' does, in its own words", async (
   const response = await render("/products");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /<title>Products — Mardal<\/title>/i);
+  assert.match(html, /<title>Products: Arvena AI and Ftesa\.co — Mardal<\/title>/i);
   assert.doesNotMatch(html, /Working|service-hero__title|class="page-index"/);
   assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);
 
@@ -2093,7 +2095,7 @@ test("search engines are kept out until launch, and have a sitemap of every page
 });
 
 test("every page has a link preview of its own, with the picture", async () => {
-  for (const [path, title] of [["/services", "Services — Mardal"], ["/blog/between-systems", "Most failures happen between systems — Mardal"]]) {
+  for (const [path, title] of [["/services", "Services: Websites, Software, Apps &amp; AI Automation — Mardal"], ["/blog/between-systems", "Most failures happen between systems — Mardal"]]) {
     const html = await (await render(path)).text();
     assert.match(html, new RegExp(`<meta property="og:title" content="${title}"`), `${path} has no preview title`);
     assert.match(html, /<meta property="og:image" content="[^"]*\/og-image\.png"/, `${path} has no preview picture`);

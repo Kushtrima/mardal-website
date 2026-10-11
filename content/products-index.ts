@@ -13,10 +13,13 @@
 
 import type { PageHeroContent } from "../components/services/ServicesHero";
 
-/** The page's name in the tab, and its line for search results. */
+/** The page's name in the tab, and its line for search results — the menu
+ *  word first, then the products by name (SEO-PLAN.md, step 1.4); the description in the
+ *  owner's own words for them. */
 export const productsPage = {
-  title: "Products",
-  description: "The products Mardal builds, in one place.",
+  title: "Products: Arvena AI and Ftesa.co",
+  description:
+    "Arvena AI and Ftesa.co, Mardal’s own digital products: an AI-powered mental health platform and a digital invitation platform.",
 } as const;
 
 /** The opening: its label, the heading in its lines, and the note. */

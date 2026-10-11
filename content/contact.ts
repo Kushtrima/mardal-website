@@ -55,8 +55,11 @@ const topics = [
 ];
 
 export const contactPage = {
-  title: "Contact",
-  description: "Write to Mardal, in Gjilan, Kosovo.",
+  /* The tab and the line for search results: the menu word first, then
+     what a visitor comes to start (SEO-PLAN.md, step 1.4). */
+  title: "Contact: Start a Website or Software Project",
+  description:
+    "Tell Mardal what you want to build: a website, custom software or AI automation. Write to our studio in Gjilan, Kosovo.",
 
   /** The approved `contact.eyebrow` as the heading, broken after `something`:
    *  the only break that does not split a phrase. */
