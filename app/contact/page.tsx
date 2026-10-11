@@ -8,6 +8,8 @@ import { LetterForm } from "../../components/contact/LetterForm";
 import { contactPage } from "../../content/contact";
 import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
 import { ServicesRules } from "../../components/services/ServicesRules";
+import { JsonLd } from "../../components/seo/JsonLd";
+import { breadcrumbs, graph, pageAbout } from "../../lib/structured-data";
 
 export const metadata: Metadata = pageMetadata(contactPage.title, contactPage.description, "/contact");
 
@@ -34,6 +36,7 @@ export const metadata: Metadata = pageMetadata(contactPage.title, contactPage.de
 export default function ContactPage() {
   return (
     <>
+      <JsonLd data={graph(breadcrumbs([{ name: "Contact", path: "/contact" }]), pageAbout("ContactPage", "/contact", "Contact Mardal"))} />
       <ServicePageEntry />
 
       <main

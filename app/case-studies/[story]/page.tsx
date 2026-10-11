@@ -3,6 +3,8 @@ import { pageMetadata } from "../../../lib/page-metadata";
 import { notFound } from "next/navigation";
 import { ClientsStory } from "../../../components/case-studies/ClientsStory";
 import { stories } from "../../../content/case-studies";
+import { JsonLd } from "../../../components/seo/JsonLd";
+import { breadcrumbs, caseStudyArticle, graph } from "../../../lib/structured-data";
 
 type Params = { params: Promise<{ story: string }> };
 
@@ -47,5 +49,18 @@ export default async function ClientsStoryPage({ params }: Params) {
   const story = storyAt((await params).story);
   if (!story) notFound();
 
-  return <ClientsStory story={story} />;
+  return (
+    <>
+      <JsonLd
+        data={graph(
+          breadcrumbs([
+            { name: "Clients", path: "/case-studies" },
+            { name: story.name, path: `/case-studies/${story.slug}` },
+          ]),
+          caseStudyArticle(story),
+        )}
+      />
+      <ClientsStory story={story} />
+    </>
+  );
 }

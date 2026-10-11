@@ -12,6 +12,8 @@ import {
   servicesIndexActions,
   servicesPage,
 } from "../../content/services-index";
+import { JsonLd } from "../../components/seo/JsonLd";
+import { breadcrumbs, graph, servicesList } from "../../lib/structured-data";
 
 export const metadata: Metadata = pageMetadata(servicesPage.title, servicesPage.description, "/services");
 
@@ -25,6 +27,7 @@ export const metadata: Metadata = pageMetadata(servicesPage.title, servicesPage.
 export default function ServicesPage() {
   return (
     <>
+      <JsonLd data={graph(breadcrumbs([{ name: "Services", path: "/services" }]), servicesList())} />
       <main
         className="service-page service-page--services"
         id="main-content"

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { pageMetadata } from "../../lib/page-metadata";
 import { ClientsPage } from "../../components/case-studies/ClientsPage";
 import { caseStudies } from "../../content/case-studies";
+import { JsonLd } from "../../components/seo/JsonLd";
+import { breadcrumbs, graph } from "../../lib/structured-data";
 
 export const metadata: Metadata = pageMetadata(caseStudies.title, caseStudies.lede, "/case-studies");
 
@@ -16,5 +18,10 @@ export const metadata: Metadata = pageMetadata(caseStudies.title, caseStudies.le
  * already linked.
  */
 export default function CaseStudiesPage() {
-  return <ClientsPage />;
+  return (
+    <>
+      <JsonLd data={graph(breadcrumbs([{ name: "Clients", path: "/case-studies" }]))} />
+      <ClientsPage />
+    </>
+  );
 }

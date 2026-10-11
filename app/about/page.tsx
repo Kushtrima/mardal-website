@@ -15,6 +15,8 @@ import { ServicesFooterRules } from "../../components/services/ServicesFooterRul
 import { ServicesHero } from "../../components/services/ServicesHero";
 import { ServicesRules } from "../../components/services/ServicesRules";
 import { about, aboutHero } from "../../content/about";
+import { JsonLd } from "../../components/seo/JsonLd";
+import { breadcrumbs, graph, pageAbout } from "../../lib/structured-data";
 
 /**
  * Which edge each photograph opens from, which is a composition decision rather
@@ -109,6 +111,7 @@ function ProseSection({
 export default function AboutPage() {
   return (
     <>
+      <JsonLd data={graph(breadcrumbs([{ name: "About", path: "/about" }]), pageAbout("AboutPage", "/about", "About Mardal"))} />
       <SectionEnter />
       <MediaReveal />
       <MediaCluster />

@@ -10,6 +10,8 @@ import { BlogEntriesReveal } from "../../components/blog/BlogEntriesReveal";
 import { ServicesHero } from "../../components/services/ServicesHero";
 import { ServicesRules } from "../../components/services/ServicesRules";
 import { ServicesFooterRules } from "../../components/services/ServicesFooterRules";
+import { JsonLd } from "../../components/seo/JsonLd";
+import { breadcrumbs, graph } from "../../lib/structured-data";
 
 export const metadata: Metadata = pageMetadata(blog.title, blog.lede, "/blog");
 
@@ -37,6 +39,7 @@ export const metadata: Metadata = pageMetadata(blog.title, blog.lede, "/blog");
 export default function BlogPage() {
   return (
     <>
+      <JsonLd data={graph(breadcrumbs([{ name: "Blog", path: "/blog" }]))} />
       <SectionEnter />
 
       <main

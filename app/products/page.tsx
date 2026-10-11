@@ -7,6 +7,8 @@ import { ServicesFooterRules } from "../../components/services/ServicesFooterRul
 import { ServicesHero } from "../../components/services/ServicesHero";
 import { ServicesRules } from "../../components/services/ServicesRules";
 import { productsHero, productsPage } from "../../content/products-index";
+import { JsonLd } from "../../components/seo/JsonLd";
+import { breadcrumbs, graph } from "../../lib/structured-data";
 
 export const metadata: Metadata = pageMetadata(productsPage.title, productsPage.description, "/products");
 
@@ -22,6 +24,7 @@ export const metadata: Metadata = pageMetadata(productsPage.title, productsPage.
 export default function ProductsPage() {
   return (
     <>
+      <JsonLd data={graph(breadcrumbs([{ name: "Products", path: "/products" }]))} />
       <main
         className="service-page service-page--products"
         id="main-content"

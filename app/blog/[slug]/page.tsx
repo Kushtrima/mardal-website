@@ -7,6 +7,8 @@ import { HeaderSpace } from "../../../components/layout/HeaderSpace";
 import { ArticleContents } from "../../../components/blog/ArticleContents";
 import { blog, formatDate, readingMinutes } from "../../../content/blog";
 import { ServicesFooterRules } from "../../../components/services/ServicesFooterRules";
+import { JsonLd } from "../../../components/seo/JsonLd";
+import { blogPosting, breadcrumbs, graph } from "../../../lib/structured-data";
 
 type Params = { slug: string };
 
@@ -75,6 +77,15 @@ export default async function BlogPostPage({
 
   return (
     <>
+      <JsonLd
+        data={graph(
+          breadcrumbs([
+            { name: "Blog", path: "/blog" },
+            { name: post.title, path: `/blog/${post.slug}` },
+          ]),
+          blogPosting(post),
+        )}
+      />
       <main className="service-page blog-post" id="main-content">
         {/* The page's five lines, grey, from its top to its foot — owner,
             2026-10-08: "add the vertical lines to the rest of the pages". */}

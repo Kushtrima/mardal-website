@@ -2094,6 +2094,57 @@ test("search engines are kept out until launch, and have a sitemap of every page
   assert.match(sitemap, /blog\.posts\.map/);
 });
 
+/* **What search engines and AI answers read** — SEO-PLAN.md, step 1.5:
+   schema.org JSON-LD in each page's HTML, built only from what the page
+   says. The company and the site on the homepage; a breadcrumb on every
+   inner page; an article about each real client; each post with its author
+   and date; the services by name. No postcode until the owner settles it,
+   and no article about the sample project's invented client. */
+test("every page tells search engines what it is", async () => {
+  const nodes = async (path) => {
+    const html = await (await render(path)).text();
+    const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+    assert.equal(blocks.length, 1, `${path} has ${blocks.length} JSON-LD blocks`);
+    assert.equal(blocks[0]["@context"], "https://schema.org");
+    return blocks[0]["@graph"];
+  };
+  const byType = (graph, type) => graph.find((node) => node["@type"] === type);
+
+  const home = await nodes("/");
+  const org = byType(home, "Organization");
+  assert.equal(org.name, "Mardal");
+  assert.equal(org.url, "https://mardal.co/");
+  assert.equal(org.email, "info@mardal.co");
+  assert.equal(org.address.addressLocality, "Gjilan");
+  assert.equal(org.address.addressCountry, "XK");
+  assert.equal(org.address.postalCode, undefined);
+  assert.deepEqual(org.areaServed.map((country) => country.name), ["Switzerland", "Germany", "Kosovo"]);
+  assert.ok(org.sameAs.some((url) => url.startsWith("https://www.linkedin.com/company/")));
+  assert.equal(byType(home, "WebSite").name, "Mardal");
+
+  const story = await nodes("/case-studies/en-nur");
+  assert.deepEqual(byType(story, "BreadcrumbList").itemListElement.map((step) => step.name), ["Home", "Clients", "En-Nur"]);
+  const article = byType(story, "Article");
+  assert.deepEqual(article.about, { "@type": "Organization", name: "En-Nur", url: "https://xhamia-en-nur.ch/" });
+  assert.equal(article.url, "https://mardal.co/case-studies/en-nur");
+  assert.equal(byType(await nodes("/case-studies/healthcare-office-website"), "Article"), undefined);
+
+  const post = byType(await nodes("/blog/between-systems"), "BlogPosting");
+  assert.equal(post.author.name, "Kushtrim Arifi");
+  assert.match(post.datePublished, /^\d{4}-\d{2}-\d{2}$/);
+
+  const services = byType(await nodes("/services"), "ItemList");
+  assert.equal(services.itemListElement.length, 19);
+  assert.ok(services.itemListElement.every((entry) => entry.item["@type"] === "Service" && entry.item.provider.name === "Mardal"));
+
+  for (const [path, type] of [["/about", "AboutPage"], ["/contact", "ContactPage"]]) {
+    assert.ok(byType(await nodes(path), type), `${path} is not a ${type}`);
+  }
+  for (const path of ["/case-studies", "/products", "/blog"]) {
+    assert.ok(byType(await nodes(path), "BreadcrumbList"), `${path} has no breadcrumb`);
+  }
+});
+
 test("every page has a link preview of its own, with the picture", async () => {
   for (const [path, title] of [["/services", "Services: Websites, Software, Apps &amp; AI Automation — Mardal"], ["/blog/between-systems", "Most failures happen between systems — Mardal"]]) {
     const html = await (await render(path)).text();
