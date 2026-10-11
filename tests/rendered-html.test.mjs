@@ -359,6 +359,7 @@ test("server-renders the Mardal homepage", async () => {
       ["About", "/about"],
       ["Contact", "/contact"],
       ["Blog", "/blog"],
+      ["Nearshoring", "/nearshoring-kosovo"],
     ],
   );
   assert.doesNotMatch(footerPart, /<a class="site-footer__link" href="\/">/);
@@ -369,9 +370,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(footerPart, /site-footer__(title|cta|mark|lead|label|sign|bars|wordmark|email|body)\b/);
   assert.doesNotMatch(html, /Let’s build|Tell us what you want to improve|practical digital solution/);
 
-  // 6 pages, the email, and the 3 legal links. The address is not a link, and
-  // the social marks are links of their own (site-footer__social-link).
-  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 10);
+  // 7 pages (Nearshoring since 2026-10-11), the email, and the 3 legal links.
+  // The address is not a link, and the social marks are links of their own
+  // (site-footer__social-link).
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 11);
   assert.doesNotMatch(html, /href="\/careers/);
   // **Team is gone from every menu, not just this one.**
   assert.doesNotMatch(html, />Team</);
@@ -2174,6 +2176,42 @@ test("each kind of work has a page of its own, in the owner's words", async () =
     assert.equal(moved.status, 308, `${from} does not redirect`);
     assert.equal(moved.headers.get("location"), to);
   }
+});
+
+/* **Nearshoring from Kosovo** — SEO-PLAN.md, step 2.5; owner, 2026-10-11:
+   "English first then De and AL". Its facts about Kosovo only from the
+   Swiss foreign ministry, STIKK and the ministry's study, each linked out;
+   about Mardal only what the site already says; linked from every page's
+   footer and in the sitemap. */
+test("nearshoring from Kosovo has a page, its facts sourced", async () => {
+  const response = await render("/nearshoring-kosovo");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
+  assert.match(html, /<title>Nearshoring from Kosovo: Software and Web Development — Mardal<\/title>/);
+  assert.match(html, /<link rel="canonical" href="(https?:\/\/[^"\/]+)?\/nearshoring-kosovo"/);
+  assert.equal((main.match(/<h1[\s>]/g) ?? []).length, 1);
+  assert.deepEqual(
+    [...main.matchAll(/<h2 class="project-passage__title">([^<]+)<\/h2>/g)].map((m) => m[1]),
+    ["Why Kosovo", "What we build", "Work for Swiss clients", "Who you work with", "Sources"],
+  );
+  /* The facts, as their sources state them. */
+  assert.match(main, /Kosovo has become a nearshoring destination for Swiss companies/);
+  assert.match(main, /about 68% of the 115 companies surveyed operate internationally/);
+  assert.match(main, /named by 52% of them/);
+  assert.match(main, /more than 1,200 companies and 11,500 jobs/);
+  const sources = [...main.matchAll(/<a class="services-wheel__cta nearshoring__source" href="(https:\/\/[^"]+)" target="_blank" rel="noopener noreferrer"/g)].map((m) => m[1]);
+  assert.deepEqual(sources.map((url) => new URL(url).hostname), ["www.eda.admin.ch", "stikk.org", "minti.rks-gov.net"]);
+  /* Each kind of work and each real project, by link. */
+  for (const href of ["/services/websites", "/services/software", "/services/crm", "/services/ai-automation", "/services/branding-design", "/case-studies/spitex-schwab", "/case-studies/en-nur", "/case-studies/jetonikeramika", "/about"]) {
+    assert.match(main, new RegExp(`href="${href}"`), `${href} is not linked`);
+  }
+  /* No claim the site does not make elsewhere. */
+  assert.doesNotMatch(main, /\b\d+\s*%\s*(cheaper|savings|lower)|German-speaking|native German|ISO|24 ?h/i);
+  const sitemap = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");
+  assert.match(sitemap, /"\/nearshoring-kosovo"/);
+  const graph = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])["@graph"];
+  assert.deepEqual(graph[0].itemListElement.map((step) => step.name), ["Home", "Nearshoring from Kosovo"]);
 });
 
 /* **What search engines and AI answers read** — SEO-PLAN.md, step 1.5:

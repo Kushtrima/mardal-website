@@ -17,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/products",
     "/case-studies",
     ...stories.map((story) => `/case-studies/${story.slug}`),
+    "/nearshoring-kosovo",
     "/about",
     "/blog",
     "/contact",

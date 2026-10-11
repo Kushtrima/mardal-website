@@ -35,7 +35,7 @@ export function ServicesHero({
   name,
 }: {
   hero: PageHeroContent;
-  name: "services" | "products" | "clients" | "about" | "blog" | "service-hub";
+  name: "services" | "products" | "clients" | "about" | "blog" | "service-hub" | "nearshoring";
 }) {
   return (
     <section

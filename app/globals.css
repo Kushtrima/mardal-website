@@ -8188,6 +8188,17 @@ a.project-live:focus-visible {
   margin-top: 0;
 }
 
+/* Nearshoring from Kosovo (NearshoringPage): a part's links a step under
+   its words; a source's long name wraps beside its arrow. */
+.nearshoring__links {
+  margin-top: 1.75rem;
+}
+
+.nearshoring__source {
+  align-items: flex-start;
+  line-height: 1.3;
+}
+
 /* ── The pages (ProjectShowcase) ──
    A screen tall and held while the pages pass through the middle columns;
    Previous and Next on the left; every page in small at the right edge, a
