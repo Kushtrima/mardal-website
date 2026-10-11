@@ -1061,7 +1061,8 @@ test("server-renders En-Nur's story from the owner's own case study", async () =
      (first paragraph, then the other two), "Discovery" and "Solution". */
   assert.deepEqual(
     [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
-    ["Situation", "Challenge", "Research", "Solution"],
+    /* Then the pages of its work, since 2026-10-11 (SEO-PLAN.md, 2.4). */
+    ["Situation", "Challenge", "Research", "Solution", "Services"],
   );
   const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
   assert.deepEqual(
@@ -1142,7 +1143,8 @@ test("server-renders Jetonikeramika's story from the owner's own case study", as
      the Challenge its last; then "Research" and "Solution". */
   assert.deepEqual(
     [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
-    ["Situation", "Challenge", "Research", "Solution"],
+    /* Then the pages of its work, since 2026-10-11 (SEO-PLAN.md, 2.4). */
+    ["Situation", "Challenge", "Research", "Solution", "Services"],
   );
   const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
   assert.deepEqual(
@@ -1218,7 +1220,8 @@ test("server-renders Spitex Schwab AG's story from the owner's own case study", 
      "Research", his "I" as "we", and "Solution". */
   assert.deepEqual(
     [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
-    ["Situation", "Challenge", "Research", "Solution"],
+    /* Then the pages of its work, since 2026-10-11 (SEO-PLAN.md, 2.4). */
+    ["Situation", "Challenge", "Research", "Solution", "Services"],
   );
   const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
   assert.deepEqual(
@@ -1527,7 +1530,10 @@ test("Our expertise stands under about, and each word opens its services", async
   assert.doesNotMatch(section, /expertise__plus/);
   assert.equal((section.match(/class="expertise__row" data-expertise-row="true" data-roll="true"/g) ?? []).length, 3);
   const subs = (key) =>
-    [...(section.match(new RegExp(`id="expertise-${key}"[\\s\\S]*?</ul>`))?.[0] ?? "").matchAll(/<li class="expertise__sub"><span class="expertise__sub-word">([^<]+)<\/span><\/li>/g)].map((m) => m[1]);
+    [...(section.match(new RegExp(`id="expertise-${key}"[\\s\\S]*?</ul>`))?.[0] ?? "").matchAll(/<li class="expertise__sub"><a class="expertise__sub-word" href="\/services\/[a-z-]+#[a-z0-9-]+">([^<]+)<\/a><\/li>/g)].map((m) => m[1]);
+  /* Each name a link to its place on its service page (SEO-PLAN.md, 2.4). */
+  assert.match(section, /<a class="expertise__sub-word" href="\/services\/websites#web-design">Web Design<\/a>/);
+  assert.match(section, /<a class="expertise__sub-word" href="\/services\/crm#sales-crm-automation">Sales &amp; CRM Automation<\/a>/);
   /* His five a row (owner, 2026-10-06). */
   assert.deepEqual(subs("creative"), ["Branding", "UX/UI Design", "Web Design", "Product Design", "Social Media Design"]);
   assert.deepEqual(subs("development"), ["Websites", "Web Platforms", "Mobile Apps", "Custom Software", "CRM Solutions"]);
@@ -2155,6 +2161,14 @@ test("each kind of work has a page of its own, in the owner's words", async () =
   }
   assert.equal(found.size, 19, "a service's own words are missing from its page");
   assert.equal((await render("/services/nope")).status, 404);
+
+  /* And each real project links back to the pages of its work; the sample
+     links none. */
+  for (const [story, pages] of [["en-nur", ["software", "crm", "branding-design"]], ["jetonikeramika", ["websites", "branding-design"]], ["spitex-schwab", ["websites", "branding-design"]], ["healthcare-office-website", []]]) {
+    const page = await (await render(`/case-studies/${story}`)).text();
+    const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
+    assert.deepEqual([...account.matchAll(/href="\/services\/([a-z-]+)"/g)].map((m) => m[1]), pages, `${story} links the wrong services`);
+  }
 
   /* Real work where there is some: websites shows Spitex and Jetonikeramika. */
   const websites = await (await render("/services/websites")).text();

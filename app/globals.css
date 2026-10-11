@@ -4190,8 +4190,12 @@ main:has(> .services-rules) > .pin-spacer {
 
 /* The closed state's timing; the open state swaps in its own through the
    custom properties, so the reduced-motion rule below still wins. */
+/* A link to its service page since 2026-10-11 (SEO-PLAN.md, 2.4), and it
+   looks as the word always has: no colour or line of its own. */
 .expertise__sub-word {
   display: block;
+  color: inherit;
+  text-decoration: none;
   opacity: 0;
   filter: blur(4px);
   transform: translateY(0.6em);

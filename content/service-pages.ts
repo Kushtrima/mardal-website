@@ -135,6 +135,12 @@ export function serviceHref(label: string): string {
   return hub ? `/services/${hub.slug}#${serviceAnchor(label)}` : "/services";
 }
 
+/** The service pages a real project shows the work of — the same pairs
+ *  the service pages list as its related work, read the other way. */
+export function hubsForStory(slug: string): readonly ServiceHub[] {
+  return serviceHubs.filter((hub) => hub.related.includes(slug));
+}
+
 /** A page's services, with the owner's words for each. */
 export function hubServices(hub: ServiceHub): readonly ServiceIndexEntry[] {
   return hub.services.map((label) => {
