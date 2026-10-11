@@ -9,16 +9,23 @@ Sources are listed at the end. No search-volume tool was used, so demand is show
 
 In every step, **You** = the owner and **Me** = the developer (Claude). Nothing below is built until you approve section 0.
 
-**Status, 11 Oct 2026** (owner: "execute the plan"):
-- **Done and committed** (local only, not deployed), Phase 1 work that needs no input from you:
-  - `fae271d`: canonicals, share pictures and the launch switch (1.1 code, 1.3)
+**Status, 11 Oct 2026** (owner: "execute the plan", then "make it what is best", "English first then De and AL", "i just want to be SEO PERFECT"):
+- **Done and committed** (local only, not deployed):
+  - `fae271d`: canonicals, share pictures and the launch switch (1.1, 1.3)
   - `90d4b8b`: titles and descriptions (1.4)
   - `6be27c6`: structured data (1.5)
   - `e3f4cac`: screenshot descriptions (1.6)
-  - `1edcac1`: headings painted from the first frame (1.7)
-- **Waiting on you:** DNS, accounts and the facts in section 0.
-- **Sample projects:** they stay while the site is unfinished (owner: "other are just samples"). They come out on launch day, together with turning the switch in `lib/launch.ts`.
-
+  - `1edcac1` and `4043666`: speed (1.7). On a throttled phone the main content of most pages shows in 0.8–0.9 s, the homepage in 2.6 s.
+  - `b6f89d5`: postcode 60000 and founding year 2026
+  - `d159ca8`: five service pages (2.1)
+  - `a98ffc7`: Nearshoring from Kosovo in English (2.5)
+  - `11849d8`: internal links (2.4)
+- **Waiting on you:**
+  - German and Albanian reviewers (Phase 3–4)
+  - the legal name and registration for the legal notice
+  - the data-protection position
+  - DNS for launch, then the accounts: Search Console, Bing, Google Business Profile, directories
+- **Sample projects:** they come out on launch day, together with turning the switch in `lib/launch.ts`.
 ---
 
 ## 0. Your decisions, needed before we start
