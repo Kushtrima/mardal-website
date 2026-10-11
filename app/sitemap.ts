@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { blog } from "../content/blog";
-import { pilotStory } from "../content/case-studies";
+import { stories } from "../content/case-studies";
 import { siteUrl } from "../content/home";
 
 /**
@@ -14,7 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/services",
     "/products",
     "/case-studies",
-    `/case-studies/${pilotStory.slug}`,
+    ...stories.map((story) => `/case-studies/${story.slug}`),
     "/about",
     "/blog",
     "/contact",

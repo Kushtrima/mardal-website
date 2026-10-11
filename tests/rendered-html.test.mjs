@@ -593,18 +593,25 @@ test("server-renders the Clients hero", async () => {
   assert.equal((main.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 5);
   assert.equal((html.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 10);
 
-  /* **No client is named, and none may be until the owner says so.**
-     PRODUCT.md records that the delivered archive may be described as Mardal's
-     work but that per-client sign-off for naming these companies in public was
-     never recorded. This is the assertion that catches a name arriving here
-     before that decision does — the copy is written so it never has to. */
+  /* **No client is named until the owner says so.** PRODUCT.md records that
+     the delivered archive may be described as Mardal's work but that
+     per-client sign-off for naming these companies in public was never
+     recorded. This is the assertion that catches a name arriving here before
+     that decision does — the copy is written so it never has to.
+
+     **En-Nur is the first he has said so for** — owner, 2026-10-11: "add one
+     project … so i have this project also in my personal portfolio", from
+     his own case study — **then Jetonikeramika and Spitex Schwab AG**, the
+     same day ("now we have new one: Jetonikeramika", "now this project:
+     …/work/spitex.html"). Taken off this list on purpose, and asserted
+     present instead. */
+  assert.match(html, /class="clients-card__name">En-Nur</);
+  assert.match(html, /class="clients-card__name">Jetonikeramika</);
+  assert.match(html, /class="clients-card__name">Spitex Schwab AG</);
   for (const client of [
-    "EN NUR",
-    "Spitex",
     "Stolzbau",
     "Henor",
     "ANDI SPORT",
-    "Jetonikeramika",
   ]) {
     assert.doesNotMatch(html, new RegExp(client, "i"), `${client} named`);
   }
@@ -652,9 +659,11 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   /* Every entry, once. There is no state and no subset any more, so this is the
      count of the whole list rather than of a view of it. Matched to the end of
      the class name rather than the attribute: a card with a story behind it
-     carries a modifier too. */
-  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 8);
-  assert.equal((cardMarkup.match(/<article/g) ?? []).length, 8);
+     carries a modifier too. Eleven since 2026-10-11: En-Nur,
+     Jetonikeramika and Spitex Schwab AG, the delivered work, and the eight
+     placeholders. */
+  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 11);
+  assert.equal((cardMarkup.match(/<article/g) ?? []).length, 11);
 
   /* **FILTERS, under the opening — owner, 2026-10-08**: "under the hero add
      this then when click to open …", then "i want when open menu to open on
@@ -704,7 +713,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
 
   /* And with All chosen the grid is every entry — which is what makes the
      default meaningful rather than just marked. */
-  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 8);
+  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 11);
 
   /* The seven sector addresses were live and prerendered. They redirect rather
      than 404, so anything already linked still lands somewhere. */
@@ -729,8 +738,8 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
 
   /* Every card carries a picture in a box of the same shape. Four tints cycled
      by position, so no plate sits under its own colour. */
-  assert.equal((cardMarkup.match(/class="clients-card__plate"/g) ?? []).length, 8);
-  assert.equal((cardMarkup.match(/class="clients-card__art"/g) ?? []).length, 8);
+  assert.equal((cardMarkup.match(/class="clients-card__plate"/g) ?? []).length, 11);
+  assert.equal((cardMarkup.match(/class="clients-card__art"/g) ?? []).length, 11);
   const tints = [...cardMarkup.matchAll(/clients-card__plate" data-tint="(\w+)"/g)].map(
     (match) => match[1],
   );
@@ -742,7 +751,13 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      frames still in it, which is exactly when nobody is reading comments.
      Delete it in the same commit that puts real screenshots in. */
   /* One `src` each (the srcset names the same frame again, at two sizes). */
+  /* The eight placeholders' — En-Nur's, Jetonikeramika's and Spitex Schwab
+     AG's are the owner's own pictures, the ones their pages open on
+     (2026-10-11), at their two widths. */
   assert.equal((cardMarkup.match(/ src="https:\/\/picsum\.photos\//g) ?? []).length, 8);
+  assert.match(cardMarkup, /<img class="clients-card__art" src="\/spitex-schwab-hero-2000\.webp" srcSet="\/spitex-schwab-hero-1200\.webp 1200w, \/spitex-schwab-hero-2000\.webp 2000w"/);
+  assert.match(cardMarkup, /<img class="clients-card__art" src="\/en-nur-hero-2376\.webp" srcSet="\/en-nur-hero-1200\.webp 1200w, \/en-nur-hero-2376\.webp 2376w"/);
+  assert.match(cardMarkup, /<img class="clients-card__art" src="\/jetonikeramika-hero-1501\.webp" srcSet="\/jetonikeramika-hero-1200\.webp 1200w, \/jetonikeramika-hero-1501\.webp 1501w"/);
   /* Decorative, so every one of them is silent to a screen reader. */
   assert.doesNotMatch(cardMarkup, /class="clients-card__art"[^>]*alt="[^"]+"/);
 
@@ -754,12 +769,16 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      reading "Customer stories" and a line promising delivered work, eight
      invented companies are a claimed client list and a reader cannot tell them
      from the real archive — which is in PRODUCT.md, behind a naming decision
-     nobody has made. Delete this with the commit that puts real names in. */
+     nobody has made. Delete this with the commit that puts real names in.
+
+     The first real ones came in ahead of them on 2026-10-11 — En-Nur, then
+     Jetonikeramika, then Spitex Schwab AG, on the owner's word — so the list
+     now opens with them; the eight after them are still invented. */
   assert.deepEqual(
     [...cardMarkup.matchAll(/class="clients-card__name">([^<]*)</g)].map(
       (m) => m[1],
     ),
-    ["Nordvik", "Alturi", "Solvei", "Marren", "Brekk", "Vantor", "Lumea", "Kestrel"],
+    ["En-Nur", "Jetonikeramika", "Spitex Schwab AG", "Nordvik", "Alturi", "Solvei", "Marren", "Brekk", "Vantor", "Lumea", "Kestrel"],
   );
 
   /* No project name, and no bracket left behind by the names landing. One entry
@@ -772,7 +791,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      project". (Industry, services and country stood there from 2026-09-30.) */
   assert.equal(
     [...cardMarkup.matchAll(/class="clients-card__name">[^<]*(?:<!-- -->)?(?:<svg class="clients-card__arrow"[\s\S]*?<\/svg>)?<\/h3><\/article>/g)].length,
-    8,
+    11,
   );
   assert.doesNotMatch(cardMarkup, /clients-card__fact/);
   assert.doesNotMatch(cardMarkup, />(Switzerland|Germany|Austria|Kosovo|Finance|Healthcare|Manufacturing|Automotive|Retail|Logistics|Public Sector|UX\/UI Design|Branding|Software|CRM)</);
@@ -780,9 +799,9 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   /* **Three shapes, two to a row at most, sometimes one** — owner,
      2026-10-08: "i want the project to have three format Box, wide and
      portrat and to be mixed", each starting on one of the page's lines, then
-     "max 2 project in one row sometimes 1". Eight cards are rows of two, one,
-     two, one, two; each card's shape, columns (of the page's four) and — a
-     row's first — starting line set by its place. */
+     "max 2 project in one row sometimes 1". Eleven cards are rows of two,
+     one, two, one, two, one, two; each card's shape, columns (of the page's
+     four) and — a row's first — starting line set by its place. */
   assert.deepEqual(
     [...cardMarkup.matchAll(/<li data-format="(\w+)" data-span="(\d+)"(?: data-start="(\d)")? data-row="(\d)" data-place="(\d)">/g)].map(
       (m) => `${m[1]} ${m[2]}${m[3] ? "@" + m[3] : ""} ${m[4]}.${m[5]}`,
@@ -793,19 +812,25 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
       "box 2@1 2.1", "portrait 2 2.2",
       "box 2@1 1.1",
       "portrait 2@1 2.1", "wide 2 2.2",
+      "wide 3@2 1.1",
+      "box 2@1 2.1", "portrait 2 2.2",
     ],
   );
 
-  /* **One card is a link, and only one.** The pilot story is the only entry
-     with a page behind it; the other seven go nowhere on purpose, because a
-     card that looks like a link and answers with an empty page is worse than a
-     card that never offered.
+  /* **Four cards are links: En-Nur, Jetonikeramika and Spitex Schwab AG
+     (2026-10-11) and the pilot story**, the entries with a page behind them;
+     the other seven go nowhere on purpose, because a card that looks like a
+     link and answers with an empty page is worse than a card that never
+     offered.
 
-     Its address lost the sector segment with the taxonomy — it was
+     The pilot's address lost the sector segment with the taxonomy — it was
      `/case-studies/healthcare/healthcare-office-website`. */
   const links = [...cardMarkup.matchAll(/<a [^>]*class="clients-card__link"[^>]*>/g)];
-  assert.equal(links.length, 1);
+  assert.equal(links.length, 4);
   assert.match(all, /href="\/case-studies\/healthcare-office-website"/);
+  assert.match(all, /href="\/case-studies\/en-nur"/);
+  assert.match(all, /href="\/case-studies\/jetonikeramika"/);
+  assert.match(all, /href="\/case-studies\/spitex-schwab"/);
 
   /* **The link opens on the picture, and that is a size, not a nesting taste.**
      The stylesheet stretches this anchor over the whole card with `inset: 0`,
@@ -832,7 +857,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      opens, and a plus under the pointer on a card that answers with an empty
      page is the promise this site refuses to make. */
   assert.equal((cardMarkup.match(/data-opens="true"/g) ?? []).length, links.length);
-  assert.equal((cardMarkup.match(/data-opens-mark/g) ?? []).length, 8);
+  assert.equal((cardMarkup.match(/data-opens-mark/g) ?? []).length, 11);
 
   /* **The hover — owner, 2026-10-08** ("i dont like it how it is right
      now"): no wash and no cross laid over the picture; its frame draws in,
@@ -851,8 +876,9 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   );
 });
 
-/* The pilot story — the page a card opens, and the only one there is. What is
-   being judged is the shape; the words in it are slots.
+/* The pilot story — one of the two pages a card opens (En-Nur's is the
+   other, since 2026-10-11). What is being judged is the shape; the words in
+   it are slots.
 
    **A new approach — owner, 2026-10-08**, from three references: "hero with
    big images", the project in a paragraph with its record under it, "then
@@ -889,12 +915,17 @@ test("server-renders the one customer story", async () => {
   assert.ok(intro, "the project is not introduced");
   assert.match(intro, /<h2 class="project-intro__name" id="project-intro-title">Solvei<\/h2>/);
   assert.match(intro, /class="project-intro__summary">\[Two or three sentences/);
+  /* Industry, services, location and stack — owner, 2026-10-11; the
+     challenge and the solution moved down into the account. */
   assert.deepEqual(
     [...intro.matchAll(/class="project-intro__label">([^<]*)</g)].map((m) => m[1]),
-    ["INDUSTRY:", "SERVICES:", "CHALLENGE:", "SOLUTION:"],
+    ["INDUSTRY:", "SERVICES:", "LOCATION:", "STACK:"],
   );
   assert.match(intro, /class="project-intro__value">Healthcare</);
   assert.match(intro, /class="project-intro__value">UX\/UI Design, Websites</);
+  assert.match(intro, /class="project-intro__value">Switzerland</);
+  assert.match(intro, /class="project-intro__value">\[What it was built with\.\]</);
+  assert.doesNotMatch(intro, /CHALLENGE|SOLUTION/);
   /* No address on file, so no LIVE WEBSITE at all (site check, 2026-10-09:
      it looked like a button and went nowhere); its rule stays for the day
      there is one. */
@@ -907,13 +938,15 @@ test("server-renders the one customer story", async () => {
   assert.match(CSS, /\.project-intro__label \{[^}]*color: var\(--ink\);/);
   assert.doesNotMatch(intro, /<a [^>]*class="project-live"/);
 
-  /* **The account**: the three the Clients page has promised, each heading
-     over its slots. */
+  /* **The account**: situation, challenge, research, solution — owner,
+     2026-10-11, in place of what it replaced / does now / the client owns —
+     each heading over its slots. */
   assert.deepEqual(
     [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
-    ["What it replaced", "What it does now", "What the client owns"],
+    ["Situation", "Challenge", "Research", "Solution"],
   );
-  assert.match(page, /class="project-passage__copy"><p>\[What the office was working/);
+  assert.match(page, /class="project-passage__copy"><p>\[Where the office stood before the project\./);
+  assert.doesNotMatch(page, /What it replaced|What it does now|What the client owns/);
   /* Still, one under the next, no effect on the scroll at all — owner,
      2026-10-08, after a reveal and a held version: "remove all on scroll
      leave it as it was in normal state". */
@@ -977,6 +1010,232 @@ test("server-renders the one customer story", async () => {
 
   assert.match(html, /class="site-nav"/);
   assert.match(html, /<footer class="site-footer"/);
+});
+
+/* **En-Nur, the first real story** — owner, 2026-10-11: "analyze the text
+   inside https://kushtrimarifi.com/work/ennur.html but you need to copy only
+   what we need", then "only take what we need". The pilot's page, with his
+   words in its places: no slot left, the live address a link at last. */
+test("server-renders En-Nur's story from the owner's own case study", async () => {
+  const response = await render("/case-studies/en-nur");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const page = html.slice(0, html.indexOf("<footer"));
+
+  assert.match(html, /<title>En-Nur — Laravel Membership &amp; Donations App — Mardal<\/title>/i);
+  assert.equal((page.match(/<h1[\s>]/g) ?? []).length, 1);
+
+  const hero = page.match(/<section class="project-hero"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.match(hero, /<span class="project-hero__mark" aria-hidden="true"><\/span>Religious, Community<\/p>/);
+  assert.match(hero, /<h1 class="project-hero__title" id="project-title" data-project-hero-title="true">En-Nur<\/h1>/);
+  /* His picture for the opening (2026-10-11), at its two widths. */
+  assert.match(hero, /class="project-hero__image" src="\/en-nur-hero-2376\.webp" srcSet="\/en-nur-hero-1200\.webp 1200w, \/en-nur-hero-2376\.webp 2376w"/);
+  for (const width of [1200, 2376]) {
+    assert.ok(existsSync(new URL(`../public/en-nur-hero-${width}.webp`, import.meta.url)), `en-nur-hero-${width}.webp is missing`);
+  }
+
+  /* His facts, his `·` lists written with the record's commas. */
+  const intro = page.match(/<section class="project-intro"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...intro.matchAll(/class="project-intro__label">([^<]*)<\/dt><dd class="project-intro__value">([^<]*)</g)].map((m) => `${m[1]} ${m[2]}`),
+    [
+      "INDUSTRY: Religious, Community",
+      "SERVICES: Product Design, Full-Stack Development, Payments",
+      "LOCATION: Switzerland",
+      "STACK: Figma, Laravel, PHP, Eloquent ORM, Blade, MySQL, Stripe, PHPMailer, Render",
+    ],
+  );
+  /* His "Company", his "I" as Mardal's "We". */
+  assert.match(intro, /class="project-intro__summary">En-Nur is a mosque community in Switzerland\.[^<]*We designed and built that system in 2025\.</);
+  /* The live address is on file, so LIVE WEBSITE is a link, out of the site. */
+  assert.match(intro, /<a class="project-live" href="https:\/\/xhamia-en-nur\.ch\/"[^>]*target="_blank"/);
+
+  /* Situation, Challenge, Research, Solution — from his "The problem"
+     (first paragraph, then the other two), "Discovery" and "Solution". */
+  assert.deepEqual(
+    [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
+    ["Situation", "Challenge", "Research", "Solution"],
+  );
+  const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...account.matchAll(/<div class="project-passage__copy">([\s\S]*?)<\/div>/g)].map((m) => (m[1].match(/<p>/g) ?? []).length),
+    [1, 2, 2, 4],
+  );
+  assert.match(account, /<p>The community managed memberships and donations through third-party software\./);
+  assert.match(account, /<p>They needed a system built around their own requirements/);
+  assert.match(account, /<p>Discovery meant working through, with the people who run the community/);
+  assert.match(account, /<p>Donations are kept separate from membership fees\./);
+
+  /* Only what the page needs: his other sections stay on his page, nothing is
+     left as a slot, and his straight apostrophes are curled. */
+  const main = page.slice(page.indexOf("<main"), page.indexOf("</main>")).replace(/<script[\s\S]*?<\/script>/g, "");
+  assert.doesNotMatch(main, /Every age, one system|Mapping the flow before the interface|A system the community owns/);
+  assert.doesNotMatch(main, /\[[A-Z][^\]]*\]/);
+  assert.doesNotMatch(account, /&#x27;|didn't|weren't|it's|community's/);
+  assert.match(account, /didn’t fit simply weren’t supported/);
+
+  /* **His eight screenshots, in his order** (2026-10-11), each one file of
+     our own rather than a stock frame offered at two widths; the opening
+     picture is still stock until he sends it. */
+  const showcase = page.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...showcase.matchAll(/<img src="([^"]+)"/g)].map((m) => m[1]),
+    [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/en-nur-${n}.avif`),
+  );
+  assert.doesNotMatch(showcase, /srcSet|srcset|picsum/i);
+  for (let n = 1; n <= 8; n += 1) {
+    assert.ok(existsSync(new URL(`../public/en-nur-${n}.avif`, import.meta.url)), `en-nur-${n}.avif is missing`);
+  }
+});
+
+/* **Jetonikeramika, the second real story** — owner, 2026-10-11: "now we
+   have new one: Jetonikeramika here you have the link:
+   https://kushtrimarifi.com/work/jetonikeramika.html". Taken as En-Nur's
+   was: only what the page needs, his words in its places. */
+test("server-renders Jetonikeramika's story from the owner's own case study", async () => {
+  const response = await render("/case-studies/jetonikeramika");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const page = html.slice(0, html.indexOf("<footer"));
+
+  assert.match(html, /<title>Jetonikeramika — Tile Showroom Website — Mardal<\/title>/i);
+  assert.equal((page.match(/<h1[\s>]/g) ?? []).length, 1);
+
+  const hero = page.match(/<section class="project-hero"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.match(hero, /<span class="project-hero__mark" aria-hidden="true"><\/span>Ceramics &amp; Tiles<\/p>/);
+  assert.match(hero, /<h1 class="project-hero__title" id="project-title" data-project-hero-title="true">Jetonikeramika<\/h1>/);
+  /* His picture for the opening (2026-10-11), at its two widths. */
+  assert.match(hero, /class="project-hero__image" src="\/jetonikeramika-hero-1501\.webp" srcSet="\/jetonikeramika-hero-1200\.webp 1200w, \/jetonikeramika-hero-1501\.webp 1501w"/);
+  for (const width of [1200, 1501]) {
+    assert.ok(existsSync(new URL(`../public/jetonikeramika-hero-${width}.webp`, import.meta.url)), `jetonikeramika-hero-${width}.webp is missing`);
+  }
+
+  /* His facts, his `·` lists with the record's commas; his "Agency: Mardal"
+     left out on Mardal's own site. */
+  const intro = page.match(/<section class="project-intro"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...intro.matchAll(/class="project-intro__label">([^<]*)<\/dt><dd class="project-intro__value">([^<]*)</g)].map((m) => `${m[1]} ${m[2]}`),
+    [
+      "INDUSTRY: Ceramics &amp; Tiles",
+      "SERVICES: Research, Product Design, Development, Analytics",
+      "LOCATION: Kosovo",
+      "STACK: Figma, WordPress (custom theme), PHP, JavaScript ES6+, Intersection Observer API, Google Analytics 4",
+    ],
+  );
+  assert.doesNotMatch(intro, /AGENCY/i);
+  /* His "Company", its last sentence in Mardal's voice. */
+  assert.match(intro, /class="project-intro__summary">Jetonikeramika’s business happens in a 2,500 m² showroom,[^<]*The project came to Mardal in 2026, and we led the research, design and build\.</);
+  assert.match(intro, /<a class="project-live" href="https:\/\/jetonikeramika\.com\/"[^>]*target="_blank"/);
+
+  /* "The problem" is one paragraph: the Situation its first two sentences,
+     the Challenge its last; then "Research" and "Solution". */
+  assert.deepEqual(
+    [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
+    ["Situation", "Challenge", "Research", "Solution"],
+  );
+  const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...account.matchAll(/<div class="project-passage__copy">([\s\S]*?)<\/div>/g)].map((m) => (m[1].match(/<p>/g) ?? []).length),
+    [1, 1, 2, 3],
+  );
+  assert.match(account, /<p>Building Jetonikeramika’s first website raised a question before any design did: what was it for\?/);
+  assert.match(account, /<p>The site had to express its philosophy, the brands it carries and the range it offers/);
+  assert.match(account, /<p>We researched how ceramics and interior brands present themselves in the Kosovo market/);
+  assert.match(account, /<p>The showroom is the call to action\./);
+
+  /* Only what the page needs: Design, Development and Outcome stay on his
+     page, nothing is left as a slot, his apostrophes are curled. */
+  const main = page.slice(page.indexOf("<main"), page.indexOf("</main>")).replace(/<script[\s\S]*?<\/script>/g, "");
+  assert.doesNotMatch(main, /A dark stage for the product|Motion without the cost|Five times the monthly traffic/);
+  assert.doesNotMatch(main, /\[[A-Z][^\]]*\]/);
+  assert.doesNotMatch(account, /&#x27;|isn't|what's|it's/);
+
+  /* **His eight screenshots, in his order** (2026-10-11), each one file of
+     our own. */
+  const showcase = page.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...showcase.matchAll(/<img src="([^"]+)"/g)].map((m) => m[1]),
+    [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/jetonikeramika-${n}.avif`),
+  );
+  assert.doesNotMatch(showcase, /srcSet|srcset|picsum/i);
+  for (let n = 1; n <= 8; n += 1) {
+    assert.ok(existsSync(new URL(`../public/jetonikeramika-${n}.avif`, import.meta.url)), `jetonikeramika-${n}.avif is missing`);
+  }
+});
+
+/* **Spitex Schwab AG, the third real story** — owner, 2026-10-11: "now this
+   project: https://kushtrimarifi.com/work/spitex.html". Taken as the other
+   two were: only what the page needs, his words in its places. */
+test("server-renders Spitex Schwab AG's story from the owner's own case study", async () => {
+  const response = await render("/case-studies/spitex-schwab");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const page = html.slice(0, html.indexOf("<footer"));
+
+  assert.match(html, /<title>Spitex Schwab AG — Home Care Website, Bern — Mardal<\/title>/i);
+  assert.equal((page.match(/<h1[\s>]/g) ?? []).length, 1);
+
+  const hero = page.match(/<section class="project-hero"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.match(hero, /<span class="project-hero__mark" aria-hidden="true"><\/span>Home Care<\/p>/);
+  assert.match(hero, /<h1 class="project-hero__title" id="project-title" data-project-hero-title="true">Spitex Schwab AG<\/h1>/);
+  /* His picture for the opening (2026-10-11), at its two widths. */
+  assert.match(hero, /class="project-hero__image" src="\/spitex-schwab-hero-2000\.webp" srcSet="\/spitex-schwab-hero-1200\.webp 1200w, \/spitex-schwab-hero-2000\.webp 2000w"/);
+  for (const width of [1200, 2000]) {
+    assert.ok(existsSync(new URL(`../public/spitex-schwab-hero-${width}.webp`, import.meta.url)), `spitex-schwab-hero-${width}.webp is missing`);
+  }
+
+  /* His facts, his `·` lists with the record's commas. */
+  const intro = page.match(/<section class="project-intro"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...intro.matchAll(/class="project-intro__label">([^<]*)<\/dt><dd class="project-intro__value">([^<]*)</g)].map((m) => `${m[1]} ${m[2]}`),
+    [
+      "INDUSTRY: Home Care",
+      "SERVICES: Research, Product Design, Accessibility, Development",
+      "LOCATION: Bern, Switzerland",
+      "STACK: Figma, WordPress (custom theme), PHP, Vanilla JavaScript, SCSS",
+    ],
+  );
+  /* His "Company", his "came to me" as "came to us". */
+  assert.match(intro, /class="project-intro__summary">Spitex Schwab AG is an independent home-care provider based in Bern\.[^<]*a children’s Spitex[^<]*Spitex Schwab came to us directly in 2025\.</);
+  assert.match(intro, /<a class="project-live" href="https:\/\/spitexschwab\.ch\/"[^>]*target="_blank"/);
+
+  /* "The problem"'s two paragraphs as the Situation and the Challenge; then
+     "Research", his "I" as "we", and "Solution". */
+  assert.deepEqual(
+    [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
+    ["Situation", "Challenge", "Research", "Solution"],
+  );
+  const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...account.matchAll(/<div class="project-passage__copy">([\s\S]*?)<\/div>/g)].map((m) => (m[1].match(/<p>/g) ?? []).length),
+    [1, 1, 3, 4],
+  );
+  assert.match(account, /<p>Before this project, everything Spitex Schwab had to say about itself was in printed brochures\./);
+  assert.match(account, /<p>That gap matters more in home care than in most sectors\./);
+  assert.match(account, /Together with the client we went through the brochures[^<]*The client also told us something/);
+  assert.match(account, /<p>We then reviewed leading Spitex organisations across Switzerland/);
+  assert.match(account, /We reorganised Spitex Schwab’s services under five headings/);
+  assert.match(account, /<p>Fewer steps to contact\./);
+  assert.doesNotMatch(account, /\bI\b|\bme\b|\bmy\b/i);
+
+  /* Only what the page needs: Users, Design, Development and Outcome stay on
+     his page, nothing is left as a slot, his apostrophes are curled. */
+  const main = page.slice(page.indexOf("<main"), page.indexOf("</main>")).replace(/<script[\s\S]*?<\/script>/g, "");
+  assert.doesNotMatch(main, /The reader is rarely the patient|clinical psychology|Deep teal, drawn with white|Accessibility built in, not added on|a surprised/);
+  assert.doesNotMatch(main, /\[[A-Z][^\]]*\]/);
+  assert.doesNotMatch(main, /&#x27;|children's|Schwab's/);
+
+  /* **His eight screenshots, in his order** (2026-10-11), each one file of
+     our own. */
+  const showcase = page.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...showcase.matchAll(/<img src="([^"]+)"/g)].map((m) => m[1]),
+    [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/spitex-schwab-${n}.avif`),
+  );
+  assert.doesNotMatch(showcase, /srcSet|srcset|picsum/i);
+  for (let n = 1; n <= 8; n += 1) {
+    assert.ok(existsSync(new URL(`../public/spitex-schwab-${n}.avif`, import.meta.url)), `spitex-schwab-${n}.avif is missing`);
+  }
 });
 
 test("the fusion mark is two strokes, and still says nothing", async () => {

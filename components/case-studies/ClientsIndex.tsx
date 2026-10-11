@@ -7,8 +7,8 @@ import { Container } from "../layout/Container";
 import { RollingLabel } from "../ui/RollingLabel";
 import {
   caseStudies,
-  clientEntries,
-  pilotStory,
+  clientsWork,
+  stories,
 } from "../../content/case-studies";
 
 /* The four, cycled. Named here rather than set as a colour on the element,
@@ -177,8 +177,8 @@ export function ClientsIndex() {
 
   const shown =
     listed === ALL
-      ? clientEntries
-      : clientEntries.filter((entry) =>
+      ? clientsWork
+      : clientsWork.filter((entry) =>
           (entry.disciplines as readonly string[]).includes(listed),
         );
 
@@ -264,14 +264,20 @@ export function ClientsIndex() {
                      article's to say. */
                   data-opens-mark
                 >
-                  {/* Decorative, so alt is empty: these photographs are of
-                      nothing to do with the work, and describing one to a
-                      screen reader would be describing a placeholder. */}
+                  {/* Decorative, so alt is empty: the placeholders'
+                      photographs are of nothing to do with the work, and the
+                      name under each picture already says whose it is. A
+                      picture of our own brings its widths (En-Nur's,
+                      2026-10-11); a stock frame is asked for at two. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     className="clients-card__art"
                     src={entry.image}
-                    srcSet={`${entry.image.replace("/1200/1200", "/600/600")} 600w, ${entry.image} 1200w`}
+                    srcSet={
+                      "imageSrcSet" in entry && typeof entry.imageSrcSet === "string"
+                        ? entry.imageSrcSet
+                        : `${entry.image.replace("/1200/1200", "/600/600")} 600w, ${entry.image} 1200w`
+                    }
                     sizes={sizesFor(slot)}
                     alt=""
                     width="1200"
@@ -292,10 +298,10 @@ export function ClientsIndex() {
                   data-place={slot.place}
                 >
                   {/* A card is a link only where there is a story behind it,
-                      which today is one of the eight. The other seven are
-                      articles and go nowhere, on purpose: a card that looks
-                      like a link and answers with an empty page is worse than
-                      a card that never offered. */}
+                      which today is two of the nine — En-Nur and the pilot.
+                      The others are articles and go nowhere, on purpose: a
+                      card that looks like a link and answers with an empty
+                      page is worse than a card that never offered. */}
                   <article
                     className={`clients-card${
                       "story" in entry ? " clients-card--linked" : ""
@@ -342,7 +348,9 @@ export function ClientsIndex() {
                            "link" with nothing to say where it goes. Named
                            from the study rather than from a sentence written
                            here, so it cannot drift from the page it opens. */
-                        aria-label={pilotStory.title}
+                        aria-label={
+                          stories.find((story) => story.slug === entry.slug)?.title
+                        }
                       >
                         {plate}
                       </Link>

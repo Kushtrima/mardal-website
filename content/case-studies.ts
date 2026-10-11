@@ -269,6 +269,106 @@ export const clientEntries = [
 export type ClientEntry = (typeof clientEntries)[number];
 
 /**
+ * **The delivered work, kept apart from the placeholders** — owner,
+ * 2026-10-11: "add one project … so i have this project also in my personal
+ * portfolio". Real, and named on his word: PRODUCT.md has the archive cleared
+ * to be named as Mardal's work since 2026-08-05. Not in `clientEntries`,
+ * because About borrows those eight as invented examples and a real client
+ * must not land among them.
+ *
+ * Its disciplines are those of the rail's seven its own page bears out —
+ * the product design and the custom Laravel application — and CRM on the
+ * owner's word (2026-10-11: "also at filter add at Software, Crm"), so the
+ * filter finds it under all three. Its picture is his, the same as its
+ * page's opening (owner, 2026-10-11: "for hero banner and for the cover
+ * image in galler[y]").
+ */
+export const deliveredEntries = [
+  {
+    slug: "en-nur",
+    sector: "community",
+    story: true,
+    name: "En-Nur",
+    location: "Switzerland",
+    disciplines: ["UX/UI Design", "Software", "CRM"],
+    image: "/en-nur-hero-2376.webp",
+    imageSrcSet: "/en-nur-hero-1200.webp 1200w, /en-nur-hero-2376.webp 2376w",
+  },
+  /* The second — owner, 2026-10-11: "now we have new one:
+     Jetonikeramika". Its disciplines are the two of the rail's seven his
+     page bears out: the product design, and the website it is. Its picture
+     is his, the same as its page's opening ("use this for cover and hero
+     banner"). */
+  {
+    slug: "jetonikeramika",
+    sector: "retail",
+    story: true,
+    name: "Jetonikeramika",
+    location: "Kosovo",
+    disciplines: ["UX/UI Design", "Websites"],
+    image: "/jetonikeramika-hero-1501.webp",
+    imageSrcSet: "/jetonikeramika-hero-1200.webp 1200w, /jetonikeramika-hero-1501.webp 1501w",
+  },
+  /* The third — owner, 2026-10-11: "now this project:
+     https://kushtrimarifi.com/work/spitex.html". Named as recorded, legal
+     suffix included. Its disciplines are the two of the rail's seven his
+     page bears out: the product design, and the website it is. Its picture
+     is his, the same as its page's opening ("here you have image for cover
+     and herobanner"). */
+  {
+    slug: "spitex-schwab",
+    sector: "healthcare",
+    story: true,
+    name: "Spitex Schwab AG",
+    location: "Switzerland",
+    disciplines: ["UX/UI Design", "Websites"],
+    image: "/spitex-schwab-hero-2000.webp",
+    imageSrcSet: "/spitex-schwab-hero-1200.webp 1200w, /spitex-schwab-hero-2000.webp 2000w",
+  },
+];
+
+/** Every card on the Clients page: the delivered work first, then the
+ *  placeholders. */
+export const clientsWork = [...deliveredEntries, ...clientEntries];
+
+/** One project written out in full — the shape every story page takes. */
+export type Story = {
+  readonly slug: string;
+  /** What the tab says, and what a shared link reads as. */
+  readonly title: string;
+  /** The page's big heading: the name on the card it was opened from. */
+  readonly name: string;
+  /** Beside the red square in the opening, and first in the record. */
+  readonly industry: string;
+  readonly lede: string;
+  readonly heroImage: string;
+  /** A picture of our own at its widths; a stock frame is offered at two
+   *  widths from its address, so it needs none. */
+  readonly heroSrcSet?: string;
+  readonly summary: string;
+  readonly record: readonly { readonly label: string; readonly value: string }[];
+  readonly live: { readonly label: string; readonly href: string | null };
+  readonly passages: readonly {
+    readonly id: string;
+    readonly heading: string;
+    readonly paragraphs: readonly string[];
+  }[];
+  readonly showcase: {
+    readonly title: string;
+    readonly previous: string;
+    readonly next: string;
+    readonly page: string;
+    readonly pages: readonly string[];
+  };
+  readonly way: {
+    readonly label: string;
+    readonly back: string;
+    readonly next: string;
+    readonly nextHref: string | null;
+  };
+};
+
+/**
  * The pilot story. One project written out in full, so the shape of a story
  * page can be judged before six more are poured into it.
  *
@@ -279,9 +379,9 @@ export type ClientEntry = (typeof clientEntries)[number];
  * outcome is claimed, and no number appears anywhere — PRODUCT.md records zero
  * quantified results and none may be invented to fill a page out.
  *
- * Everything with a bracket round it is a slot. The headings are not: they are
- * the three the index has promised since the hero was written, asked here at
- * length instead of in a column.
+ * Everything with a bracket round it is a slot. The headings are not: since
+ * 2026-10-11 they are Situation, Challenge, Research and Solution (the
+ * owner's), in place of the three the index had promised.
  *
  * The pictures are stock and must go. See `image` above for why.
  */
@@ -291,7 +391,7 @@ const pilotEntry = clientEntries.find((entry) => "story" in entry)!;
 
 export const pilotStory = {
   slug: "healthcare-office-website",
-  sector: "healthcare",
+  industry: "Healthcare",
 
   /* What the tab says, and what a shared link reads as. The page's big
      heading is the entry's name (below), as the card it was opened from. */
@@ -321,45 +421,60 @@ export const pilotStory = {
   summary:
     "[Two or three sentences: who the office is and what the project was — what Mardal built for them, and what it had to make easier. Described, not named, until sign-off is on file.]",
 
-  /* The record under it, two by two. Industry and services are what the
-     entry already says; the challenge and the solution are slots. */
+  /* The record under it, two by two — owner, 2026-10-11: "here we need to
+     have industry, sevice, location and stack" (the challenge and the
+     solution moved down, into the account). Industry, services and location
+     are what the entry already says; nothing about the tools is on file, so
+     the stack is a slot. */
   record: [
     { label: "INDUSTRY:", value: "Healthcare" },
     { label: "SERVICES:", value: pilotEntry.disciplines.join(", ") },
-    { label: "CHALLENGE:", value: "[The problem, in one line.]" },
-    { label: "SOLUTION:", value: "[What was built, in one line.]" },
+    { label: "LOCATION:", value: pilotEntry.location },
+    { label: "STACK:", value: "[What it was built with.]" },
   ],
 
   /* The way to the delivered site. No address is on file, so it stands
      without a link until one is. */
   live: { label: "LIVE WEBSITE", href: null as string | null },
 
-  /* The account, under the record — what it replaced, what it does now, what
-     the client owns: the three the Clients page has promised since it was
-     written. Every paragraph is a slot. */
+  /* The account, under the record: situation, challenge, research, solution
+     — owner, 2026-10-11, in place of what it replaced / what it does now /
+     what the client owns: challenge and solution moved down from the record,
+     "more professinally to add also Situation or problem" before them, then
+     "yes add research" between the two. Every paragraph is a slot, and the
+     research is only what was actually done: no invented interviews or
+     numbers. */
   passages: [
     {
-      id: "replaced",
-      heading: "What it replaced",
+      id: "situation",
+      heading: "Situation",
       paragraphs: [
-        "[What the office was working with before. Two or three sentences on the state of things — where the information lived, who had to touch it, and what a patient had to do to get an answer. State it, do not complain about it.]",
-        "[The second paragraph: what that cost them week to week, and which part of it was the reason they picked up the phone.]",
+        "[Where the office stood before the project. Two or three sentences on the state of things — who they are, where the information lived, who had to touch it, and what a patient had to do to get an answer. State it, do not complain about it.]",
+        "[The second paragraph: who the website is for, and what they came to it for.]",
       ],
     },
     {
-      id: "now",
-      heading: "What it does now",
+      id: "challenge",
+      heading: "Challenge",
       paragraphs: [
-        "[What the site does for the office and for the people who visit it. Name the things that changed for someone outside the building, not the technology that changed inside it.]",
-        "[The second paragraph: what a patient can do now that they could not do at all, and what the office stopped doing by hand.]",
+        "[The problem the project had to solve: what it cost the office week to week, and which part of it was the reason they picked up the phone.]",
+        "[The second paragraph: what made it hard — the constraint, the deadline, or what had to keep working while it changed.]",
       ],
     },
     {
-      id: "owns",
-      heading: "What the client owns",
+      id: "research",
+      heading: "Research",
       paragraphs: [
-        "[Named one by one — the repository and who holds it, the domain and the DNS, the hosting account and the bill, the content and who can change it without calling anyone.]",
-        "[The second paragraph: what keeps running if they never call again, and where that is written down for whoever comes next.]",
+        "[What was looked at before anything was designed, and how: conversations with the office, a review of the old site, the sites patients compare it with, any visitor data on file. Only what actually happened.]",
+        "[The second paragraph: what the research showed, and which finding shaped the solution most.]",
+      ],
+    },
+    {
+      id: "solution",
+      heading: "Solution",
+      paragraphs: [
+        "[What Mardal built, and the decisions that mattered. Name the things that changed for someone outside the building, not the technology that changed inside it.]",
+        "[The second paragraph: what a patient can do now that they could not do at all, what the office stopped doing by hand, and what the client owns and keeps running on its own.]",
       ],
     },
   ],
@@ -384,12 +499,284 @@ export const pilotStory = {
 
   /* The page's foot: Back on the left, Next Project on the right — owner,
      2026-10-08: "in the end to have button on the right Next Project and on
-     the left to be Back". This is the only story written, so there is no
-     next one to go to yet: it stands without a link until there is. */
+     the left to be Back". Next Project stands without a link until it is
+     given one. */
   way: {
     label: "More projects",
     back: "Back",
     next: "Next Project",
     nextHref: null as string | null,
   },
-} as const;
+} as const satisfies Story;
+
+/**
+ * **En-Nur** — owner, 2026-10-11: "analyze the text inside
+ * https://kushtrimarifi.com/work/ennur.html but you need to copy only what we
+ * need", then "only take what we need". His own case study, word for word,
+ * set in this page's places:
+ *
+ *   — the name, industry, services, location, stack and live address from
+ *     its facts (his `·` lists written with commas, as the record's are);
+ *   — the summary from "Company", his "I designed and built" as Mardal's
+ *     "We";
+ *   — Situation from "The problem"'s first paragraph, Challenge from its
+ *     other two, Research from "Discovery", Solution from "Solution".
+ *
+ * Left on his page: Users, System design, Design, Development (its tools are
+ * the stack) and Outcome, and every section's sub-heading. His straight
+ * apostrophes are curled, as everywhere on this site. The pages are his own
+ * screenshots, and the opening picture (the card's too) is his.
+ */
+export const ennurStory = {
+  slug: "en-nur",
+  /* His portfolio's own title for it, less his name. */
+  title: "En-Nur — Laravel Membership & Donations App",
+  name: "En-Nur",
+  industry: "Religious, Community",
+  lede: "A Laravel membership and donations app for En-Nur, a mosque community in Switzerland.",
+  /* His picture for the opening — owner, 2026-10-11: "use this image for
+     hero banner and for the cover image in galler[y]" (mosque.jpg from his
+     Desktop, 2376×1584, as WebP at 1200 and at its full width). */
+  heroImage: "/en-nur-hero-2376.webp",
+  heroSrcSet: "/en-nur-hero-1200.webp 1200w, /en-nur-hero-2376.webp 2376w",
+  summary:
+    "En-Nur is a mosque community in Switzerland. Its members, people of every age who live in the community, pay a monthly membership fee and also give donations, and the community depends on both to operate. Membership is not a one-off sign-up but an ongoing relationship, which means the system behind it is used constantly rather than occasionally. We designed and built that system in 2025.",
+  record: [
+    { label: "INDUSTRY:", value: "Religious, Community" },
+    { label: "SERVICES:", value: "Product Design, Full-Stack Development, Payments" },
+    { label: "LOCATION:", value: "Switzerland" },
+    {
+      label: "STACK:",
+      value: "Figma, Laravel, PHP, Eloquent ORM, Blade, MySQL, Stripe, PHPMailer, Render",
+    },
+  ],
+  live: { label: "LIVE WEBSITE", href: "https://xhamia-en-nur.ch/" as string | null },
+  passages: [
+    {
+      id: "situation",
+      heading: "Situation",
+      paragraphs: [
+        "The community managed memberships and donations through third-party software. It was expensive and inflexible, but the core issue was that it had never been built for a mosque. Generic membership tools are designed around the average association, so they arrive with their own assumptions about how members register, how fees are collected and how money is reported. The community’s actual requirements had to be squeezed into fields and processes designed for someone else, and the ones that didn’t fit simply weren’t supported.",
+      ],
+    },
+    {
+      id: "challenge",
+      heading: "Challenge",
+      paragraphs: [
+        "The result was a tool the people running the community spent their time working around rather than with. Work the software should have done still happened by hand, and every month they paid a subscription for a system that didn’t match how they operate.",
+        "They needed a system built around their own requirements, at a cost that made sense for a community organisation, and one they would own rather than rent.",
+      ],
+    },
+    {
+      id: "research",
+      heading: "Research",
+      paragraphs: [
+        "Discovery meant working through, with the people who run the community, the questions any system has to answer before it can be designed. Who can become a member and how they register. When a monthly payment falls due and what happens if it’s missed. How donations differ from membership fees and how each needs to be recorded. What the admins need to see at the end of every month.",
+        "Those answers became the brief, and anything that didn’t serve them didn’t get built.",
+      ],
+    },
+    {
+      id: "solution",
+      heading: "Solution",
+      paragraphs: [
+        "The admin dashboard carries the complexity. Members, payments, donations and reporting all live here, because this is where the work of running the community happens. Payment status is visible across the whole membership, so the question of who is up to date has an immediate answer.",
+        "The member dashboard stays simple. Three things: your details, your payments, your status. A member can update their information and see exactly where they stand without having to ask anyone, which also spares the admins a whole category of questions.",
+        "Reminders are automated. When a payment falls due, the system sends the reminder itself. Admins no longer have to work out each month who needs one.",
+        "Donations are kept separate from membership fees. They are different kinds of money with different meanings, so they are recorded separately and reported separately. Admins get clear donation reporting without having to untangle it from membership payments first.",
+      ],
+    },
+  ],
+  /* His eight screenshots of the platform, in his order — owner,
+     2026-10-11 (en1–en8 from his Desktop, unchanged, as public/en-nur-*.avif;
+     1300×855, so the 16:10 frame trims a sliver of white margin top and
+     foot). */
+  showcase: {
+    ...pilotStory.showcase,
+    title: "The platform, page by page",
+    pages: [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/en-nur-${n}.avif`),
+  },
+  way: pilotStory.way,
+} as const satisfies Story;
+
+/**
+ * **Jetonikeramika** — owner, 2026-10-11: "now we have new one:
+ * Jetonikeramika here you have the link:
+ * https://kushtrimarifi.com/work/jetonikeramika.html". Taken as En-Nur's
+ * was, only what this page needs, word for word:
+ *
+ *   — the name, industry, services, location, stack and live address from
+ *     its facts (his `·` lists with the record's commas; his "Agency: Mardal"
+ *     left out, on Mardal's own site);
+ *   — the summary from "Company", its last sentence in Mardal's voice ("The
+ *     project came to Mardal in 2026, and we led …" for his "Mardal brought
+ *     the project to me in 2026, and I led …");
+ *   — "The problem" is one paragraph: its first two sentences are the
+ *     Situation, its last the Challenge;
+ *   — Research from "Research" (his "I researched" as "We researched"),
+ *     Solution from "Solution".
+ *
+ * Left on his page: Design, Development, Outcome and every sub-heading. His
+ * straight apostrophes are curled. The pages are his own screenshots, and
+ * the opening picture (the card's too) is his.
+ */
+export const jetonikeramikaStory = {
+  slug: "jetonikeramika",
+  /* His portfolio's own title for it, less his name. */
+  title: "Jetonikeramika — Tile Showroom Website",
+  name: "Jetonikeramika",
+  industry: "Ceramics & Tiles",
+  lede: "A website for Jetonikeramika, a ceramics and tiles showroom in Kosovo.",
+  /* His picture for the opening — owner, 2026-10-11: "use this for cover and
+     hero banner" (cover-s.jpg from his Desktop, 1501×1062, as WebP at 1200
+     and at its full width; a wide screen draws it larger than that). */
+  heroImage: "/jetonikeramika-hero-1501.webp",
+  heroSrcSet: "/jetonikeramika-hero-1200.webp 1200w, /jetonikeramika-hero-1501.webp 1501w",
+  summary:
+    "Jetonikeramika’s business happens in a 2,500 m² showroom, where customers see, touch and choose premium ceramics and tiles for bathrooms and living spaces. It sells to private clients and contractors alike. The project came to Mardal in 2026, and we led the research, design and build.",
+  record: [
+    { label: "INDUSTRY:", value: "Ceramics & Tiles" },
+    { label: "SERVICES:", value: "Research, Product Design, Development, Analytics" },
+    { label: "LOCATION:", value: "Kosovo" },
+    {
+      label: "STACK:",
+      value:
+        "Figma, WordPress (custom theme), PHP, JavaScript ES6+, Intersection Observer API, Google Analytics 4",
+    },
+  ],
+  live: { label: "LIVE WEBSITE", href: "https://jetonikeramika.com/" as string | null },
+  passages: [
+    {
+      id: "situation",
+      heading: "Situation",
+      paragraphs: [
+        "Building Jetonikeramika’s first website raised a question before any design did: what was it for? A high-end ceramics brand could easily become an online catalogue competing on product specs, but that isn’t how this company sells.",
+      ],
+    },
+    {
+      id: "challenge",
+      heading: "Challenge",
+      paragraphs: [
+        "The site had to express its philosophy, the brands it carries and the range it offers, in a way that matched what a customer feels on arrival at the showroom.",
+      ],
+    },
+    {
+      id: "research",
+      heading: "Research",
+      paragraphs: [
+        "We researched how ceramics and interior brands present themselves in the Kosovo market, and asked the client how their customers get from first hearing of the brand to buying.",
+        "The answer was clear. Sales are made in person at the showroom, with advertising bringing people in, and none of them happen online. So a visitor to the website is not yet a buyer. They are someone deciding whether the showroom is worth the trip.",
+      ],
+    },
+    {
+      id: "solution",
+      heading: "Solution",
+      paragraphs: [
+        "The philosophy leads. The homepage opens with what the company stands for, not a product grid. For a brand competing on quality rather than price, that story is the reason to choose it.",
+        "The catalogue informs the visit. Brands and ranges are presented so visitors can understand the breadth of what’s available and arrive at the showroom already knowing what interests them. The final choice is made in person, under real light, with the product in hand.",
+        "The showroom is the call to action. Where another site would push a Buy button, this one points to the showroom: where it is, when it’s open and how to get there. That trip is the outcome the whole site is built around.",
+      ],
+    },
+  ],
+  /* His eight screenshots of the site, in his order — owner, 2026-10-11
+     (jetoni1–jetoni8 from his Desktop, unchanged, as
+     public/jetonikeramika-*.avif; the 16:10 frame trims a sliver off the
+     1.52 ones top and foot, and off the laptop shot's sides). */
+  showcase: {
+    ...pilotStory.showcase,
+    pages: [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/jetonikeramika-${n}.avif`),
+  },
+  way: pilotStory.way,
+} as const satisfies Story;
+
+/**
+ * **Spitex Schwab AG** — owner, 2026-10-11: "now this project:
+ * https://kushtrimarifi.com/work/spitex.html". Taken as the other two were,
+ * only what this page needs, word for word:
+ *
+ *   — the name, industry, services, location, stack and live address from
+ *     its facts (his `·` lists with the record's commas);
+ *   — the summary from "Company", his "came to me" as "came to us";
+ *   — Situation and Challenge from "The problem"'s two paragraphs;
+ *   — Research from "Research", his "I" and "me" as Mardal's "we" and "us"
+ *     (we went through, told us, we then reviewed, we reorganised);
+ *   — Solution from "Solution".
+ *
+ * Left on his page: Users (his own clinical-psychology background with it),
+ * Design, Development, Outcome and every sub-heading. His straight
+ * apostrophes are curled. The pages are his own screenshots, and the
+ * opening picture (the card's too) is his.
+ */
+export const spitexSchwabStory = {
+  slug: "spitex-schwab",
+  /* His portfolio's own title for it, less his name. */
+  title: "Spitex Schwab AG — Home Care Website, Bern",
+  name: "Spitex Schwab AG",
+  industry: "Home Care",
+  lede: "A website for Spitex Schwab AG, an independent home-care provider in Bern.",
+  /* His picture for the opening — owner, 2026-10-11: "here you have image for
+     cover and herobanner" (eldery-cover.jpg from his Desktop, 2000×1333, as
+     WebP at 1200 and at its full width). */
+  heroImage: "/spitex-schwab-hero-2000.webp",
+  heroSrcSet: "/spitex-schwab-hero-1200.webp 1200w, /spitex-schwab-hero-2000.webp 2000w",
+  summary:
+    "Spitex Schwab AG is an independent home-care provider based in Bern. Its nurses and carers support people of all ages in their own homes, so they can keep their independence there, with services ranging from basic and medical care to psychiatric, palliative and oncology care, dementia support, a children’s Spitex and Spitexpress, a 24-hour emergency service. Spitex Schwab came to us directly in 2025.",
+  record: [
+    { label: "INDUSTRY:", value: "Home Care" },
+    { label: "SERVICES:", value: "Research, Product Design, Accessibility, Development" },
+    { label: "LOCATION:", value: "Bern, Switzerland" },
+    { label: "STACK:", value: "Figma, WordPress (custom theme), PHP, Vanilla JavaScript, SCSS" },
+  ],
+  live: { label: "LIVE WEBSITE", href: "https://spitexschwab.ch/" as string | null },
+  passages: [
+    {
+      id: "situation",
+      heading: "Situation",
+      paragraphs: [
+        "Before this project, everything Spitex Schwab had to say about itself was in printed brochures. They worked for people already in contact with the company. For anyone searching online, the company did not exist.",
+      ],
+    },
+    {
+      id: "challenge",
+      heading: "Challenge",
+      paragraphs: [
+        "That gap matters more in home care than in most sectors. The need for care often arrives suddenly, after a fall or a hospital stay, and people look for help quickly and under pressure.",
+      ],
+    },
+    {
+      id: "research",
+      heading: "Research",
+      paragraphs: [
+        "The work started with a content audit. Together with the client we went through the brochures and every service Spitex Schwab offers, a long list written for print and for people who already knew the company. The client also told us something that shaped everything after it: in most cases, first contact comes from a son or daughter arranging care for a parent, not from the person who needs it.",
+        "We then reviewed leading Spitex organisations across Switzerland, looking at how they explain their services, how they handle first contact, and how quickly a relative can find what they need. The review turned up one thing worth keeping and one worth fixing. The design of the best sites was simple and uncluttered, with no visual overload, and that became the benchmark for the look. The problem was the information. Explaining care properly takes words, so the amount of text was not the issue in itself. The issue was where it lived: information was scattered across the site, and a relative had to piece answers together from several pages.",
+        "That set the priority for the information architecture. We reorganised Spitex Schwab’s services under five headings a relative can grasp at once, care, household help, personal support, coordination and the 24-hour Spitexpress, with one page per service, so every answer sits in one predictable place.",
+      ],
+    },
+    {
+      id: "solution",
+      heading: "Solution",
+      paragraphs: [
+        "Text large enough to read without effort. Body text is set larger than usual, so nobody has to zoom in or lean closer, and a tired reader can take in a page at a glance.",
+        "The phone number never leaves the screen. For many families the first step is a conversation, not a form. The number stays in view throughout the site, so calling is always the easiest thing to do.",
+        "Care described in everyday words. Services are explained the way a relative would ask about them, not in the terminology of the care sector.",
+        "Fewer steps to contact. Getting in touch takes as few steps as possible, and the contact form asks only for what Spitex needs to call back.",
+      ],
+    },
+  ],
+  /* His eight screenshots of the site, in his order — owner, 2026-10-11
+     (spitex1–spitex8 from his Desktop, unchanged, as
+     public/spitex-schwab-*.avif; the 16:10 frame trims a sliver off the
+     1.52 ones top and foot, and off the laptop shot's sides). */
+  showcase: {
+    ...pilotStory.showcase,
+    pages: [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/spitex-schwab-${n}.avif`),
+  },
+  way: pilotStory.way,
+} as const satisfies Story;
+
+/** Every story written out, each at /case-studies/<slug>. */
+export const stories: readonly Story[] = [
+  ennurStory,
+  jetonikeramikaStory,
+  spitexSchwabStory,
+  pilotStory,
+];

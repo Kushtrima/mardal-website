@@ -186,12 +186,18 @@ export function ProjectShowcase({
           <ol className="project-showcase__pages" ref={pagesRef}>
             {pages.map((src, index) => (
               <li className="project-showcase__page" key={src}>
-                {/* Stock frames standing in for screenshots of the
-                    delivered site: decorative, so alt is empty. */}
+                {/* Screenshots of the delivered work (stock frames where
+                    none are in yet): decorative, so alt is empty. A stock
+                    frame is offered at two widths; a screenshot of our own
+                    is one file (En-Nur's, 2026-10-11). */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={src}
-                  srcSet={`${src.replace("/1600/1000", "/800/500")} 800w, ${src} 1600w`}
+                  srcSet={
+                    src.includes("/1600/1000")
+                      ? `${src.replace("/1600/1000", "/800/500")} 800w, ${src} 1600w`
+                      : undefined
+                  }
                   sizes="(max-width: 40rem) 100vw, 50vw"
                   alt=""
                   width="1600"

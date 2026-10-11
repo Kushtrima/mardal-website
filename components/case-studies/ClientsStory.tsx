@@ -6,11 +6,12 @@ import { ServicesFooterRules } from "../services/ServicesFooterRules";
 import { RollingLabel } from "../ui/RollingLabel";
 import { ProjectHeroReveal } from "./ProjectHeroReveal";
 import { ProjectShowcase } from "./ProjectShowcase";
-import { pilotStory } from "../../content/case-studies";
-import { industries } from "../../content/home";
+import type { Story } from "../../content/case-studies";
 
 /**
- * One customer's story — the page a card on the index opens.
+ * One customer's story — the page a card on the index opens. Whichever story
+ * it is handed (content/case-studies.ts `stories`): En-Nur, the first real
+ * one, since 2026-10-11, and the pilot.
  *
  * **A new approach — owner, 2026-10-08**, from three references: "hero with
  * big images", then the project in a paragraph with its record under it,
@@ -22,18 +23,16 @@ import { industries } from "../../content/home";
  * — the project: its name on the second line, a paragraph from the middle
  *   line to the edge, the record two by two under it, and the way to the live
  *   site;
- * — the account: what it replaced, what it does now, what the client owns;
+ * — the account: situation, challenge, research, solution (owner,
+ *   2026-10-11 — what it replaced, what it does now and what the client owns
+ *   before that);
  * — the pages, one after the next (ProjectShowcase);
  * — the way back to every story.
  *
  * The earlier pages (a record down the left beside the reading, and four
  * bodies before it) are in the history.
  */
-export function ClientsStory() {
-  const sector = industries.find(
-    (industry) => industry.id === pilotStory.sector,
-  );
-
+export function ClientsStory({ story }: { story: Story }) {
   return (
     <>
       <SectionEnter />
@@ -54,13 +53,17 @@ export function ClientsStory() {
           <ProjectHeroReveal />
 
           <div className="project-hero__media" aria-hidden="true">
-            {/* Decorative, so alt is empty: a stock frame standing in for a
-                shot of the delivered site. */}
+            {/* Decorative, so alt is empty: the project's picture (a stock
+                frame where none is in yet). A picture of our own brings its
+                widths; a stock frame is asked for at two. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="project-hero__image"
-              src={pilotStory.heroImage}
-              srcSet={`${pilotStory.heroImage.replace("/2400/1500", "/1200/750")} 1200w, ${pilotStory.heroImage} 2400w`}
+              src={story.heroImage}
+              srcSet={
+                story.heroSrcSet ??
+                `${story.heroImage.replace("/2400/1500", "/1200/750")} 1200w, ${story.heroImage} 2400w`
+              }
               sizes="100vw"
               alt=""
               width="2400"
@@ -84,14 +87,14 @@ export function ClientsStory() {
           <Container className="project-hero__inner">
             <p className="project-hero__meta" data-project-hero-meta>
               <span className="project-hero__mark" aria-hidden="true" />
-              {sector?.title ?? pilotStory.sector}
+              {story.industry}
             </p>
             <h1
               className="project-hero__title"
               id="project-title"
               data-project-hero-title
             >
-              {pilotStory.name}
+              {story.name}
             </h1>
           </Container>
         </section>
@@ -109,13 +112,13 @@ export function ClientsStory() {
             {/* Where a reference shows the client's logo: there is none on
                 file, so its name stands there in words. */}
             <h2 className="project-intro__name" id="project-intro-title">
-              {pilotStory.name}
+              {story.name}
             </h2>
 
-            <p className="project-intro__summary">{pilotStory.summary}</p>
+            <p className="project-intro__summary">{story.summary}</p>
 
             <dl className="project-intro__record">
-              {pilotStory.record.map((fact) => (
+              {story.record.map((fact) => (
                 <div className="project-intro__fact" key={fact.label}>
                   <dt className="project-intro__label">{fact.label}</dt>
                   <dd className="project-intro__value">{fact.value}</dd>
@@ -126,15 +129,15 @@ export function ClientsStory() {
             {/* Only once an address is on file — until then it is not shown
                 (site check, 2026-10-09: a word and an arrow that looked like
                 a button and went nowhere). */}
-            {pilotStory.live.href ? (
+            {story.live.href ? (
               <a
                 className="project-live"
-                href={pilotStory.live.href}
+                href={story.live.href}
                 data-roll
                 target="_blank"
                 rel="noreferrer"
               >
-                <RollingLabel>{pilotStory.live.label}</RollingLabel>
+                <RollingLabel>{story.live.label}</RollingLabel>
                 <ProjectArrow />
               </a>
             ) : null}
@@ -151,9 +154,9 @@ export function ClientsStory() {
               it was in normal state". */}
           <Container data-enter data-enter-mode="none">
             <h2 className="visually-hidden" id="project-account-title">
-              {pilotStory.title}
+              {story.title}
             </h2>
-            {pilotStory.passages.map((passage) => (
+            {story.passages.map((passage) => (
               <article className="project-passage" key={passage.id}>
                 <h3 className="project-passage__title">{passage.heading}</h3>
                 <div className="project-passage__copy">
@@ -167,11 +170,11 @@ export function ClientsStory() {
         </section>
 
         <ProjectShowcase
-          title={pilotStory.showcase.title}
-          pages={pilotStory.showcase.pages}
-          previous={pilotStory.showcase.previous}
-          next={pilotStory.showcase.next}
-          page={pilotStory.showcase.page}
+          title={story.showcase.title}
+          pages={story.showcase.pages}
+          previous={story.showcase.previous}
+          next={story.showcase.next}
+          page={story.showcase.page}
         />
 
         {/* Back from the second line, Next Project ending on the fourth: two
@@ -180,21 +183,21 @@ export function ClientsStory() {
             to tourn in red". The words stay for a screen reader. There is no
             second story yet, so Next Project is not shown until there is one
             (site check, 2026-10-09: an arrow that went nowhere). */}
-        <nav className="project-out" aria-label={pilotStory.way.label}>
+        <nav className="project-out" aria-label={story.way.label}>
           <Container className="project-out__inner">
             <Link
               className="project-out__link project-out__link--back"
               href="/case-studies"
             >
               <LongArrow back />
-              <span className="visually-hidden">{pilotStory.way.back}</span>
+              <span className="visually-hidden">{story.way.back}</span>
             </Link>
-            {pilotStory.way.nextHref ? (
+            {story.way.nextHref ? (
               <Link
                 className="project-out__link project-out__link--next"
-                href={pilotStory.way.nextHref}
+                href={story.way.nextHref}
               >
-                <span className="visually-hidden">{pilotStory.way.next}</span>
+                <span className="visually-hidden">{story.way.next}</span>
                 <LongArrow />
               </Link>
             ) : null}
