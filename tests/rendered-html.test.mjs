@@ -259,11 +259,11 @@ test("server-renders the Mardal homepage", async () => {
   assert.ok(row, "the bar has no row of pages");
   assert.deepEqual(
     [...row.matchAll(/<a [^>]*href="([^"]+)"[^>]*class="bar-menu__link"|<a [^>]*class="bar-menu__link"[^>]*href="([^"]+)"/g)].map((m) => m[1] ?? m[2]),
-    ["/services", "/products", "/case-studies", "/about", "/contact"],
+    ["/services", "/case-studies", "/products", "/about", "/contact"],
   );
   assert.deepEqual(
     [...row.matchAll(/<span class="roll__face">([^<]*)</g)].map((m) => m[1]),
-    ["Services", "Products", "Clients", "About", "Contact"],
+    ["Services", "Clients", "Products", "About", "Contact"],
   );
   assert.doesNotMatch(bar, />(Company|Hire us)</);
   assert.doesNotMatch(html, /mega-menu|nav-trigger|site-nav__actions/);
@@ -286,7 +286,7 @@ test("server-renders the Mardal homepage", async () => {
   assert.ok(pages, "the menu has no entries");
   assert.deepEqual(
     [...pages.matchAll(/data-menu-word="true"><span class="roll"><span class="roll__face">([^<]*)</g)].map((m) => m[1]),
-    ["Services", "Products", "Clients", "About", "Contact"],
+    ["Services", "Clients", "Products", "About", "Contact"],
   );
   /* No parents left: About became one page and Contact a word of its own
      (owner, 2026-10-08: "i want to remain only one page about", "add
@@ -296,7 +296,7 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(pages, /<button class="mobile-menu__page"|mobile-menu__panel|mobile-menu__links/);
   assert.deepEqual(
     [...pages.matchAll(/<a href="([^"]+)" class="mobile-menu__page"/g)].map((m) => m[1]),
-    ["/services", "/products", "/case-studies", "/about", "/contact"],
+    ["/services", "/case-studies", "/products", "/about", "/contact"],
   );
   /* No second screen to step into, and nothing to go back from. */
   assert.doesNotMatch(html, /mobile-menu__(index|detail|back|count|rows|num)/);
@@ -354,8 +354,8 @@ test("server-renders the Mardal homepage", async () => {
     [...menuList.matchAll(/<a class="site-footer__link" href="([^"]+)">([^<]+)<\/a>/g)].map((m) => [m[2], m[1]]),
     [
       ["Services", "/services"],
-      ["Products", "/products"],
       ["Clients", "/case-studies"],
+      ["Products", "/products"],
       ["About", "/about"],
       ["Contact", "/contact"],
       ["Blog", "/blog"],

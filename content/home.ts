@@ -173,18 +173,6 @@ export const menu = [
      is untouched and still on the homepage; it is reached by reading the page
      rather than by being sent there. Both the header and the footer read this
      list, so it is gone from the two of them at once. */
-  {
-    key: "products",
-    label: "Products",
-    eyebrow: "Mardal Products",
-    description: "Focused digital products designed and built by Mardal.",
-    href: "/products",
-    /* A page, as Services is — owner, 2026-10-08, of the two products'
-       own pages: "delete it all", "we dont have seperate pages for those
-       links". Both products are on the products page. */
-    panelOnly: false,
-    items: [],
-  },
   /* The only entry in the bar that is both a page and a list. `href` is a route
      rather than an anchor, so the word itself is a link and clicking it goes to
      the page; `items` is not empty, so hovering it opens the panel. The header
@@ -230,6 +218,20 @@ export const menu = [
 
        An empty array rather than the field being deleted, so every entry in
        this menu still answers the same two questions. */
+    items: [],
+  },
+  /* After Clients — owner, 2026-10-11: "I want in header menu the page
+     Products to be after Clients". */
+  {
+    key: "products",
+    label: "Products",
+    eyebrow: "Mardal Products",
+    description: "Focused digital products designed and built by Mardal.",
+    href: "/products",
+    /* A page, as Services is — owner, 2026-10-08, of the two products'
+       own pages: "delete it all", "we dont have seperate pages for those
+       links". Both products are on the products page. */
+    panelOnly: false,
     items: [],
   },
   /* **About is one page, and Contact a word of its own** — owner,
