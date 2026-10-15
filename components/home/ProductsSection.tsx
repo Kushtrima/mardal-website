@@ -7,6 +7,13 @@ import { productsIntro } from "../../content/products-index";
 /** The widths each product's photograph is offered at. */
 const PRODUCT_WIDTHS = [480, 800, 1200, 1600];
 
+/* A picture at one of those widths: the photograph service's own `w=`, or
+   our own file cut at that width (`/arvena-ai-1600.webp` → `-800.webp`). */
+const atWidth = (image: string, width: number) =>
+  image.startsWith("/")
+    ? image.replace(/-\d+\.webp$/, `-${width}.webp`)
+    : image.replace(/([?&])w=\d+/, `$1w=${width}`);
+
 /**
  * The products — redesigned on the owner's word, 2026-10-05: "pls
  * redesign this section"; then "you have to use our new concept text color
@@ -118,7 +125,7 @@ export function ProductsSection({ page = false }: { page?: boolean }) {
                      for, so a phone takes a phone's (sizes: the full column
                      there, a quarter of the page above it). */
                   srcSet={PRODUCT_WIDTHS.map(
-                    (width) => `${product.image.replace(/([?&])w=\d+/, `$1w=${width}`)} ${width}w`,
+                    (width) => `${atWidth(product.image, width)} ${width}w`,
                   ).join(", ")}
                   sizes={
                     page

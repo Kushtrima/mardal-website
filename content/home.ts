@@ -611,9 +611,10 @@ export const products = {
       status: "Coming soon",
       description:
         "Applied AI for mental-health support, built around safety and consent. The hard part was never the conversation — it is knowing what not to say, when to step back, and how to hand someone on to real help.",
-      image:
-        "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=1600&q=70",
-      imageAlt: "A footbridge running into woodland.",
+      /* The owner's own cover, 2026-10-15, cut to the four widths in
+         ProductsSection (`/arvena-ai-{480,800,1200,1600}.webp`). */
+      image: "/arvena-ai-1600.webp",
+      imageAlt: "The Arvena AI logo over a woman in profile, her head filled with clouds.",
       year: "2025",
     },
     {

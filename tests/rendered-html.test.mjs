@@ -134,7 +134,15 @@ test("server-renders the Mardal homepage", async () => {
   for (const image of productImages) {
     assert.match(image[0], /alt="[^"]+"/);
     assert.match(image[0], /width="1600" height="1000"/);
-    assert.match(image[1], /^https:\/\/images\.unsplash\.com\//);
+    assert.match(image[1], /^(https:\/\/images\.unsplash\.com\/|\/[a-z-]+-1600\.webp$)/);
+  }
+  // Arvena AI's is the owner's own cover (2026-10-15), every width of it on
+  // disk: a srcSet entry with no file behind it is a broken picture on a phone.
+  const arvena = productImages.find((image) => image[1] === "/arvena-ai-1600.webp");
+  assert.ok(arvena, "Arvena AI shows the owner's cover");
+  for (const width of [480, 800, 1200, 1600]) {
+    assert.match(arvena[0], new RegExp(`/arvena-ai-${width}\\.webp ${width}w`));
+    assert.ok(existsSync(new URL(`../public/arvena-ai-${width}.webp`, import.meta.url)));
   }
   // The products stand as one ruled index under their heading (2026-10-05).
   assert.match(html, /<ul class="products__list">/);
