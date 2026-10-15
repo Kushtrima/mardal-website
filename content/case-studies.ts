@@ -326,11 +326,42 @@ export const deliveredEntries = [
     image: "/spitex-schwab-hero-2000.webp",
     imageSrcSet: "/spitex-schwab-hero-1200.webp 1200w, /spitex-schwab-hero-2000.webp 2000w",
   },
+  /* The fourth — owner, 2026-10-15: "now we have new project we have a
+     logo", from https://kushtrimarifi.com/work/baren.html. A brand identity,
+     so of the rail's seven it is Branding alone. Its picture is his, the
+     same as its page's opening ("use this image for cover"). */
+  {
+    slug: "baren",
+    sector: "construction",
+    story: true,
+    name: "Bären Baugruppe AG",
+    location: "Switzerland",
+    disciplines: ["Branding"],
+    image: "/baren-hero-2000.webp",
+    imageSrcSet: "/baren-hero-1200.webp 1200w, /baren-hero-2000.webp 2000w",
+  },
+  /* The fifth — owner, 2026-10-15: "now continue with this new project
+     branding", from https://kushtrimarifi.com/work/riesen.html. Branding
+     alone, as Bären is. Its picture is his, the same as its page's opening
+     ("use this image for cover"). */
+  {
+    slug: "riesen",
+    sector: "construction",
+    story: true,
+    /* With its AG — owner, 2026-10-15: "also after name add AG". */
+    name: "Riesen Holzbau AG",
+    location: "Switzerland",
+    disciplines: ["Branding"],
+    image: "/riesen-hero-2560.webp",
+    imageSrcSet: "/riesen-hero-1200.webp 1200w, /riesen-hero-2560.webp 2560w",
+  },
 ];
 
-/** Every card on the Clients page: the delivered work first, then the
- *  placeholders. */
-export const clientsWork = [...deliveredEntries, ...clientEntries];
+/** Every card on the Clients page: the delivered work and nothing else —
+ *  owner, 2026-10-15: "remove the samples project in the clients page leave it
+ *  only what are active those 3". The eight placeholders above stay in the
+ *  file because About borrows their names and the pilot story is built on one. */
+export const clientsWork = deliveredEntries;
 
 /** One project written out in full — the shape every story page takes. */
 export type Story = {
@@ -806,10 +837,215 @@ export const spitexSchwabStory = {
   way: pilotStory.way,
 } as const satisfies Story;
 
+/**
+ * **Bären Baugruppe AG** — owner, 2026-10-15: "now we have new project we
+ * have a logo … you can take the text you need for this project and images
+ * i will send you later" (https://kushtrimarifi.com/work/baren.html). Taken
+ * as the other three were, word for word:
+ *
+ *   — the name, industry, services, location and the company's address from
+ *     its facts (his `·` lists with the record's commas); a logo has no
+ *     stack, so the record's fourth line is his Deliverables;
+ *   — the summary from "Who they are", his "came to me" as "came to us",
+ *     and his 2024 as 2026 (owner, 2026-10-15: "change this: Business
+ *     Leaders AG in 2024. to 2026");
+ *   — Situation and Challenge from "Before", its one paragraph cut where it
+ *     turns to what the client wanted;
+ *   — Solution from "The lettering", his "I" as "we", then "Four states".
+ *
+ * No Research: his page has none, and none is invented. Left on his page:
+ * Agency, The palette, Voice and imagery, In the field, After, and every
+ * sub-heading. His straight apostrophes are curled. The link is the
+ * company's own site, which Mardal did not build, so it reads as his page
+ * writes it — its address — rather than LIVE WEBSITE. The opening picture
+ * (the card's too) and the nine pages are his.
+ */
+export const barenStory = {
+  slug: "baren",
+  /* His portfolio's own title for it, less his name. */
+  title: "Bären Baugruppe AG — Logo & Brand Identity",
+  name: "Bären Baugruppe AG",
+  industry: "Construction & Roofing",
+  lede: "A logo and brand identity for Bären Baugruppe AG, a Swiss construction company near Bern.",
+  /* His picture for the opening — owner, 2026-10-15: "use this image for
+     cover" (baren-hero.jpg from his Desktop, 2000×1120, as WebP at 1200 and
+     at its full width; q72, since the tiles' fine grain made q80 2.5 times
+     Spitex's weight for nothing the eye can find at 1:1). */
+  heroImage: "/baren-hero-2000.webp",
+  heroSrcSet: "/baren-hero-1200.webp 1200w, /baren-hero-2000.webp 2000w",
+  ogImage: "/og-baren.jpg",
+  summary:
+    "Bären Baugruppe AG is a Swiss construction company based in Urtenen-Schönbühl, near Bern. It started out as a roofing contractor and has grown into a building group covering roofing and sheet-metal work, flat roofs, façades, building protection, coatings, painting and renovation, and even drone inspections of tall buildings. It is also a major sponsor in Swiss sport, above all football. The project came to us through Business Leaders AG in 2026.",
+  record: [
+    { label: "INDUSTRY:", value: "Construction & Roofing" },
+    { label: "SERVICES:", value: "Logo Design, Lettering, Brand Identity" },
+    { label: "LOCATION:", value: "Urtenen-Schönbühl, Switzerland" },
+    {
+      label: "DELIVERABLES:",
+      value:
+        "Logo and lettering, Bear symbol, Colour palette, Typography, Identity pattern, Photography direction, Brand workbook, Site and sponsorship applications",
+    },
+  ],
+  live: { label: "BAEREN-BAUGRUPPE-AG.CH", href: "https://baeren-baugruppe-ag.ch/" as string | null },
+  passages: [
+    {
+      id: "situation",
+      heading: "Situation",
+      paragraphs: [
+        "The previous logo was simply the word Bären, set in type with nothing else. It named the company but gave it no mark of its own: nothing to recognise at a distance, nothing that could stand alone on a helmet or a hoarding, and no sign of the animal the name refers to.",
+      ],
+    },
+    {
+      id: "challenge",
+      heading: "Challenge",
+      paragraphs: [
+        "The client wanted something new and distinctive, a self-contained mark that holds more of the company than a word alone could.",
+      ],
+    },
+    {
+      id: "solution",
+      heading: "Solution",
+      paragraphs: [
+        "We started with the type. The plain lettering was replaced with a heavy, forward-leaning italic that gives the word real weight. Then, instead of placing a bear beside the name, we built it into the letters. A red bear walks through the middle of the word, taking the place of parts of the Ä and the R, with its legs standing in for their strokes and the umlaut dots still sitting above it.",
+        "The name and the animal are now one shape. Bären means bears, and the logo says it twice at once, in words and in image, without needing a symbol next to it. The italic slant and the bear’s direction of travel point the same way, forward in the reading direction, which gives the mark its momentum. Below it, Baugruppe AG is set light and widely spaced, a calm counterweight to the heavy name.",
+        "In the word. The primary logo: black letters with the red bear walking through them. This is the version for white grounds, print and anywhere full colour can be reproduced.",
+        "Carved into the letters. In one colour, white on black or black on white, the bear is not drawn at all. Its outline stays cut into the Ä and the R, so the animal is still there as negative space. The idea survives even when the colour can’t.",
+        "On its own. The red bear works as a standalone symbol, small enough for the brim of a hard hat and other spaces where the full name would be too wide.",
+        "As a pattern. The letter fragments that frame the bear are repeated in white on red to form the identity pattern. The bear itself is left out, implied by the shapes around it, so the pattern belongs to Bären even though the logo never appears in it.",
+      ],
+    },
+  ],
+  /* His nine pictures, in his order — owner, 2026-10-15: "here you have
+     images to put inside the project", then "dont change the format of
+     images": each is HIS FILE, UNCHANGED — the two JPEGs as JPEGs, the
+     seven AVIFs as AVIFs, each at its own size and shape. The gallery shows
+     a picture whole in its 16:10 place (globals.css), so the square palette
+     and the slides with words on their edges are neither cropped nor
+     padded. */
+  showcase: {
+    ...pilotStory.showcase,
+    pages: [
+      { src: "/baren-1.jpg", alt: "Bären Baugruppe AG logo, the red bear walking through the black lettering, over a faded photo of roofers on a metal roof" },
+      { src: "/baren-2.jpg", alt: "Bären Baugruppe AG roofer in a white hard hat with the logo, reading plans beside a company van with the red bear" },
+      { src: "/baren-3.avif", alt: "Bären Baugruppe AG primary logo on white: the red bear in the Ä and the R, Baugruppe AG set light beneath" },
+      { src: "/baren-4.avif", alt: "Bären Baugruppe AG colour palette: black, dark grey #4D4D4D, primary red #E40625, lighter red #F0484A and white" },
+      { src: "/baren-5.avif", alt: "Bären Baugruppe AG typography sheet: Humanist 777 in light, regular and bold, with paragraph and header samples" },
+      { src: "/baren-6.avif", alt: "Bären Baugruppe AG identity pattern: the letter fragments around the bear, repeated in white on red" },
+      { src: "/baren-7.avif", alt: "Bären Baugruppe AG photography direction: a roofer carrying tiles, beside the white logo on black and notes on the imagery" },
+      { src: "/baren-8.avif", alt: "Bären Baugruppe AG roofing slide: a grid of tiled-roof photographs on the brand red, marked Switzerland, Roofing, 2025" },
+      { src: "/baren-9.avif", alt: "Bären Baugruppe AG site banner on a building-site fence: the white logo on black, the address and the list of services" },
+    ],
+  },
+  way: pilotStory.way,
+} as const satisfies Story;
+
+/**
+ * **Riesen Holzbau** — owner, 2026-10-15: "now continue with this new
+ * project branding: https://kushtrimarifi.com/work/riesen.html -- take the
+ * text you needed". Taken as Bären's was, word for word:
+ *
+ *   — the name, industry, services, location and Deliverables from its
+ *     facts (his `·` lists with the record's commas);
+ *   — "The contest" is one paragraph that holds both the summary and the
+ *     situation, so it is shared out in his order: the company and how the
+ *     project came to us as the summary, the old logo and the contest as the
+ *     Situation. His "came to me … where I was working at the time" is "came
+ *     to us", the clause about his job dropped; "mine was chosen, and I then
+ *     developed it" is "ours … we";
+ *   — Solution from "The idea", then "Anatomy of the mark".
+ *
+ * No Challenge and no Research: his page states neither, and neither is
+ * invented. Left on his page: Agency, Colour, On the building site, Since
+ * then, and every sub-heading. His straight apostrophes are curled.
+ *
+ * The company's site is not linked: riesenholzbau.ch answered 500 on
+ * 2026-10-15 (a WordPress error page, every address), and the page shows a
+ * link only once one is set. Its address stays here, ready — set `href` to
+ * "https://riesenholzbau.ch/" when it is back. The opening picture (the
+ * card's too) and the seven pages are his.
+ */
+export const riesenStory = {
+  slug: "riesen",
+  /* His portfolio's own title for it, less his name; the company's name with
+     its AG, here and on the heading (owner, 2026-10-15: "also after name add
+     AG"). */
+  title: "Riesen Holzbau AG — Timber Construction Logo",
+  name: "Riesen Holzbau AG",
+  industry: "Timber Construction",
+  lede: "A logo and brand identity for Riesen Holzbau AG, a Swiss timber construction company.",
+  /* His picture for the opening — owner, 2026-10-15: "use this image for
+     cover" (cover-ww.webp from his Desktop, 2560×1440: his file unchanged at
+     its full width, and as WebP at 1200). */
+  heroImage: "/riesen-hero-2560.webp",
+  heroSrcSet: "/riesen-hero-1200.webp 1200w, /riesen-hero-2560.webp 2560w",
+  ogImage: "/og-riesen.jpg",
+  summary:
+    "Riesen Holzbau AG has built in timber since 1997: houses, cabins and custom wooden projects. The project came to us through Business Leaders AG.",
+  record: [
+    { label: "INDUSTRY:", value: "Timber Construction" },
+    { label: "SERVICES:", value: "Logo Design, Brand Identity" },
+    { label: "LOCATION:", value: "Switzerland" },
+    {
+      label: "DELIVERABLES:",
+      value:
+        "Brand positioning, Icon and wordmark, Colour palette, Brand workbook, Print applications, Workwear",
+    },
+  ],
+  live: { label: "RIESENHOLZBAU.CH", href: null as string | null },
+  passages: [
+    {
+      id: "situation",
+      heading: "Situation",
+      paragraphs: [
+        "Its original logo had dated and no longer represented the company Riesen had become, so it ran a small design contest to find a new identity. Five concepts were presented, ours was chosen, and we then developed it into the full identity.",
+      ],
+    },
+    {
+      id: "solution",
+      heading: "Solution",
+      paragraphs: [
+        "Holzbau means timber construction, and the icon says exactly that in one shape: a house made of wood. Its outline is the plain silhouette of a house, a pitched roof over straight walls. Inside it, instead of a door or windows, sits the end grain of a tree trunk, its growth rings running across the facade.",
+        "The mark holds two kinds of form in balance. The house is geometric, drawn on a strict grid with the roof pitch and the walls fixed by construction lines. The wood is organic and uneven, grown rather than drawn. That meeting of the built and the grown is what a timber construction company does every day, and it is what makes the mark recognisably Riesen’s rather than any builder’s.",
+        "The house. A pentagon set on a construction grid, with the roof angle and wall lines fixed by guides that extend beyond the shape. It gives the mark a stable, architectural base that reads instantly as a building.",
+        "The rings. The growth rings radiate from the bottom corner, where the heart of the trunk would be, and widen as they move outward, so the house appears to have been cut from the end of a log.",
+        "The outer edge. Toward the roofline the rings give way to a solid band with an irregular edge, like the bark at the outside of a trunk, which carries the organic character right up to the geometric outline.",
+        "The wordmark. Riesen Holzbau AG is set in wide, extended capitals with larger initials, a steady horizontal line of type that echoes a timber beam. A rule underneath runs the full width of the logo and grounds the whole composition like a sill.",
+        "The tagline. Stolz auf Holz, proud of wood, is the only handwritten element in the identity. Set in a loose script beneath the rule, it adds a human voice to an otherwise engineered logo: the signature of people who work with their hands.",
+      ],
+    },
+  ],
+  /* His ten pictures — owner, 2026-10-15: "now add those images inside the
+     project", then "add also those", then "delete those two" (the vans on
+     the country road) "and dont change the format of images". So: box-cover,
+     riesen1, reisen342, Team-scaled and riesen122 in the order he sent them,
+     then riesen3–7 in number order — each HIS FILE, UNCHANGED: its own type
+     (AVIF, JPEG, WebP), its own size, its own shape. The gallery shows a
+     picture whole in its 16:10 place (globals.css), so none is cropped or
+     padded to fit. */
+  showcase: {
+    ...pilotStory.showcase,
+    pages: [
+      { src: "/riesen-1.avif", alt: "Riesen Holzbau AG carpenters in brown branded shirts fixing the topping-out tree with its ribbons to the timber frame" },
+      { src: "/riesen-2.jpg", alt: "Riesen Holzbau AG logo in white, the house cut from a log beside the wordmark and Stolz auf Holz, over the team in brown" },
+      { src: "/riesen-3.jpg", alt: "Riesen Holzbau AG van at a building site under scaffolding, lettered Holzbau, Schreinerei, Spenglerei, Fenster" },
+      { src: "/riesen-4.jpg", alt: "Riesen Holzbau AG team in brown branded workwear in front of two company vans and the timber store" },
+      { src: "/riesen-5.webp", alt: "Riesen Holzbau AG carpenter in brown workwear and an orange helmet sealing the joint of a timber wall panel" },
+      { src: "/riesen-6.avif", alt: "Riesen Holzbau AG logo in timber tan on charcoal: the house cut from a log, the wordmark and Stolz auf Holz" },
+      { src: "/riesen-7.avif", alt: "Riesen Holzbau AG icon on its construction grid: the outline of a house filled with the growth rings of a log" },
+      { src: "/riesen-8.avif", alt: "Riesen Holzbau AG colour palette: wood browns from #734C40, charcoal greys from #333333 and timber tones to #D9BB92" },
+      { src: "/riesen-9.avif", alt: "Riesen Holzbau AG team at lunch in brown branded workwear, round a table on a base of stacked wood" },
+      { src: "/riesen-10.avif", alt: "Riesen Holzbau AG carpenter in an orange helmet on site, the logo embroidered on the brown sweatshirt" },
+    ],
+  },
+  way: pilotStory.way,
+} as const satisfies Story;
+
 /** Every story written out, each at /case-studies/<slug>. */
 export const stories: readonly Story[] = [
   ennurStory,
   jetonikeramikaStory,
   spitexSchwabStory,
+  barenStory,
+  riesenStory,
   pilotStory,
 ];

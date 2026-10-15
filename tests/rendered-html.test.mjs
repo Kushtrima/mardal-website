@@ -621,6 +621,12 @@ test("server-renders the Clients hero", async () => {
   assert.match(html, /class="clients-card__name">En-Nur</);
   assert.match(html, /class="clients-card__name">Jetonikeramika</);
   assert.match(html, /class="clients-card__name">Spitex Schwab AG</);
+  /* And Bären Baugruppe AG, 2026-10-15 ("now we have new project we have a
+     logo", from his …/work/baren.html). */
+  assert.match(html, /class="clients-card__name">Bären Baugruppe AG</);
+  /* And Riesen Holzbau AG, the same day ("now continue with this new project
+     branding", from his …/work/riesen.html; "also after name add AG"). */
+  assert.match(html, /class="clients-card__name">Riesen Holzbau AG</);
   for (const client of [
     "Stolzbau",
     "Henor",
@@ -672,11 +678,11 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   /* Every entry, once. There is no state and no subset any more, so this is the
      count of the whole list rather than of a view of it. Matched to the end of
      the class name rather than the attribute: a card with a story behind it
-     carries a modifier too. Eleven since 2026-10-11: En-Nur,
-     Jetonikeramika and Spitex Schwab AG, the delivered work, and the eight
-     placeholders. */
-  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 11);
-  assert.equal((cardMarkup.match(/<article/g) ?? []).length, 11);
+     carries a modifier too. Five since 2026-10-15: En-Nur,
+     Jetonikeramika, Spitex Schwab AG, Bären Baugruppe AG and Riesen Holzbau AG,
+     the delivered work, with the eight placeholders taken off the page. */
+  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 5);
+  assert.equal((cardMarkup.match(/<article/g) ?? []).length, 5);
 
   /* **FILTERS, under the opening — owner, 2026-10-08**: "under the hero add
      this then when click to open …", then "i want when open menu to open on
@@ -731,7 +737,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
 
   /* And with All chosen the grid is every entry — which is what makes the
      default meaningful rather than just marked. */
-  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 11);
+  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 5);
 
   /* The seven sector addresses were live and prerendered. They redirect rather
      than 404, so anything already linked still lands somewhere. */
@@ -756,47 +762,44 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
 
   /* Every card carries a picture in a box of the same shape. Four tints cycled
      by position, so no plate sits under its own colour. */
-  assert.equal((cardMarkup.match(/class="clients-card__plate"/g) ?? []).length, 11);
-  assert.equal((cardMarkup.match(/class="clients-card__art"/g) ?? []).length, 11);
+  assert.equal((cardMarkup.match(/class="clients-card__plate"/g) ?? []).length, 5);
+  assert.equal((cardMarkup.match(/class="clients-card__art"/g) ?? []).length, 5);
   const tints = [...cardMarkup.matchAll(/clients-card__plate" data-tint="(\w+)"/g)].map(
     (match) => match[1],
   );
-  assert.deepEqual(tints.slice(0, 5), ["one", "two", "three", "four", "one"]);
+  assert.deepEqual(tints, ["one", "two", "three", "four", "one"]);
 
-  /* **The pictures are placeholders on a third party's server and must not
-     ship.** This is the assertion that makes that impossible to forget: it
-     fails the build the day someone tries to publish this page with stock
-     frames still in it, which is exactly when nobody is reading comments.
-     Delete it in the same commit that puts real screenshots in. */
-  /* One `src` each (the srcset names the same frame again, at two sizes). */
-  /* The eight placeholders' — En-Nur's, Jetonikeramika's and Spitex Schwab
-     AG's are the owner's own pictures, the ones their pages open on
-     (2026-10-11), at their two widths. */
-  assert.equal((cardMarkup.match(/ src="https:\/\/picsum\.photos\//g) ?? []).length, 8);
+  /* **No stock frame on a card.** The eight placeholders' came off a third
+     party's server and were taken off this page with their invented names —
+     owner, 2026-10-15: "remove the samples project in the clients page leave
+     it only what are active those 3". Every picture left is the owner's own,
+     the one its page opens on (2026-10-11; Bären Baugruppe AG's and Riesen
+     Holzbau AG's 2026-10-15, "use this image for cover"), at its two
+     widths. */
+  assert.doesNotMatch(cardMarkup, /picsum\.photos/);
+  assert.match(cardMarkup, /<img class="clients-card__art" src="\/riesen-hero-2560\.webp" srcSet="\/riesen-hero-1200\.webp 1200w, \/riesen-hero-2560\.webp 2560w"/);
+  assert.match(cardMarkup, /<img class="clients-card__art" src="\/baren-hero-2000\.webp" srcSet="\/baren-hero-1200\.webp 1200w, \/baren-hero-2000\.webp 2000w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/spitex-schwab-hero-2000\.webp" srcSet="\/spitex-schwab-hero-1200\.webp 1200w, \/spitex-schwab-hero-2000\.webp 2000w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/en-nur-hero-2376\.webp" srcSet="\/en-nur-hero-1200\.webp 1200w, \/en-nur-hero-2376\.webp 2376w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/jetonikeramika-hero-1501\.webp" srcSet="\/jetonikeramika-hero-1200\.webp 1200w, \/jetonikeramika-hero-1501\.webp 1501w"/);
   /* Decorative, so every one of them is silent to a screen reader. */
   assert.doesNotMatch(cardMarkup, /class="clients-card__art"[^>]*alt="[^"]+"/);
 
-  /* ⚠ **THE EIGHT NAMES ON THIS PAGE ARE INVENTED AND MUST NOT SHIP.**
-
-     Pinned for the same reason the stock photographs above are: so publishing
-     this page means deleting a test on purpose rather than forgetting a
-     comment. None of these is a company Mardal has worked for. Under a heading
-     reading "Customer stories" and a line promising delivered work, eight
-     invented companies are a claimed client list and a reader cannot tell them
-     from the real archive — which is in PRODUCT.md, behind a naming decision
-     nobody has made. Delete this with the commit that puts real names in.
-
-     The first real ones came in ahead of them on 2026-10-11 — En-Nur, then
-     Jetonikeramika, then Spitex Schwab AG, on the owner's word — so the list
-     now opens with them; the eight after them are still invented. */
+  /* **The delivered work, and only it.** The real ones came in on 2026-10-11 —
+     En-Nur, then Jetonikeramika, then Spitex Schwab AG, on the owner's word —
+     and the eight invented names that stood after them went on 2026-10-15.
+     Under a heading reading "Customer stories" an invented company is a
+     claimed client, so each of the eight is asserted absent by name: one
+     creeping back fails here rather than on the live page. */
   assert.deepEqual(
     [...cardMarkup.matchAll(/class="clients-card__name">([^<]*)</g)].map(
       (m) => m[1],
     ),
-    ["En-Nur", "Jetonikeramika", "Spitex Schwab AG", "Nordvik", "Alturi", "Solvei", "Marren", "Brekk", "Vantor", "Lumea", "Kestrel"],
+    ["En-Nur", "Jetonikeramika", "Spitex Schwab AG", "Bären Baugruppe AG", "Riesen Holzbau AG"],
+  );
+  assert.doesNotMatch(
+    cardMarkup,
+    /Nordvik|Alturi|Solvei|Marren|Brekk|Vantor|Lumea|Kestrel/,
   );
 
   /* No project name, and no bracket left behind by the names landing. One entry
@@ -809,7 +812,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      project". (Industry, services and country stood there from 2026-09-30.) */
   assert.equal(
     [...cardMarkup.matchAll(/class="clients-card__name">[^<]*(?:<!-- -->)?(?:<svg class="clients-card__arrow"[\s\S]*?<\/svg>)?<\/h3><\/article>/g)].length,
-    11,
+    5,
   );
   assert.doesNotMatch(cardMarkup, /clients-card__fact/);
   assert.doesNotMatch(cardMarkup, />(Switzerland|Germany|Austria|Kosovo|Finance|Healthcare|Manufacturing|Automotive|Retail|Logistics|Public Sector|UX\/UI Design|Branding|Software|CRM)</);
@@ -817,9 +820,9 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   /* **Three shapes, two to a row at most, sometimes one** — owner,
      2026-10-08: "i want the project to have three format Box, wide and
      portrat and to be mixed", each starting on one of the page's lines, then
-     "max 2 project in one row sometimes 1". Eleven cards are rows of two,
-     one, two, one, two, one, two; each card's shape, columns (of the page's
-     four) and — a row's first — starting line set by its place. */
+     "max 2 project in one row sometimes 1". Five cards are a row of two,
+     then one, then two; each card's shape, columns (of the page's four) and —
+     a row's first — starting line set by its place. */
   assert.deepEqual(
     [...cardMarkup.matchAll(/<li data-format="(\w+)" data-span="(\d+)"(?: data-start="(\d)")? data-row="(\d)" data-place="(\d)">/g)].map(
       (m) => `${m[1]} ${m[2]}${m[3] ? "@" + m[3] : ""} ${m[4]}.${m[5]}`,
@@ -828,27 +831,19 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
       "portrait 2@1 2.1", "wide 2 2.2",
       "wide 3@2 1.1",
       "box 2@1 2.1", "portrait 2 2.2",
-      "box 2@1 1.1",
-      "portrait 2@1 2.1", "wide 2 2.2",
-      "wide 3@2 1.1",
-      "box 2@1 2.1", "portrait 2 2.2",
     ],
   );
 
-  /* **Four cards are links: En-Nur, Jetonikeramika and Spitex Schwab AG
-     (2026-10-11) and the pilot story**, the entries with a page behind them;
-     the other seven go nowhere on purpose, because a card that looks like a
-     link and answers with an empty page is worse than a card that never
-     offered.
-
-     The pilot's address lost the sector segment with the taxonomy — it was
-     `/case-studies/healthcare/healthcare-office-website`. */
+  /* **Every card is a link: En-Nur, Jetonikeramika and Spitex Schwab AG
+     (2026-10-11), Bären Baugruppe AG and Riesen Holzbau AG (2026-10-15)**, each
+     with its page behind it. */
   const links = [...cardMarkup.matchAll(/<a [^>]*class="clients-card__link"[^>]*>/g)];
-  assert.equal(links.length, 4);
-  assert.match(all, /href="\/case-studies\/healthcare-office-website"/);
+  assert.equal(links.length, 5);
   assert.match(all, /href="\/case-studies\/en-nur"/);
   assert.match(all, /href="\/case-studies\/jetonikeramika"/);
   assert.match(all, /href="\/case-studies\/spitex-schwab"/);
+  assert.match(all, /href="\/case-studies\/baren"/);
+  assert.match(all, /href="\/case-studies\/riesen"/);
 
   /* **The link opens on the picture, and that is a size, not a nesting taste.**
      The stylesheet stretches this anchor over the whole card with `inset: 0`,
@@ -866,8 +861,8 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      A card that opens something darkens and draws a plus on its picture. The
      stylesheet answers to `[data-opens]` and `[data-opens-mark]` rather than to
      anything named Clients, so another card type adopts the whole treatment by
-     carrying two attributes — and, more to the point here, these eight get it
-     the moment a story is written behind them, with no CSS and no markup
+     carrying two attributes — and, more to the point here, a new entry gets
+     it the moment a story is written behind it, with no CSS and no markup
      touched.
 
      Which is the half worth asserting: `data-opens` must appear exactly as
@@ -875,7 +870,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      opens, and a plus under the pointer on a card that answers with an empty
      page is the promise this site refuses to make. */
   assert.equal((cardMarkup.match(/data-opens="true"/g) ?? []).length, links.length);
-  assert.equal((cardMarkup.match(/data-opens-mark/g) ?? []).length, 11);
+  assert.equal((cardMarkup.match(/data-opens-mark/g) ?? []).length, 5);
 
   /* **The hover — owner, 2026-10-08** ("i dont like it how it is right
      now"): no wash and no cross laid over the picture; its frame draws in,
@@ -1265,6 +1260,191 @@ test("server-renders Spitex Schwab AG's story from the owner's own case study", 
   assert.ok(alts.every((alt) => alt.startsWith("Spitex Schwab AG ") && alt.length > 30), "a screenshot says nothing of what it shows");
   for (let n = 1; n <= 8; n += 1) {
     assert.ok(existsSync(new URL(`../public/spitex-schwab-${n}.avif`, import.meta.url)), `spitex-schwab-${n}.avif is missing`);
+  }
+});
+
+test("server-renders Bären Baugruppe AG's story from the owner's own case study", async () => {
+  const response = await render("/case-studies/baren");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const page = html.slice(0, html.indexOf("<footer"));
+
+  assert.match(html, /<title>Bären Baugruppe AG — Logo &amp; Brand Identity — Mardal<\/title>/i);
+  assert.equal((page.match(/<h1[\s>]/g) ?? []).length, 1);
+
+  const hero = page.match(/<section class="project-hero"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.match(hero, /<span class="project-hero__mark" aria-hidden="true"><\/span>Construction &amp; Roofing<\/p>/);
+  assert.match(hero, /<h1 class="project-hero__title" id="project-title" data-project-hero-title="true">Bären Baugruppe AG<\/h1>/);
+  /* His picture for the opening (2026-10-15, "use this image for cover"),
+     the card's too, at its two widths. */
+  assert.match(hero, /class="project-hero__image" src="\/baren-hero-2000\.webp" srcSet="\/baren-hero-1200\.webp 1200w, \/baren-hero-2000\.webp 2000w"/);
+  for (const width of [1200, 2000]) {
+    assert.ok(existsSync(new URL(`../public/baren-hero-${width}.webp`, import.meta.url)), `baren-hero-${width}.webp is missing`);
+  }
+  assert.match(html, /<meta property="og:image" content="[^"]*\/og-baren\.jpg"/);
+
+  /* His facts, his `·` lists with the record's commas — and his Deliverables
+     where the others have a stack, since a logo has none. */
+  const intro = page.match(/<section class="project-intro"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...intro.matchAll(/class="project-intro__label">([^<]*)<\/dt><dd class="project-intro__value">([^<]*)</g)].map((m) => `${m[1]} ${m[2]}`),
+    [
+      "INDUSTRY: Construction &amp; Roofing",
+      "SERVICES: Logo Design, Lettering, Brand Identity",
+      "LOCATION: Urtenen-Schönbühl, Switzerland",
+      "DELIVERABLES: Logo and lettering, Bear symbol, Colour palette, Typography, Identity pattern, Photography direction, Brand workbook, Site and sponsorship applications",
+    ],
+  );
+  /* His "Who they are", his "came to me" as "came to us" and his 2024 as
+     2026 (owner, 2026-10-15). */
+  assert.match(intro, /class="project-intro__summary">Bären Baugruppe AG is a Swiss construction company based in Urtenen-Schönbühl, near Bern\.[^<]*The project came to us through Business Leaders AG in 2026\.</);
+  /* The company's own site, which Mardal did not build: named by its
+     address, never as LIVE WEBSITE. */
+  assert.match(intro, /<a class="project-live" href="https:\/\/baeren-baugruppe-ag\.ch\/"[^>]*target="_blank"[\s\S]*?BAEREN-BAUGRUPPE-AG\.CH/);
+  assert.doesNotMatch(intro, /LIVE WEBSITE/);
+
+  /* "Before" cut in two as the Situation and the Challenge; "The lettering",
+     his "I" as "we", and "Four states" as the Solution. No Research — his
+     page has none. */
+  assert.deepEqual(
+    [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
+    ["Situation", "Challenge", "Solution"],
+  );
+  const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...account.matchAll(/<div class="project-passage__copy">([\s\S]*?)<\/div>/g)].map((m) => (m[1].match(/<p>/g) ?? []).length),
+    [1, 1, 6],
+  );
+  assert.match(account, /<p>The previous logo was simply the word Bären, set in type with nothing else\./);
+  assert.match(account, /<p>The client wanted something new and distinctive/);
+  assert.match(account, /<p>We started with the type\.[^<]*we built it into the letters\./);
+  assert.match(account, /<p>As a pattern\./);
+  assert.doesNotMatch(account, /\bI\b|\bme\b|\bmy\b/);
+
+  /* Only what the page needs: Agency, the palette, voice and imagery, the
+     field and After stay on his page (matched on their sentences — the
+     palette's colours and the typeface are named by the pictures' alt text);
+     nothing is left as a slot; his apostrophes are curled. */
+  const main = page.slice(page.indexOf("<main"), page.indexOf("</main>")).replace(/<script[\s\S]*?<\/script>/g, "");
+  assert.doesNotMatch(main, /Red from the roof|The red has a history|Typography is Humanist 777|From the hard hat|The identity runs across|From a word to a mark|Bären went from a name|BusinessLeaders/);
+  assert.doesNotMatch(main, /\[[A-Z][^\]]*\]/);
+  assert.doesNotMatch(main, /&#x27;|bear's|can't/);
+
+  /* **His nine pictures, in his order** (2026-10-15), each HIS FILE as he
+     sent it ("dont change the format of images": the two JPEGs stay JPEGs),
+     each saying what it shows. */
+  const showcase = page.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
+  const pictures = ["/baren-1.jpg", "/baren-2.jpg", ...[3, 4, 5, 6, 7, 8, 9].map((n) => `/baren-${n}.avif`)];
+  assert.deepEqual(
+    [...showcase.matchAll(/<img src="([^"]+)"/g)].map((m) => m[1]),
+    pictures,
+  );
+  assert.doesNotMatch(showcase, /srcSet|srcset|picsum/i);
+  const alts = [...showcase.matchAll(/<img [^>]*alt="([^"]*)"/g)].map((m) => m[1]);
+  assert.equal(alts.length, 9);
+  assert.ok(alts.every((alt) => alt.startsWith("Bären Baugruppe AG ") && alt.length > 30), "a picture says nothing of what it shows");
+  for (const src of pictures) {
+    assert.ok(existsSync(new URL(`../public${src}`, import.meta.url)), `${src} is missing`);
+  }
+
+  /* **Shown whole, in its own format** (owner, 2026-10-15: "dont change the
+     format of images"). The gallery fits each picture inside its 16:10 place
+     instead of cropping it to fill, so a square palette or a slide with words
+     on its edge keeps every word with none of its pixels changed — and the
+     place has no ground of its own, so nothing is drawn round a picture that
+     is not 16:10. Asserted on the rule: put `cover` back and they are cut. */
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /\.project-showcase__page img \{\s*object-fit: contain;\s*\}/);
+  assert.doesNotMatch(css.match(/\.project-showcase__page \{[^}]*\}/)?.[0] ?? "", /background/);
+});
+
+test("server-renders Riesen Holzbau AG's story from the owner's own case study", async () => {
+  const response = await render("/case-studies/riesen");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const page = html.slice(0, html.indexOf("<footer"));
+
+  assert.match(html, /<title>Riesen Holzbau AG — Timber Construction Logo — Mardal<\/title>/i);
+  assert.equal((page.match(/<h1[\s>]/g) ?? []).length, 1);
+
+  const hero = page.match(/<section class="project-hero"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.match(hero, /<span class="project-hero__mark" aria-hidden="true"><\/span>Timber Construction<\/p>/);
+  assert.match(hero, /<h1 class="project-hero__title" id="project-title" data-project-hero-title="true">Riesen Holzbau AG<\/h1>/);
+  /* His picture for the opening (2026-10-15, "use this image for cover"),
+     the card's too: his file at its full width, and at 1200. */
+  assert.match(hero, /class="project-hero__image" src="\/riesen-hero-2560\.webp" srcSet="\/riesen-hero-1200\.webp 1200w, \/riesen-hero-2560\.webp 2560w"/);
+  for (const width of [1200, 2560]) {
+    assert.ok(existsSync(new URL(`../public/riesen-hero-${width}.webp`, import.meta.url)), `riesen-hero-${width}.webp is missing`);
+  }
+  assert.match(html, /<meta property="og:image" content="[^"]*\/og-riesen\.jpg"/);
+
+  /* His facts, his `·` lists with the record's commas, his Deliverables as
+     the fourth line, as Bären's. */
+  const intro = page.match(/<section class="project-intro"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...intro.matchAll(/class="project-intro__label">([^<]*)<\/dt><dd class="project-intro__value">([^<]*)</g)].map((m) => `${m[1]} ${m[2]}`),
+    [
+      "INDUSTRY: Timber Construction",
+      "SERVICES: Logo Design, Brand Identity",
+      "LOCATION: Switzerland",
+      "DELIVERABLES: Brand positioning, Icon and wordmark, Colour palette, Brand workbook, Print applications, Workwear",
+    ],
+  );
+  /* "The contest" shared out: the company and how the project came to us
+     here, his job at the agency left out. */
+  assert.match(intro, /class="project-intro__summary">Riesen Holzbau AG has built in timber since 1997: houses, cabins and custom wooden projects\. The project came to us through Business Leaders AG\.</);
+  /* riesenholzbau.ch answered 500 on 2026-10-15 (a WordPress error page), so
+     no link until it is back: a visitor must not be sent to an error. */
+  assert.doesNotMatch(intro, /class="project-live"/);
+
+  /* The old logo and the contest as the Situation; "The idea" and "Anatomy
+     of the mark" as the Solution. No Challenge, no Research — his page
+     states neither. */
+  assert.deepEqual(
+    [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
+    ["Situation", "Solution"],
+  );
+  const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...account.matchAll(/<div class="project-passage__copy">([\s\S]*?)<\/div>/g)].map((m) => (m[1].match(/<p>/g) ?? []).length),
+    [1, 7],
+  );
+  assert.match(account, /<p>Its original logo had dated[^<]*Five concepts were presented, ours was chosen, and we then developed it into the full identity\.</);
+  assert.match(account, /<p>Holzbau means timber construction/);
+  assert.match(account, /recognisably Riesen’s rather than any builder’s\./);
+  assert.match(account, /<p>The tagline\. Stolz auf Holz, proud of wood/);
+  assert.doesNotMatch(account, /\bI\b|\bme\b|\bmy\b|\bmine\b/);
+
+  /* Only what the page needs: Agency, Colour, On the building site and
+     Since then stay on his page (matched on their sentences — a picture's
+     alt names the topping-out); nothing is left as a slot; his apostrophes
+     are curled. */
+  const main = page.slice(page.indexOf("<main"), page.indexOf("</main>")).replace(/<script[\s\S]*?<\/script>/g, "");
+  assert.doesNotMatch(main, /where I was working|The colours come from the material|The logo works in two main versions|brand is seen most on the building site|At a topping-out ceremony|Since the contest|for a business building in timber/i);
+  assert.doesNotMatch(main, /\[[A-Z][^\]]*\]/);
+  assert.doesNotMatch(main, /&#x27;|Riesen's|builder's/);
+
+  /* **His ten pictures** (2026-10-15): five in the order he sent them, then
+     riesen3–7; the two vans on the country road deleted ("delete those
+     two"); each HIS FILE as he sent it, in its own type and shape ("dont
+     change the format of images" — shown whole, see Bären's test), each
+     saying what it shows. */
+  const showcase = page.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
+  const pictures = [
+    "/riesen-1.avif", "/riesen-2.jpg", "/riesen-3.jpg", "/riesen-4.jpg", "/riesen-5.webp",
+    ...[6, 7, 8, 9, 10].map((n) => `/riesen-${n}.avif`),
+  ];
+  assert.deepEqual(
+    [...showcase.matchAll(/<img src="([^"]+)"/g)].map((m) => m[1]),
+    pictures,
+  );
+  assert.doesNotMatch(showcase, /srcSet|srcset|picsum/i);
+  const alts = [...showcase.matchAll(/<img [^>]*alt="([^"]*)"/g)].map((m) => m[1]);
+  assert.equal(alts.length, 10);
+  assert.ok(alts.every((alt) => alt.startsWith("Riesen Holzbau AG ") && alt.length > 30), "a picture says nothing of what it shows");
+  assert.ok(!alts.some((alt) => /on a country road/.test(alt)), "a van on the country road is back");
+  for (const src of pictures) {
+    assert.ok(existsSync(new URL(`../public${src}`, import.meta.url)), `${src} is missing`);
   }
 });
 
@@ -2109,7 +2289,7 @@ test("search engines are kept out until launch, and have a sitemap of every page
   }
   const story = await (await render("/case-studies/spitex-schwab")).text();
   assert.match(story, /<meta property="og:image" content="[^"]*\/og-spitex-schwab\.jpg"/);
-  for (const name of ["en-nur", "jetonikeramika", "spitex-schwab"]) {
+  for (const name of ["en-nur", "jetonikeramika", "spitex-schwab", "baren", "riesen"]) {
     assert.ok(existsSync(new URL(`../public/og-${name}.jpg`, import.meta.url)), `og-${name}.jpg is missing`);
   }
   const sitemap = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");

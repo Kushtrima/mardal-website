@@ -8271,11 +8271,14 @@ a.project-live:focus-visible {
   will-change: transform;
 }
 
+/* Each picture whole, in its own format — owner, 2026-10-15: "dont change
+   the format of images". The page keeps its 16:10 place in the pinned run,
+   and a square or a tall picture sits whole inside it on the page's own
+   ground, rather than cropped to fill or padded out. */
 .project-showcase__page {
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: var(--radius-sm);
-  background: var(--surface);
 }
 
 .project-showcase__page img,
@@ -8284,6 +8287,10 @@ a.project-live:focus-visible {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.project-showcase__page img {
+  object-fit: contain;
 }
 
 .project-showcase__strip {
