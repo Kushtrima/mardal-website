@@ -627,6 +627,9 @@ test("server-renders the Clients hero", async () => {
   /* And Riesen Holzbau AG, the same day ("now continue with this new project
      branding", from his …/work/riesen.html; "also after name add AG"). */
   assert.match(html, /class="clients-card__name">Riesen Holzbau AG</);
+  /* And WMK, 2026-10-16 ("now lets add new project", from his
+     …/work/wmk.html). */
+  assert.match(html, /class="clients-card__name">WMK</);
   for (const client of [
     "Stolzbau",
     "Henor",
@@ -678,11 +681,12 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   /* Every entry, once. There is no state and no subset any more, so this is the
      count of the whole list rather than of a view of it. Matched to the end of
      the class name rather than the attribute: a card with a story behind it
-     carries a modifier too. Five since 2026-10-15: En-Nur,
-     Jetonikeramika, Spitex Schwab AG, Bären Baugruppe AG and Riesen Holzbau AG,
-     the delivered work, with the eight placeholders taken off the page. */
-  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 5);
-  assert.equal((cardMarkup.match(/<article/g) ?? []).length, 5);
+     carries a modifier too. Six since 2026-10-16: En-Nur,
+     Jetonikeramika, Spitex Schwab AG, Bären Baugruppe AG, Riesen Holzbau AG
+     and WMK, the delivered work, with the eight placeholders taken off the
+     page. */
+  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 6);
+  assert.equal((cardMarkup.match(/<article/g) ?? []).length, 6);
 
   /* **FILTERS, under the opening — owner, 2026-10-08**: "under the hero add
      this then when click to open …", then "i want when open menu to open on
@@ -737,7 +741,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
 
   /* And with All chosen the grid is every entry — which is what makes the
      default meaningful rather than just marked. */
-  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 5);
+  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 6);
 
   /* The seven sector addresses were live and prerendered. They redirect rather
      than 404, so anything already linked still lands somewhere. */
@@ -762,21 +766,22 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
 
   /* Every card carries a picture in a box of the same shape. Four tints cycled
      by position, so no plate sits under its own colour. */
-  assert.equal((cardMarkup.match(/class="clients-card__plate"/g) ?? []).length, 5);
-  assert.equal((cardMarkup.match(/class="clients-card__art"/g) ?? []).length, 5);
+  assert.equal((cardMarkup.match(/class="clients-card__plate"/g) ?? []).length, 6);
+  assert.equal((cardMarkup.match(/class="clients-card__art"/g) ?? []).length, 6);
   const tints = [...cardMarkup.matchAll(/clients-card__plate" data-tint="(\w+)"/g)].map(
     (match) => match[1],
   );
-  assert.deepEqual(tints, ["one", "two", "three", "four", "one"]);
+  assert.deepEqual(tints, ["one", "two", "three", "four", "one", "two"]);
 
   /* **No stock frame on a card.** The eight placeholders' came off a third
      party's server and were taken off this page with their invented names —
      owner, 2026-10-15: "remove the samples project in the clients page leave
      it only what are active those 3". Every picture left is the owner's own,
      the one its page opens on (2026-10-11; Bären Baugruppe AG's and Riesen
-     Holzbau AG's 2026-10-15, "use this image for cover"), at its two
-     widths. */
+     Holzbau AG's 2026-10-15, "use this image for cover"; WMK's 2026-10-16,
+     "use this for cover"), at its two widths. */
   assert.doesNotMatch(cardMarkup, /picsum\.photos/);
+  assert.match(cardMarkup, /<img class="clients-card__art" src="\/wmk-hero-2000\.jpg" srcSet="\/wmk-hero-1200\.jpg 1200w, \/wmk-hero-2000\.jpg 2000w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/riesen-hero-2560\.webp" srcSet="\/riesen-hero-1200\.webp 1200w, \/riesen-hero-2560\.webp 2560w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/baren-hero-2000\.webp" srcSet="\/baren-hero-1200\.webp 1200w, \/baren-hero-2000\.webp 2000w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/spitex-schwab-hero-2000\.webp" srcSet="\/spitex-schwab-hero-1200\.webp 1200w, \/spitex-schwab-hero-2000\.webp 2000w"/);
@@ -795,7 +800,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
     [...cardMarkup.matchAll(/class="clients-card__name">([^<]*)</g)].map(
       (m) => m[1],
     ),
-    ["En-Nur", "Jetonikeramika", "Spitex Schwab AG", "Bären Baugruppe AG", "Riesen Holzbau AG"],
+    ["En-Nur", "Jetonikeramika", "Spitex Schwab AG", "Bären Baugruppe AG", "Riesen Holzbau AG", "WMK"],
   );
   assert.doesNotMatch(
     cardMarkup,
@@ -812,7 +817,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      project". (Industry, services and country stood there from 2026-09-30.) */
   assert.equal(
     [...cardMarkup.matchAll(/class="clients-card__name">[^<]*(?:<!-- -->)?(?:<svg class="clients-card__arrow"[\s\S]*?<\/svg>)?<\/h3><\/article>/g)].length,
-    5,
+    6,
   );
   assert.doesNotMatch(cardMarkup, /clients-card__fact/);
   assert.doesNotMatch(cardMarkup, />(Switzerland|Germany|Austria|Kosovo|Finance|Healthcare|Manufacturing|Automotive|Retail|Logistics|Public Sector|UX\/UI Design|Branding|Software|CRM)</);
@@ -820,9 +825,9 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   /* **Three shapes, two to a row at most, sometimes one** — owner,
      2026-10-08: "i want the project to have three format Box, wide and
      portrat and to be mixed", each starting on one of the page's lines, then
-     "max 2 project in one row sometimes 1". Five cards are a row of two,
-     then one, then two; each card's shape, columns (of the page's four) and —
-     a row's first — starting line set by its place. */
+     "max 2 project in one row sometimes 1". Six cards are rows of two, one,
+     two and one; each card's shape, columns (of the page's four) and — a
+     row's first — starting line set by its place. */
   assert.deepEqual(
     [...cardMarkup.matchAll(/<li data-format="(\w+)" data-span="(\d+)"(?: data-start="(\d)")? data-row="(\d)" data-place="(\d)">/g)].map(
       (m) => `${m[1]} ${m[2]}${m[3] ? "@" + m[3] : ""} ${m[4]}.${m[5]}`,
@@ -831,19 +836,21 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
       "portrait 2@1 2.1", "wide 2 2.2",
       "wide 3@2 1.1",
       "box 2@1 2.1", "portrait 2 2.2",
+      "box 2@1 1.1",
     ],
   );
 
   /* **Every card is a link: En-Nur, Jetonikeramika and Spitex Schwab AG
-     (2026-10-11), Bären Baugruppe AG and Riesen Holzbau AG (2026-10-15)**, each
-     with its page behind it. */
+     (2026-10-11), Bären Baugruppe AG and Riesen Holzbau AG (2026-10-15) and WMK
+     (2026-10-16)**, each with its page behind it. */
   const links = [...cardMarkup.matchAll(/<a [^>]*class="clients-card__link"[^>]*>/g)];
-  assert.equal(links.length, 5);
+  assert.equal(links.length, 6);
   assert.match(all, /href="\/case-studies\/en-nur"/);
   assert.match(all, /href="\/case-studies\/jetonikeramika"/);
   assert.match(all, /href="\/case-studies\/spitex-schwab"/);
   assert.match(all, /href="\/case-studies\/baren"/);
   assert.match(all, /href="\/case-studies\/riesen"/);
+  assert.match(all, /href="\/case-studies\/wmk"/);
 
   /* **The link opens on the picture, and that is a size, not a nesting taste.**
      The stylesheet stretches this anchor over the whole card with `inset: 0`,
@@ -870,7 +877,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      opens, and a plus under the pointer on a card that answers with an empty
      page is the promise this site refuses to make. */
   assert.equal((cardMarkup.match(/data-opens="true"/g) ?? []).length, links.length);
-  assert.equal((cardMarkup.match(/data-opens-mark/g) ?? []).length, 5);
+  assert.equal((cardMarkup.match(/data-opens-mark/g) ?? []).length, 6);
 
   /* **The hover — owner, 2026-10-08** ("i dont like it how it is right
      now"): no wash and no cross laid over the picture; its frame draws in,
@@ -976,7 +983,7 @@ test("server-renders the one customer story", async () => {
   const showcase = page.match(/<section class="project-showcase"[\s\S]*?<\/section>/)?.[0];
   assert.ok(showcase, "the pages are not shown");
   assert.doesNotMatch(showcase, /data-bar-dark/);
-  assert.equal((showcase.match(/<li class="project-showcase__page">/g) ?? []).length, 6);
+  assert.equal((showcase.match(/<li class="project-showcase__page"[ >]/g) ?? []).length, 6);
   assert.equal((showcase.match(/class="project-showcase__thumb"/g) ?? []).length, 6);
   assert.match(showcase, /class="project-showcase__window"/);
   assert.match(showcase, /<button class="project-showcase__step" type="button" disabled=""><span>Previous<\/span>/);
@@ -1445,6 +1452,142 @@ test("server-renders Riesen Holzbau AG's story from the owner's own case study",
   assert.ok(!alts.some((alt) => /on a country road/.test(alt)), "a van on the country road is back");
   for (const src of pictures) {
     assert.ok(existsSync(new URL(`../public${src}`, import.meta.url)), `${src} is missing`);
+  }
+});
+
+test("server-renders WMK's story from the owner's own case study", async () => {
+  const response = await render("/case-studies/wmk");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const page = html.slice(0, html.indexOf("<footer"));
+
+  assert.match(html, /<title>WMK Zurich — Marketing Academy Branding — Mardal<\/title>/i);
+  assert.equal((page.match(/<h1[\s>]/g) ?? []).length, 1);
+
+  const hero = page.match(/<section class="project-hero"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.match(hero, /<span class="project-hero__mark" aria-hidden="true"><\/span>Education<\/p>/);
+  assert.match(hero, /<h1 class="project-hero__title" id="project-title" data-project-hero-title="true">WMK<\/h1>/);
+  /* His picture for the opening (2026-10-16, "use this for cover"), the
+     card's too: his JPEG unchanged at full width, and a JPEG at 1200. */
+  assert.match(hero, /class="project-hero__image" src="\/wmk-hero-2000\.jpg" srcSet="\/wmk-hero-1200\.jpg 1200w, \/wmk-hero-2000\.jpg 2000w"/);
+  for (const width of [1200, 2000]) {
+    assert.ok(existsSync(new URL(`../public/wmk-hero-${width}.jpg`, import.meta.url)), `wmk-hero-${width}.jpg is missing`);
+  }
+  assert.match(html, /<meta property="og:image" content="[^"]*\/og-wmk\.jpg"/);
+
+  /* His facts, his `·` lists with the record's commas, his Deliverables as
+     the fourth line. */
+  const intro = page.match(/<section class="project-intro"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...intro.matchAll(/class="project-intro__label">([^<]*)<\/dt><dd class="project-intro__value">([^<]*)</g)].map((m) => `${m[1]} ${m[2]}`),
+    [
+      "INDUSTRY: Education",
+      "SERVICES: Brand Identity, Brand System, Art Direction",
+      "LOCATION: Zurich, Switzerland",
+      "DELIVERABLES: Brand strategy, Logotype, Colour palette, Typography, Graphic pattern, Photography style, Brand guidelines, Stationery, Digital and print assets",
+    ],
+  );
+  /* His "Company", its two paragraphs as one, "I worked" as "We worked". */
+  assert.match(intro, /class="project-intro__summary">WMK is a private academy in Zurich that teaches modern marketing and communication,[^<]*The academy was new, so this was a brand built from nothing\. We worked with WMK directly in 2026\.</);
+  /* The address his page gives, akade-wmk.ch, is not registered
+     (2026-10-16): no link until a real one is on file. */
+  assert.doesNotMatch(intro, /class="project-live"/);
+
+  /* "The brief"'s two paragraphs as the Situation and the Challenge; then
+     "Research", his "I" as "we"; then "The logo" and "The system" as the
+     Solution. */
+  assert.deepEqual(
+    [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
+    ["Situation", "Challenge", "Research", "Solution"],
+  );
+  const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...account.matchAll(/<div class="project-passage__copy">([\s\S]*?)<\/div>/g)].map((m) => (m[1].match(/<p>/g) ?? []).length),
+    [1, 1, 2, 7],
+  );
+  assert.match(account, /<p>A new academy has no reputation yet/);
+  assert.match(account, /<p>The client added one clear instruction: keep the logo simple/);
+  assert.match(account, /<p>Before designing anything, we went through a wide range of academies/);
+  assert.match(account, /Of the early directions we explored, this one answered the brief most directly/);
+  assert.match(account, /<p>The third is the logo itself used as a supergraphic/);
+  assert.doesNotMatch(account, /\bI\b|\bme\b|\bmy\b/);
+
+  /* Only what the page needs: Colour, Typography, Applications and Outcome
+     stay on his page; nothing is left as a slot; no straight apostrophe. */
+  const main = page.slice(page.indexOf("<main"), page.indexOf("</main>")).replace(/<script[\s\S]*?<\/script>/g, "");
+  assert.doesNotMatch(main, /so I proposed purple|The palette is a range of deep purples|Every tone in the range also works|Arial is an unusual choice|Regular and bold cover everyday use|a set of three posters|From there the system runs across|The concept was accepted immediately, and the full system/);
+  assert.doesNotMatch(main, /\[[A-Z][^\]]*\]/);
+  assert.doesNotMatch(main, /&#x27;/);
+
+  /* **His ten pictures, in number order** (2026-10-16), each his file as he
+     sent it, each saying what it shows. */
+  const showcase = page.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
+  const pictures = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `/wmk-${n}.avif`);
+  assert.deepEqual(
+    [...showcase.matchAll(/<img src="([^"]+)"/g)].map((m) => m[1]),
+    pictures,
+  );
+  assert.doesNotMatch(showcase, /srcSet|srcset|picsum/i);
+  const alts = [...showcase.matchAll(/<img [^>]*alt="([^"]*)"/g)].map((m) => m[1]);
+  assert.equal(alts.length, 10);
+  assert.ok(alts.every((alt) => alt.startsWith("WMK ") && alt.length > 30), "a picture says nothing of what it shows");
+  for (const src of pictures) {
+    assert.ok(existsSync(new URL(`../public${src}`, import.meta.url)), `${src} is missing`);
+  }
+});
+
+/* A picture's own size, read from its file: AVIF's `ispe` box, WebP's
+   VP8/VP8L/VP8X header, JPEG's start of frame. */
+function pictureSize(path) {
+  const b = readFileSync(new URL(`../public${path}`, import.meta.url));
+  if (b.toString("latin1", 4, 8) === "ftyp") {
+    const at = b.indexOf("ispe");
+    return [b.readUInt32BE(at + 8), b.readUInt32BE(at + 12)];
+  }
+  if (b.toString("latin1", 0, 4) === "RIFF" && b.toString("latin1", 8, 12) === "WEBP") {
+    const chunk = b.toString("latin1", 12, 16);
+    if (chunk === "VP8X") return [1 + b.readUIntLE(24, 3), 1 + b.readUIntLE(27, 3)];
+    if (chunk === "VP8L") {
+      const bits = b.readUInt32LE(21);
+      return [1 + (bits & 0x3fff), 1 + ((bits >>> 14) & 0x3fff)];
+    }
+    return [b.readUInt16LE(26) & 0x3fff, b.readUInt16LE(28) & 0x3fff];
+  }
+  for (let at = 2; at < b.length; at += 2 + b.readUInt16BE(at + 2)) {
+    const marker = b[at + 1];
+    if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) {
+      return [b.readUInt16BE(at + 7), b.readUInt16BE(at + 5)];
+    }
+  }
+  throw new Error(`${path} has no size the test can read`);
+}
+
+test("every gallery picture keeps its own shape, and a wide one runs from line to line", async () => {
+  /* Owner, 2026-10-16: "make all images thats are wide to be from horizontal
+     line to horisontal line and squares leave as they are". Each page states
+     its picture's width and height, and they must be the file's own: a wrong
+     pair draws the place the wrong shape, banding or cropping the picture. A
+     wide one carries `data-shape="wide"`, which lets its own shape set its
+     height at the full width; a square keeps the 16:10 place. */
+  for (const slug of ["en-nur", "jetonikeramika", "spitex-schwab", "baren", "riesen", "wmk"]) {
+    const html = await (await render(`/case-studies/${slug}`)).text();
+    const showcase = html.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
+    const pages = [...showcase.matchAll(/<li class="project-showcase__page"( data-shape="wide")?><img src="([^"]+)"[^>]*? width="(\d+)" height="(\d+)"/g)];
+    assert.ok(pages.length > 0, `${slug} shows no pages`);
+    for (const [, wide, src, width, height] of pages) {
+      assert.deepEqual([Number(width), Number(height)], pictureSize(src), `${src} is not the size its page says`);
+      assert.equal(Boolean(wide), Number(width) > Number(height), `${src} has the wrong shape on the page`);
+    }
+  }
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /\.project-showcase__page\[data-shape="wide"\] \{\s*aspect-ratio: auto;\s*\}/);
+  assert.match(css, /\.project-showcase__page\[data-shape="wide"\] img \{\s*height: auto;\s*\}/);
+
+  /* **Square corners** — owner, 2026-10-16: "make images without rounding so
+     no round corners". None on a picture's place, a small page or the frame
+     over them, in any rule that styles them. */
+  for (const [rule] of css.matchAll(/[^{}]*\.project-showcase__(page|thumb|window)\b[^{]*\{[^}]*\}/g)) {
+    assert.doesNotMatch(rule, /border-radius/, `rounded again: ${rule.trim().split("{")[0]}`);
   }
 });
 
@@ -2289,7 +2432,7 @@ test("search engines are kept out until launch, and have a sitemap of every page
   }
   const story = await (await render("/case-studies/spitex-schwab")).text();
   assert.match(story, /<meta property="og:image" content="[^"]*\/og-spitex-schwab\.jpg"/);
-  for (const name of ["en-nur", "jetonikeramika", "spitex-schwab", "baren", "riesen"]) {
+  for (const name of ["en-nur", "jetonikeramika", "spitex-schwab", "baren", "riesen", "wmk"]) {
     assert.ok(existsSync(new URL(`../public/og-${name}.jpg`, import.meta.url)), `og-${name}.jpg is missing`);
   }
   const sitemap = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");

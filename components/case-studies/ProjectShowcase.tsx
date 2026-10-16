@@ -38,7 +38,7 @@ export function ProjectShowcase({
   page,
 }: {
   title: string;
-  pages: readonly { src: string; alt: string }[];
+  pages: readonly { src: string; width: number; height: number; alt: string }[];
   previous: string;
   next: string;
   page: string;
@@ -184,12 +184,23 @@ export function ProjectShowcase({
 
         <div className="project-showcase__stage" ref={stageRef}>
           <ol className="project-showcase__pages" ref={pagesRef}>
-            {pages.map(({ src, alt }, index) => (
-              <li className="project-showcase__page" key={src}>
+            {pages.map(({ src, width, height, alt }, index) => (
+              /* A wide picture runs from line to line in its own shape; a
+                 square (or a tall one) stays whole inside the 16:10 place —
+                 owner, 2026-10-16: "make all images thats are wide to be from
+                 horizontal line to horisontal line and squares leave as they
+                 are". */
+              <li
+                className="project-showcase__page"
+                key={src}
+                data-shape={width > height ? "wide" : undefined}
+              >
                 {/* Screenshots of the delivered work, each saying what it
                     shows (SEO-PLAN.md, step 1.6) — a stock frame where none
                     is in yet says nothing. A stock frame is offered at two
-                    widths; a screenshot of our own is one file. */}
+                    widths; a screenshot of our own is one file. Its own
+                    width and height, so its place is the right shape before
+                    it loads and the pinned run is the right length. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={src}
@@ -200,8 +211,8 @@ export function ProjectShowcase({
                   }
                   sizes="(max-width: 40rem) 100vw, 50vw"
                   alt={alt}
-                  width="1600"
-                  height="1000"
+                  width={width}
+                  height={height}
                   loading={index === 0 ? "eager" : "lazy"}
                   decoding="async"
                 />

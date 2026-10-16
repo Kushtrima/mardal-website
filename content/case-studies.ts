@@ -355,6 +355,20 @@ export const deliveredEntries = [
     image: "/riesen-hero-2560.webp",
     imageSrcSet: "/riesen-hero-1200.webp 1200w, /riesen-hero-2560.webp 2560w",
   },
+  /* The sixth — owner, 2026-10-16: "now lets add new project", from
+     https://kushtrimarifi.com/work/wmk.html. A brand identity and its system,
+     so of the rail's seven it is Branding alone. Its picture is his, the same
+     as its page's opening ("use this for cover"). */
+  {
+    slug: "wmk",
+    sector: "education",
+    story: true,
+    name: "WMK",
+    location: "Switzerland",
+    disciplines: ["Branding"],
+    image: "/wmk-hero-2000.jpg",
+    imageSrcSet: "/wmk-hero-1200.jpg 1200w, /wmk-hero-2000.jpg 2000w",
+  },
 ];
 
 /** Every card on the Clients page: the delivered work and nothing else —
@@ -395,8 +409,15 @@ export type Story = {
     readonly page: string;
     /** Each page and what it shows. A screenshot of our own says what is on
      *  it, for Google Images and a screen reader; a stock frame says nothing
-     *  (SEO-PLAN.md, step 1.6). */
-    readonly pages: readonly { readonly src: string; readonly alt: string }[];
+     *  (SEO-PLAN.md, step 1.6). Its width and height are the file's own:
+     *  they decide its shape on the page (a wide one runs from line to line)
+     *  before it has loaded, and a test reads each file to keep them true. */
+    readonly pages: readonly {
+      readonly src: string;
+      readonly width: number;
+      readonly height: number;
+      readonly alt: string;
+    }[];
   };
   readonly way: {
     readonly label: string;
@@ -527,6 +548,8 @@ export const pilotStory = {
     page: "Page",
     pages: [1, 2, 3, 4, 5, 6].map((n) => ({
       src: `https://picsum.photos/seed/mardal-healthcare-page-${n}/1600/1000`,
+      width: 1600,
+      height: 1000,
       alt: "",
     })),
   },
@@ -629,14 +652,14 @@ export const ennurStory = {
     ...pilotStory.showcase,
     title: "The platform, page by page",
     pages: [
-      { src: "/en-nur-1.avif", alt: "En-Nur membership app on a laptop: the administrator panel with quick actions and community totals" },
-      { src: "/en-nur-2.avif", alt: "En-Nur administrator panel: quick actions and the community overview of members, revenue, donations and pending payments" },
-      { src: "/en-nur-3.avif", alt: "En-Nur payment, step one: choose a membership amount in CHF and pay by TWINT, Stripe or cash" },
-      { src: "/en-nur-4.avif", alt: "En-Nur TWINT payment: a QR code to scan with the TWINT app, beside the payment summary" },
-      { src: "/en-nur-5.avif", alt: "En-Nur payment management: totals by status, search and filters, and the list of payments" },
-      { src: "/en-nur-6.avif", alt: "En-Nur user management: members with their roles, verified email and registration date" },
-      { src: "/en-nur-7.avif", alt: "En-Nur administrator form for creating a member account with a username" },
-      { src: "/en-nur-8.avif", alt: "En-Nur member profile: the account summary of contributions, donations, payments and email status" },
+      { src: "/en-nur-1.avif", width: 1300, height: 855, alt: "En-Nur membership app on a laptop: the administrator panel with quick actions and community totals" },
+      { src: "/en-nur-2.avif", width: 1300, height: 855, alt: "En-Nur administrator panel: quick actions and the community overview of members, revenue, donations and pending payments" },
+      { src: "/en-nur-3.avif", width: 1300, height: 855, alt: "En-Nur payment, step one: choose a membership amount in CHF and pay by TWINT, Stripe or cash" },
+      { src: "/en-nur-4.avif", width: 1300, height: 855, alt: "En-Nur TWINT payment: a QR code to scan with the TWINT app, beside the payment summary" },
+      { src: "/en-nur-5.avif", width: 1300, height: 855, alt: "En-Nur payment management: totals by status, search and filters, and the list of payments" },
+      { src: "/en-nur-6.avif", width: 1300, height: 855, alt: "En-Nur user management: members with their roles, verified email and registration date" },
+      { src: "/en-nur-7.avif", width: 1300, height: 855, alt: "En-Nur administrator form for creating a member account with a username" },
+      { src: "/en-nur-8.avif", width: 1300, height: 855, alt: "En-Nur member profile: the account summary of contributions, donations, payments and email status" },
     ],
   },
   way: pilotStory.way,
@@ -729,14 +752,14 @@ export const jetonikeramikaStory = {
   showcase: {
     ...pilotStory.showcase,
     pages: [
-      { src: "/jetonikeramika-1.avif", alt: "Jetonikeramika website on a laptop: the dark homepage opening with the headline “Tile with style”" },
-      { src: "/jetonikeramika-2.avif", alt: "Jetonikeramika homepage: the showroom, unique tile models, sanitary ware, planning and professional installation" },
-      { src: "/jetonikeramika-3.avif", alt: "Jetonikeramika “Our inspiration” section, about tiles for kitchens, bathrooms and living rooms" },
-      { src: "/jetonikeramika-4.avif", alt: "Jetonikeramika page on new ceramic models, opening on green wall tiles in a shower" },
-      { src: "/jetonikeramika-5.avif", alt: "Jetonikeramika product categories: bathroom, floor, porcelain and terrace tiles, mosaic, decor and travertine" },
-      { src: "/jetonikeramika-6.avif", alt: "Jetonikeramika projects page: residential developments and venues fitted with its tiles" },
-      { src: "/jetonikeramika-7.avif", alt: "Jetonikeramika showroom page: views of the showroom" },
-      { src: "/jetonikeramika-8.avif", alt: "Jetonikeramika “Our exclusive showroom” page: the story of its showroom in Gjilan" },
+      { src: "/jetonikeramika-1.avif", width: 1466, height: 860, alt: "Jetonikeramika website on a laptop: the dark homepage opening with the headline “Tile with style”" },
+      { src: "/jetonikeramika-2.avif", width: 1500, height: 987, alt: "Jetonikeramika homepage: the showroom, unique tile models, sanitary ware, planning and professional installation" },
+      { src: "/jetonikeramika-3.avif", width: 1500, height: 987, alt: "Jetonikeramika “Our inspiration” section, about tiles for kitchens, bathrooms and living rooms" },
+      { src: "/jetonikeramika-4.avif", width: 1500, height: 987, alt: "Jetonikeramika page on new ceramic models, opening on green wall tiles in a shower" },
+      { src: "/jetonikeramika-5.avif", width: 1500, height: 987, alt: "Jetonikeramika product categories: bathroom, floor, porcelain and terrace tiles, mosaic, decor and travertine" },
+      { src: "/jetonikeramika-6.avif", width: 1300, height: 855, alt: "Jetonikeramika projects page: residential developments and venues fitted with its tiles" },
+      { src: "/jetonikeramika-7.avif", width: 1300, height: 855, alt: "Jetonikeramika showroom page: views of the showroom" },
+      { src: "/jetonikeramika-8.avif", width: 1500, height: 987, alt: "Jetonikeramika “Our exclusive showroom” page: the story of its showroom in Gjilan" },
     ],
   },
   way: pilotStory.way,
@@ -824,14 +847,14 @@ export const spitexSchwabStory = {
   showcase: {
     ...pilotStory.showcase,
     pages: [
-      { src: "/spitex-schwab-1.avif", alt: "Spitex Schwab AG website on a laptop: the teal homepage, “Pflege und Unterstützung für Seniorinnen und Familien”" },
-      { src: "/spitex-schwab-2.avif", alt: "Spitex Schwab AG homepage: five large navigation boxes over a teal-washed photo" },
-      { src: "/spitex-schwab-3.avif", alt: "Spitex Schwab AG care introduction, with the phone button “Beratung und Anmeldung” in the header" },
-      { src: "/spitex-schwab-4.avif", alt: "Spitex Schwab AG household help page, its services listed in everyday words" },
-      { src: "/spitex-schwab-5.avif", alt: "Spitex Schwab AG section on needs-based care in Bern, with the heart logo" },
-      { src: "/spitex-schwab-6.avif", alt: "Spitex Schwab AG “Pflege & Betreuung in vertrauter Umgebung”: text in a solid teal panel over a photo" },
-      { src: "/spitex-schwab-7.avif", alt: "Spitex Schwab AG “Warum uns wählen?” section with expandable reasons beside a care photo" },
-      { src: "/spitex-schwab-8.avif", alt: "Spitex Schwab AG services menu open: dementia, psychiatry, palliative and oncology care, wound care and transport" },
+      { src: "/spitex-schwab-1.avif", width: 1466, height: 860, alt: "Spitex Schwab AG website on a laptop: the teal homepage, “Pflege und Unterstützung für Seniorinnen und Familien”" },
+      { src: "/spitex-schwab-2.avif", width: 1300, height: 855, alt: "Spitex Schwab AG homepage: five large navigation boxes over a teal-washed photo" },
+      { src: "/spitex-schwab-3.avif", width: 1300, height: 855, alt: "Spitex Schwab AG care introduction, with the phone button “Beratung und Anmeldung” in the header" },
+      { src: "/spitex-schwab-4.avif", width: 1500, height: 990, alt: "Spitex Schwab AG household help page, its services listed in everyday words" },
+      { src: "/spitex-schwab-5.avif", width: 1300, height: 855, alt: "Spitex Schwab AG section on needs-based care in Bern, with the heart logo" },
+      { src: "/spitex-schwab-6.avif", width: 1500, height: 990, alt: "Spitex Schwab AG “Pflege & Betreuung in vertrauter Umgebung”: text in a solid teal panel over a photo" },
+      { src: "/spitex-schwab-7.avif", width: 1500, height: 990, alt: "Spitex Schwab AG “Warum uns wählen?” section with expandable reasons beside a care photo" },
+      { src: "/spitex-schwab-8.avif", width: 1300, height: 855, alt: "Spitex Schwab AG services menu open: dementia, psychiatry, palliative and oncology care, wound care and transport" },
     ],
   },
   way: pilotStory.way,
@@ -925,15 +948,15 @@ export const barenStory = {
   showcase: {
     ...pilotStory.showcase,
     pages: [
-      { src: "/baren-1.jpg", alt: "Bären Baugruppe AG logo, the red bear walking through the black lettering, over a faded photo of roofers on a metal roof" },
-      { src: "/baren-2.jpg", alt: "Bären Baugruppe AG roofer in a white hard hat with the logo, reading plans beside a company van with the red bear" },
-      { src: "/baren-3.avif", alt: "Bären Baugruppe AG primary logo on white: the red bear in the Ä and the R, Baugruppe AG set light beneath" },
-      { src: "/baren-4.avif", alt: "Bären Baugruppe AG colour palette: black, dark grey #4D4D4D, primary red #E40625, lighter red #F0484A and white" },
-      { src: "/baren-5.avif", alt: "Bären Baugruppe AG typography sheet: Humanist 777 in light, regular and bold, with paragraph and header samples" },
-      { src: "/baren-6.avif", alt: "Bären Baugruppe AG identity pattern: the letter fragments around the bear, repeated in white on red" },
-      { src: "/baren-7.avif", alt: "Bären Baugruppe AG photography direction: a roofer carrying tiles, beside the white logo on black and notes on the imagery" },
-      { src: "/baren-8.avif", alt: "Bären Baugruppe AG roofing slide: a grid of tiled-roof photographs on the brand red, marked Switzerland, Roofing, 2025" },
-      { src: "/baren-9.avif", alt: "Bären Baugruppe AG site banner on a building-site fence: the white logo on black, the address and the list of services" },
+      { src: "/baren-1.jpg", width: 2948, height: 1720, alt: "Bären Baugruppe AG logo, the red bear walking through the black lettering, over a faded photo of roofers on a metal roof" },
+      { src: "/baren-2.jpg", width: 1672, height: 941, alt: "Bären Baugruppe AG roofer in a white hard hat with the logo, reading plans beside a company van with the red bear" },
+      { src: "/baren-3.avif", width: 1500, height: 1500, alt: "Bären Baugruppe AG primary logo on white: the red bear in the Ä and the R, Baugruppe AG set light beneath" },
+      { src: "/baren-4.avif", width: 1500, height: 1500, alt: "Bären Baugruppe AG colour palette: black, dark grey #4D4D4D, primary red #E40625, lighter red #F0484A and white" },
+      { src: "/baren-5.avif", width: 1500, height: 877, alt: "Bären Baugruppe AG typography sheet: Humanist 777 in light, regular and bold, with paragraph and header samples" },
+      { src: "/baren-6.avif", width: 1500, height: 877, alt: "Bären Baugruppe AG identity pattern: the letter fragments around the bear, repeated in white on red" },
+      { src: "/baren-7.avif", width: 1500, height: 877, alt: "Bären Baugruppe AG photography direction: a roofer carrying tiles, beside the white logo on black and notes on the imagery" },
+      { src: "/baren-8.avif", width: 1500, height: 877, alt: "Bären Baugruppe AG roofing slide: a grid of tiled-roof photographs on the brand red, marked Switzerland, Roofing, 2025" },
+      { src: "/baren-9.avif", width: 1200, height: 1200, alt: "Bären Baugruppe AG site banner on a building-site fence: the white logo on black, the address and the list of services" },
     ],
   },
   way: pilotStory.way,
@@ -1025,16 +1048,125 @@ export const riesenStory = {
   showcase: {
     ...pilotStory.showcase,
     pages: [
-      { src: "/riesen-1.avif", alt: "Riesen Holzbau AG carpenters in brown branded shirts fixing the topping-out tree with its ribbons to the timber frame" },
-      { src: "/riesen-2.jpg", alt: "Riesen Holzbau AG logo in white, the house cut from a log beside the wordmark and Stolz auf Holz, over the team in brown" },
-      { src: "/riesen-3.jpg", alt: "Riesen Holzbau AG van at a building site under scaffolding, lettered Holzbau, Schreinerei, Spenglerei, Fenster" },
-      { src: "/riesen-4.jpg", alt: "Riesen Holzbau AG team in brown branded workwear in front of two company vans and the timber store" },
-      { src: "/riesen-5.webp", alt: "Riesen Holzbau AG carpenter in brown workwear and an orange helmet sealing the joint of a timber wall panel" },
-      { src: "/riesen-6.avif", alt: "Riesen Holzbau AG logo in timber tan on charcoal: the house cut from a log, the wordmark and Stolz auf Holz" },
-      { src: "/riesen-7.avif", alt: "Riesen Holzbau AG icon on its construction grid: the outline of a house filled with the growth rings of a log" },
-      { src: "/riesen-8.avif", alt: "Riesen Holzbau AG colour palette: wood browns from #734C40, charcoal greys from #333333 and timber tones to #D9BB92" },
-      { src: "/riesen-9.avif", alt: "Riesen Holzbau AG team at lunch in brown branded workwear, round a table on a base of stacked wood" },
-      { src: "/riesen-10.avif", alt: "Riesen Holzbau AG carpenter in an orange helmet on site, the logo embroidered on the brown sweatshirt" },
+      { src: "/riesen-1.avif", width: 1200, height: 1200, alt: "Riesen Holzbau AG carpenters in brown branded shirts fixing the topping-out tree with its ribbons to the timber frame" },
+      { src: "/riesen-2.jpg", width: 2946, height: 1716, alt: "Riesen Holzbau AG logo in white, the house cut from a log beside the wordmark and Stolz auf Holz, over the team in brown" },
+      { src: "/riesen-3.jpg", width: 2048, height: 1536, alt: "Riesen Holzbau AG van at a building site under scaffolding, lettered Holzbau, Schreinerei, Spenglerei, Fenster" },
+      { src: "/riesen-4.jpg", width: 2560, height: 1709, alt: "Riesen Holzbau AG team in brown branded workwear in front of two company vans and the timber store" },
+      { src: "/riesen-5.webp", width: 2560, height: 1707, alt: "Riesen Holzbau AG carpenter in brown workwear and an orange helmet sealing the joint of a timber wall panel" },
+      { src: "/riesen-6.avif", width: 1300, height: 1300, alt: "Riesen Holzbau AG logo in timber tan on charcoal: the house cut from a log, the wordmark and Stolz auf Holz" },
+      { src: "/riesen-7.avif", width: 1300, height: 1300, alt: "Riesen Holzbau AG icon on its construction grid: the outline of a house filled with the growth rings of a log" },
+      { src: "/riesen-8.avif", width: 1300, height: 1300, alt: "Riesen Holzbau AG colour palette: wood browns from #734C40, charcoal greys from #333333 and timber tones to #D9BB92" },
+      { src: "/riesen-9.avif", width: 1471, height: 861, alt: "Riesen Holzbau AG team at lunch in brown branded workwear, round a table on a base of stacked wood" },
+      { src: "/riesen-10.avif", width: 1200, height: 1200, alt: "Riesen Holzbau AG carpenter in an orange helmet on site, the logo embroidered on the brown sweatshirt" },
+    ],
+  },
+  way: pilotStory.way,
+} as const satisfies Story;
+
+/**
+ * **WMK** — owner, 2026-10-16: "now lets add new project:
+ * https://kushtrimarifi.com/work/wmk.html". Taken as the others were, word
+ * for word:
+ *
+ *   — the name, industry, services, location and Deliverables from its
+ *     facts (his `·` lists with the record's commas);
+ *   — the summary from "Company", its two paragraphs as one, his "I worked
+ *     with WMK directly" as "We worked";
+ *   — Situation and Challenge from "The brief"'s two paragraphs, as
+ *     Spitex's came from "The problem";
+ *   — Research from "Research", his "I went through" as "we went through";
+ *   — Solution from "The logo", his "directions I explored" as "we
+ *     explored", then "The system".
+ *
+ * Left on his page: Colour, Typography, Applications, Outcome and every
+ * sub-heading.
+ *
+ * The academy's site is not linked: the address his page gives,
+ * akade-wmk.ch, is not registered (the .ch registry has no such domain,
+ * 2026-10-16), and the page shows a link only once one is set. The
+ * opening picture (the card's too) and the ten pages are his.
+ */
+export const wmkStory = {
+  slug: "wmk",
+  /* His portfolio's own title for it, less his name. */
+  title: "WMK Zurich — Marketing Academy Branding",
+  name: "WMK",
+  industry: "Education",
+  lede: "A brand identity for WMK, a private marketing academy in Zurich.",
+  /* His picture for the opening — owner, 2026-10-16: "use this for cover"
+     (covers-wmk.jpg from his Desktop, 2000×1333). His JPEG unchanged at its
+     full width, and a JPEG at 1200 for a phone: the same type and shape, as
+     he asked of his pictures ("dont change the format of images"). */
+  heroImage: "/wmk-hero-2000.jpg",
+  heroSrcSet: "/wmk-hero-1200.jpg 1200w, /wmk-hero-2000.jpg 2000w",
+  ogImage: "/og-wmk.jpg",
+  summary:
+    "WMK is a private academy in Zurich that teaches modern marketing and communication, from building an online presence to performance marketing, content strategy and consumer psychology. Its students are marketing professionals, career changers and company employees building new skills. The name carries its subjects: Wirtschaft, Marketing, Kommunikation. The academy was new, so this was a brand built from nothing. We worked with WMK directly in 2026.",
+  record: [
+    { label: "INDUSTRY:", value: "Education" },
+    { label: "SERVICES:", value: "Brand Identity, Brand System, Art Direction" },
+    { label: "LOCATION:", value: "Zurich, Switzerland" },
+    {
+      label: "DELIVERABLES:",
+      value:
+        "Brand strategy, Logotype, Colour palette, Typography, Graphic pattern, Photography style, Brand guidelines, Stationery, Digital and print assets",
+    },
+  ],
+  live: { label: "AKADE-WMK.CH", href: null as string | null },
+  passages: [
+    {
+      id: "situation",
+      heading: "Situation",
+      paragraphs: [
+        "A new academy has no reputation yet, so its brand has to supply the credibility that years would normally provide. At the same time, WMK teaches the newest parts of marketing, and a brand that looked like a traditional institution would contradict what it teaches. It had to feel academic and current at once.",
+      ],
+    },
+    {
+      id: "challenge",
+      heading: "Challenge",
+      paragraphs: [
+        "The client added one clear instruction: keep the logo simple, and put the richness into the branding around it.",
+      ],
+    },
+    {
+      id: "research",
+      heading: "Research",
+      paragraphs: [
+        "Before designing anything, we went through a wide range of academies and business schools. Almost all of them had the same kind of brand: a simple mark, a simple concept, and nothing wrong with either. The problem was that simplicity had made them similar. Few of them gave a reason to remember one over another.",
+        "The client had said the same thing in their own words: they wanted to be different, above all in colour and in branding. The research showed where that difference could come from. Simplicity in the logo was worth keeping, because it is what makes an academy look clear and trustworthy. Colour and the system around the mark were where the category had nothing to say, so that is where WMK would speak.",
+      ],
+    },
+    {
+      id: "solution",
+      heading: "Solution",
+      paragraphs: [
+        "The mark is the three initials set in a heavy grotesque with tight spacing, so they read as one solid block. A thin vertical rule separates them from the three words they stand for, Wirtschaft, Marketing and Kommunikation, stacked in a lighter weight.",
+        "The logo explains itself. An acronym on its own expects the reader to already know the name. Here the meaning sits right beside it, so a first-time visitor learns what WMK teaches in the same glance that shows them the name. For an academy nobody had heard of yet, that did more work than a symbol could. Of the early directions we explored, this one answered the brief most directly, and it was accepted immediately.",
+        "The logo also steps down with the space it has. Where there is room, the full lockup appears with all three words. In tighter spaces the initials stand alone, and over photography the brand often signs off with just Akademie and WMK in small type, leaving the images and the pattern to do the rest.",
+        "Because the logo stays simple, the character of the brand lives in three elements around it.",
+        "The first is a pattern of vertical white bars in different lengths, set in staggered rows. The bars stand for movement. Marketing and technology are fields that never stand still, and the people learning them are moving too, from one skill and one stage of their career to the next. Offset at different heights, the bars read as momentum rather than as a fixed grid. The pattern can be packed densely to fill a poster on its own, thinned out to sit behind a headline, or reduced to a handful of strokes over a photograph.",
+        "The second is photography. The images show learners in real settings, and every photograph is set in a purple duotone, so pictures from different sources share one voice while the people in them stay the focus.",
+        "The third is the logo itself used as a supergraphic: the letters W, M and K enlarged and cropped at the edge of the format, so even a fragment of a letter is recognisably WMK. Headlines complete the voice with short, confident statements, such as Good marketing tells a story, set in capitals and sometimes turned vertical to run the full height of a poster.",
+      ],
+    },
+  ],
+  /* His ten pictures in number order — owner, 2026-10-16: "add those
+     images inside the project" (wmk1–wmk10.avif). Each is his file,
+     unchanged, in its own shape ("dont change the format of images"); the
+     gallery shows the square ones whole. */
+  showcase: {
+    ...pilotStory.showcase,
+    pages: [
+      { src: "/wmk-1.avif", width: 1500, height: 878, alt: "WMK logo lockup, the three initials beside Wirtschaft, Marketing, Kommunikation, over students in a purple duotone" },
+      { src: "/wmk-2.avif", width: 1500, height: 1500, alt: "WMK full logo on the darkest purple: the initials, the rule and the three words, with Akademie above" },
+      { src: "/wmk-3.avif", width: 1500, height: 1500, alt: "WMK colour palette: the four deep purples #31014B, #440566, #52097A and #5B0A87" },
+      { src: "/wmk-4.avif", width: 1500, height: 877, alt: "WMK typography sheet: Arial in light, regular and bold, with paragraph and header samples on purple" },
+      { src: "/wmk-5.avif", width: 1500, height: 877, alt: "WMK foundation posters: the bar pattern alone, with the headline Good marketing tells a story, and over a photograph" },
+      { src: "/wmk-6.avif", width: 1500, height: 877, alt: "WMK layout with students walking past flags in the purple duotone, the cropped initials running along the foot" },
+      { src: "/wmk-7.avif", width: 1000, height: 1000, alt: "WMK square social post: a smiling student in the purple duotone, the bar pattern and Akademie WMK" },
+      { src: "/wmk-8.avif", width: 1000, height: 1000, alt: "WMK square post: students in the purple duotone, the bars, and a paragraph about the academy under Akademie WMK" },
+      { src: "/wmk-9.avif", width: 1500, height: 877, alt: "WMK on a wall-sized digital display in a dark room, the bars and the logo at architectural scale, a visitor in front" },
+      { src: "/wmk-10.avif", width: 1500, height: 877, alt: "WMK landscape layout on purple: the bar pattern above the logo and a paragraph, Akademie in the corner" },
     ],
   },
   way: pilotStory.way,
@@ -1047,5 +1179,6 @@ export const stories: readonly Story[] = [
   spitexSchwabStory,
   barenStory,
   riesenStory,
+  wmkStory,
   pilotStory,
 ];

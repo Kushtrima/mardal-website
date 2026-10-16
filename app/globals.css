@@ -8272,13 +8272,14 @@ a.project-live:focus-visible {
 }
 
 /* Each picture whole, in its own format — owner, 2026-10-15: "dont change
-   the format of images". The page keeps its 16:10 place in the pinned run,
-   and a square or a tall picture sits whole inside it on the page's own
-   ground, rather than cropped to fill or padded out. */
+   the format of images". A square or a tall picture keeps a 16:10 place in
+   the pinned run and sits whole inside it on the page's own ground, rather
+   than cropped to fill or padded out. Square corners, as the small pages
+   and their frame below — owner, 2026-10-16: "make images without rounding
+   so no round corners". */
 .project-showcase__page {
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  border-radius: var(--radius-sm);
 }
 
 .project-showcase__page img,
@@ -8291,6 +8292,19 @@ a.project-live:focus-visible {
 
 .project-showcase__page img {
   object-fit: contain;
+}
+
+/* A wide picture from line to line — owner, 2026-10-16: "make all images
+   thats are wide to be from horizontal line to horisontal line and squares
+   leave as they are". Full width, and its own width and height (the img's
+   attributes) give the place its height, so it is never cropped and never
+   narrower than the lines. */
+.project-showcase__page[data-shape="wide"] {
+  aspect-ratio: auto;
+}
+
+.project-showcase__page[data-shape="wide"] img {
+  height: auto;
 }
 
 .project-showcase__strip {
@@ -8322,7 +8336,6 @@ a.project-live:focus-visible {
   padding: 0;
   overflow: hidden;
   border: 0;
-  border-radius: 3px;
   background: var(--surface);
   cursor: pointer;
   opacity: 0.55;
@@ -8348,7 +8361,6 @@ a.project-live:focus-visible {
   left: -0.3rem;
   height: 0;
   border: 1.5px solid var(--ink);
-  border-radius: 5px;
   pointer-events: none;
 }
 
