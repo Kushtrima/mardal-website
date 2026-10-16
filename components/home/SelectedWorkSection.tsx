@@ -1,8 +1,76 @@
 import Link from "next/link";
 import { Container } from "../layout/Container";
 import { selectedWork } from "../../content/home";
+import { deliveredEntries, stories } from "../../content/case-studies";
 import { SelectedWorkReveal } from "./SelectedWorkReveal";
 import { RollingLabel } from "../ui/RollingLabel";
+
+/**
+ * A piece of work as its project page has it: the name and the location
+ * from the page's record, the picture from its card, the way in to the page.
+ * (The service is the piece's own word, in `selectedWork`.) A name in
+ * `selectedWork` with no page behind it fails the build rather than showing
+ * a piece that opens nothing.
+ */
+function piece(slug: string) {
+  const story = stories.find((entry) => entry.slug === slug);
+  const card = deliveredEntries.find((entry) => entry.slug === slug);
+  if (!story || !card) throw new Error(`Selected Work names "${slug}", which has no project page`);
+  const fact = (label: string) => story.record.find((line) => line.label === label)?.value ?? "";
+  return {
+    href: `/case-studies/${slug}`,
+    name: story.name,
+    location: fact("LOCATION:"),
+    src: card.image,
+    srcSet: "imageSrcSet" in card && typeof card.imageSrcSet === "string" ? card.imageSrcSet : undefined,
+  };
+}
+
+/** The frame each place gives its picture, as its width and height. */
+const FRAMES = { tall: [607, 764], wide: [603, 427], square: [1000, 1000] } as const;
+
+/** One piece: the picture in its frame, the three lines under it, the whole
+ *  of it the way in to the project. The picture says nothing a reader needs —
+ *  the name is right under it — so its alt is empty, as on the Clients
+ *  cards. */
+function Piece({
+  slug,
+  service,
+  frame,
+}: {
+  slug: string;
+  service: string;
+  frame: keyof typeof FRAMES;
+}) {
+  const work = piece(slug);
+  const [width, height] = FRAMES[frame];
+  return (
+    <Link className="selected-work__link" href={work.href}>
+      <figure className="selected-work__figure">
+        <div className="selected-work__frame" data-selected-work-frame>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className="selected-work__image"
+            src={work.src}
+            srcSet={work.srcSet}
+            sizes="(max-width: 40rem) 100vw, 50vw"
+            alt=""
+            width={width}
+            height={height}
+            loading="lazy"
+            decoding="async"
+            data-selected-work-image
+          />
+        </div>
+        <figcaption className="selected-work__meta" data-selected-work-meta>
+          <span className="selected-work__meta-line">{work.name}</span>
+          <span className="selected-work__meta-line">{service}</span>
+          <span className="selected-work__meta-line">{work.location}</span>
+        </figcaption>
+      </figure>
+    </Link>
+  );
+}
 
 /**
  * Selected Work — the owner's comp of 2026-10-05, under Human Creativity +
@@ -13,9 +81,9 @@ import { RollingLabel } from "../ui/RollingLabel";
  * and a wide one, three lines under each. The halves meet on the middle rule of
  * the section above, so the two sections share one grid.
  *
- * The pieces open nothing (see `selectedWork` in content/home.ts), so they
- * carry no hover: the site gives a pointer effect only to a card that goes
- * somewhere.
+ * The pieces are the owner's projects (2026-10-16), each opening its page;
+ * they read their lines from that page (see `selectedWork` in
+ * content/home.ts). No hover treatment yet — none has been asked for.
  */
 export function SelectedWorkSection() {
   return (
@@ -71,36 +139,10 @@ export function SelectedWorkSection() {
           {selectedWork.items.map((item) => (
             <li
               className={`selected-work__item selected-work__item--${item.shape}`}
-              key={item.key}
+              key={item.project}
               data-selected-work-item
             >
-              <figure className="selected-work__figure">
-                <div className="selected-work__frame" data-selected-work-frame>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    className="selected-work__image"
-                    src={item.image.src}
-                    alt={item.image.alt}
-                    width={item.image.width}
-                    height={item.image.height}
-                    loading="lazy"
-                    decoding="async"
-                    data-selected-work-image
-                  />
-                </div>
-                <figcaption
-                  className="selected-work__meta"
-                  data-selected-work-meta
-                >
-                  <span className="selected-work__meta-line">{item.name}</span>
-                  <span className="selected-work__meta-line">
-                    {item.services}
-                  </span>
-                  <span className="selected-work__meta-line">
-                    {item.location}
-                  </span>
-                </figcaption>
-              </figure>
+              <Piece slug={item.project} service={item.service} frame={item.shape} />
             </li>
           ))}
         </ul>
@@ -111,37 +153,11 @@ export function SelectedWorkSection() {
           {selectedWork.features.map((item) => (
             <li
               className="selected-work__feature"
-              key={item.key}
+              key={item.project}
               data-selected-work-item
               data-selected-work-feature
             >
-              <figure className="selected-work__figure">
-                <div className="selected-work__frame" data-selected-work-frame>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    className="selected-work__image"
-                    src={item.image.src}
-                    alt={item.image.alt}
-                    width={item.image.width}
-                    height={item.image.height}
-                    loading="lazy"
-                    decoding="async"
-                    data-selected-work-image
-                  />
-                </div>
-                <figcaption
-                  className="selected-work__meta"
-                  data-selected-work-meta
-                >
-                  <span className="selected-work__meta-line">{item.name}</span>
-                  <span className="selected-work__meta-line">
-                    {item.services}
-                  </span>
-                  <span className="selected-work__meta-line">
-                    {item.location}
-                  </span>
-                </figcaption>
-              </figure>
+              <Piece slug={item.project} service={item.service} frame="square" />
             </li>
           ))}
         </ul>

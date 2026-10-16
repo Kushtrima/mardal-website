@@ -1773,20 +1773,35 @@ test("Selected Work stands under Fusion, as the owner's comp draws it", async ()
   assert.match(CSSF, /\.selected-work__features \{[^}]*grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\);/);
   assert.match(CSSF, /\.selected-work__feature:nth-child\(1\) \{\s*grid-column:\s*2;/);
   assert.match(CSSF, /\.selected-work__feature:nth-child\(2\) \{\s*grid-column:\s*3 \/ -1;/);
-  for (const line of ["Buhler", "Software, CRM", "Switzerland"]) {
-    assert.equal(
-      (section.match(new RegExp(`>${line}<`, "g")) ?? []).length,
-      4,
-      `"${line}" is not under every piece`,
-    );
-  }
-  assert.equal((section.match(/src="\/selected-work-buhler\.webp"/g) ?? []).length, 4);
+  /* **His own projects, in his order** (owner, 2026-10-16: "1.Riesen Holzbau
+     AG 2. Jetonikeramika 3.WMK and 4. EN-nur …", then "swap … Wmk with EN
+     nur places"): under each its name and its location as its own page
+     records them, between them his one word for the service — "Reisend only
+     BRanding, Jetoni Website, Wmk Branding, EN nur Software thats it"; its
+     cover above. */
+  const lines = [...section.matchAll(/<figcaption class="selected-work__meta"[^>]*>([\s\S]*?)<\/figcaption>/g)].map((m) =>
+    [...m[1].matchAll(/<span class="selected-work__meta-line">([^<]*)<\/span>/g)].map((line) => line[1]),
+  );
+  assert.deepEqual(lines, [
+    ["Riesen Holzbau AG", "Branding", "Switzerland"],
+    ["Jetonikeramika", "Website", "Kosovo"],
+    ["En-Nur", "Software", "Switzerland"],
+    ["WMK", "Branding", "Zurich, Switzerland"],
+  ]);
+  assert.deepEqual(
+    [...section.matchAll(/<img class="selected-work__image" src="([^"]+)"/g)].map((m) => m[1]),
+    ["/riesen-hero-2560.webp", "/jetonikeramika-hero-1501.webp", "/en-nur-hero-2376.webp", "/wmk-hero-2000.jpg"],
+  );
+  /* Not one "Buhler" — the comp's stand-in, and a real Swiss company that was
+     never a client. */
+  assert.doesNotMatch(main, /Buhler|Bühler|selected-work-buhler/);
 
-  /* **No piece opens anything** — there is no Buhler page, and a card that
-     answers with nothing is the promise this site refuses to make. VIEW ALL is
-     the section's one link. */
-  const list = section.slice(section.indexOf('class="selected-work__list"'));
-  assert.doesNotMatch(list, /<a /);
+  /* **Each piece opens its project**, the page it read its lines from. VIEW
+     ALL stays the section's way to the index. */
+  assert.deepEqual(
+    [...section.matchAll(/<a [^>]*class="selected-work__link"[^>]*>/g)].map((m) => m[0].match(/href="([^"]+)"/)?.[1]),
+    ["/case-studies/riesen", "/case-studies/jetonikeramika", "/case-studies/en-nur", "/case-studies/wmk"],
+  );
 
   /* Its own entrance, so it declines the site's, and nothing in the
      stylesheet hides it before the script runs. */

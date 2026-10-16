@@ -3693,6 +3693,19 @@ main:has(> .services-rules) > .pin-spacer {
   list-style: none;
 }
 
+/* Each piece opens its project — the owner's own work since 2026-10-16. The
+   whole piece is the link and looks as it did; only the focus ring is new. */
+.selected-work__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.selected-work__link:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0.35em;
+}
+
 .selected-work__figure {
   margin: 0;
 }

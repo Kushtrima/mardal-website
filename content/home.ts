@@ -346,24 +346,23 @@ export const fusion = {
 
 /**
  * Selected Work, under Human Creativity + Artificial Intelligence — the
- * owner's comp of 2026-10-05: the heading, VIEW ALL, and two pieces of work,
- * a tall picture and a wide one, three lines under each.
+ * owner's comp of 2026-10-05: the heading, VIEW ALL, a tall picture and a
+ * wide one, then two squares side by side, three lines under each.
  *
- * Every word is his comp's, line for line. Both pieces read "Buhler" in it;
- * they are set as he drew them, not filled in with a second client.
+ * **His own projects, in his order** — owner, 2026-10-16: "populate with
+ * actual project … 1.Riesen Holzbau AG 2. Jetonikeramika 3.WMK and 4. EN-nur
+ * but here need to be disaplay also services and location as they are", then
+ * "also swap … Wmk with EN nur places". They replace the comp's four "Buhler"
+ * pieces (a real Swiss company, never a client). Each piece names its
+ * project; its name and location are read from its own page (`stories` in
+ * content/case-studies.ts) and its picture is its cover, so those can never
+ * disagree with the project. The service is one word per piece, his: "Reisend
+ * only BRanding, Jetoni Website, Wmk Branding, EN nur Software thats it" —
+ * here only; each page keeps its full list. Each opens its page.
  *
- * ⚠ The picture is cut from his screenshot of the comp, 607×764 — the only
- * copy of it on this machine. It is soft on a 2x screen; the original file
- * replaces it at the same path. Both pieces use it: the wide one is the same
- * photograph at the same scale, cut lower (his comp, measured).
- *
- * No piece links anywhere: there is no Buhler page, and a card that opens
- * nothing is the promise this site refuses to make (see `work.items`). VIEW
- * ALL goes to the case-studies index, which exists.
- *
- * (Three in a row with a hover that opened the picture was tried the same day
- * and reverted on his word: "i dont like the selectec work design, revers as
- * it was".)
+ * (Three in a row with a hover that opened the picture was tried on
+ * 2026-10-05 and reverted on his word: "i dont like the selectec work
+ * design, revers as it was".)
  */
 export const selectedWork = {
   id: "selected-work",
@@ -371,67 +370,19 @@ export const selectedWork = {
      in upperc case SELECTED WORK" — like VIEW ALL beside it. */
   titleLines: ["SELECTED", "WORK"],
   viewAll: { label: "VIEW ALL", href: "/case-studies" },
+  /* The comp's pair: a tall picture, then a wide one. */
   items: [
-    {
-      key: "buhler-tall",
-      shape: "tall",
-      name: "Buhler",
-      services: "Software, CRM",
-      location: "Switzerland",
-      image: {
-        src: "/selected-work-buhler.webp",
-        width: 607,
-        height: 764,
-        alt: "A phone showing the Bühler Law website, resting on the arm of a chair.",
-      },
-    },
-    {
-      key: "buhler-wide",
-      shape: "wide",
-      name: "Buhler",
-      services: "Software, CRM",
-      location: "Switzerland",
-      image: {
-        src: "/selected-work-buhler.webp",
-        width: 607,
-        height: 764,
-        alt: "A phone showing the Bühler Law website, resting on the arm of a chair.",
-      },
-    },
+    { project: "riesen", shape: "tall", service: "Branding" },
+    { project: "jetonikeramika", shape: "wide", service: "Website" },
   ],
   /* **Two more, in a format of their own** — owner, 2026-10-05: "add more two
      project to the homepage in differen format"; "change format of prject not
-     same" (of a row that only turned the first round); then, of two squares
-     each on its own row with its lines beside it, "i want those two last …
-     to be near each other". So: two squares side by side, close, on the
-     page's second and third columns, their lines under them. ⚠ Buhler again,
-     as every piece in his comps reads; his own projects replace them when he
-     sends them. */
+     same"; then "i want those two last … to be near each other". So: two
+     squares side by side, close, on the page's second and third columns,
+     their lines under them. */
   features: [
-    {
-      key: "buhler-feature-1",
-      name: "Buhler",
-      services: "Software, CRM",
-      location: "Switzerland",
-      image: {
-        src: "/selected-work-buhler.webp",
-        width: 607,
-        height: 764,
-        alt: "A phone showing the Bühler Law website, resting on the arm of a chair.",
-      },
-    },
-    {
-      key: "buhler-feature-2",
-      name: "Buhler",
-      services: "Software, CRM",
-      location: "Switzerland",
-      image: {
-        src: "/selected-work-buhler.webp",
-        width: 607,
-        height: 764,
-        alt: "A phone showing the Bühler Law website, resting on the arm of a chair.",
-      },
-    },
+    { project: "en-nur", service: "Software" },
+    { project: "wmk", service: "Branding" },
   ],
 } as const;
 
