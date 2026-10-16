@@ -644,22 +644,23 @@ export const ennurStory = {
       ],
     },
   ],
-  /* His eight screenshots of the platform, in his order — owner,
-     2026-10-11 (en1–en8 from his Desktop, unchanged, as public/en-nur-*.avif;
-     1300×855, so the 16:10 frame trims a sliver of white margin top and
-     foot). */
+  /* The laptop shot of 2026-10-11 first — owner, 2026-10-16: "the first one
+     is alredy ok" — then his eight new screenshots in their number order
+     ("en1 put second en2 third"), each his JPEG unchanged, in its own shape
+     ("dont change the format of images"); the earlier seven are gone. */
   showcase: {
     ...pilotStory.showcase,
     title: "The platform, page by page",
     pages: [
       { src: "/en-nur-1.avif", width: 1300, height: 855, alt: "En-Nur membership app on a laptop: the administrator panel with quick actions and community totals" },
-      { src: "/en-nur-2.avif", width: 1300, height: 855, alt: "En-Nur administrator panel: quick actions and the community overview of members, revenue, donations and pending payments" },
-      { src: "/en-nur-3.avif", width: 1300, height: 855, alt: "En-Nur payment, step one: choose a membership amount in CHF and pay by TWINT, Stripe or cash" },
-      { src: "/en-nur-4.avif", width: 1300, height: 855, alt: "En-Nur TWINT payment: a QR code to scan with the TWINT app, beside the payment summary" },
-      { src: "/en-nur-5.avif", width: 1300, height: 855, alt: "En-Nur payment management: totals by status, search and filters, and the list of payments" },
-      { src: "/en-nur-6.avif", width: 1300, height: 855, alt: "En-Nur user management: members with their roles, verified email and registration date" },
-      { src: "/en-nur-7.avif", width: 1300, height: 855, alt: "En-Nur administrator form for creating a member account with a username" },
-      { src: "/en-nur-8.avif", width: 1300, height: 855, alt: "En-Nur member profile: the account summary of contributions, donations, payments and email status" },
+      { src: "/en-nur-2.jpg", width: 1635, height: 1616, alt: "En-Nur administrator panel: quick actions, the community overview of members, income and donations, and membership renewals" },
+      { src: "/en-nur-3.jpg", width: 1639, height: 1620, alt: "En-Nur payment management: totals by status, search and filters, and the list of every payment" },
+      { src: "/en-nur-4.jpg", width: 1629, height: 1358, alt: "En-Nur administrator form for creating a member account with a username" },
+      { src: "/en-nur-5.jpg", width: 1622, height: 1068, alt: "En-Nur payment, step one: choose a membership amount in CHF and pay by TWINT, Stripe or cash" },
+      { src: "/en-nur-6.jpg", width: 1642, height: 1562, alt: "En-Nur TWINT payment: a QR code to scan with the TWINT app, beside the payment summary" },
+      { src: "/en-nur-7.jpg", width: 1148, height: 1087, alt: "En-Nur cash payment instructions: the payment details and the reference to bring" },
+      { src: "/en-nur-8.jpg", width: 1625, height: 1598, alt: "En-Nur user management: members with their roles, verified email, payments and registration date" },
+      { src: "/en-nur-9.jpg", width: 1678, height: 1768, alt: "En-Nur member profile: the account summary of contributions, donations and payments, and the profile form" },
     ],
   },
   way: pilotStory.way,

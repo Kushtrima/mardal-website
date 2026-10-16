@@ -1094,21 +1094,27 @@ test("server-renders En-Nur's story from the owner's own case study", async () =
   assert.doesNotMatch(account, /&#x27;|didn't|weren't|it's|community's/);
   assert.match(account, /didn’t fit simply weren’t supported/);
 
-  /* **His eight screenshots, in his order** (2026-10-11), each one file of
-     our own rather than a stock frame offered at two widths; the opening
-     picture is still stock until he sends it. */
+  /* **The laptop shot, then his eight new screenshots in number order**
+     (2026-10-16: "the first one is alredy ok", "en1 put second en2 third"),
+     each one file of our own — the new ones his JPEGs unchanged — rather
+     than a stock frame offered at two widths. */
   const showcase = page.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
+  const pictures = ["/en-nur-1.avif", ...[2, 3, 4, 5, 6, 7, 8, 9].map((n) => `/en-nur-${n}.jpg`)];
   assert.deepEqual(
     [...showcase.matchAll(/<img src="([^"]+)"/g)].map((m) => m[1]),
-    [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/en-nur-${n}.avif`),
+    pictures,
   );
   assert.doesNotMatch(showcase, /srcSet|srcset|picsum/i);
   /* Each screenshot says what it shows (SEO-PLAN.md, step 1.6). */
   const alts = [...showcase.matchAll(/<img [^>]*alt="([^"]*)"/g)].map((m) => m[1]);
-  assert.equal(alts.length, 8);
+  assert.equal(alts.length, 9);
   assert.ok(alts.every((alt) => alt.startsWith("En-Nur ") && alt.length > 30), "a screenshot says nothing of what it shows");
-  for (let n = 1; n <= 8; n += 1) {
-    assert.ok(existsSync(new URL(`../public/en-nur-${n}.avif`, import.meta.url)), `en-nur-${n}.avif is missing`);
+  for (const src of pictures) {
+    assert.ok(existsSync(new URL(`../public${src}`, import.meta.url)), `${src} is missing`);
+  }
+  /* The earlier seven are gone with the screenshots they showed. */
+  for (let n = 2; n <= 8; n += 1) {
+    assert.ok(!existsSync(new URL(`../public/en-nur-${n}.avif`, import.meta.url)), `en-nur-${n}.avif is back`);
   }
 });
 
@@ -1356,14 +1362,14 @@ test("server-renders Bären Baugruppe AG's story from the owner's own case study
   }
 
   /* **Shown whole, in its own format** (owner, 2026-10-15: "dont change the
-     format of images"). The gallery fits each picture inside its 16:10 place
-     instead of cropping it to fill, so a square palette or a slide with words
-     on its edge keeps every word with none of its pixels changed — and the
-     place has no ground of its own, so nothing is drawn round a picture that
-     is not 16:10. Asserted on the rule: put `cover` back and they are cut. */
+     format of images"; 2026-10-16: every picture "fully from one vertical to
+     other"). Each picture is the full width at its own height, so a square
+     palette or a slide with words on its edge keeps every word with none of
+     its pixels changed — and the page has no ground of its own. Asserted on
+     the rule (and on every gallery in the size test below). */
   const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.match(css, /\.project-showcase__page img \{\s*object-fit: contain;\s*\}/);
-  assert.doesNotMatch(css.match(/\.project-showcase__page \{[^}]*\}/)?.[0] ?? "", /background/);
+  assert.match(css, /\.project-showcase__page img \{\s*display: block;\s*width: 100%;\s*height: auto;\s*\}/);
+  assert.doesNotMatch(css.match(/\.project-showcase__page \{[^}]*\}/)?.[0] ?? "", /background|aspect-ratio/);
 });
 
 test("server-renders Riesen Holzbau AG's story from the owner's own case study", async () => {
@@ -1566,26 +1572,25 @@ function pictureSize(path) {
   throw new Error(`${path} has no size the test can read`);
 }
 
-test("every gallery picture keeps its own shape, and a wide one runs from line to line", async () => {
-  /* Owner, 2026-10-16: "make all images thats are wide to be from horizontal
-     line to horisontal line and squares leave as they are". Each page states
-     its picture's width and height, and they must be the file's own: a wrong
-     pair draws the place the wrong shape, banding or cropping the picture. A
-     wide one carries `data-shape="wide"`, which lets its own shape set its
-     height at the full width; a square keeps the 16:10 place. */
+test("every gallery picture runs from line to line in its own shape", async () => {
+  /* Owner, 2026-10-16: "i need all images to bu fully from one vertical to
+     other make all the same dont cut it just as the aee". Each picture is the
+     full width, and its own width and height set its page's height; so each
+     page must state the file's own pair — a wrong one would draw the page the
+     wrong shape, banding or stretching the picture. No picture is set apart
+     by its shape any more: wide, square and tall alike. */
   for (const slug of ["en-nur", "jetonikeramika", "spitex-schwab", "baren", "riesen", "wmk"]) {
     const html = await (await render(`/case-studies/${slug}`)).text();
     const showcase = html.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
-    const pages = [...showcase.matchAll(/<li class="project-showcase__page"( data-shape="wide")?><img src="([^"]+)"[^>]*? width="(\d+)" height="(\d+)"/g)];
+    const pages = [...showcase.matchAll(/<li class="project-showcase__page"><img src="([^"]+)"[^>]*? width="(\d+)" height="(\d+)"/g)];
+    assert.equal(pages.length, (showcase.match(/<li class="project-showcase__page"/g) ?? []).length, `${slug} has a page set apart`);
     assert.ok(pages.length > 0, `${slug} shows no pages`);
-    for (const [, wide, src, width, height] of pages) {
+    for (const [, src, width, height] of pages) {
       assert.deepEqual([Number(width), Number(height)], pictureSize(src), `${src} is not the size its page says`);
-      assert.equal(Boolean(wide), Number(width) > Number(height), `${src} has the wrong shape on the page`);
     }
   }
   const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.match(css, /\.project-showcase__page\[data-shape="wide"\] \{\s*aspect-ratio: auto;\s*\}/);
-  assert.match(css, /\.project-showcase__page\[data-shape="wide"\] img \{\s*height: auto;\s*\}/);
+  assert.doesNotMatch(css, /\.project-showcase__page\[data-shape|\.project-showcase__page img \{[^}]*object-fit/);
 
   /* **Square corners** — owner, 2026-10-16: "make images without rounding so
      no round corners". None on a picture's place, a small page or the frame

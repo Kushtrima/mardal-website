@@ -185,16 +185,11 @@ export function ProjectShowcase({
         <div className="project-showcase__stage" ref={stageRef}>
           <ol className="project-showcase__pages" ref={pagesRef}>
             {pages.map(({ src, width, height, alt }, index) => (
-              /* A wide picture runs from line to line in its own shape; a
-                 square (or a tall one) stays whole inside the 16:10 place —
-                 owner, 2026-10-16: "make all images thats are wide to be from
-                 horizontal line to horisontal line and squares leave as they
-                 are". */
-              <li
-                className="project-showcase__page"
-                key={src}
-                data-shape={width > height ? "wide" : undefined}
-              >
+              /* Every picture runs from line to line in its own shape, wide,
+                 square or tall alike — owner, 2026-10-16: "i need all images
+                 to bu fully from one vertical to other make all the same dont
+                 cut it just as the aee". */
+              <li className="project-showcase__page" key={src}>
                 {/* Screenshots of the delivered work, each saying what it
                     shows (SEO-PLAN.md, step 1.6) — a stock frame where none
                     is in yet says nothing. A stock frame is offered at two

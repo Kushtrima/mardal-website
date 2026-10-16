@@ -8284,40 +8284,29 @@ a.project-live:focus-visible {
   will-change: transform;
 }
 
-/* Each picture whole, in its own format — owner, 2026-10-15: "dont change
-   the format of images". A square or a tall picture keeps a 16:10 place in
-   the pinned run and sits whole inside it on the page's own ground, rather
-   than cropped to fill or padded out. Square corners, as the small pages
-   and their frame below — owner, 2026-10-16: "make images without rounding
-   so no round corners". */
+/* Every picture from line to line, whole, in its own shape — owner,
+   2026-10-16: "i need all images to bu fully from one vertical to other make
+   all the same dont cut it just as the aee" (wide ones only, squares kept in
+   a 16:10 place, until then), and "dont change the format of images" before
+   that. Full width; its own width and height (the img's attributes) give the
+   page its height before it loads, so nothing is cropped or padded. Square
+   corners, as the small pages and their frame below — owner, 2026-10-16:
+   "make images without rounding so no round corners". */
 .project-showcase__page {
-  aspect-ratio: 16 / 10;
   overflow: hidden;
 }
 
-.project-showcase__page img,
+.project-showcase__page img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .project-showcase__thumb img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.project-showcase__page img {
-  object-fit: contain;
-}
-
-/* A wide picture from line to line — owner, 2026-10-16: "make all images
-   thats are wide to be from horizontal line to horisontal line and squares
-   leave as they are". Full width, and its own width and height (the img's
-   attributes) give the place its height, so it is never cropped and never
-   narrower than the lines. */
-.project-showcase__page[data-shape="wide"] {
-  aspect-ratio: auto;
-}
-
-.project-showcase__page[data-shape="wide"] img {
-  height: auto;
 }
 
 .project-showcase__strip {
