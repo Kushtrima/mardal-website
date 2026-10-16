@@ -938,10 +938,11 @@ export const barenStory = {
       ],
     },
   ],
-  /* His nine pictures, in his order — owner, 2026-10-15: "here you have
+  /* His ten pictures, in his order — owner, 2026-10-15: "here you have
      images to put inside the project", then "dont change the format of
-     images": each is HIS FILE, UNCHANGED — the two JPEGs as JPEGs, the
-     seven AVIFs as AVIFs, each at its own size and shape. The gallery shows
+     images", then (2026-10-16) the football team "in the end": each is HIS
+     FILE, UNCHANGED — the two JPEGs as JPEGs, the seven AVIFs as AVIFs, the
+     WebP as WebP, each at its own size and shape. The gallery shows
      a picture whole in its 16:10 place (globals.css), so the square palette
      and the slides with words on their edges are neither cropped nor
      padded. */
@@ -957,6 +958,7 @@ export const barenStory = {
       { src: "/baren-7.avif", width: 1500, height: 877, alt: "Bären Baugruppe AG photography direction: a roofer carrying tiles, beside the white logo on black and notes on the imagery" },
       { src: "/baren-8.avif", width: 1500, height: 877, alt: "Bären Baugruppe AG roofing slide: a grid of tiled-roof photographs on the brand red, marked Switzerland, Roofing, 2025" },
       { src: "/baren-9.avif", width: 1200, height: 1200, alt: "Bären Baugruppe AG site banner on a building-site fence: the white logo on black, the address and the list of services" },
+      { src: "/baren-10.webp", width: 850, height: 636, alt: "Bären Baugruppe AG as a football sponsor: the team in white kits with the Bären logo, lined up before a Bären banner" },
     ],
   },
   way: pilotStory.way,
@@ -1037,11 +1039,12 @@ export const riesenStory = {
       ],
     },
   ],
-  /* His ten pictures — owner, 2026-10-15: "now add those images inside the
-     project", then "add also those", then "delete those two" (the vans on
-     the country road) "and dont change the format of images". So: box-cover,
-     riesen1, reisen342, Team-scaled and riesen122 in the order he sent them,
-     then riesen3–7 in number order — each HIS FILE, UNCHANGED: its own type
+  /* His eleven pictures — owner, 2026-10-15: "now add those images inside
+     the project", then "add also those", then "delete those two" (the vans
+     on the country road) "and dont change the format of images", then
+     (2026-10-16) riesen2 "before this image", the logo on charcoal. So:
+     box-cover, riesen1, reisen342, Team-scaled and riesen122 in the order he
+     sent them, then riesen2–7 in number order — each HIS FILE, UNCHANGED: its own type
      (AVIF, JPEG, WebP), its own size, its own shape. The gallery shows a
      picture whole in its 16:10 place (globals.css), so none is cropped or
      padded to fit. */
@@ -1053,11 +1056,12 @@ export const riesenStory = {
       { src: "/riesen-3.jpg", width: 2048, height: 1536, alt: "Riesen Holzbau AG van at a building site under scaffolding, lettered Holzbau, Schreinerei, Spenglerei, Fenster" },
       { src: "/riesen-4.jpg", width: 2560, height: 1709, alt: "Riesen Holzbau AG team in brown branded workwear in front of two company vans and the timber store" },
       { src: "/riesen-5.webp", width: 2560, height: 1707, alt: "Riesen Holzbau AG carpenter in brown workwear and an orange helmet sealing the joint of a timber wall panel" },
-      { src: "/riesen-6.avif", width: 1300, height: 1300, alt: "Riesen Holzbau AG logo in timber tan on charcoal: the house cut from a log, the wordmark and Stolz auf Holz" },
-      { src: "/riesen-7.avif", width: 1300, height: 1300, alt: "Riesen Holzbau AG icon on its construction grid: the outline of a house filled with the growth rings of a log" },
-      { src: "/riesen-8.avif", width: 1300, height: 1300, alt: "Riesen Holzbau AG colour palette: wood browns from #734C40, charcoal greys from #333333 and timber tones to #D9BB92" },
-      { src: "/riesen-9.avif", width: 1471, height: 861, alt: "Riesen Holzbau AG team at lunch in brown branded workwear, round a table on a base of stacked wood" },
-      { src: "/riesen-10.avif", width: 1200, height: 1200, alt: "Riesen Holzbau AG carpenter in an orange helmet on site, the logo embroidered on the brown sweatshirt" },
+      { src: "/riesen-6.avif", width: 1300, height: 1300, alt: "Riesen Holzbau AG logo in wood brown on white: the house cut from a log, the wordmark and Stolz auf Holz" },
+      { src: "/riesen-7.avif", width: 1300, height: 1300, alt: "Riesen Holzbau AG logo in timber tan on charcoal: the house cut from a log, the wordmark and Stolz auf Holz" },
+      { src: "/riesen-8.avif", width: 1300, height: 1300, alt: "Riesen Holzbau AG icon on its construction grid: the outline of a house filled with the growth rings of a log" },
+      { src: "/riesen-9.avif", width: 1300, height: 1300, alt: "Riesen Holzbau AG colour palette: wood browns from #734C40, charcoal greys from #333333 and timber tones to #D9BB92" },
+      { src: "/riesen-10.avif", width: 1471, height: 861, alt: "Riesen Holzbau AG team at lunch in brown branded workwear, round a table on a base of stacked wood" },
+      { src: "/riesen-11.avif", width: 1200, height: 1200, alt: "Riesen Holzbau AG carpenter in an orange helmet on site, the logo embroidered on the brown sweatshirt" },
     ],
   },
   way: pilotStory.way,

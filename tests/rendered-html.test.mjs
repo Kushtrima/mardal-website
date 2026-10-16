@@ -1337,18 +1337,19 @@ test("server-renders Bären Baugruppe AG's story from the owner's own case study
   assert.doesNotMatch(main, /\[[A-Z][^\]]*\]/);
   assert.doesNotMatch(main, /&#x27;|bear's|can't/);
 
-  /* **His nine pictures, in his order** (2026-10-15), each HIS FILE as he
-     sent it ("dont change the format of images": the two JPEGs stay JPEGs),
-     each saying what it shows. */
+  /* **His ten pictures, in his order** (2026-10-15; the football team added
+     at the end 2026-10-16), each HIS FILE as he sent it ("dont change the
+     format of images": the JPEGs stay JPEGs, the WebP a WebP), each saying
+     what it shows. */
   const showcase = page.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
-  const pictures = ["/baren-1.jpg", "/baren-2.jpg", ...[3, 4, 5, 6, 7, 8, 9].map((n) => `/baren-${n}.avif`)];
+  const pictures = ["/baren-1.jpg", "/baren-2.jpg", ...[3, 4, 5, 6, 7, 8, 9].map((n) => `/baren-${n}.avif`), "/baren-10.webp"];
   assert.deepEqual(
     [...showcase.matchAll(/<img src="([^"]+)"/g)].map((m) => m[1]),
     pictures,
   );
   assert.doesNotMatch(showcase, /srcSet|srcset|picsum/i);
   const alts = [...showcase.matchAll(/<img [^>]*alt="([^"]*)"/g)].map((m) => m[1]);
-  assert.equal(alts.length, 9);
+  assert.equal(alts.length, 10);
   assert.ok(alts.every((alt) => alt.startsWith("Bären Baugruppe AG ") && alt.length > 30), "a picture says nothing of what it shows");
   for (const src of pictures) {
     assert.ok(existsSync(new URL(`../public${src}`, import.meta.url)), `${src} is missing`);
@@ -1431,15 +1432,15 @@ test("server-renders Riesen Holzbau AG's story from the owner's own case study",
   assert.doesNotMatch(main, /\[[A-Z][^\]]*\]/);
   assert.doesNotMatch(main, /&#x27;|Riesen's|builder's/);
 
-  /* **His ten pictures** (2026-10-15): five in the order he sent them, then
-     riesen3–7; the two vans on the country road deleted ("delete those
+  /* **His eleven pictures** (2026-10-15): five in the order he sent them,
+     then riesen2–7 (riesen2 added 2026-10-16, before the logo on charcoal); the two vans on the country road deleted ("delete those
      two"); each HIS FILE as he sent it, in its own type and shape ("dont
      change the format of images" — shown whole, see Bären's test), each
      saying what it shows. */
   const showcase = page.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
   const pictures = [
     "/riesen-1.avif", "/riesen-2.jpg", "/riesen-3.jpg", "/riesen-4.jpg", "/riesen-5.webp",
-    ...[6, 7, 8, 9, 10].map((n) => `/riesen-${n}.avif`),
+    ...[6, 7, 8, 9, 10, 11].map((n) => `/riesen-${n}.avif`),
   ];
   assert.deepEqual(
     [...showcase.matchAll(/<img src="([^"]+)"/g)].map((m) => m[1]),
@@ -1447,8 +1448,11 @@ test("server-renders Riesen Holzbau AG's story from the owner's own case study",
   );
   assert.doesNotMatch(showcase, /srcSet|srcset|picsum/i);
   const alts = [...showcase.matchAll(/<img [^>]*alt="([^"]*)"/g)].map((m) => m[1]);
-  assert.equal(alts.length, 10);
+  assert.equal(alts.length, 11);
   assert.ok(alts.every((alt) => alt.startsWith("Riesen Holzbau AG ") && alt.length > 30), "a picture says nothing of what it shows");
+  /* The two versions of the logo side by side, brown on white first. */
+  assert.match(alts[5], /logo in wood brown on white/);
+  assert.match(alts[6], /logo in timber tan on charcoal/);
   assert.ok(!alts.some((alt) => /on a country road/.test(alt)), "a van on the country road is back");
   for (const src of pictures) {
     assert.ok(existsSync(new URL(`../public${src}`, import.meta.url)), `${src} is missing`);
