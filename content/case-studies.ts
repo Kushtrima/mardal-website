@@ -298,8 +298,8 @@ export const deliveredEntries = [
   /* The second — owner, 2026-10-11: "now we have new one:
      Jetonikeramika". Its disciplines are the two of the rail's seven his
      page bears out: the product design, and the website it is. Its picture
-     is his, the same as its page's opening ("use this for cover and hero
-     banner"). */
+     is his, the same as its page's opening — since 2026-10-16 his
+     jetonicover64.avif ("use this image for cover in jetonikeramika"). */
   {
     slug: "jetonikeramika",
     sector: "retail",
@@ -307,8 +307,8 @@ export const deliveredEntries = [
     name: "Jetonikeramika",
     location: "Kosovo",
     disciplines: ["UX/UI Design", "Websites"],
-    image: "/jetonikeramika-hero-1501.webp",
-    imageSrcSet: "/jetonikeramika-hero-1200.webp 1200w, /jetonikeramika-hero-1501.webp 1501w",
+    image: "/jetonikeramika-hero-1920.avif",
+    imageSrcSet: "/jetonikeramika-hero-1200.avif 1200w, /jetonikeramika-hero-1920.avif 1920w",
   },
   /* The third — owner, 2026-10-11: "now this project:
      https://kushtrimarifi.com/work/spitex.html". Named as recorded, legal
@@ -694,11 +694,13 @@ export const jetonikeramikaStory = {
   name: "Jetonikeramika",
   industry: "Ceramics & Tiles",
   lede: "A website for Jetonikeramika, a ceramics and tiles showroom in Kosovo.",
-  /* His picture for the opening — owner, 2026-10-11: "use this for cover and
-     hero banner" (cover-s.jpg from his Desktop, 1501×1062, as WebP at 1200
-     and at its full width; a wide screen draws it larger than that). */
-  heroImage: "/jetonikeramika-hero-1501.webp",
-  heroSrcSet: "/jetonikeramika-hero-1200.webp 1200w, /jetonikeramika-hero-1501.webp 1501w",
+  /* His picture for the opening — owner, 2026-10-16: "use this image for
+     cover in jetonikeramika" (jetonicover64.avif from his Desktop,
+     1920×1280): his AVIF unchanged at its full width, and an AVIF at 1200
+     for a phone, the same type and shape ("dont change the format of
+     images"). It replaced the cover-s.jpg of 2026-10-11. */
+  heroImage: "/jetonikeramika-hero-1920.avif",
+  heroSrcSet: "/jetonikeramika-hero-1200.avif 1200w, /jetonikeramika-hero-1920.avif 1920w",
   ogImage: "/og-jetonikeramika.jpg",
   summary:
     "Jetonikeramika’s business happens in a 2,500 m² showroom, where customers see, touch and choose premium ceramics and tiles for bathrooms and living spaces. It sells to private clients and contractors alike. The project came to Mardal in 2026, and we led the research, design and build.",

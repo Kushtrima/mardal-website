@@ -786,7 +786,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/baren-hero-2000\.webp" srcSet="\/baren-hero-1200\.webp 1200w, \/baren-hero-2000\.webp 2000w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/spitex-schwab-hero-2000\.webp" srcSet="\/spitex-schwab-hero-1200\.webp 1200w, \/spitex-schwab-hero-2000\.webp 2000w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/en-nur-hero-2376\.webp" srcSet="\/en-nur-hero-1200\.webp 1200w, \/en-nur-hero-2376\.webp 2376w"/);
-  assert.match(cardMarkup, /<img class="clients-card__art" src="\/jetonikeramika-hero-1501\.webp" srcSet="\/jetonikeramika-hero-1200\.webp 1200w, \/jetonikeramika-hero-1501\.webp 1501w"/);
+  assert.match(cardMarkup, /<img class="clients-card__art" src="\/jetonikeramika-hero-1920\.avif" srcSet="\/jetonikeramika-hero-1200\.avif 1200w, \/jetonikeramika-hero-1920\.avif 1920w"/);
   /* Decorative, so every one of them is silent to a screen reader. */
   assert.doesNotMatch(cardMarkup, /class="clients-card__art"[^>]*alt="[^"]+"/);
 
@@ -1134,10 +1134,15 @@ test("server-renders Jetonikeramika's story from the owner's own case study", as
   const hero = page.match(/<section class="project-hero"[\s\S]*?<\/section>/)?.[0] ?? "";
   assert.match(hero, /<span class="project-hero__mark" aria-hidden="true"><\/span>Ceramics &amp; Tiles<\/p>/);
   assert.match(hero, /<h1 class="project-hero__title" id="project-title" data-project-hero-title="true">Jetonikeramika<\/h1>/);
-  /* His picture for the opening (2026-10-11), at its two widths. */
-  assert.match(hero, /class="project-hero__image" src="\/jetonikeramika-hero-1501\.webp" srcSet="\/jetonikeramika-hero-1200\.webp 1200w, \/jetonikeramika-hero-1501\.webp 1501w"/);
+  /* His picture for the opening (2026-10-16, "use this image for cover in
+     jetonikeramika"), his AVIF at its full width and an AVIF at 1200; the
+     cover it replaced is gone. */
+  assert.match(hero, /class="project-hero__image" src="\/jetonikeramika-hero-1920\.avif" srcSet="\/jetonikeramika-hero-1200\.avif 1200w, \/jetonikeramika-hero-1920\.avif 1920w"/);
+  for (const width of [1200, 1920]) {
+    assert.ok(existsSync(new URL(`../public/jetonikeramika-hero-${width}.avif`, import.meta.url)), `jetonikeramika-hero-${width}.avif is missing`);
+  }
   for (const width of [1200, 1501]) {
-    assert.ok(existsSync(new URL(`../public/jetonikeramika-hero-${width}.webp`, import.meta.url)), `jetonikeramika-hero-${width}.webp is missing`);
+    assert.ok(!existsSync(new URL(`../public/jetonikeramika-hero-${width}.webp`, import.meta.url)), `the old jetonikeramika-hero-${width}.webp is back`);
   }
 
   /* His facts, his `·` lists with the record's commas; his "Agency: Mardal"
@@ -1795,7 +1800,7 @@ test("Selected Work stands under Fusion, as the owner's comp draws it", async ()
   ]);
   assert.deepEqual(
     [...section.matchAll(/<img class="selected-work__image" src="([^"]+)"/g)].map((m) => m[1]),
-    ["/riesen-hero-2560.webp", "/jetonikeramika-hero-1501.webp", "/en-nur-hero-2376.webp", "/wmk-hero-2000.jpg"],
+    ["/riesen-hero-2560.webp", "/jetonikeramika-hero-1920.avif", "/en-nur-hero-2376.webp", "/wmk-hero-2000.jpg"],
   );
   /* Not one "Buhler" — the comp's stand-in, and a real Swiss company that was
      never a client. */
