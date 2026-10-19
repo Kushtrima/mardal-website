@@ -1179,7 +1179,12 @@ export const wmkStory = {
   way: pilotStory.way,
 } as const satisfies Story;
 
-/** Every story written out, each at /case-studies/<slug>. */
+/** Every story written out, each at /case-studies/<slug>.
+ *
+ *  The pilot is not one of them since launch, 2026-10-19: its client is
+ *  invented and its pictures are stock (SEO-PLAN.md, step 1.2), so it came
+ *  out with the samples. Its object stays, because every real story above is
+ *  built on its showcase and its way out. */
 export const stories: readonly Story[] = [
   ennurStory,
   jetonikeramikaStory,
@@ -1187,5 +1192,4 @@ export const stories: readonly Story[] = [
   barenStory,
   riesenStory,
   wmkStory,
-  pilotStory,
 ];

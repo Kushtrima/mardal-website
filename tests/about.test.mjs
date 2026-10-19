@@ -69,9 +69,9 @@ const CLIENTS = [
   "ZEN",
 ];
 
-/** ⚠ The eight placeholder companies the Clients page carries, reused on About
- *  at the owner's request. NOT clients. Written out here, not imported, so this
- *  file states plainly what it is pinning. */
+/** ⚠ The eight placeholder companies the About list once borrowed from the
+ *  Clients page, at the owner's request. NOT clients: out since launch
+ *  (2026-10-19), and written out here so the test below can hold them out. */
 const BORROWED_NAMES = [
   "Nordvik",
   "Alturi",
@@ -83,10 +83,8 @@ const BORROWED_NAMES = [
   "Kestrel",
 ];
 
-/** ⚠ The fifteen written for this list when the owner asked for more, after the
- *  eight above ran out. NOT clients. Kept apart from them because the two are
- *  declared differently — those are imported, these are typed — and the test
- *  below holds each to its own rule. */
+/** ⚠ The fifteen written for the About list when the owner asked for more,
+ *  after the eight above ran out. NOT clients: out since launch (2026-10-19). */
 const INVENTED_NAMES = [
   "Astrel",
   "Brimhold",
@@ -105,7 +103,7 @@ const INVENTED_NAMES = [
   "Varek",
 ];
 
-/** ⚠ Everything on the page that is not a client: twenty-three of thirty. */
+/** ⚠ Every name that stood on the page and was never a client: twenty-three. */
 const EXAMPLE_NAMES = [...BORROWED_NAMES, ...INVENTED_NAMES];
 
 /** The line the page ends on, verbatim. His words, and the whole of them —
@@ -1343,7 +1341,7 @@ test("the page ends on the owner's line, whole and last", async () => {
   assert.doesNotMatch(main.slice(line), /data-wash-end/);
 });
 
-test("the client list is seven real names and twenty-three examples", async () => {
+test("the client list is the seven real names", async () => {
   const html = await (await render("/about")).text();
   const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
   const at = main.indexOf('<section class="about-clients"');
@@ -1359,40 +1357,18 @@ test("the client list is seven real names and twenty-three examples", async () =
     assert.ok(section.includes(name), `${name} is missing from the client list`);
   }
 
-  /* **And twenty-three are examples**, added at the owner's request after he was
-     told the archive holds seven and no more, and extended when he asked for
-     more. Eight are the Clients page's own placeholders; fifteen were written
-     for this list because there were only ever eight. See the test below, which
-     is what stops any of them shipping. */
-  for (const name of EXAMPLE_NAMES) {
-    assert.ok(section.includes(name), `${name} is missing from the client list`);
-  }
-
-  /* **A name and nothing else.** No sector, no country, no year, no count —
-     none of those is recorded per client and every one is the kind of fact that
-     goes unchecked once it is set in type. Asserted by reading the section's
-     whole visible text: anything added to it has to be added here too. */
+  /* **A name and nothing else**, alphabetical — the one order that does not
+     rank them. Asserted by reading the section's whole visible text: anything
+     added to it has to be added here too. */
   const words = section
     .replace(/<[^>]*>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-  const shown = [...CLIENTS, ...EXAMPLE_NAMES].sort((a, b) => a.localeCompare(b, "en"));
+  const shown = [...CLIENTS].sort((a, b) => a.localeCompare(b, "en"));
   assert.equal(words, ["Our clients", ...shown].join(" "));
 
-  /* **Alphabetical over the whole list, which is doing two jobs.** It is the one
-     order that does not rank them — PRODUCT.md lists the real ones by how strong
-     the artefact is, and carrying that onto a public page turns a list into a
-     league table. And sorted TOGETHER, the real names are not a block at the top
-     with the filler beneath, which is the arrangement that quietly tells a
-     reader which is which.
-
-     Derived, not restated: the order asserted above is computed from the two
-     lists, so this checks the page agrees with it. */
-  const order = shown.map((name) => section.indexOf(name));
-  assert.deepEqual(order, [...order].sort((a, b) => a - b));
-
-  /* A real list. Thirty names in two columns is a list whatever it is drawn as,
-     and "list, 30 items" is what a screen reader has instead of the columns. */
+  /* A real list: "list, 7 items" is what a screen reader has instead of the
+     columns. */
   assert.match(section, /<ul class="about-clients__list">/);
   assert.equal(
     (section.match(/<li class="about-clients__name"/g) ?? []).length,
@@ -1404,72 +1380,28 @@ test("the client list is seven real names and twenty-three examples", async () =
   assert.match(section, /data-route-section="true"/);
 });
 
-test("the example names are invented, marked, and cannot ship quietly", async () => {
-  const source = readFileSync(
-    new URL("../content/about.ts", import.meta.url),
-    "utf8",
-  );
-
-  /* ⚠ **TWENTY-THREE OF THE THIRTY NAMES ON THIS PAGE ARE INVENTED AND MUST NOT
-     SHIP.**
-
-     Pinned the way the Clients page's are in `rendered-html.test.mjs`, and for
-     the same reason: so publishing means deleting a test on purpose rather than
-     forgetting a comment, which is exactly what nobody is reading on the day
-     this goes live. None of these is a company Mardal has worked for. Under a
-     heading reading "Our clients", alphabetised in among the real seven, a
-     reader has no way at all to tell which is which.
-
-     Delete this test in the same commit that puts real names in. */
+test("no example name is published as a client", async () => {
+  /* ⚠ **The twenty-three example names came out at launch, 2026-10-19.** The
+     owner asked for them (2026-08-26) to fill the layout while the archive held
+     seven; under "Our clients", alphabetised in among the real seven, a reader
+     could not tell which was which, so they never go online. Each is held out
+     by name, and neither array that held them may come back. */
   const html = await (await render("/about")).text();
   const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
-  for (const invented of EXAMPLE_NAMES) {
-    assert.ok(main.includes(invented), `${invented} is not on the page`);
+  for (const name of EXAMPLE_NAMES) {
+    assert.ok(!main.includes(name), `${name} is on the page, and was never a client`);
   }
+  const source = readFileSync(new URL("../content/about.ts", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /const (BORROWED|INVENTED|EXAMPLES) = /);
+  assert.doesNotMatch(source, /clientEntries/);
 
-  /* **The eight are borrowed, not re-invented.** The Clients page already carries
-     them; typing them again here would give the site a third place to delete
-     them from. Imported, replacing them in `content/case-studies.ts` carries
-     this list with it — and this assertion is what keeps that true, because the
-     tempting edit is to paste the strings in. */
-  assert.match(source, /const BORROWED = clientEntries\.map\(\(entry\) => entry\.name\)/);
-  assert.match(source, /import \{ clientEntries \} from "\.\/case-studies"/);
-  for (const borrowed of BORROWED_NAMES) {
-    assert.ok(
-      !source.includes(`"${borrowed}"`),
-      `${borrowed} is typed into content/about.ts instead of imported`,
-    );
-  }
-
-  /* **The fifteen are declared here, in one array, under the warning.** They had
-     to be written somewhere — there were only ever eight placeholders — and the
-     thing that matters is that they are in ONE place with a marker on it, not
-     scattered into the real list where nothing records what they are. */
-  const invented = source.indexOf("const INVENTED = [");
-  assert.ok(invented > 0, "the written examples are not declared");
-  assert.deepEqual(
-    [...source.slice(invented, source.indexOf("]", invented)).matchAll(/"([^"]+)"/g)].map(
-      (m) => m[1],
-    ),
-    INVENTED_NAMES,
-  );
-  const warned = source.slice(0, invented);
-  assert.match(warned.slice(warned.lastIndexOf("/**")), /INVENTED|MUST NOT SHIP/);
-
-  /* **The real list holds only the real names.** The failure this catches is an
-     example being appended to `DELIVERED` — after which nothing on the page,
-     and nothing in the source, records that it was never a client. */
+  /* **The real list holds only the real names.** */
   const at = source.indexOf("const DELIVERED = [");
   assert.ok(at > 0, "the delivered archive is not declared");
   const delivered = [
     ...source.slice(at, source.indexOf("]", at)).matchAll(/"([^"]+)"/g),
   ].map((m) => m[1]);
   assert.deepEqual(delivered, CLIENTS);
-
-  /* And the borrowed set says what it is too, in the place someone editing it
-     looks. */
-  const marker = source.slice(0, source.indexOf("const BORROWED"));
-  assert.match(marker.slice(marker.lastIndexOf("/**")), /INVENTED|MUST NOT SHIP/);
 });
 
 test("the client list is a label beside two columns", () => {

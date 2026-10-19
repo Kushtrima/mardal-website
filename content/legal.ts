@@ -44,11 +44,18 @@ export type LegalPageContent = {
    jellyfish.systems, and its name servers, namecheaphosting.com, checked the
    same day); the law of Kosovo, where Mardal is; and how long letters are
    kept, which was his to set and he left to us. To be read by a lawyer
-   before launch. */
+   before launch.
+
+   **The website moved to GitHub Pages, 2026-10-19**, on the owner's choice
+   (next.config.ts). GitHub hosts the site and logs each visitor's IP address
+   for security — in its own words, "the visitor's IP address is logged and
+   stored for security purposes" — and Namecheap keeps the email. Privacy says
+   so, under its own date; Terms and Cookies did not change. */
 const company =
   "Mardal, a company registered in Kosovo, Rr. “Isa Boletini”, 60000 Gjilan, Kosovo";
 
 const updated = "Last updated: 9 October 2026.";
+const privacyUpdated = "Last updated: 19 October 2026.";
 
 export const privacyPage = {
   title: "Privacy",
@@ -66,7 +73,7 @@ export const privacyPage = {
       title: "What we collect",
       paragraphs: [
         "When you write to us with the letter on the contact page: your name, your company if you give it, the topic you choose, your email address and your message.",
-        "When you open any page: the technical details every visit to a website carries — your IP address, your browser and the time — which our hosting provider, Namecheap, records to deliver the site and keep it secure.",
+        "When you open any page: the technical details every visit to a website carries — your IP address, your browser and the time. Our hosting provider, GitHub, logs your IP address to keep the site secure.",
         "We do not use analytics or advertising tools, and we do not build profiles of the people who visit.",
       ],
     },
@@ -80,15 +87,15 @@ export const privacyPage = {
     {
       title: "Who else sees it",
       paragraphs: [
-        "Only the services we need to run the website and to send and receive email: Namecheap hosts both. We do not sell personal data, and we do not share it for marketing.",
-        "Namecheap is a company based in the United States, so what it keeps for us may be stored outside Kosovo. It protects that data under its own privacy policy and security measures.",
+        "Only the services we need to run the website and to send and receive email: GitHub hosts the website and Namecheap our email. We do not sell personal data, and we do not share it for marketing.",
+        "GitHub and Namecheap are companies based in the United States, so what they keep for us may be stored outside Kosovo. Each protects that data under its own privacy policy and security measures.",
       ],
     },
     {
       title: "How long we keep it",
       paragraphs: [
         "Messages: for as long as the conversation needs them, and no longer than 12 months after it ends — unless it leads to work together, when they are kept with the records of that work.",
-        "Server records: for as long as Namecheap keeps its server logs, under its own policy.",
+        "Server records: for as long as GitHub keeps its logs, under its own policy.",
       ],
     },
     {
@@ -102,7 +109,7 @@ export const privacyPage = {
       title: "Changes",
       paragraphs: [
         "When what we collect, or why, changes, this page changes with it.",
-        updated,
+        privacyUpdated,
       ],
     },
   ],

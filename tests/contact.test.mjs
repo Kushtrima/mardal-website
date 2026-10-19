@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 /**
  * Contact.
@@ -115,8 +115,9 @@ test("under it, a letter, and the blanks are where you write", async () => {
      `noValidate` — and HTML attribute names are case-insensitive. */
   const open = form.slice(0, form.indexOf(">") + 1);
   assert.match(open, /class="letter"/);
-  assert.match(open, /action="\/api\/contact"/);
-  assert.match(open, /method="post"/i);
+  /* Nowhere to post to: the site is plain files on GitHub Pages, so the
+     letter becomes an email instead (owner, 2026-10-19). */
+  assert.doesNotMatch(open, /action=|method=/i);
   assert.match(open, /novalidate/i);
 
   /* The letter reads as a letter. */
@@ -209,54 +210,14 @@ test("under it, a letter, and the blanks are where you write", async () => {
   }
 });
 
-/** A letter as the form posts it. */
-function letter(fields = {}) {
-  const body = new FormData();
-  const base = {
-    name: "A Visitor",
-    company: "Example AG",
-    topic: "Software",
-    email: "visitor@example.com",
-    message: "Three of our systems do not talk to each other.",
-  };
-  for (const [key, value] of Object.entries({ ...base, ...fields })) {
-    if (value !== undefined) body.set(key, value);
-  }
-  return { method: "POST", body };
-}
-
-const post = async (fields) => {
-  const response = await fetchWorker("/api/contact", letter(fields));
-  return { status: response.status, body: await response.json() };
-};
-
-test("a letter with nowhere to go is told so, not swallowed", async () => {
-  /* The state this repository is in: no mail service. Accepting a letter here
-     and dropping it would be worse than no form, so the endpoint says which of
-     the two happened and the letter offers the visitor's own email instead. */
-  const { status, body } = await post({});
-  assert.equal(status, 503);
-  assert.deepEqual(body, { ok: false, error: "sending-not-configured" });
-});
-
-test("the endpoint checks what it needs before anything else", async () => {
-  assert.equal((await post({ name: "" })).body.error, "missing-fields");
-  assert.equal((await post({ email: "" })).body.error, "missing-fields");
-  assert.equal((await post({ message: "   " })).body.error, "missing-fields");
-  assert.equal((await post({ email: "not-an-address" })).body.error, "bad-email");
-
-  /* Company and topic are optional at the endpoint as well as in the letter. */
-  assert.equal(
-    (await post({ company: undefined, topic: undefined })).body.error,
-    "sending-not-configured",
+test("there is no endpoint: GitHub Pages serves files and runs nothing", () => {
+  /* The route that answered "sending-not-configured" went with the move to
+     GitHub Pages (owner, 2026-10-19; next.config.ts). Plain files cannot take
+     a POST, so the letter never tries: Send writes it into an email. */
+  assert.ok(
+    !existsSync(new URL("../app/api/contact/route.ts", import.meta.url)),
+    "the contact endpoint is back, and GitHub Pages cannot run it",
   );
-
-  const unreadable = await fetchWorker("/api/contact", {
-    method: "POST",
-    headers: { "content-type": "text/plain" },
-    body: "not a form",
-  });
-  assert.equal(unreadable.status, 400);
 });
 
 test("the letter answers honestly, and draws its blanks in once", () => {
@@ -266,8 +227,10 @@ test("the letter answers honestly, and draws its blanks in once", () => {
   ).replace(/\/\*[\s\S]*?\*\//g, "");
 
   assert.match(code, /"use client"/);
-  assert.match(code, /fetch\(CONTACT_ENDPOINT/);
-  assert.match(code, /result\.error === "sending-not-configured"/);
+  /* Send checks the blanks, then writes the letter into an email: no network
+     call, since there is nothing behind the page to call. */
+  assert.doesNotMatch(code, /fetch\(/);
+  assert.match(code, /setFallback\(asEmail\(data\)\);\s*setStatus\("not-configured"\);/);
   assert.match(code, /encodeURIComponent\(body\)/);
   assert.match(code, /aria-invalid=\{invalid\(/);
 

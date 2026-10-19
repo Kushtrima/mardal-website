@@ -743,16 +743,11 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      default meaningful rather than just marked. */
   assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 6);
 
-  /* The seven sector addresses were live and prerendered. They redirect rather
-     than 404, so anything already linked still lands somewhere. */
+  /* The seven sector addresses redirected here while a server could. GitHub
+     Pages runs none (owner, 2026-10-19), and they were never public on
+     mardal.co, so they are wrong addresses now, like any other. */
   for (const sector of ["finance", "healthcare", "public-sector"]) {
-    const response = await render(`/case-studies/${sector}`);
-    assert.equal(
-      response.status,
-      308,
-      `/case-studies/${sector} does not redirect`,
-    );
-    assert.equal(response.headers.get("location"), "/case-studies");
+    assert.equal((await render(`/case-studies/${sector}`)).status, 404, `/case-studies/${sector} still answers`);
   }
 
 
@@ -896,80 +891,49 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   );
 });
 
-/* The pilot story — one of the two pages a card opens (En-Nur's is the
-   other, since 2026-10-11). What is being judged is the shape; the words in
-   it are slots.
-
-   **A new approach — owner, 2026-10-08**, from three references: "hero with
-   big images", the project in a paragraph with its record under it, "then
-   changellens etc", then the delivered pages one after the next. */
-test("server-renders the one customer story", async () => {
-  /* The sector segment came out of this address with the taxonomy on
-     2026-08-25; next.config.ts redirects the old one. */
-  const path = "/case-studies/healthcare-office-website";
-  const response = await render(path);
+/* **A story page, the way every one is built** — owner, 2026-10-08, from
+   three references: "hero with big images", the project in a paragraph with
+   its record under it, "then changellens etc", then the delivered pages one
+   after the next. Asserted on En-Nur since launch: the pilot these checks
+   were first written for came out with the samples (2026-10-19). */
+test("a story page has its opening, its record, its account and its pages", async () => {
+  const response = await render("/case-studies/en-nur");
   assert.equal(response.status, 200);
-
   const html = await response.text();
   const page = html.slice(0, html.indexOf("<footer"));
-
-  /* The tab is the whole title on one line; the heading is the card's name. */
-  assert.match(html, /<title>A website for a healthcare office — Mardal<\/title>/i);
   assert.equal((page.match(/<h1[\s>]/g) ?? []).length, 1);
 
-  /* **The opening: one picture across the screen**, the bar white over it,
-     the page's lines drawn over it, and from the middle line the industry
-     beside the red square and the name of the card it was opened from. */
+  /* **The opening: one picture across the screen**, the bar white over it
+     and the page's lines drawn over it. */
   const hero = page.match(/<section class="project-hero"[\s\S]*?<\/section>/)?.[0];
   assert.ok(hero, "the story does not open on the picture");
   assert.match(hero, /data-bar-dark="true" data-project-hero="true"/);
-  assert.match(hero, /class="project-hero__image"[^>]*src="https:\/\/picsum\.photos\/seed\/mardal-healthcare-hero\//);
   assert.equal((hero.match(/class="services-rules__line"/g) ?? []).length, 5);
-  assert.match(hero, /<span class="project-hero__mark" aria-hidden="true"><\/span>Healthcare<\/p>/);
-  assert.match(hero, /<h1 class="project-hero__title" id="project-title" data-project-hero-title="true">Solvei<\/h1>/);
 
-  /* **The project**: its name where a logo would stand (there is none on
-     file), the paragraph, the record two by two, the way to the live site —
-     with no address on file, not a link. */
+  /* **The project**: industry, services, location and stack — owner,
+     2026-10-11; the challenge and the solution moved down into the account. */
   const intro = page.match(/<section class="project-intro"[\s\S]*?<\/section>/)?.[0];
   assert.ok(intro, "the project is not introduced");
-  assert.match(intro, /<h2 class="project-intro__name" id="project-intro-title">Solvei<\/h2>/);
-  assert.match(intro, /class="project-intro__summary">\[Two or three sentences/);
-  /* Industry, services, location and stack — owner, 2026-10-11; the
-     challenge and the solution moved down into the account. */
   assert.deepEqual(
     [...intro.matchAll(/class="project-intro__label">([^<]*)</g)].map((m) => m[1]),
     ["INDUSTRY:", "SERVICES:", "LOCATION:", "STACK:"],
   );
-  assert.match(intro, /class="project-intro__value">Healthcare</);
-  assert.match(intro, /class="project-intro__value">UX\/UI Design, Websites</);
-  assert.match(intro, /class="project-intro__value">Switzerland</);
-  assert.match(intro, /class="project-intro__value">\[What it was built with\.\]</);
   assert.doesNotMatch(intro, /CHALLENGE|SOLUTION/);
-  /* No address on file, so no LIVE WEBSITE at all (site check, 2026-10-09:
-     it looked like a button and went nowhere); its rule stays for the day
-     there is one. */
-  assert.doesNotMatch(intro, /project-live|LIVE WEBSITE/);
   /* The site's word-and-arrow button (VIEW ALL's), not a box; labels black. */
   const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
   const live = CSS.slice(CSS.indexOf("\n.project-live {"), CSS.indexOf("\n}", CSS.indexOf("\n.project-live {")));
   assert.doesNotMatch(live, /background|border/);
   assert.match(live, /gap: 0\.7em;/);
   assert.match(CSS, /\.project-intro__label \{[^}]*color: var\(--ink\);/);
-  assert.doesNotMatch(intro, /<a [^>]*class="project-live"/);
 
   /* **The account**: situation, challenge, research, solution — owner,
-     2026-10-11, in place of what it replaced / does now / the client owns —
-     each heading over its slots. */
+     2026-10-11 — still, one under the next, no effect on the scroll at all
+     (2026-10-08: "remove all on scroll leave it as it was in normal state"). */
   assert.deepEqual(
     [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
     ["Situation", "Challenge", "Research", "Solution"],
   );
-  assert.match(page, /class="project-passage__copy"><p>\[Where the office stood before the project\./);
   assert.doesNotMatch(page, /What it replaced|What it does now|What the client owns/);
-  /* Still, one under the next, no effect on the scroll at all — owner,
-     2026-10-08, after a reveal and a held version: "remove all on scroll
-     leave it as it was in normal state". */
   assert.match(page, /<section class="project-account"[^>]*>[\s\S]*?data-enter-mode="none"/);
   assert.doesNotMatch(page, /project-account__stack|data-held|project-passage__rise/);
   assert.ok(
@@ -977,14 +941,14 @@ test("server-renders the one customer story", async () => {
     "the account is moved by the scroll again",
   );
 
-  /* **The pages**, on the white page ("here bacground in white"): six, the
-     same six in small with a frame over the part in view, Previous (shut at
-     the first) and Next. No dark ground, so the bar stays as it is. */
+  /* **The pages**, on the white page: each in small too, with a frame over
+     the part in view, Previous (shut at the first) and Next. */
   const showcase = page.match(/<section class="project-showcase"[\s\S]*?<\/section>/)?.[0];
   assert.ok(showcase, "the pages are not shown");
   assert.doesNotMatch(showcase, /data-bar-dark/);
-  assert.equal((showcase.match(/<li class="project-showcase__page"[ >]/g) ?? []).length, 6);
-  assert.equal((showcase.match(/class="project-showcase__thumb"/g) ?? []).length, 6);
+  const pages = (showcase.match(/<li class="project-showcase__page"[ >]/g) ?? []).length;
+  assert.ok(pages > 1, "the story shows no pages");
+  assert.equal((showcase.match(/class="project-showcase__thumb"/g) ?? []).length, pages);
   assert.match(showcase, /class="project-showcase__window"/);
   assert.match(showcase, /<button class="project-showcase__step" type="button" disabled=""><span>Previous<\/span>/);
   assert.match(showcase, /<button class="project-showcase__step" type="button"><span>Next<\/span>/);
@@ -995,41 +959,34 @@ test("server-renders the one customer story", async () => {
     .map((name) => page.indexOf(`<section class="${name}"`))
     .concat(page.indexOf('<nav class="project-out"'));
   assert.deepEqual([...order].sort((x, y) => x - y), order, `the sections are out of order: ${order}`);
-  /* The foot: Back on the left to every story, Next Project on the right —
-     owner, 2026-10-08. No second story yet, so Next Project is no link. */
+  /* Back on the left to every story, arrows only ("remove text only leave it
+     arrows"), the word kept for a screen reader; no Next Project arrow, since
+     none goes anywhere (site check, 2026-10-09). */
   const back = page.match(/<a [^>]*class="project-out__link project-out__link--back"[^>]*>[\s\S]*?<\/a>/)?.[0];
   assert.ok(back, "there is no way back");
   assert.match(back, /href="\/case-studies"/);
-  /* Arrows only on the page ("remove text only leave it arrows"), the words
-     kept for a screen reader. */
   assert.match(back, /<svg class="project-out__arrow"[\s\S]*?<span class="visually-hidden">Back<\/span>/);
-  /* No second story yet, so no Next Project arrow at all (site check,
-     2026-10-09). */
   assert.doesNotMatch(page, /project-out__link--next|Next Project/);
   assert.doesNotMatch(page.slice(page.indexOf('<nav class="project-out"')), /class="roll__face"/);
   assert.doesNotMatch(page, /All customer stories/);
 
-  /* **Every picture is stock and must not ship**: the opening and six pages,
-     one `src` each. Delete this with the commit that puts real shots in. */
-  assert.equal((page.match(/ src="https:\/\/picsum\.photos\/seed\/mardal-healthcare-/g) ?? []).length, 1 + 6 + 6);
-
   /* The old page is gone: its record rail, its steps, its plate. */
   assert.doesNotMatch(page, /class="story-|service-hero/);
 
-  /* Exactly one story exists, and any other slug is a wrong address rather than
-     an unwritten page. */
-  assert.equal((await render("/case-studies/not-a-story")).status, 404);
-
-  /* **The two-segment addresses are now redirects, not 404s** — they were
-     `/case-studies/{sector}/{story}`; an old address is a moved page, then
-     the router judges what is left. */
-  const moved = await render("/case-studies/healthcare/not-a-story");
-  assert.equal(moved.status, 308);
-  assert.equal(moved.headers.get("location"), "/case-studies/not-a-story");
-  assert.equal((await render("/case-studies/not-a-story")).status, 404);
-
   assert.match(html, /class="site-nav"/);
   assert.match(html, /<footer class="site-footer"/);
+});
+
+/* **The sample story came out at launch** — 2026-10-19 (SEO-PLAN.md, step
+   1.2): "Solvei" was invented, its pictures stock and its slots brackets.
+   Its page and its line in the sitemap are gone; any other slug is a wrong
+   address rather than an unwritten page. */
+test("the sample story is not published", async () => {
+  assert.equal((await render("/case-studies/healthcare-office-website")).status, 404);
+  assert.equal((await render("/case-studies/not-a-story")).status, 404);
+  const sitemap = await (await render("/sitemap.xml")).text();
+  assert.doesNotMatch(sitemap, /healthcare-office-website/);
+  assert.match(sitemap, /\/case-studies\/en-nur</);
 });
 
 /* **En-Nur, the first real story** — owner, 2026-10-11: "analyze the text
@@ -2221,18 +2178,20 @@ test("the three legal pages are written as documents, and guess nothing", async 
 
     /* Nothing invented: the company is named as what is on file — no legal
        form, no registration number, since none is on file — and the only
-       provider named is the one Mardal uses (Namecheap: the owner's word and
-       mardal.co's own mail servers, 2026-10-09). No bracket left. */
+       providers named are the ones Mardal uses: GitHub for the website (the
+       owner's choice, 2026-10-19) and Namecheap for the email (mardal.co's
+       own mail servers, 2026-10-09). No bracket left. */
     const prose = main.replace(/<[^>]*>/g, " ");
     assert.doesNotMatch(prose, /\b(L\.?L\.?C|SH\.?P\.?K|GmbH|Ltd)\b/, `${path} names a legal form nobody gave`);
     assert.doesNotMatch(prose, /\b(Google Analytics|Vercel|Cloudflare|Netlify|AWS|Mailchimp)\b/, `${path} names a provider nobody chose`);
     assert.doesNotMatch(prose, /\[[A-Za-z][^\]]{1,90}\]/, `${path} still has a bracket`);
-    assert.match(prose, /Last updated: 9 October 2026\./);
+    assert.match(prose, path === "/privacy" ? /Last updated: 19 October 2026\./ : /Last updated: 9 October 2026\./);
   }
 
   const privacy = await (await render("/privacy")).text();
-  assert.match(privacy, /our hosting provider, Namecheap, records/);
-  assert.match(privacy, /Namecheap hosts both/);
+  assert.match(privacy, /Our hosting provider, GitHub, logs your IP address to keep the site secure\./);
+  assert.match(privacy, /GitHub hosts the website and Namecheap our email\./);
+  assert.doesNotMatch(privacy, /Namecheap hosts both|hosting provider, Namecheap/);
   assert.match(privacy, /no longer than 12 months after it ends/);
   const terms = await (await render("/terms")).text();
   assert.match(terms, /governed by the law of the Republic of Kosovo/);
@@ -2351,7 +2310,7 @@ test("Menu draws no ring after a click unless Tab is pressed, and ends on the la
 /* Owner, 2026-10-09: "in mobile i want a project to show like this so that
    right that we have in desktop here we have at the bottom". */
 test("a phone holds the project's pages too, the small ones in a row along the foot", async () => {
-  const page = await (await render("/case-studies/healthcare-office-website")).text();
+  const page = await (await render("/case-studies/en-nur")).text();
   const showcase = page.match(/<section class="project-showcase"[\s\S]*?<\/section>/)?.[0] ?? "";
   /* The frame is placed along the small pages, and slides with them. */
   assert.match(showcase, /<div class="project-showcase__strip"><div class="project-showcase__track"><ol class="project-showcase__thumbs">[\s\S]*<\/ol><span class="project-showcase__window" aria-hidden="true"><\/span><\/div><\/div>/);
@@ -2437,20 +2396,33 @@ test("the keyboard's first stop on every page skips the bar", async () => {
   assert.match(link, /main\.focus\(\{ preventScroll: true \}\)/);
 });
 
-test("search engines are kept out until launch, and have a sitemap of every page", async () => {
-  /* **One switch for launch** (SEO-PLAN.md, step 1.1): off, robots.txt keeps
-     every crawler out and the Vercel address serves the pages; on, every
-     crawler is let in, mardal.vercel.app redirects to mardal.co and every
+test("search engines are let in since launch, and have a sitemap of every page", async () => {
+  /* **One switch for launch** (SEO-PLAN.md, step 1.1), turned on 2026-10-19
+     with the move to GitHub Pages: every crawler is let in, and every
      canonical and preview address is written against mardal.co. */
   const launch = readFileSync(new URL("../lib/launch.ts", import.meta.url), "utf8");
-  assert.match(launch, /^export const siteIsLive = false;$/m);
+  assert.match(launch, /^export const siteIsLive = true;$/m);
   const robots = readFileSync(new URL("../app/robots.ts", import.meta.url), "utf8");
   assert.match(robots, /rules: siteIsLive\s*\?\s*\{ userAgent: "\*", allow: "\/" \}\s*:\s*\{ userAgent: "\*", disallow: "\/" \}/);
   assert.match(robots, /sitemap: `\$\{siteUrl\}\/sitemap\.xml`/);
   const robotsTxt = await (await render("/robots.txt")).text();
-  assert.match(robotsTxt, /Disallow: \//);
+  assert.match(robotsTxt, /Allow: \//);
+  assert.doesNotMatch(robotsTxt, /Disallow/);
+  /* **Plain files, for GitHub Pages** (owner, 2026-10-19): `next build`
+     writes the site out as HTML, robots.txt and the sitemap with it. Pages
+     runs no code, so a redirect, a rewrite or a header in next.config.ts
+     would build and then silently do nothing: none is there, and none may
+     come back unnoticed. */
   const config = readFileSync(new URL("../next.config.ts", import.meta.url), "utf8");
-  assert.match(config, /\.\.\.\(siteIsLive\s*\?\s*\[\s*\{\s*source: "\/:path\*",\s*has: \[\{ type: "host" as const, value: "mardal\.vercel\.app" \}\],\s*destination: "https:\/\/mardal\.co\/:path\*",\s*permanent: true,/);
+  assert.match(config, /output: "export",/);
+  assert.doesNotMatch(config, /redirects\(|rewrites\(|headers\(/);
+  for (const file of ["../app/robots.ts", "../app/sitemap.ts"]) {
+    assert.match(readFileSync(new URL(file, import.meta.url), "utf8"), /export const dynamic = "force-static";/);
+  }
+  const workflow = readFileSync(new URL("../.github/workflows/pages.yml", import.meta.url), "utf8");
+  assert.match(workflow, /branches: \[light-and-dark\]/);
+  assert.match(workflow, /run: npm run build/);
+  assert.match(workflow, /path: out/);
   const layout = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
   assert.match(layout, /metadataBase: siteIsLive \? new URL\(siteUrl\) : undefined,/);
 
@@ -2476,8 +2448,7 @@ test("search engines are kept out until launch, and have a sitemap of every page
    says. The company and the site on the homepage; a breadcrumb on every
    inner page; an article about each real client; each post with its author
    and date; the services by name. The founding year and the postcode are
-   the owner's (2026-10-11); no article about the sample project's invented
-   client. */
+   the owner's (2026-10-11). */
 test("every page tells search engines what it is", async () => {
   const nodes = async (path) => {
     const html = await (await render(path)).text();
@@ -2506,7 +2477,6 @@ test("every page tells search engines what it is", async () => {
   const article = byType(story, "Article");
   assert.deepEqual(article.about, { "@type": "Organization", name: "En-Nur", url: "https://xhamia-en-nur.ch/" });
   assert.equal(article.url, "https://mardal.co/case-studies/en-nur");
-  assert.equal(byType(await nodes("/case-studies/healthcare-office-website"), "Article"), undefined);
 
   const post = byType(await nodes("/blog/between-systems"), "BlogPosting");
   assert.equal(post.author.name, "Kushtrim Arifi");

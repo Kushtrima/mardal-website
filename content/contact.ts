@@ -107,7 +107,6 @@ export const contactPage = {
     },
 
     send: "Send",
-    sending: "Sending…",
 
     /* Said once, beside Send, rather than under each blank: a letter with a
        message under every missing word would stop reading as a letter. */
@@ -115,15 +114,10 @@ export const contactPage = {
     missing: "Add {fields} to send it.",
     badEmail: "That email address does not look complete.",
 
-    sentTitle: "Thank you, {name}.",
-    /** The answer a sent letter gets. */
-    sent: "Received. We will read it and come back to you at {email}.",
-    again: "Write another",
-
-    /* Today's answer — see app/api/contact/route.ts. The link opens the
-       visitor's own email app with the letter already written in it. */
+    /* The answer Send gets: the site is plain files on GitHub Pages and sends
+       nothing itself (see components/contact/LetterForm.tsx). The link opens
+       the visitor's own email app with the letter already written in it. */
     notConfigured: "Sending from the website is not switched on yet.",
     notConfiguredLink: "Send it from your email app",
-    failed: "That did not send. Write to us at",
   },
 } as const;

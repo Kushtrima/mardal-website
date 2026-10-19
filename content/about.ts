@@ -15,7 +15,6 @@
  */
 
 import type { PageHeroContent } from "../components/services/ServicesHero";
-import { clientEntries } from "./case-studies";
 
 /**
  * The delivered archive, recorded in PRODUCT.md and confirmed by the owner on
@@ -34,68 +33,10 @@ const DELIVERED = [
   "ZEN",
 ];
 
-/**
- * ⚠ **INVENTED. NOT CLIENTS. MUST NOT SHIP.**
- *
- * Owner, 2026-08-26, after being told the archive holds seven and no more: add
- * some example names. So this is a filled-out list rather than a true one, and
- * it is his decision knowingly made — but the decision that remains mine is how
- * hard it is to forget, and the answer this codebase already uses is a marked
- * array and a test that fails the day someone publishes.
- *
- * **Borrowed rather than re-invented**, as far as it went. The Clients page
- * already carries eight placeholder companies, so those are imported rather
- * than retyped: replace them in `content/case-studies.ts` and this list
- * follows. It stopped going far enough when he asked for more — there were only
- * ever eight — so fifteen more are written below, and the site now has two
- * invented vocabularies to delete rather than one.
- *
- * They are pinned in `tests/about.test.mjs` the way the Clients page's are in
- * `tests/rendered-html.test.mjs` — so publishing means deleting an assertion on
- * purpose rather than forgetting a comment. Delete both with the commit that
- * puts real names in.
- */
-const BORROWED = clientEntries.map((entry) => entry.name);
-
-/**
- * ⚠ **INVENTED. NOT CLIENTS. MUST NOT SHIP.**
- *
- * Owner, 2026-08-26, twice: add some example names, then add some more. The
- * eight above are all the placeholders this site had, so these fifteen are new
- * — which is the thing the borrowing was meant to avoid, and it is his call.
- * They are here rather than in `case-studies.ts` because they belong to no
- * page's data: nothing filters or links on them, they exist to give this list
- * the length of the layout he pointed at.
- *
- * Invented to read as companies and to match nothing. Checked against the sort
- * of name that would be a claim if it landed by accident: no real business is
- * knowingly among them, and none is a place, a person or a product this project
- * has a record of.
- *
- * Pinned in `tests/about.test.mjs` with the other eight. Delete both arrays and
- * that assertion in the commit that puts real names in.
- */
-const INVENTED = [
-  "Astrel",
-  "Brimhold",
-  "Corvane",
-  "Delmara",
-  "Fennik",
-  "Grisal",
-  "Halvorn",
-  "Ivrell",
-  "Jarnek",
-  "Kolvi",
-  "Lestad",
-  "Myrek",
-  "Oskra",
-  "Rendal",
-  "Varek",
-];
-
-/** ⚠ Every name that is not a client: the Clients page's eight and the fifteen
- *  written for this list. Twenty-three of the thirty names on the page. */
-const EXAMPLES = [...BORROWED, ...INVENTED];
+/* The twenty-three example names that stood beside these — eight borrowed
+   from the Clients page's placeholders, fifteen written for this list at the
+   owner's request on 2026-08-26 — came out at launch, 2026-10-19: none of
+   them was ever a client. */
 
 /**
  * **About opens as the services, the products and the clients do** — owner,
@@ -330,17 +271,8 @@ export const about = {
   /**
    * The client list, under the closing line.
    *
-   * **Seven of these thirty are real and twenty-three are not**, and the split is
-   * kept in the source because the page cannot show it: alphabetised together,
-   * `Nordvik` reads exactly like `Jetonikeramika` to anyone looking at it.
-   * `DELIVERED` is the archive; `EXAMPLES` is invented and marked as such where
-   * it is declared.
-   *
-   * The owner asked for the examples after being told the archive holds seven
-   * and no more, and then for more of them, so it is his call knowingly made
-   * twice. What is not his to forget is the shipping: every invented name is
-   * pinned by a test, and publishing this page means deleting that assertion on
-   * purpose.
+   * **The seven of the delivered archive and nothing else** since launch,
+   * 2026-10-19, when the twenty-three examples came out (see `DELIVERED`).
    *
    * ⚠ **The other outstanding decision, unchanged**: PRODUCT.md records that
    * per-client sign-off for naming the real seven publicly "has not been
@@ -348,21 +280,14 @@ export const about = {
    * whether each client is content to appear on a public page is a separate
    * question and his to answer.
    *
-   * **Alphabetical**, which is the one order that does not rank them — and here
-   * it does a second job: sorted together, the real names are not a block at
-   * the top with the filler beneath, which would be the arrangement that
-   * quietly tells a reader which is which.
+   * **Alphabetical**, which is the one order that does not rank them.
    *
    * Nothing is added to any of them: no sector, no year, no country, no count.
    * A name is the largest true thing that can be said about each without a
-   * brief, and for twenty-three of them it is not true either.
+   * brief.
    */
   clients: {
     title: "Our clients",
-    /** The real ones. See `DELIVERED`. */
-    delivered: DELIVERED,
-    /** ⚠ The invented ones. See `EXAMPLES`. */
-    examples: EXAMPLES,
-    names: [...DELIVERED, ...EXAMPLES].sort((a, b) => a.localeCompare(b, "en")),
+    names: [...DELIVERED].sort((a, b) => a.localeCompare(b, "en")),
   },
 } as const;

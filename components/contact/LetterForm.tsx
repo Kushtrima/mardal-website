@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  useEffect,
   useId,
   useLayoutEffect,
   useRef,
@@ -35,21 +34,17 @@ import { contactPage } from "../../content/contact";
  *
  * ── Where a message goes ──
  *
- * To `/api/contact`, which today answers that sending is not switched on — the
- * site has no mail service yet, see the route. The form turns that answer into a
- * link that opens the visitor's own email app with the letter already written,
- * so nothing typed here is lost. Wiring the route changes nothing in this file.
- *
- * `action` and `method` are set, as on the Careers form, so the letter still
- * posts without JavaScript.
+ * Into the visitor's own email app. The site is plain files on GitHub Pages
+ * (owner, 2026-10-19; see next.config.ts), with no server and no mail service
+ * behind it, so Send checks the blanks and then offers a link that opens the
+ * visitor's email app with the letter already written. Nothing typed here is
+ * lost, and nothing claims to have been sent.
  */
 
-export const CONTACT_ENDPOINT = "/api/contact";
-
-type Status = "idle" | "sending" | "sent" | "not-configured" | "failed";
+type Status = "idle" | "not-configured";
 type Needed = "name" | "email" | "message";
 
-/** Deliberately loose: the endpoint's own check, said early. */
+/** Deliberately loose: it catches a typo, and the email app does the rest. */
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 function read(data: FormData, key: string) {
@@ -90,22 +85,16 @@ export function LetterForm() {
   const { letter } = contactPage;
   const id = useId();
   const formRef = useRef<HTMLFormElement>(null);
-  const doneRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [flagged, setFlagged] = useState<Needed[]>([]);
   const [problem, setProblem] = useState("");
   const [fallback, setFallback] = useState("");
-  const [sentTo, setSentTo] = useState({ name: "", email: "" });
-
-  /** The letter is on the page for every state but one. */
-  const open = status !== "sent";
 
   /* The blanks draw in from their left edge, one after another, a beat after
      the page arrives. A layout effect, so the first frame already has them
      closed rather than drawn and then taken away; cleared when it is done, so
      nothing is left clipping a field someone is typing in. */
   useLayoutEffect(() => {
-    if (!open) return;
     const root = formRef.current;
     if (!root) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -127,18 +116,10 @@ export function LetterForm() {
     return () => {
       tween.kill();
     };
-  }, [open]);
+  }, []);
 
-  /* The letter is replaced by the answer, so focus goes to the answer —
-     otherwise it would be left on a button that no longer exists. */
-  useEffect(() => {
-    if (status === "sent") doneRef.current?.focus();
-  }, [status]);
-
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    /* Held before the first `await`: React clears `currentTarget` once the
-       handler has returned. */
     const element = event.currentTarget;
     const data = new FormData(element);
 
@@ -167,28 +148,8 @@ export function LetterForm() {
       return;
     }
 
-    setStatus("sending");
-
-    try {
-      const response = await fetch(CONTACT_ENDPOINT, { method: "POST", body: data });
-      const result = (await response.json()) as { ok?: boolean; error?: string };
-
-      if (response.ok && result.ok) {
-        setSentTo({ name: read(data, "name"), email: read(data, "email") });
-        setStatus("sent");
-        return;
-      }
-
-      if (result.error === "sending-not-configured") {
-        setFallback(asEmail(data));
-        setStatus("not-configured");
-        return;
-      }
-
-      setStatus("failed");
-    } catch {
-      setStatus("failed");
-    }
+    setFallback(asEmail(data));
+    setStatus("not-configured");
   }
 
   /* A blank stops being marked the moment it is written in. */
@@ -201,37 +162,6 @@ export function LetterForm() {
     if (!next.length) setProblem("");
   }
 
-  if (!open) {
-    return (
-      <div
-        className="letter letter--sent"
-        ref={doneRef}
-        tabIndex={-1}
-        role="status"
-      >
-        <p className="letter__line">
-          {letter.sentTitle.replace("{name}", sentTo.name)}
-        </p>
-        <p className="letter__note">
-          {letter.sent.replace("{email}", sentTo.email)}
-        </p>
-        <button
-          className="letter__send"
-          data-roll
-          type="button"
-          onClick={() => {
-            setFlagged([]);
-            setProblem("");
-            setStatus("idle");
-          }}
-        >
-          <RollingLabel>{letter.again}</RollingLabel>
-          <SendArrow />
-        </button>
-      </div>
-    );
-  }
-
   const invalid = (key: Needed) => (flagged.includes(key) ? true : undefined);
 
   const line = problem ? (
@@ -240,18 +170,12 @@ export function LetterForm() {
     <>
       {letter.notConfigured} <a href={fallback}>{letter.notConfiguredLink}</a>
     </>
-  ) : status === "failed" ? (
-    <>
-      {letter.failed} <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
-    </>
   ) : null;
 
   return (
     <form
       ref={formRef}
       className="letter"
-      action={CONTACT_ENDPOINT}
-      method="post"
       noValidate
       aria-label={letter.label}
       onSubmit={onSubmit}
@@ -355,13 +279,8 @@ export function LetterForm() {
           {line}
         </p>
 
-        <button
-          className="letter__send"
-          data-roll
-          type="submit"
-          disabled={status === "sending"}
-        >
-          <RollingLabel>{status === "sending" ? letter.sending : letter.send}</RollingLabel>
+        <button className="letter__send" data-roll type="submit">
+          <RollingLabel>{letter.send}</RollingLabel>
           <SendArrow />
         </button>
       </div>
