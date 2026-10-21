@@ -370,14 +370,15 @@ export const selectedWork = {
      in upperc case SELECTED WORK" — like VIEW ALL beside it. */
   titleLines: ["SELECTED", "WORK"],
   viewAll: { label: "VIEW ALL", href: "/case-studies" },
-  /* The comp's pair: a tall picture, then a wide one. Bären Baugruppe AG
-     holds Riesen Holzbau AG's place while Riesen is hidden (owner,
-     2026-10-21: "Hide this project: Riesen Holzbau AG at the moment"): the
-     same service for the same trade, a Swiss builder's brand. When Riesen is
-     shown again it comes back here as
+  /* The comp's pair: a tall picture, then a wide one. Doratec GmbH holds
+     Riesen Holzbau AG's place while Riesen is hidden (owner, 2026-10-21:
+     "Hide this project: Riesen Holzbau AG at the moment"), as Bären
+     Baugruppe AG did until it was hidden too, the same day ("now hide lso
+     Baren logo project"). Doratec is a website, so its word is Website. When
+     Riesen is shown again it comes back here as
      { project: "riesen", shape: "tall", service: "Branding" }. */
   items: [
-    { project: "baren", shape: "tall", service: "Branding" },
+    { project: "doratec", shape: "tall", service: "Website" },
     { project: "jetonikeramika", shape: "wide", service: "Website" },
   ],
   /* **Two more, in a format of their own** — owner, 2026-10-05: "add more two

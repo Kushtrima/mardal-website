@@ -631,8 +631,9 @@ test("server-renders the Clients hero", async () => {
   assert.match(html, /class="clients-card__name">Jetonikeramika</);
   assert.match(html, /class="clients-card__name">Spitex Schwab AG</);
   /* And Bären Baugruppe AG, 2026-10-15 ("now we have new project we have a
-     logo", from his …/work/baren.html). */
-  assert.match(html, /class="clients-card__name">Bären Baugruppe AG</);
+     logo", from his …/work/baren.html) — hidden for now (owner, 2026-10-21:
+     "now hide lso Baren logo project"), so not named at all. */
+  assert.doesNotMatch(html, /Bären/);
   /* And Riesen Holzbau AG, the same day ("now continue with this new project
      branding", from his …/work/riesen.html; "also after name add AG") —
      hidden for now (owner, 2026-10-21: "Hide this project: Riesen Holzbau AG
@@ -695,12 +696,12 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   /* Every entry, once. There is no state and no subset any more, so this is the
      count of the whole list rather than of a view of it. Matched to the end of
      the class name rather than the attribute: a card with a story behind it
-     carries a modifier too. Six since 2026-10-21: En-Nur, Jetonikeramika,
-     Spitex Schwab AG, Bären Baugruppe AG, WMK and Doratec GmbH, the
-     delivered work, with the eight placeholders taken off the page and
-     Riesen Holzbau AG hidden for now. */
-  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 6);
-  assert.equal((cardMarkup.match(/<article/g) ?? []).length, 6);
+     carries a modifier too. Five since 2026-10-21: En-Nur, Jetonikeramika,
+     Spitex Schwab AG, WMK and Doratec GmbH, the delivered work, with the
+     eight placeholders taken off the page and Riesen Holzbau AG and Bären
+     Baugruppe AG hidden for now. */
+  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 5);
+  assert.equal((cardMarkup.match(/<article/g) ?? []).length, 5);
 
   /* **FILTERS, under the opening — owner, 2026-10-08**: "under the hero add
      this then when click to open …", then "i want when open menu to open on
@@ -755,7 +756,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
 
   /* And with All chosen the grid is every entry — which is what makes the
      default meaningful rather than just marked. */
-  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 6);
+  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 5);
 
   /* The seven sector addresses redirected here while a server could. GitHub
      Pages runs none (owner, 2026-10-19), and they were never public on
@@ -775,12 +776,12 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
 
   /* Every card carries a picture in a box of the same shape. Four tints cycled
      by position, so no plate sits under its own colour. */
-  assert.equal((cardMarkup.match(/class="clients-card__plate"/g) ?? []).length, 6);
-  assert.equal((cardMarkup.match(/class="clients-card__art"/g) ?? []).length, 6);
+  assert.equal((cardMarkup.match(/class="clients-card__plate"/g) ?? []).length, 5);
+  assert.equal((cardMarkup.match(/class="clients-card__art"/g) ?? []).length, 5);
   const tints = [...cardMarkup.matchAll(/clients-card__plate" data-tint="(\w+)"/g)].map(
     (match) => match[1],
   );
-  assert.deepEqual(tints, ["one", "two", "three", "four", "one", "two"]);
+  assert.deepEqual(tints, ["one", "two", "three", "four", "one"]);
 
   /* **No stock frame on a card.** The eight placeholders' came off a third
      party's server and were taken off this page with their invented names —
@@ -795,7 +796,8 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   assert.doesNotMatch(cardMarkup, /riesen-hero/);
   /* Doratec GmbH's is his (2026-10-21, "use this for cover first"). */
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/doratec-hero-1920\.avif" srcSet="\/doratec-hero-1200\.avif 1200w, \/doratec-hero-1920\.avif 1920w"/);
-  assert.match(cardMarkup, /<img class="clients-card__art" src="\/baren-hero-2000\.webp" srcSet="\/baren-hero-1200\.webp 1200w, \/baren-hero-2000\.webp 2000w"/);
+  /* Bären Baugruppe AG's is not: it is hidden for now too (2026-10-21). */
+  assert.doesNotMatch(cardMarkup, /baren-hero/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/spitex-schwab-hero-2000\.webp" srcSet="\/spitex-schwab-hero-1200\.webp 1200w, \/spitex-schwab-hero-2000\.webp 2000w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/en-nur-hero-2376\.webp" srcSet="\/en-nur-hero-1200\.webp 1200w, \/en-nur-hero-2376\.webp 2376w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/jetonikeramika-hero-1920\.avif" srcSet="\/jetonikeramika-hero-1200\.avif 1200w, \/jetonikeramika-hero-1920\.avif 1920w"/);
@@ -812,7 +814,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
     [...cardMarkup.matchAll(/class="clients-card__name">([^<]*)</g)].map(
       (m) => m[1],
     ),
-    ["En-Nur", "Jetonikeramika", "Spitex Schwab AG", "Bären Baugruppe AG", "WMK", "Doratec GmbH"],
+    ["En-Nur", "Jetonikeramika", "Spitex Schwab AG", "WMK", "Doratec GmbH"],
   );
   assert.doesNotMatch(
     cardMarkup,
@@ -829,7 +831,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      project". (Industry, services and country stood there from 2026-09-30.) */
   assert.equal(
     [...cardMarkup.matchAll(/class="clients-card__name">[^<]*(?:<!-- -->)?(?:<svg class="clients-card__arrow"[\s\S]*?<\/svg>)?<\/h3><\/article>/g)].length,
-    6,
+    5,
   );
   assert.doesNotMatch(cardMarkup, /clients-card__fact/);
   assert.doesNotMatch(cardMarkup, />(Switzerland|Germany|Austria|Kosovo|Finance|Healthcare|Manufacturing|Automotive|Retail|Logistics|Public Sector|UX\/UI Design|Branding|Software|CRM)</);
@@ -837,9 +839,10 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   /* **Three shapes, two to a row at most, sometimes one** — owner,
      2026-10-08: "i want the project to have three format Box, wide and
      portrat and to be mixed", each starting on one of the page's lines, then
-     "max 2 project in one row sometimes 1". Six cards are rows of two, one,
-     two and one; each card's shape, columns (of the page's four) and — a
-     row's first — starting line set by its place. */
+     "max 2 project in one row sometimes 1". Five cards are rows of two, one
+     and two (six, before Bären Baugruppe AG was hidden, were two, one, two
+     and one); each card's shape, columns (of the page's four) and — a row's
+     first — starting line set by its place. */
   assert.deepEqual(
     [...cardMarkup.matchAll(/<li data-format="(\w+)" data-span="(\d+)"(?: data-start="(\d)")? data-row="(\d)" data-place="(\d)">/g)].map(
       (m) => `${m[1]} ${m[2]}${m[3] ? "@" + m[3] : ""} ${m[4]}.${m[5]}`,
@@ -848,20 +851,20 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
       "portrait 2@1 2.1", "wide 2 2.2",
       "wide 3@2 1.1",
       "box 2@1 2.1", "portrait 2 2.2",
-      "box 2@1 1.1",
     ],
   );
 
   /* **Every card is a link: En-Nur, Jetonikeramika and Spitex Schwab AG
      (2026-10-11), Bären Baugruppe AG and Riesen Holzbau AG (2026-10-15) and WMK
      (2026-10-16) and Doratec GmbH (2026-10-21)**, each with its page behind
-     it — but Riesen Holzbau AG, hidden for now (2026-10-21). */
+     it — but Riesen Holzbau AG and Bären Baugruppe AG, hidden for now
+     (2026-10-21). */
   const links = [...cardMarkup.matchAll(/<a [^>]*class="clients-card__link"[^>]*>/g)];
-  assert.equal(links.length, 6);
+  assert.equal(links.length, 5);
   assert.match(all, /href="\/case-studies\/en-nur"/);
   assert.match(all, /href="\/case-studies\/jetonikeramika"/);
   assert.match(all, /href="\/case-studies\/spitex-schwab"/);
-  assert.match(all, /href="\/case-studies\/baren"/);
+  assert.doesNotMatch(all, /href="\/case-studies\/baren"/);
   assert.doesNotMatch(all, /href="\/case-studies\/riesen"/);
   assert.match(all, /href="\/case-studies\/wmk"/);
   assert.match(all, /href="\/case-studies\/doratec"/);
@@ -891,7 +894,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      opens, and a plus under the pointer on a card that answers with an empty
      page is the promise this site refuses to make. */
   assert.equal((cardMarkup.match(/data-opens="true"/g) ?? []).length, links.length);
-  assert.equal((cardMarkup.match(/data-opens-mark/g) ?? []).length, 6);
+  assert.equal((cardMarkup.match(/data-opens-mark/g) ?? []).length, 5);
 
   /* **The hover — owner, 2026-10-08** ("i dont like it how it is right
      now"): no wash and no cross laid over the picture; its frame draws in,
@@ -1014,6 +1017,7 @@ test("the sample story is not published", async () => {
    story and its pictures stay in the code, ready for the day it is shown. */
 test("a hidden project shows nowhere", async () => {
   assert.ok(hiddenProjects.includes("riesen"), "Riesen Holzbau AG is shown again: only on the owner's word");
+  assert.ok(hiddenProjects.includes("baren"), "Bären Baugruppe AG is shown again: only on the owner's word");
   const sitemap = await (await render("/sitemap.xml")).text();
   const paths = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
   assert.ok(paths.length > 10, "the sitemap lists too few pages to check");
@@ -1029,6 +1033,7 @@ test("a hidden project shows nowhere", async () => {
       assert.doesNotMatch(html, new RegExp(`/case-studies/${slug}\\b|/(og-)?${slug}[-.]`), `${path} links to or shows ${slug}`);
     }
     assert.doesNotMatch(html, /Riesen/, `${path} names Riesen Holzbau AG`);
+    assert.doesNotMatch(html, /Bären Baugruppe/, `${path} names Bären Baugruppe AG`);
   }
 });
 
@@ -1281,7 +1286,9 @@ test("server-renders Spitex Schwab AG's story from the owner's own case study", 
   }
 });
 
-test("server-renders Bären Baugruppe AG's story from the owner's own case study", async () => {
+/* Waits while Bären Baugruppe AG is hidden (owner, 2026-10-21: "now hide
+   lso Baren logo project"); it runs again the moment the project is shown. */
+test("server-renders Bären Baugruppe AG's story from the owner's own case study", { skip: hiddenProjects.includes("baren") && "hidden for now" }, async () => {
   const response = await render("/case-studies/baren");
   assert.equal(response.status, 200);
   const html = await response.text();
@@ -1866,20 +1873,20 @@ test("Selected Work stands under Fusion, as the owner's comp draws it", async ()
      nur places"): under each its name and its location as its own page
      records them, between them his one word for the service — "Reisend only
      BRanding, Jetoni Website, Wmk Branding, EN nur Software thats it"; its
-     cover above. Bären Baugruppe AG, Branding as well, holds Riesen's place
-     while Riesen is hidden (2026-10-21). */
+     cover above. Doratec GmbH holds Riesen's place while Riesen and Bären
+     Baugruppe AG, which held it first, are hidden (2026-10-21). */
   const lines = [...section.matchAll(/<figcaption class="selected-work__meta"[^>]*>([\s\S]*?)<\/figcaption>/g)].map((m) =>
     [...m[1].matchAll(/<span class="selected-work__meta-line">([^<]*)<\/span>/g)].map((line) => line[1]),
   );
   assert.deepEqual(lines, [
-    ["Bären Baugruppe AG", "Branding", "Urtenen-Schönbühl, Switzerland"],
+    ["Doratec GmbH", "Website", "Oftringen, Switzerland"],
     ["Jetonikeramika", "Website", "Kosovo"],
     ["En-Nur", "Software", "Switzerland"],
     ["WMK", "Branding", "Zurich, Switzerland"],
   ]);
   assert.deepEqual(
     [...section.matchAll(/<img class="selected-work__image" src="([^"]+)"/g)].map((m) => m[1]),
-    ["/baren-hero-2000.webp", "/jetonikeramika-hero-1920.avif", "/en-nur-hero-2376.webp", "/wmk-hero-2000.jpg"],
+    ["/doratec-hero-1920.avif", "/jetonikeramika-hero-1920.avif", "/en-nur-hero-2376.webp", "/wmk-hero-2000.jpg"],
   );
   /* Not one "Buhler" — the comp's stand-in, and a real Swiss company that was
      never a client. */
@@ -1889,7 +1896,7 @@ test("Selected Work stands under Fusion, as the owner's comp draws it", async ()
      ALL stays the section's way to the index. */
   assert.deepEqual(
     [...section.matchAll(/<a [^>]*class="selected-work__link"[^>]*>/g)].map((m) => m[0].match(/href="([^"]+)"/)?.[1]),
-    ["/case-studies/baren", "/case-studies/jetonikeramika", "/case-studies/en-nur", "/case-studies/wmk"],
+    ["/case-studies/doratec", "/case-studies/jetonikeramika", "/case-studies/en-nur", "/case-studies/wmk"],
   );
 
   /* Its own entrance, so it declines the site's, and nothing in the
