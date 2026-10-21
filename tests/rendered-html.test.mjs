@@ -641,6 +641,9 @@ test("server-renders the Clients hero", async () => {
   /* And WMK, 2026-10-16 ("now lets add new project", from his
      …/work/wmk.html). */
   assert.match(html, /class="clients-card__name">WMK</);
+  /* And Doratec GmbH, 2026-10-21 ("now you need to woek on new project this
+     is the website live", https://dora-tec.ch/). */
+  assert.match(html, /class="clients-card__name">Doratec GmbH</);
   for (const client of [
     "Stolzbau",
     "Henor",
@@ -692,12 +695,12 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   /* Every entry, once. There is no state and no subset any more, so this is the
      count of the whole list rather than of a view of it. Matched to the end of
      the class name rather than the attribute: a card with a story behind it
-     carries a modifier too. Five since 2026-10-21: En-Nur, Jetonikeramika,
-     Spitex Schwab AG, Bären Baugruppe AG and WMK, the delivered work, with
-     the eight placeholders taken off the page and Riesen Holzbau AG hidden
-     for now. */
-  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 5);
-  assert.equal((cardMarkup.match(/<article/g) ?? []).length, 5);
+     carries a modifier too. Six since 2026-10-21: En-Nur, Jetonikeramika,
+     Spitex Schwab AG, Bären Baugruppe AG, WMK and Doratec GmbH, the
+     delivered work, with the eight placeholders taken off the page and
+     Riesen Holzbau AG hidden for now. */
+  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 6);
+  assert.equal((cardMarkup.match(/<article/g) ?? []).length, 6);
 
   /* **FILTERS, under the opening — owner, 2026-10-08**: "under the hero add
      this then when click to open …", then "i want when open menu to open on
@@ -752,7 +755,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
 
   /* And with All chosen the grid is every entry — which is what makes the
      default meaningful rather than just marked. */
-  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 5);
+  assert.equal((cardMarkup.match(/class="clients-card[" ]/g) ?? []).length, 6);
 
   /* The seven sector addresses redirected here while a server could. GitHub
      Pages runs none (owner, 2026-10-19), and they were never public on
@@ -772,12 +775,12 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
 
   /* Every card carries a picture in a box of the same shape. Four tints cycled
      by position, so no plate sits under its own colour. */
-  assert.equal((cardMarkup.match(/class="clients-card__plate"/g) ?? []).length, 5);
-  assert.equal((cardMarkup.match(/class="clients-card__art"/g) ?? []).length, 5);
+  assert.equal((cardMarkup.match(/class="clients-card__plate"/g) ?? []).length, 6);
+  assert.equal((cardMarkup.match(/class="clients-card__art"/g) ?? []).length, 6);
   const tints = [...cardMarkup.matchAll(/clients-card__plate" data-tint="(\w+)"/g)].map(
     (match) => match[1],
   );
-  assert.deepEqual(tints, ["one", "two", "three", "four", "one"]);
+  assert.deepEqual(tints, ["one", "two", "three", "four", "one", "two"]);
 
   /* **No stock frame on a card.** The eight placeholders' came off a third
      party's server and were taken off this page with their invented names —
@@ -790,6 +793,8 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/wmk-hero-2000\.jpg" srcSet="\/wmk-hero-1200\.jpg 1200w, \/wmk-hero-2000\.jpg 2000w"/);
   /* Riesen Holzbau AG's is not: it is hidden for now (2026-10-21). */
   assert.doesNotMatch(cardMarkup, /riesen-hero/);
+  /* Doratec GmbH's is its site's own opening, taken from the live page. */
+  assert.match(cardMarkup, /<img class="clients-card__art" src="\/doratec-hero-2000\.webp" srcSet="\/doratec-hero-1200\.webp 1200w, \/doratec-hero-2000\.webp 2000w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/baren-hero-2000\.webp" srcSet="\/baren-hero-1200\.webp 1200w, \/baren-hero-2000\.webp 2000w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/spitex-schwab-hero-2000\.webp" srcSet="\/spitex-schwab-hero-1200\.webp 1200w, \/spitex-schwab-hero-2000\.webp 2000w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/en-nur-hero-2376\.webp" srcSet="\/en-nur-hero-1200\.webp 1200w, \/en-nur-hero-2376\.webp 2376w"/);
@@ -807,7 +812,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
     [...cardMarkup.matchAll(/class="clients-card__name">([^<]*)</g)].map(
       (m) => m[1],
     ),
-    ["En-Nur", "Jetonikeramika", "Spitex Schwab AG", "Bären Baugruppe AG", "WMK"],
+    ["En-Nur", "Jetonikeramika", "Spitex Schwab AG", "Bären Baugruppe AG", "WMK", "Doratec GmbH"],
   );
   assert.doesNotMatch(
     cardMarkup,
@@ -824,7 +829,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      project". (Industry, services and country stood there from 2026-09-30.) */
   assert.equal(
     [...cardMarkup.matchAll(/class="clients-card__name">[^<]*(?:<!-- -->)?(?:<svg class="clients-card__arrow"[\s\S]*?<\/svg>)?<\/h3><\/article>/g)].length,
-    5,
+    6,
   );
   assert.doesNotMatch(cardMarkup, /clients-card__fact/);
   assert.doesNotMatch(cardMarkup, />(Switzerland|Germany|Austria|Kosovo|Finance|Healthcare|Manufacturing|Automotive|Retail|Logistics|Public Sector|UX\/UI Design|Branding|Software|CRM)</);
@@ -832,10 +837,9 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   /* **Three shapes, two to a row at most, sometimes one** — owner,
      2026-10-08: "i want the project to have three format Box, wide and
      portrat and to be mixed", each starting on one of the page's lines, then
-     "max 2 project in one row sometimes 1". Five cards are rows of two, one
-     and two (six, with Riesen Holzbau AG, were two, one, two and one); each
-     card's shape, columns (of the page's four) and — a row's first —
-     starting line set by its place. */
+     "max 2 project in one row sometimes 1". Six cards are rows of two, one,
+     two and one; each card's shape, columns (of the page's four) and — a
+     row's first — starting line set by its place. */
   assert.deepEqual(
     [...cardMarkup.matchAll(/<li data-format="(\w+)" data-span="(\d+)"(?: data-start="(\d)")? data-row="(\d)" data-place="(\d)">/g)].map(
       (m) => `${m[1]} ${m[2]}${m[3] ? "@" + m[3] : ""} ${m[4]}.${m[5]}`,
@@ -844,21 +848,23 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
       "portrait 2@1 2.1", "wide 2 2.2",
       "wide 3@2 1.1",
       "box 2@1 2.1", "portrait 2 2.2",
+      "box 2@1 1.1",
     ],
   );
 
   /* **Every card is a link: En-Nur, Jetonikeramika and Spitex Schwab AG
      (2026-10-11), Bären Baugruppe AG and Riesen Holzbau AG (2026-10-15) and WMK
-     (2026-10-16)**, each with its page behind it — but Riesen Holzbau AG,
-     hidden for now (2026-10-21). */
+     (2026-10-16) and Doratec GmbH (2026-10-21)**, each with its page behind
+     it — but Riesen Holzbau AG, hidden for now (2026-10-21). */
   const links = [...cardMarkup.matchAll(/<a [^>]*class="clients-card__link"[^>]*>/g)];
-  assert.equal(links.length, 5);
+  assert.equal(links.length, 6);
   assert.match(all, /href="\/case-studies\/en-nur"/);
   assert.match(all, /href="\/case-studies\/jetonikeramika"/);
   assert.match(all, /href="\/case-studies\/spitex-schwab"/);
   assert.match(all, /href="\/case-studies\/baren"/);
   assert.doesNotMatch(all, /href="\/case-studies\/riesen"/);
   assert.match(all, /href="\/case-studies\/wmk"/);
+  assert.match(all, /href="\/case-studies\/doratec"/);
 
   /* **The link opens on the picture, and that is a size, not a nesting taste.**
      The stylesheet stretches this anchor over the whole card with `inset: 0`,
@@ -885,7 +891,7 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
      opens, and a plus under the pointer on a card that answers with an empty
      page is the promise this site refuses to make. */
   assert.equal((cardMarkup.match(/data-opens="true"/g) ?? []).length, links.length);
-  assert.equal((cardMarkup.match(/data-opens-mark/g) ?? []).length, 5);
+  assert.equal((cardMarkup.match(/data-opens-mark/g) ?? []).length, 6);
 
   /* **The hover — owner, 2026-10-08** ("i dont like it how it is right
      now"): no wash and no cross laid over the picture; its frame draws in,
@@ -1574,6 +1580,74 @@ function pictureSize(path) {
   throw new Error(`${path} has no size the test can read`);
 }
 
+/* **Doratec GmbH, written by us from its live site** — owner, 2026-10-21:
+   "write the text by yourself not to copy othe project but to write new text
+   for this: https://dora-tec.ch/". Its facts are the site's own, its
+   pictures screens of the live pages. */
+test("server-renders Doratec GmbH's story, written from its live site", async () => {
+  const response = await render("/case-studies/doratec");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  const page = html.slice(0, html.indexOf("<footer"));
+
+  assert.match(html, /<title>Doratec GmbH — Windows and Doors Website, Oftringen — Mardal<\/title>/i);
+  assert.equal((page.match(/<h1[\s>]/g) ?? []).length, 1);
+  const hero = page.match(/<section class="project-hero"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.match(hero, /<span class="project-hero__mark" aria-hidden="true"><\/span>Windows and Doors<\/p>/);
+  assert.match(hero, /<h1 class="project-hero__title" id="project-title" data-project-hero-title="true">Doratec GmbH<\/h1>/);
+  assert.match(hero, /class="project-hero__image" src="\/doratec-hero-2000\.webp" srcSet="\/doratec-hero-1200\.webp 1200w, \/doratec-hero-2000\.webp 2000w"/);
+  for (const width of [1200, 2000]) {
+    assert.ok(existsSync(new URL(`../public/doratec-hero-${width}.webp`, import.meta.url)), `doratec-hero-${width}.webp is missing`);
+  }
+  assert.match(html, /<meta property="og:image" content="[^"]*\/og-doratec\.jpg"/);
+
+  const intro = page.match(/<section class="project-intro"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...intro.matchAll(/class="project-intro__label">([^<]*)<\/dt><dd class="project-intro__value">([^<]*)</g)].map((m) => `${m[1]} ${m[2]}`),
+    [
+      "INDUSTRY: Windows and Doors",
+      "SERVICES: Information Architecture, UX/UI Design, Development",
+      "LOCATION: Oftringen, Switzerland",
+      "STACK: WordPress, Elementor, Vanilla JavaScript, CSS",
+    ],
+  );
+  assert.match(intro, /class="project-intro__summary">Doratec GmbH is a young family business in Oftringen, in the canton of Aargau,/);
+  assert.match(intro, /<a class="project-live" href="https:\/\/dora-tec\.ch\/"[^>]*target="_blank"/);
+
+  /* A Situation, a Challenge and seven paragraphs of Solution; no Research,
+     because none can be read off the site. */
+  assert.deepEqual(
+    [...page.matchAll(/class="project-passage__title">([^<]*)</g)].map((m) => m[1]),
+    ["Situation", "Challenge", "Solution"],
+  );
+  const account = page.match(/<section class="project-account"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...account.matchAll(/<div class="project-passage__copy">([\s\S]*?)<\/div>/g)].map((m) => (m[1].match(/<p>/g) ?? []).length),
+    [1, 1, 7],
+  );
+  assert.match(account, /<p>Windows are chosen on figures:/);
+  assert.match(account, /<p>Every window system is set out the same way\./);
+  assert.match(account, /Escape closes it and returns to where you were/);
+  assert.doesNotMatch(account, /\bI\b|\bme\b|\bmy\b/);
+
+  const main = page.slice(page.indexOf("<main"), page.indexOf("</main>")).replace(/<script[\s\S]*?<\/script>/g, "");
+  assert.doesNotMatch(main, /\[[A-Z][^\]]*\]/);
+  assert.doesNotMatch(main, /&#x27;|Doratec's|products'/);
+
+  /* Eight screens of the live site, each saying what it shows. */
+  const showcase = page.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
+  assert.deepEqual(
+    [...showcase.matchAll(/<img src="([^"]+)"/g)].map((m) => m[1]),
+    [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/doratec-${n}.avif`),
+  );
+  const alts = [...showcase.matchAll(/<img [^>]*alt="([^"]*)"/g)].map((m) => m[1]);
+  assert.equal(alts.length, 8);
+  assert.ok(alts.every((alt) => alt.startsWith("Doratec GmbH ") && alt.length > 30), "a screenshot says nothing of what it shows");
+  for (let n = 1; n <= 8; n += 1) {
+    assert.ok(existsSync(new URL(`../public/doratec-${n}.avif`, import.meta.url)), `doratec-${n}.avif is missing`);
+  }
+});
+
 test("every gallery picture runs from line to line in its own shape", async () => {
   /* Owner, 2026-10-16: "i need all images to bu fully from one vertical to
      other make all the same dont cut it just as the aee". Each picture is the
@@ -1581,7 +1655,7 @@ test("every gallery picture runs from line to line in its own shape", async () =
      page must state the file's own pair — a wrong one would draw the page the
      wrong shape, banding or stretching the picture. No picture is set apart
      by its shape any more: wide, square and tall alike. */
-  for (const slug of ["en-nur", "jetonikeramika", "spitex-schwab", "baren", "riesen", "wmk"].filter((slug) => !hiddenProjects.includes(slug))) {
+  for (const slug of ["en-nur", "jetonikeramika", "spitex-schwab", "baren", "riesen", "wmk", "doratec"].filter((slug) => !hiddenProjects.includes(slug))) {
     const html = await (await render(`/case-studies/${slug}`)).text();
     const showcase = html.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
     const pages = [...showcase.matchAll(/<li class="project-showcase__page"><img src="([^"]+)"[^>]*? width="(\d+)" height="(\d+)"/g)];
@@ -2474,7 +2548,7 @@ test("search engines are let in since launch, and have a sitemap of every page",
   }
   const story = await (await render("/case-studies/spitex-schwab")).text();
   assert.match(story, /<meta property="og:image" content="[^"]*\/og-spitex-schwab\.jpg"/);
-  for (const name of ["en-nur", "jetonikeramika", "spitex-schwab", "baren", "riesen", "wmk"]) {
+  for (const name of ["en-nur", "jetonikeramika", "spitex-schwab", "baren", "riesen", "wmk", "doratec"]) {
     assert.ok(existsSync(new URL(`../public/og-${name}.jpg`, import.meta.url)), `og-${name}.jpg is missing`);
   }
   const sitemap = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");

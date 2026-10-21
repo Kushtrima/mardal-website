@@ -369,6 +369,21 @@ export const deliveredEntries = [
     image: "/wmk-hero-2000.jpg",
     imageSrcSet: "/wmk-hero-1200.jpg 1200w, /wmk-hero-2000.jpg 2000w",
   },
+  /* The seventh — owner, 2026-10-21: "now you need to woek on new project
+     this is the website live", https://dora-tec.ch/, whose footer credits
+     us. A website, so of the rail's seven it is the two a website is: the
+     product design and the website. Its picture is the site's own opening,
+     the same as its page's. */
+  {
+    slug: "doratec",
+    sector: "construction",
+    story: true,
+    name: "Doratec GmbH",
+    location: "Switzerland",
+    disciplines: ["UX/UI Design", "Websites"],
+    image: "/doratec-hero-2000.webp",
+    imageSrcSet: "/doratec-hero-1200.webp 1200w, /doratec-hero-2000.webp 2000w",
+  },
 ];
 
 /** **Hidden for now** — owner, 2026-10-21: "Hide this project: Riesen Holzbau
@@ -1190,6 +1205,92 @@ export const wmkStory = {
   way: pilotStory.way,
 } as const satisfies Story;
 
+/**
+ * **Doratec GmbH** — owner, 2026-10-21: "now you need to woek on new project
+ * this is the website live: so i need from you to write the text by yourself
+ * not to copy othe project but to write new text for this:
+ * https://dora-tec.ch/". The first story with no case study of his behind
+ * it: every line is written for it, from what the live site shows, read page
+ * by page that day. Its footer credits us: "Created by: MARDAL.CO".
+ *
+ *   — the company from its Unternehmen page and its imprint: a young family
+ *     business with more than twenty years in windows and doors, Oftringen;
+ *   — the range from its product pages: five window systems, four Pirnar door
+ *     collections, lift-and-slide doors in five constructions;
+ *   — the menu's keyboard handling from the page's own script.
+ *
+ * Not stated, because the site does not say it: how and when the project
+ * came to us, and what it has achieved since.
+ */
+export const doratecStory = {
+  slug: "doratec",
+  title: "Doratec GmbH — Windows and Doors Website, Oftringen",
+  name: "Doratec GmbH",
+  industry: "Windows and Doors",
+  lede: "A website for Doratec GmbH, a family business in Oftringen that sells and installs windows and doors.",
+  /* The site's own opening, captured from the live page on 2026-10-21 (1440
+     wide at 1.5×, as WebP at 1200 and 2000): its first slide. */
+  heroImage: "/doratec-hero-2000.webp",
+  heroSrcSet: "/doratec-hero-1200.webp 1200w, /doratec-hero-2000.webp 2000w",
+  ogImage: "/og-doratec.jpg",
+  summary:
+    "Doratec GmbH is a young family business in Oftringen, in the canton of Aargau, whose team brings more than twenty years of experience in selling and installing windows and doors. It supplies windows in PVC, aluminium, wood and wood-aluminium, front doors, lift-and-slide doors and the insect screens and window sills that go with them, working with partners such as VEKA, Schüco, Siegenia and Pirnar.",
+  record: [
+    { label: "INDUSTRY:", value: "Windows and Doors" },
+    { label: "SERVICES:", value: "Information Architecture, UX/UI Design, Development" },
+    { label: "LOCATION:", value: "Oftringen, Switzerland" },
+    { label: "STACK:", value: "WordPress, Elementor, Vanilla JavaScript, CSS" },
+  ],
+  live: { label: "LIVE WEBSITE", href: "https://dora-tec.ch/" as string | null },
+  passages: [
+    {
+      id: "situation",
+      heading: "Situation",
+      paragraphs: [
+        "Doratec’s range is wide: five window systems in four materials, four collections of front doors and lift-and-slide doors in five constructions, each line from a different manufacturer with its own datasheets and product names. The people it serves are planning a renovation, a conversion or a new build, and most of them buy windows once in a long while.",
+      ],
+    },
+    {
+      id: "challenge",
+      heading: "Challenge",
+      paragraphs: [
+        "Windows are chosen on figures: how well the frame insulates, how much noise the glass keeps out, how deep the profile is and which fittings hold it. Those figures decide comfort and heating costs for decades, but manufacturers publish them for installers. The site had to let a homeowner compare one window with another, find a front door they like, and see what happens after the first call.",
+      ],
+    },
+    {
+      id: "solution",
+      heading: "Solution",
+      paragraphs: [
+        "We built the site around what people come to buy. Under Products the menu holds four pages, windows, front doors, sliding doors and accessories, with projects, the company and contact beside it. The homepage opens on the same range: a slider with a slide each for PVC, for aluminium windows, for doors and for wood and wood-aluminium, then four tiles that step down the page into the product pages.",
+        "Every window system is set out the same way. Each of the five has one block: what it is and what it suits, a cut through its profile, and a table of its figures that starts with its thermal insulation. Someone weighing a PVC window against a wood-aluminium one reads two blocks built alike instead of two datasheets.",
+        "Front doors are chosen by eye, so their page leads with pictures. A strip of door models moves across the page, then the four collections, Optimum, Premium, Ultimum Pure and Ultimum Multilevel, each show their models in a grid, with the full catalogue a click away as a PDF.",
+        "The homepage answers what a first-time buyer wants to know next: what happens after they call. Four numbered steps, consultation, planning, manufacturing and installation, take the job from the first conversation to the fitted window.",
+        "The partners are on show. A moving strip carries the brands Doratec works with, VEKA, Schüco, Siegenia, aluplast, Procural and Pirnar, and the homepage gives five reasons to choose Doratec windows: quality, trust, innovation, design and security.",
+        "Getting in touch is one step from any page. The phone number and email address sit in every footer, and the contact page adds the opening hours and a short form that asks which product the enquiry is about, so each one reaches Doratec already sorted.",
+        "The menu also works without a mouse. Enter, Space or the down arrow opens the products menu on its first page, the arrow keys move through it, and Escape closes it and returns to where you were; a screen reader is told whether it is open.",
+      ],
+    },
+  ],
+  /* Eight screens of the live site, taken from it on 2026-10-21 at 1440 wide
+     (1.5×, as AVIF at 2000): the homepage's slider, tiles, steps and five
+     reasons, then a window system, the Optimum doors, the lift-and-slide page
+     and the contact form. The doors are cut under their grid. */
+  showcase: {
+    ...pilotStory.showcase,
+    pages: [
+      { src: "/doratec-1.avif", width: 2000, height: 1250, alt: "Doratec GmbH homepage: the slider on its aluminium window slide, “Premium Aluminium-Fenster nach Mass”, with its arrows" },
+      { src: "/doratec-2.avif", width: 2000, height: 1500, alt: "Doratec GmbH homepage: four product tiles, windows, front doors, sliding doors and accessories, stepping down the page" },
+      { src: "/doratec-3.avif", width: 2000, height: 1250, alt: "Doratec GmbH “So Arbeiten wir bei Doratec”: consultation, planning, manufacturing and installation as four numbered steps" },
+      { src: "/doratec-4.avif", width: 2000, height: 1250, alt: "Doratec GmbH “5 gute Gründe für Doratec-Fenster”: quality, trust and innovation beside photographs of modern houses" },
+      { src: "/doratec-5.avif", width: 2000, height: 1597, alt: "Doratec GmbH windows page: the VEKA Softline 82 MD system, a cut through its PVC profile and its table of figures" },
+      { src: "/doratec-6.avif", width: 2000, height: 1694, alt: "Doratec GmbH front doors page: the Optimum collection, six door models between red rules" },
+      { src: "/doratec-7.avif", width: 2000, height: 1528, alt: "Doratec GmbH sliding doors page: “Mehr Raum. Mehr Licht. Mehr Freiheit.” above the first lift-and-slide door, in PVC" },
+      { src: "/doratec-8.avif", width: 2000, height: 1514, alt: "Doratec GmbH contact page: phone, email, opening hours and the enquiry form that asks which product it is about" },
+    ],
+  },
+  way: pilotStory.way,
+} as const satisfies Story;
+
 /** Every story written out, each at /case-studies/<slug> — less any hidden
  *  for now (`hiddenProjects`), whose story stays written, with no page.
  *
@@ -1204,4 +1305,5 @@ export const stories: readonly Story[] = [
   barenStory,
   riesenStory,
   wmkStory,
+  doratecStory,
 ].filter((story) => !hiddenProjects.includes(story.slug));
