@@ -50,12 +50,17 @@ export type LegalPageContent = {
    (next.config.ts). GitHub hosts the site and logs each visitor's IP address
    for security — in its own words, "the visitor's IP address is logged and
    stored for security purposes" — and Namecheap keeps the email. Privacy says
-   so, under its own date; Terms and Cookies did not change. */
+   so, under its own date; Terms and Cookies did not change.
+
+   **The studio moved to Prishtina, 2026-10-21** — owner, 2026-10-21: "chnagethe location of website to Prishtina you can find any adress in Ruga B somwhere in prishtina". Privacy and Terms
+   name the company's address, so both carry the new date; Cookies does not,
+   and keeps its own. */
 const company =
-  "Mardal, a company registered in Kosovo, Rr. “Isa Boletini”, 60000 Gjilan, Kosovo";
+  "Mardal, a company registered in Kosovo, Rruga B, 10000 Prishtina, Kosovo";
 
 const updated = "Last updated: 9 October 2026.";
-const privacyUpdated = "Last updated: 19 October 2026.";
+const privacyUpdated = "Last updated: 21 October 2026.";
+const termsUpdated = "Last updated: 21 October 2026.";
 
 export const privacyPage = {
   title: "Privacy",
@@ -162,7 +167,7 @@ export const termsPage = {
       paragraphs: [
         "These terms are governed by the law of the Republic of Kosovo. Any dispute about them is heard by the competent courts of Kosovo.",
         "We may change these terms; the version on this page is the one that applies.",
-        updated,
+        termsUpdated,
       ],
     },
   ],

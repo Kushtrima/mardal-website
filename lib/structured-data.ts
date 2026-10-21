@@ -10,8 +10,8 @@ import type { Story } from "../content/case-studies";
  * Absolute addresses on mardal.co, the canonical home of everything here,
  * even while the site is a preview — which no crawler is let into.
  *
- * The founding year (2026) and the postcode (60000, the footer's "6000"
- * corrected) are the owner's, 2026-10-11. Left out until he has them: the
+ * The founding year (2026) is the owner's, 2026-10-11; the address, Rruga B in
+ * Prishtina (10000), his of 2026-10-21, as the footer has it. Left out until he has them: the
  * registered legal name and number, and the team.
  */
 
@@ -48,9 +48,9 @@ export function organization() {
     foundingDate: "2026",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Rr. “Isa Boletini”",
-      postalCode: "60000",
-      addressLocality: "Gjilan",
+      streetAddress: "Rruga B",
+      postalCode: "10000",
+      addressLocality: "Prishtina",
       addressCountry: "XK",
     },
     areaServed: MARKETS,

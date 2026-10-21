@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: "%s — Mardal",
   },
   description:
-    "Mardal designs and builds websites, custom software and AI automation for companies in Switzerland, Germany and Kosovo, from its studio in Gjilan.",
+    "Mardal designs and builds websites, custom software and AI automation for companies in Switzerland, Germany and Kosovo, from its studio in Prishtina.",
   openGraph: {
     type: "website",
     siteName: "Mardal",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     url: "/",
     title: "Mardal — Web Design, Custom Software & AI Automation",
     description:
-      "Mardal designs and builds websites, custom software and AI automation for companies in Switzerland, Germany and Kosovo, from its studio in Gjilan.",
+      "Mardal designs and builds websites, custom software and AI automation for companies in Switzerland, Germany and Kosovo, from its studio in Prishtina.",
     /* The homepage's preview, and the fallback for any page without its
        own; the pages' come from lib/page-metadata (site check, 2026-10-09). */
     images: [previewImage],

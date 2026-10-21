@@ -96,7 +96,7 @@ test("on top: the question and its sentence, and nothing else", async () => {
      not the footer, which must keep them. */
   assert.doesNotMatch(page, /contact__details|<dl/);
   assert.doesNotMatch(page, /href="mailto:|href="tel:/);
-  assert.doesNotMatch(page, /Isa Boletini/);
+  assert.doesNotMatch(page, /Rruga\sB/);
   assert.match(markup((await render("/contact")).html), /<footer[\s\S]*info@mardal\.co/);
 
   /* And the letter comes after the question, not beside it. */

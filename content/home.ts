@@ -635,7 +635,11 @@ export const footer = {
       href: `mailto:${contactEmail}`,
       short: "EMAIL",
     },
-    /* Street, then postcode and city — the order an address is written in,
+    /* **Prishtina since 2026-10-21** — owner, 2026-10-21: "chnagethe location of website to Prishtina you can find any adress in Ruga B somwhere in prishtina". The street with no house
+       number: none was given, and a number picked at random is somebody
+       else's door.
+
+       Street, then postcode and city — the order an address is written in,
        and the order that survives a phone.
      *
      * The value column is 134px wide on a 320 screen and the address is
@@ -648,7 +652,7 @@ export const footer = {
      * postcode rather than as a number left over from the street. */
     {
       label: "Address",
-      value: "Rr. “Isa Boletini”, 60000 Gjilan",
+      value: "Rruga B, 10000 Prishtina",
       href: "",
       short: "STR",
     },

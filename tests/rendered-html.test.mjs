@@ -423,7 +423,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /href="tel:|\+383 49/);
   // Street first, then postcode and city — the order it is written in,
   // and the one that breaks into two lines a phone can hold.
-  assert.match(html, /Rr\.\u00a0\u201cIsa\u00a0Boletini\u201d, 60000\u00a0Gjilan/);
+  /* Prishtina since 2026-10-21 (owner: "chnagethe location of website to
+     Prishtina … in Ruga B"); nothing of the Gjilan address is left. */
+  assert.match(html, /Rruga\u00a0B, 10000\u00a0Prishtina/);
+  assert.doesNotMatch(html, /Gjilan|Boletini|60000/);
   assert.doesNotMatch(html, /site-footer__detail-short/);
   assert.doesNotMatch(html, /contact-icon/);
   assert.doesNotMatch(html, /\[Phone number\]|\[Street\]|\[City\]/);
@@ -2356,7 +2359,10 @@ test("the three legal pages are written as documents, and guess nothing", async 
     assert.doesNotMatch(prose, /\b(L\.?L\.?C|SH\.?P\.?K|GmbH|Ltd)\b/, `${path} names a legal form nobody gave`);
     assert.doesNotMatch(prose, /\b(Google Analytics|Vercel|Cloudflare|Netlify|AWS|Mailchimp)\b/, `${path} names a provider nobody chose`);
     assert.doesNotMatch(prose, /\[[A-Za-z][^\]]{1,90}\]/, `${path} still has a bracket`);
-    assert.match(prose, path === "/privacy" ? /Last updated: 19 October 2026\./ : /Last updated: 9 October 2026\./);
+    /* Privacy and Terms name the address, so both changed when the studio
+       moved to Prishtina (2026-10-21); Cookies did not. */
+    assert.match(prose, path === "/cookies" ? /Last updated: 9 October 2026\./ : /Last updated: 21 October 2026\./);
+    if (path !== "/cookies") assert.match(prose, /Rruga B, 10000 Prishtina, Kosovo/);
   }
 
   const privacy = await (await render("/privacy")).text();
@@ -2635,9 +2641,10 @@ test("every page tells search engines what it is", async () => {
   assert.equal(org.name, "Mardal");
   assert.equal(org.url, "https://mardal.co/");
   assert.equal(org.email, "info@mardal.co");
-  assert.equal(org.address.addressLocality, "Gjilan");
+  assert.equal(org.address.streetAddress, "Rruga B");
+  assert.equal(org.address.addressLocality, "Prishtina");
   assert.equal(org.address.addressCountry, "XK");
-  assert.equal(org.address.postalCode, "60000");
+  assert.equal(org.address.postalCode, "10000");
   assert.equal(org.foundingDate, "2026");
   assert.deepEqual(org.areaServed.map((country) => country.name), ["Switzerland", "Germany", "Kosovo"]);
   assert.ok(org.sameAs.some((url) => url.startsWith("https://www.linkedin.com/company/")));
