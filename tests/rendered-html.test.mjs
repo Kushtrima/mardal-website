@@ -1582,8 +1582,8 @@ function pictureSize(path) {
 
 /* **Doratec GmbH, written by us from its live site** — owner, 2026-10-21:
    "write the text by yourself not to copy othe project but to write new text
-   for this: https://dora-tec.ch/". Its facts are the site's own, its
-   pictures screens of the live pages. */
+   for this: https://dora-tec.ch/". Its facts are the site's own; its
+   pictures are his (2026-10-21). */
 test("server-renders Doratec GmbH's story, written from its live site", async () => {
   const response = await render("/case-studies/doratec");
   assert.equal(response.status, 200);
@@ -1636,17 +1636,22 @@ test("server-renders Doratec GmbH's story, written from its live site", async ()
   assert.doesNotMatch(main, /\[[A-Z][^\]]*\]/);
   assert.doesNotMatch(main, /&#x27;|Doratec's|products'/);
 
-  /* Eight screens of the live site, each saying what it shows. */
+  /* **His seven pictures, in his numbering** (2026-10-21: "now delete the
+     images you have add at dora and add those new images"), each saying what
+     it shows. The screenshots taken from the live site are gone. */
   const showcase = page.match(/<ol class="project-showcase__pages"[\s\S]*?<\/ol>/)?.[0] ?? "";
   assert.deepEqual(
     [...showcase.matchAll(/<img src="([^"]+)"/g)].map((m) => m[1]),
-    [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `/doratec-${n}.avif`),
+    [1, 2, 3, 4, 5, 6, 7].map((n) => `/doratec-${n}.webp`),
   );
   const alts = [...showcase.matchAll(/<img [^>]*alt="([^"]*)"/g)].map((m) => m[1]);
-  assert.equal(alts.length, 8);
-  assert.ok(alts.every((alt) => alt.startsWith("Doratec GmbH ") && alt.length > 30), "a screenshot says nothing of what it shows");
+  assert.equal(alts.length, 7);
+  assert.ok(alts.every((alt) => alt.startsWith("Doratec GmbH ") && alt.length > 30), "a picture says nothing of what it shows");
+  for (let n = 1; n <= 7; n += 1) {
+    assert.ok(existsSync(new URL(`../public/doratec-${n}.webp`, import.meta.url)), `doratec-${n}.webp is missing`);
+  }
   for (let n = 1; n <= 8; n += 1) {
-    assert.ok(existsSync(new URL(`../public/doratec-${n}.avif`, import.meta.url)), `doratec-${n}.avif is missing`);
+    assert.ok(!existsSync(new URL(`../public/doratec-${n}.avif`, import.meta.url)), `the screenshot doratec-${n}.avif is back`);
   }
 });
 

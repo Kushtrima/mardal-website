@@ -1272,23 +1272,20 @@ export const doratecStory = {
       ],
     },
   ],
-  /* Eight screens of the live site, taken from it on 2026-10-21 at 1440 wide
-     (1.5×, as AVIF at 2000): the homepage's slider, tiles, steps and five
-     reasons, then a window system, the Optimum doors, the lift-and-slide page
-     and the contact form. The doors are cut under their grid. They stand
-     until his own pictures come (2026-10-21: "now i will send you my image
-     and you will change it replace it"). */
+  /* His seven pictures of the site — owner, 2026-10-21: "now delete the
+     images you have add at dora and add those new images" (dora1–dora7 from
+     his Desktop, unchanged, as public/doratec-1–7.webp), in his numbering:
+     the homepage from its opening down, then the windows page. */
   showcase: {
     ...pilotStory.showcase,
     pages: [
-      { src: "/doratec-1.avif", width: 2000, height: 1250, alt: "Doratec GmbH homepage: the slider on its aluminium window slide, “Premium Aluminium-Fenster nach Mass”, with its arrows" },
-      { src: "/doratec-2.avif", width: 2000, height: 1500, alt: "Doratec GmbH homepage: four product tiles, windows, front doors, sliding doors and accessories, stepping down the page" },
-      { src: "/doratec-3.avif", width: 2000, height: 1250, alt: "Doratec GmbH “So Arbeiten wir bei Doratec”: consultation, planning, manufacturing and installation as four numbered steps" },
-      { src: "/doratec-4.avif", width: 2000, height: 1250, alt: "Doratec GmbH “5 gute Gründe für Doratec-Fenster”: quality, trust and innovation beside photographs of modern houses" },
-      { src: "/doratec-5.avif", width: 2000, height: 1597, alt: "Doratec GmbH windows page: the VEKA Softline 82 MD system, a cut through its PVC profile and its table of figures" },
-      { src: "/doratec-6.avif", width: 2000, height: 1694, alt: "Doratec GmbH front doors page: the Optimum collection, six door models between red rules" },
-      { src: "/doratec-7.avif", width: 2000, height: 1528, alt: "Doratec GmbH sliding doors page: “Mehr Raum. Mehr Licht. Mehr Freiheit.” above the first lift-and-slide door, in PVC" },
-      { src: "/doratec-8.avif", width: 2000, height: 1514, alt: "Doratec GmbH contact page: phone, email, opening hours and the enquiry form that asks which product it is about" },
+      { src: "/doratec-1.webp", width: 2690, height: 1706, alt: "Doratec GmbH homepage: “Fenster und Türen aus Kunststoff in Perfektion” over a white modern house, with the slider’s arrows" },
+      { src: "/doratec-2.webp", width: 2682, height: 1510, alt: "Doratec GmbH homepage: four product tiles, windows, front doors, sliding doors and accessories, stepping down the page" },
+      { src: "/doratec-3.webp", width: 2686, height: 1510, alt: "Doratec GmbH “Ihr Spezialist für Fenster & Türen”: the introduction above folding glass doors open onto a lake" },
+      { src: "/doratec-4.webp", width: 2688, height: 1504, alt: "Doratec GmbH “So Arbeiten wir bei Doratec”: consultation, planning, manufacturing and installation as four numbered steps" },
+      { src: "/doratec-5.webp", width: 2686, height: 1508, alt: "Doratec GmbH “Unsere Projekte”: a red band with its arrows and “Alle ansehen” above a carousel of houses" },
+      { src: "/doratec-6.webp", width: 2684, height: 1506, alt: "Doratec GmbH “5 gute Gründe für Doratec-Fenster”: quality, trust and innovation beside photographs of modern houses" },
+      { src: "/doratec-7.webp", width: 2686, height: 1514, alt: "Doratec GmbH windows page: six benefits, from security and sound insulation to steel-reinforced frames, beside a kitchen window" },
     ],
   },
   way: pilotStory.way,
