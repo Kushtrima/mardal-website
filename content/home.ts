@@ -1,3 +1,5 @@
+import { hiddenPages } from "../lib/launch";
+
 /**
  * Single source of truth for every word on the homepage.
  *
@@ -139,7 +141,7 @@ export const serviceNames: readonly ServiceName[] = serviceGroups.flatMap<Servic
  * name, and the owner took them straight out: "why explanation under each menu
  * that is very bad". Do not put them back.
  */
-export const menu = [
+export const menu = ([
   {
     key: "services",
     label: "Services",
@@ -258,7 +260,10 @@ export const menu = [
     panelOnly: false,
     items: [],
   },
-] as const;
+] as const).filter(
+  /* Less any page hidden for now (lib/launch.ts `hiddenPages`). */
+  (item) => !hiddenPages.includes(item.href),
+);
 
 export const contactEmail = "info@mardal.co";
 

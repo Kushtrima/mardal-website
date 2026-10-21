@@ -32,6 +32,15 @@ const hiddenProjects = JSON.parse(
   )[1],
 );
 
+/** The pages hidden for now — lib/launch.ts `hiddenPages` (owner, 2026-10-21:
+ *  "hide also Product page completley"). Asserted absent from every page; a
+ *  hidden page's own test waits for it. */
+const hiddenPages = JSON.parse(
+  readFileSync(new URL("../lib/launch.ts", import.meta.url), "utf8").match(
+    /export const hiddenPages: readonly string\[\] = (\[[^\]]*\]);/,
+  )[1],
+);
+
 /** The anchors that are still on the page. The menu also links to Services,
  *  Company and Products, whose sections are not on the page, and to Clients,
  *  which is not an anchor at all any more but a link to /case-studies.
@@ -271,16 +280,18 @@ test("server-renders the Mardal homepage", async () => {
      other not as a sublink". Five plain links beside Menu, each to the page
      that holds everything under it; no sub-links, and no Company or Hire us.
      Home came out and Contact went in — owner, 2026-10-08: "remove HOME link
-     from header add contact". */
+     from header add contact". Products is off it, and off the burger and
+     the footer, while its page is hidden (owner, 2026-10-21: "hide also
+     Product page completley"). */
   const row = bar.match(/<ul class="bar-menu" id="bar-menu" aria-label="Pages">[\s\S]*?<\/ul>/)?.[0];
   assert.ok(row, "the bar has no row of pages");
   assert.deepEqual(
     [...row.matchAll(/<a [^>]*href="([^"]+)"[^>]*class="bar-menu__link"|<a [^>]*class="bar-menu__link"[^>]*href="([^"]+)"/g)].map((m) => m[1] ?? m[2]),
-    ["/services", "/case-studies", "/products", "/about", "/contact"],
+    ["/services", "/case-studies", "/about", "/contact"],
   );
   assert.deepEqual(
     [...row.matchAll(/<span class="roll__face">([^<]*)</g)].map((m) => m[1]),
-    ["Services", "Clients", "Products", "About", "Contact"],
+    ["Services", "Clients", "About", "Contact"],
   );
   assert.doesNotMatch(bar, />(Company|Hire us)</);
   assert.doesNotMatch(html, /mega-menu|nav-trigger|site-nav__actions/);
@@ -303,7 +314,7 @@ test("server-renders the Mardal homepage", async () => {
   assert.ok(pages, "the menu has no entries");
   assert.deepEqual(
     [...pages.matchAll(/data-menu-word="true"><span class="roll"><span class="roll__face">([^<]*)</g)].map((m) => m[1]),
-    ["Services", "Clients", "Products", "About", "Contact"],
+    ["Services", "Clients", "About", "Contact"],
   );
   /* No parents left: About became one page and Contact a word of its own
      (owner, 2026-10-08: "i want to remain only one page about", "add
@@ -313,7 +324,7 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(pages, /<button class="mobile-menu__page"|mobile-menu__panel|mobile-menu__links/);
   assert.deepEqual(
     [...pages.matchAll(/<a href="([^"]+)" class="mobile-menu__page"/g)].map((m) => m[1]),
-    ["/services", "/case-studies", "/products", "/about", "/contact"],
+    ["/services", "/case-studies", "/about", "/contact"],
   );
   /* No second screen to step into, and nothing to go back from. */
   assert.doesNotMatch(html, /mobile-menu__(index|detail|back|count|rows|num)/);
@@ -372,7 +383,6 @@ test("server-renders the Mardal homepage", async () => {
     [
       ["Services", "/services"],
       ["Clients", "/case-studies"],
-      ["Products", "/products"],
       ["About", "/about"],
       ["Contact", "/contact"],
       ["Blog", "/blog"],
@@ -386,9 +396,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(footerPart, /site-footer__(title|cta|mark|lead|label|sign|bars|wordmark|email|body)\b/);
   assert.doesNotMatch(html, /Let’s build|Tell us what you want to improve|practical digital solution/);
 
-  // 6 pages, the email, and the 3 legal links. The address is not a link, and
-  // the social marks are links of their own (site-footer__social-link).
-  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 10);
+  // 5 pages (Products hidden for now, 2026-10-21), the email, and the 3 legal
+  // links. The address is not a link, and the social marks are links of their
+  // own (site-footer__social-link).
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 9);
   assert.doesNotMatch(html, /href="\/careers/);
   // **Team is gone from every menu, not just this one.**
   assert.doesNotMatch(html, />Team</);
@@ -1015,6 +1026,29 @@ test("the sample story is not published", async () => {
    AG at the moment". A hidden project has no page and no line in the
    sitemap, and no page links to it, shows its pictures or names it. Its
    story and its pictures stay in the code, ready for the day it is shown. */
+/* **Hidden for now** — owner, 2026-10-21: "hide also Product page
+   completley". A hidden page has no address, no line in the sitemap and no
+   link on any page; its folder is private (app/_products), kept for the day
+   it is shown. */
+test("a hidden page shows nowhere", async () => {
+  assert.ok(hiddenPages.includes("/products"), "the Products page is shown again: only on the owner's word");
+  assert.ok(!existsSync(new URL("../app/products/page.tsx", import.meta.url)), "the Products page is routed again");
+  assert.ok(existsSync(new URL("../app/_products/page.tsx", import.meta.url)), "the Products page is gone, not hidden");
+  const sitemap = await (await render("/sitemap.xml")).text();
+  const paths = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
+  assert.ok(paths.length > 10, "the sitemap lists too few pages to check");
+  for (const hidden of hiddenPages) {
+    assert.equal((await render(hidden)).status, 404, `${hidden} still answers`);
+    assert.ok(!paths.includes(hidden), `${hidden} is in the sitemap`);
+  }
+  for (const path of paths) {
+    const html = await (await render(path)).text();
+    for (const hidden of hiddenPages) {
+      assert.doesNotMatch(html, new RegExp(`href="${hidden}["/#?]`), `${path} links to ${hidden}`);
+    }
+  }
+});
+
 test("a hidden project shows nowhere", async () => {
   assert.ok(hiddenProjects.includes("riesen"), "Riesen Holzbau AG is shown again: only on the owner's word");
   assert.ok(hiddenProjects.includes("baren"), "Bären Baugruppe AG is shown again: only on the owner's word");
@@ -2239,7 +2273,9 @@ test("the services' page turns its services on a wheel, each one's content besid
   assert.doesNotMatch(html, /class="page-index"/);
 });
 
-test("the products' page opens as the services' does, in its own words", async () => {
+/* Waits while the Products page is hidden (owner, 2026-10-21: "hide also
+   Product page completley"); it runs again the moment the page is shown. */
+test("the products' page opens as the services' does, in its own words", { skip: hiddenPages.includes("/products") && "hidden for now" }, async () => {
   /* Owner, 2026-10-07: "Recreate Product page, make same hero banner but with
      different text adapt a text that explakin product pages". */
   const response = await render("/products");
@@ -2619,7 +2655,7 @@ test("every page tells search engines what it is", async () => {
   for (const [path, type] of [["/about", "AboutPage"], ["/contact", "ContactPage"]]) {
     assert.ok(byType(await nodes(path), type), `${path} is not a ${type}`);
   }
-  for (const path of ["/case-studies", "/products", "/blog"]) {
+  for (const path of ["/case-studies", "/products", "/blog"].filter((path) => !hiddenPages.includes(path))) {
     assert.ok(byType(await nodes(path), "BreadcrumbList"), `${path} has no breadcrumb`);
   }
 });

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { blog } from "../content/blog";
 import { stories } from "../content/case-studies";
 import { siteUrl } from "../content/home";
+import { hiddenPages } from "../lib/launch";
 
 /** Written once, at build, and served as a file: GitHub Pages runs no code
  *  (next.config.ts). */
@@ -25,7 +26,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/privacy",
     "/terms",
     "/cookies",
-  ].map((path) => ({ url: `${siteUrl}${path === "/" ? "" : path}` }));
+  ]
+    /* Less any page hidden for now (lib/launch.ts). */
+    .filter((path) => !hiddenPages.includes(path))
+    .map((path) => ({ url: `${siteUrl}${path === "/" ? "" : path}` }));
 
   const pieces = blog.posts.map((post) => ({
     url: `${siteUrl}/blog/${post.slug}`,

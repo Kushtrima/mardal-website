@@ -20,6 +20,11 @@ export const metadata: Metadata = pageMetadata(productsPage.title, productsPage.
  * PlaceholderPage. Under it the homepage's products section in this page's
  * words (ProductsSection `page`); each product went to a page of its own
  * until those were deleted, 2026-10-08.
+ *
+ * **Hidden since 2026-10-21** (owner: "hide also Product page completley"):
+ * this folder is private (`_products`), so no address answers. Move it back
+ * to `app/products` and take "/products" off `hiddenPages` in lib/launch.ts
+ * to show the page again.
  */
 export default function ProductsPage() {
   return (

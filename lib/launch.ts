@@ -10,3 +10,13 @@
  * preview address is written against mardal.co.
  */
 export const siteIsLive = true;
+
+/**
+ * **Pages hidden for now** — owner, 2026-10-21: "hide also Product page
+ * completley". A path here is off the menu (the bar, the burger and the
+ * footer, which all read `menu` in content/home.ts) and out of the sitemap,
+ * and its page sits in a private folder (`app/_products`), so its address
+ * answers nothing. To show it again: take it off this list and move the
+ * folder back to `app/products`.
+ */
+export const hiddenPages: readonly string[] = ["/products"];
