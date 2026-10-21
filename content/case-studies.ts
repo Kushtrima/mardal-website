@@ -371,11 +371,22 @@ export const deliveredEntries = [
   },
 ];
 
+/** **Hidden for now** — owner, 2026-10-21: "Hide this project: Riesen Holzbau
+ *  AG at the moment". A project named here has no card, no page and no line in
+ *  the sitemap, and the homepage fails its build if it names one. Its entry
+ *  above, its story below and its pictures stay as they are, so taking it off
+ *  this list, and putting it back on the homepage (`selectedWork` in
+ *  content/home.ts), shows it again. */
+export const hiddenProjects: readonly string[] = ["riesen"];
+
 /** Every card on the Clients page: the delivered work and nothing else —
  *  owner, 2026-10-15: "remove the samples project in the clients page leave it
- *  only what are active those 3". The eight placeholders above stay in the
- *  file because About borrows their names and the pilot story is built on one. */
-export const clientsWork = deliveredEntries;
+ *  only what are active those 3" — less any hidden for now. The eight
+ *  placeholders above stay in the file because About borrows their names and
+ *  the pilot story is built on one. */
+export const clientsWork = deliveredEntries.filter(
+  (entry) => !hiddenProjects.includes(entry.slug),
+);
 
 /** One project written out in full — the shape every story page takes. */
 export type Story = {
@@ -1179,7 +1190,8 @@ export const wmkStory = {
   way: pilotStory.way,
 } as const satisfies Story;
 
-/** Every story written out, each at /case-studies/<slug>.
+/** Every story written out, each at /case-studies/<slug> — less any hidden
+ *  for now (`hiddenProjects`), whose story stays written, with no page.
  *
  *  The pilot is not one of them since launch, 2026-10-19: its client is
  *  invented and its pictures are stock (SEO-PLAN.md, step 1.2), so it came
@@ -1192,4 +1204,4 @@ export const stories: readonly Story[] = [
   barenStory,
   riesenStory,
   wmkStory,
-];
+].filter((story) => !hiddenProjects.includes(story.slug));

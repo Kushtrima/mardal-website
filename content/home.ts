@@ -370,9 +370,14 @@ export const selectedWork = {
      in upperc case SELECTED WORK" — like VIEW ALL beside it. */
   titleLines: ["SELECTED", "WORK"],
   viewAll: { label: "VIEW ALL", href: "/case-studies" },
-  /* The comp's pair: a tall picture, then a wide one. */
+  /* The comp's pair: a tall picture, then a wide one. Bären Baugruppe AG
+     holds Riesen Holzbau AG's place while Riesen is hidden (owner,
+     2026-10-21: "Hide this project: Riesen Holzbau AG at the moment"): the
+     same service for the same trade, a Swiss builder's brand. When Riesen is
+     shown again it comes back here as
+     { project: "riesen", shape: "tall", service: "Branding" }. */
   items: [
-    { project: "riesen", shape: "tall", service: "Branding" },
+    { project: "baren", shape: "tall", service: "Branding" },
     { project: "jetonikeramika", shape: "wide", service: "Website" },
   ],
   /* **Two more, in a format of their own** — owner, 2026-10-05: "add more two
