@@ -372,8 +372,8 @@ export const deliveredEntries = [
   /* The seventh — owner, 2026-10-21: "now you need to woek on new project
      this is the website live", https://dora-tec.ch/, whose footer credits
      us. A website, so of the rail's seven it is the two a website is: the
-     product design and the website. Its picture is the site's own opening,
-     the same as its page's. */
+     product design and the website. Its picture is his, the same as its
+     page's opening (2026-10-21: "use this for cover first"). */
   {
     slug: "doratec",
     sector: "construction",
@@ -381,8 +381,8 @@ export const deliveredEntries = [
     name: "Doratec GmbH",
     location: "Switzerland",
     disciplines: ["UX/UI Design", "Websites"],
-    image: "/doratec-hero-2000.webp",
-    imageSrcSet: "/doratec-hero-1200.webp 1200w, /doratec-hero-2000.webp 2000w",
+    image: "/doratec-hero-1920.avif",
+    imageSrcSet: "/doratec-hero-1200.avif 1200w, /doratec-hero-1920.avif 1920w",
   },
 ];
 
@@ -1228,10 +1228,11 @@ export const doratecStory = {
   name: "Doratec GmbH",
   industry: "Windows and Doors",
   lede: "A website for Doratec GmbH, a family business in Oftringen that sells and installs windows and doors.",
-  /* The site's own opening, captured from the live page on 2026-10-21 (1440
-     wide at 1.5×, as WebP at 1200 and 2000): its first slide. */
-  heroImage: "/doratec-hero-2000.webp",
-  heroSrcSet: "/doratec-hero-1200.webp 1200w, /doratec-hero-2000.webp 2000w",
+  /* His picture for the opening and the card — owner, 2026-10-21: "i have
+     not asked to put any images … use this for cover first" (cover2.jpg from
+     his Desktop, 1920×1280, as AVIF at 1200 and at its full width). */
+  heroImage: "/doratec-hero-1920.avif",
+  heroSrcSet: "/doratec-hero-1200.avif 1200w, /doratec-hero-1920.avif 1920w",
   ogImage: "/og-doratec.jpg",
   summary:
     "Doratec GmbH is a young family business in Oftringen, in the canton of Aargau, whose team brings more than twenty years of experience in selling and installing windows and doors. It supplies windows in PVC, aluminium, wood and wood-aluminium, front doors, lift-and-slide doors and the insect screens and window sills that go with them, working with partners such as VEKA, Schüco, Siegenia and Pirnar.",
@@ -1274,7 +1275,9 @@ export const doratecStory = {
   /* Eight screens of the live site, taken from it on 2026-10-21 at 1440 wide
      (1.5×, as AVIF at 2000): the homepage's slider, tiles, steps and five
      reasons, then a window system, the Optimum doors, the lift-and-slide page
-     and the contact form. The doors are cut under their grid. */
+     and the contact form. The doors are cut under their grid. They stand
+     until his own pictures come (2026-10-21: "now i will send you my image
+     and you will change it replace it"). */
   showcase: {
     ...pilotStory.showcase,
     pages: [

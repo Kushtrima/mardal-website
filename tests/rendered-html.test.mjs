@@ -793,8 +793,8 @@ test("the Clients index is one page under FILTERS, not seven filtered views", as
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/wmk-hero-2000\.jpg" srcSet="\/wmk-hero-1200\.jpg 1200w, \/wmk-hero-2000\.jpg 2000w"/);
   /* Riesen Holzbau AG's is not: it is hidden for now (2026-10-21). */
   assert.doesNotMatch(cardMarkup, /riesen-hero/);
-  /* Doratec GmbH's is its site's own opening, taken from the live page. */
-  assert.match(cardMarkup, /<img class="clients-card__art" src="\/doratec-hero-2000\.webp" srcSet="\/doratec-hero-1200\.webp 1200w, \/doratec-hero-2000\.webp 2000w"/);
+  /* Doratec GmbH's is his (2026-10-21, "use this for cover first"). */
+  assert.match(cardMarkup, /<img class="clients-card__art" src="\/doratec-hero-1920\.avif" srcSet="\/doratec-hero-1200\.avif 1200w, \/doratec-hero-1920\.avif 1920w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/baren-hero-2000\.webp" srcSet="\/baren-hero-1200\.webp 1200w, \/baren-hero-2000\.webp 2000w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/spitex-schwab-hero-2000\.webp" srcSet="\/spitex-schwab-hero-1200\.webp 1200w, \/spitex-schwab-hero-2000\.webp 2000w"/);
   assert.match(cardMarkup, /<img class="clients-card__art" src="\/en-nur-hero-2376\.webp" srcSet="\/en-nur-hero-1200\.webp 1200w, \/en-nur-hero-2376\.webp 2376w"/);
@@ -1595,9 +1595,11 @@ test("server-renders Doratec GmbH's story, written from its live site", async ()
   const hero = page.match(/<section class="project-hero"[\s\S]*?<\/section>/)?.[0] ?? "";
   assert.match(hero, /<span class="project-hero__mark" aria-hidden="true"><\/span>Windows and Doors<\/p>/);
   assert.match(hero, /<h1 class="project-hero__title" id="project-title" data-project-hero-title="true">Doratec GmbH<\/h1>/);
-  assert.match(hero, /class="project-hero__image" src="\/doratec-hero-2000\.webp" srcSet="\/doratec-hero-1200\.webp 1200w, \/doratec-hero-2000\.webp 2000w"/);
-  for (const width of [1200, 2000]) {
-    assert.ok(existsSync(new URL(`../public/doratec-hero-${width}.webp`, import.meta.url)), `doratec-hero-${width}.webp is missing`);
+  /* His picture (2026-10-21, "use this for cover first"), at its full
+     width and at 1200. */
+  assert.match(hero, /class="project-hero__image" src="\/doratec-hero-1920\.avif" srcSet="\/doratec-hero-1200\.avif 1200w, \/doratec-hero-1920\.avif 1920w"/);
+  for (const width of [1200, 1920]) {
+    assert.ok(existsSync(new URL(`../public/doratec-hero-${width}.avif`, import.meta.url)), `doratec-hero-${width}.avif is missing`);
   }
   assert.match(html, /<meta property="og:image" content="[^"]*\/og-doratec\.jpg"/);
 
