@@ -387,12 +387,13 @@ export const deliveredEntries = [
 ];
 
 /** **Hidden for now** — owner, 2026-10-21: "Hide this project: Riesen Holzbau
- *  AG at the moment", then "now hide lso Baren logo project". A project named here has no card, no page and no line in
+ *  AG at the moment", then "now hide lso Baren logo project" and "hide  WMK also
+ *  from mardal". A project named here has no card, no page and no line in
  *  the sitemap, and the homepage fails its build if it names one. Its entry
  *  above, its story below and its pictures stay as they are, so taking it off
  *  this list, and putting it back on the homepage (`selectedWork` in
  *  content/home.ts), shows it again. */
-export const hiddenProjects: readonly string[] = ["riesen", "baren"];
+export const hiddenProjects: readonly string[] = ["riesen", "baren", "wmk"];
 
 /** Every card on the Clients page: the delivered work and nothing else —
  *  owner, 2026-10-15: "remove the samples project in the clients page leave it

@@ -393,7 +393,11 @@ export const selectedWork = {
      their lines under them. */
   features: [
     { project: "en-nur", service: "Software" },
-    { project: "wmk", service: "Branding" },
+    /* Spitex Schwab AG in WMK's place while WMK is hidden (owner,
+       2026-10-21: "hide  WMK also from mardal"), the one project left that
+       the homepage did not show; a website, so Website. WMK comes back here
+       as { project: "wmk", service: "Branding" }. */
+    { project: "spitex-schwab", service: "Website" },
   ],
 } as const;
 
