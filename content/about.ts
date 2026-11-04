@@ -61,15 +61,18 @@ export const about = {
   /**
    * The photograph under the hero, and what is said about it.
    *
-   * The owner's file, `Open office-1.webp` off his desktop, 4000x2250 and 16:9.
-   * It replaced a 739x415 one, which is why the plate can be full width now:
-   * the first file was drawn at its own resolution at 736px and would have been
-   * a 3.68x upscale on a retina screen at the page width.
+   * The owner's photo, sent 2026-11-04: 1600x1200 and 4:3, replacing the
+   * 4000x2250 `Open office-1.webp`. The frame stays 16:9 and `object-fit:
+   * cover` takes 150px off the top and the bottom (ceiling edge, chair backs);
+   * desk, lit shelf, glass room and armchairs all stay in.
    *
-   * **Five widths rather than one.** The original is 1.2MB, and a phone that
-   * needs 1200px of it should not be sent 4000. `sizes="100vw"` tells the
-   * browser the plate is the page width, and it takes the rung it needs — 107KB
-   * on a phone against 947KB for the whole thing.
+   * **Two widths, because the source has no more.** 1200 for phones and 1600 at
+   * its own size; a 2400+ rung would only be an upscale with more bytes. On a
+   * wide retina screen the plate is drawn softer than the old 4000px file —
+   * a larger original from him is the fix, not a resize.
+   *
+   * **A new file name (`about-room-*`)**, so no browser shows the old picture
+   * from its cache under the old name.
    *
    * **The alt describes the room and does not say whose it is.** Nothing I have
    * been told says this is Mardal's own office, and on a page ABOUT the company
@@ -79,13 +82,15 @@ export const about = {
    */
   photo: {
     /** The rung a browser takes if it ignores `srcset` entirely. */
-    src: "/about-office-2400.webp",
-    widths: [1200, 1800, 2400, 3200, 4000],
-    /** The source's own pixels, so the box reserves the right shape before it
-     *  loads and nothing below it jumps. */
-    width: 4000,
-    height: 2250,
-    alt: "An open-plan office: desks with monitors and mesh chairs, glass-walled rooms beyond, and daylight from a full-height window.",
+    src: "/about-room-1600.webp",
+    /** Each rung is `${base}-${width}.webp` in `public/`. */
+    base: "/about-room",
+    widths: [1200, 1600],
+    /** The source's own pixels. The frame's `aspect-ratio` reserves the box,
+     *  so nothing below it jumps while it loads. */
+    width: 1600,
+    height: 1200,
+    alt: "An office with wood-panelled walls: a desk with a monitor and a mesh chair, a lit shelf niche, two leather armchairs around marble side tables, and a glass wall onto a second room of desks.",
   },
 
   /**
@@ -135,10 +140,18 @@ export const about = {
    * pair out of things that are not a pair. The difference is the arrangement's
    * material, not a problem with it.
    *
-   * Three rungs each rather than one file, the same reason the plate above has
-   * five: these are drawn at about a third to a half of the column, and a phone
-   * has no use for 5472 pixels of the wide one. `sizes` names the fraction of
-   * the page each occupies, so the browser can pick before layout exists.
+   * **The owner's photos, sent 2026-11-04**, in his order left to right: the
+   * entrance sign (glass slot), the view through the glass door (timber slot),
+   * the room with the blinds (window slot). All three came 4:3 landscape, so
+   * each file is CROPPED to its slot's ratio (the layout's timber drop is
+   * worked out from the wide one being 3:2): sign x100 790x1086 of 1448x1086,
+   * door x150 1024x1200 of 1600x1200, blinds y66 1600x1067 of 1600x1200. The
+   * slot names stay because they are the CSS modifiers; the file stems are new
+   * so no browser shows an old picture from its cache.
+   *
+   * Three rungs each, the largest the crop's own width; `sizes` names the
+   * fraction of the page each occupies, so the browser can pick before layout
+   * exists.
    *
    * **The alts describe the rooms and do not say whose they are**, exactly as
    * the plate's does — nothing states that any of these is Mardal's own office,
@@ -150,39 +163,39 @@ export const about = {
       /** The asset stem. Kept apart from `name`, which is the CSS modifier:
        *  the files are prefixed and the class is not, and building one out of
        *  the other shipped `/glass-700.webp` against `about-glass-700.webp`. */
-      file: "about-glass",
-      widths: [700, 1050, 1400],
-      width: 1397,
-      height: 1920,
+      file: "about-sign",
+      widths: [400, 600, 790],
+      width: 790,
+      height: 1086,
       /* Left, and the tallest thing in the block. */
       sizes: "(max-width: 48rem) calc(100vw - 2 * clamp(1rem, 4vw, 2.5rem)), 32vw",
-      alt: "An office seen through a glass partition at night: desks with monitors under a run of linear pendant lights, and a large plant in the foreground.",
+      alt: "An entrance wall with a black logo and the words House of Creativity & Technology in raised letters under track spotlights, and a potted olive tree in the corner.",
     },
     {
       name: "timber",
       /** The asset stem. Kept apart from `name`, which is the CSS modifier:
        *  the files are prefixed and the class is not, and building one out of
        *  the other shipped `/glass-700.webp` against `about-glass-700.webp`. */
-      file: "about-timber",
-      widths: [700, 1050, 1400],
-      width: 1639,
-      height: 1920,
+      file: "about-door",
+      widths: [500, 750, 1024],
+      width: 1024,
+      height: 1200,
       /* Upright, hanging under the wide one and indented from the right. */
       sizes: "(max-width: 48rem) calc(100vw - 2 * clamp(1rem, 4vw, 2.5rem)), 24vw",
-      alt: "A bright open-plan floor: timber desks and a timber-framed glass room, daylight through tall curtained windows.",
+      alt: "An office seen through an open glass door: black desks with mesh chairs and a laptop, linear ceiling lights, and windows with blinds along the far wall.",
     },
     {
       name: "window",
       /** The asset stem. Kept apart from `name`, which is the CSS modifier:
        *  the files are prefixed and the class is not, and building one out of
        *  the other shipped `/glass-700.webp` against `about-glass-700.webp`. */
-      file: "about-window",
-      widths: [900, 1400, 2000],
-      width: 5472,
-      height: 3648,
+      file: "about-blinds",
+      widths: [900, 1200, 1600],
+      width: 1600,
+      height: 1067,
       /* Wide, across the top right. */
       sizes: "(max-width: 48rem) calc(100vw - 2 * clamp(1rem, 4vw, 2.5rem)), 40vw",
-      alt: "Desks along a wall of floor-to-ceiling windows, with blinds half drawn and a view over open ground beyond.",
+      alt: "A room with wood-panelled walls and floor-length blinds: a desk with a monitor under a lit shelf niche, and leather armchairs around two marble side tables.",
     },
   ],
 

@@ -6620,7 +6620,7 @@ main:has(> .services-rules) > .pin-spacer {
    image". So the whole second column (the second line to the middle one,
    where the wide picture starts), and its top where the wide picture ends:
    that picture's own drop (12cqw) plus its height, half the block wide at
-   3:2 (5472 x 3648). */
+   3:2 (1600 x 1067, cropped to it). */
 .about-rooms__frame--timber {
   grid-column: 2 / span 1;
   margin-top: calc(12cqw + 50cqw * 2 / 3);

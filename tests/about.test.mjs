@@ -256,8 +256,8 @@ test("the photograph is under the hero, and says only what it shows", async () =
      nothing below it moves when it arrives — which is also what makes lazy safe.
      It was `eager` for a version on the belief that it had to be, which was
      never true once the frame carried a ratio. */
-  assert.match(html, /width="4000"/);
-  assert.match(html, /height="2250"/);
+  assert.match(html, /width="1600"/);
+  assert.match(html, /height="1200"/);
   assert.match(html, /loading="lazy"/);
 
   /* **One picture, and one `<img>`.** It was five copies for a version, each
@@ -279,10 +279,10 @@ test("the photograph is under the hero, and says only what it shows", async () =
      value and the attribute is dropped whole. */
   assert.match(html, /sizes="calc\(100vw - 2 \* clamp\(1rem, 4vw, 2\.5rem\)\)"/);
   assert.doesNotMatch(html, /sizes="[^"]*var\(/);
-  for (const width of [1200, 1800, 2400, 3200, 4000]) {
+  for (const width of [1200, 1600]) {
     assert.match(
       html,
-      new RegExp(`/about-office-${width}\\.webp ${width}w`),
+      new RegExp(`/about-room-${width}\\.webp ${width}w`),
       `the ${width}px rung is missing from srcset`,
     );
   }
@@ -294,7 +294,7 @@ test("the photograph is under the hero, and says only what it shows", async () =
   const described = html
     .match(/alt="([^"]+)"/g)
     .map((a) => a.toLowerCase())
-    .find((a) => a.includes("open-plan"));
+    .find((a) => a.includes("wood-panelled"));
   assert.ok(described, "the photograph has no descriptive alt");
   assert.doesNotMatch(described, /\bour\b|mardal|\bstudio\b|\bteam\b|\bwe\b/);
 });
@@ -330,19 +330,24 @@ test("the plate is the column wide, and every rung of it is on disk", () => {
   /* Every width named in `srcset` has to exist, or a browser picks a rung and
      gets a 404 — which shows as no picture at all, only at some window sizes. */
   let total = 0;
-  for (const width of [1200, 1800, 2400, 3200, 4000]) {
+  for (const width of [1200, 1600]) {
     const file = statSync(
-      new URL(`../public/about-office-${width}.webp`, import.meta.url),
+      new URL(`../public/about-room-${width}.webp`, import.meta.url),
     );
     assert.ok(file.size > 0, `the ${width}px rung is empty`);
     total += file.size;
   }
   assert.ok(total > 0);
 
-  /* And the file it replaced is gone rather than left behind unreferenced. */
+  /* And the files it replaced are gone rather than left behind unreferenced. */
   assert.throws(() =>
     statSync(new URL("../public/about-office.jpeg", import.meta.url)),
   );
+  for (const width of [1200, 1800, 2400, 3200, 4000]) {
+    assert.throws(() =>
+      statSync(new URL(`../public/about-office-${width}.webp`, import.meta.url)),
+    );
+  }
 });
 
 test("the plate's rule survives the build, not just the stylesheet", () => {
@@ -541,16 +546,16 @@ test("the three rooms are composed, and say only what they show", async () => {
      CSS modifier are different strings on purpose: the files are prefixed and
      the class is not, and building one from the other shipped `/glass-700.webp`
      against `about-glass-700.webp`. */
-  for (const stem of ["about-glass", "about-window", "about-timber"]) {
+  for (const stem of ["about-sign", "about-blinds", "about-door"]) {
     assert.match(rooms, new RegExp(`src="/${stem}-\\d+\\.webp"`));
   }
 
   /* Three rungs each, and each named by what the room is rather than by its
      position, so the composition can be rearranged without renaming files. */
   for (const [name, widths] of [
-    ["about-glass", [700, 1050, 1400]],
-    ["about-window", [900, 1400, 2000]],
-    ["about-timber", [700, 1050, 1400]],
+    ["about-sign", [400, 600, 790]],
+    ["about-blinds", [900, 1200, 1600]],
+    ["about-door", [500, 750, 1024]],
   ]) {
     for (const width of widths) {
       const file = statSync(

@@ -186,7 +186,7 @@ export default function AboutPage() {
                 className="about-plate__image"
                 src={about.photo.src}
                 srcSet={about.photo.widths
-                  .map((width) => `/about-office-${width}.webp ${width}w`)
+                  .map((width) => `${about.photo.base}-${width}.webp ${width}w`)
                   .join(", ")}
                 /* The plate is the page's COLUMN, not the page, so the gutters
                    come off before a rung is chosen. Written out rather than as
