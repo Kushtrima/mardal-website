@@ -54,13 +54,16 @@ export type LegalPageContent = {
 
    **The studio moved to Prishtina, 2026-10-21** — owner, 2026-10-21: "chnagethe location of website to Prishtina you can find any adress in Ruga B somwhere in prishtina". Privacy and Terms
    name the company's address, so both carry the new date; Cookies does not,
-   and keeps its own. */
+   and keeps its own.
+
+   **Back to Gjilan, 2026-11-04** — owner, 2026-11-04: "change adrese everywhere to : Isa Boletini, Gjilan 10000".
+   Privacy and Terms carry that date for the same reason. */
 const company =
-  "Mardal, a company registered in Kosovo, Rruga B, 10000 Prishtina, Kosovo";
+  "Mardal, a company registered in Kosovo, Isa Boletini, Gjilan 10000, Kosovo";
 
 const updated = "Last updated: 9 October 2026.";
-const privacyUpdated = "Last updated: 21 October 2026.";
-const termsUpdated = "Last updated: 21 October 2026.";
+const privacyUpdated = "Last updated: 4 November 2026.";
+const termsUpdated = "Last updated: 4 November 2026.";
 
 export const privacyPage = {
   title: "Privacy",

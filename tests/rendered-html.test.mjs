@@ -423,10 +423,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /href="tel:|\+383 49/);
   // Street first, then postcode and city — the order it is written in,
   // and the one that breaks into two lines a phone can hold.
-  /* Prishtina since 2026-10-21 (owner: "chnagethe location of website to
-     Prishtina … in Ruga B"); nothing of the Gjilan address is left. */
-  assert.match(html, /Rruga\u00a0B, 10000\u00a0Prishtina/);
-  assert.doesNotMatch(html, /Gjilan|Boletini|60000/);
+  /* Gjilan since 2026-11-04 (owner: "change adrese everywhere to : Isa
+     Boletini, Gjilan 10000"); nothing of the Prishtina address is left. */
+  assert.match(html, /Isa\u00a0Boletini, Gjilan\u00a010000/);
+  assert.doesNotMatch(html, /Prishtina|Rruga/);
   assert.doesNotMatch(html, /site-footer__detail-short/);
   assert.doesNotMatch(html, /contact-icon/);
   assert.doesNotMatch(html, /\[Phone number\]|\[Street\]|\[City\]/);
@@ -2360,9 +2360,10 @@ test("the three legal pages are written as documents, and guess nothing", async 
     assert.doesNotMatch(prose, /\b(Google Analytics|Vercel|Cloudflare|Netlify|AWS|Mailchimp)\b/, `${path} names a provider nobody chose`);
     assert.doesNotMatch(prose, /\[[A-Za-z][^\]]{1,90}\]/, `${path} still has a bracket`);
     /* Privacy and Terms name the address, so both changed when the studio
-       moved to Prishtina (2026-10-21); Cookies did not. */
-    assert.match(prose, path === "/cookies" ? /Last updated: 9 October 2026\./ : /Last updated: 21 October 2026\./);
-    if (path !== "/cookies") assert.match(prose, /Rruga B, 10000 Prishtina, Kosovo/);
+       moved to Prishtina (2026-10-21) and back to Gjilan (2026-11-04);
+       Cookies did not. */
+    assert.match(prose, path === "/cookies" ? /Last updated: 9 October 2026\./ : /Last updated: 4 November 2026\./);
+    if (path !== "/cookies") assert.match(prose, /Isa Boletini, Gjilan 10000, Kosovo/);
   }
 
   const privacy = await (await render("/privacy")).text();
@@ -2641,8 +2642,8 @@ test("every page tells search engines what it is", async () => {
   assert.equal(org.name, "Mardal");
   assert.equal(org.url, "https://mardal.co/");
   assert.equal(org.email, "info@mardal.co");
-  assert.equal(org.address.streetAddress, "Rruga B");
-  assert.equal(org.address.addressLocality, "Prishtina");
+  assert.equal(org.address.streetAddress, "Isa Boletini");
+  assert.equal(org.address.addressLocality, "Gjilan");
   assert.equal(org.address.addressCountry, "XK");
   assert.equal(org.address.postalCode, "10000");
   assert.equal(org.foundingDate, "2026");
