@@ -424,8 +424,9 @@ test("server-renders the Mardal homepage", async () => {
   // Street first, then postcode and city — the order it is written in,
   // and the one that breaks into two lines a phone can hold.
   /* Gjilan since 2026-11-04 (owner: "change adrese everywhere to : Isa
-     Boletini, Gjilan 10000"); nothing of the Prishtina address is left. */
-  assert.match(html, /Isa\u00a0Boletini, Gjilan\u00a010000/);
+     Boletini, Gjilan 10000", postcode 60000 since 2026-11-05); nothing of
+     the Prishtina address is left. */
+  assert.match(html, /Isa\u00a0Boletini, Gjilan\u00a060000/);
   assert.doesNotMatch(html, /Prishtina|Rruga/);
   assert.doesNotMatch(html, /site-footer__detail-short/);
   assert.doesNotMatch(html, /contact-icon/);
@@ -2362,8 +2363,8 @@ test("the three legal pages are written as documents, and guess nothing", async 
     /* Privacy and Terms name the address, so both changed when the studio
        moved to Prishtina (2026-10-21) and back to Gjilan (2026-11-04);
        Cookies did not. */
-    assert.match(prose, path === "/cookies" ? /Last updated: 9 October 2026\./ : /Last updated: 4 November 2026\./);
-    if (path !== "/cookies") assert.match(prose, /Isa Boletini, Gjilan 10000, Kosovo/);
+    assert.match(prose, path === "/cookies" ? /Last updated: 9 October 2026\./ : /Last updated: 5 November 2026\./);
+    if (path !== "/cookies") assert.match(prose, /Isa Boletini, Gjilan 60000, Kosovo/);
   }
 
   const privacy = await (await render("/privacy")).text();
@@ -2645,7 +2646,7 @@ test("every page tells search engines what it is", async () => {
   assert.equal(org.address.streetAddress, "Isa Boletini");
   assert.equal(org.address.addressLocality, "Gjilan");
   assert.equal(org.address.addressCountry, "XK");
-  assert.equal(org.address.postalCode, "10000");
+  assert.equal(org.address.postalCode, "60000");
   assert.equal(org.foundingDate, "2026");
   assert.deepEqual(org.areaServed.map((country) => country.name), ["Switzerland", "Germany", "Kosovo"]);
   assert.ok(org.sameAs.some((url) => url.startsWith("https://www.linkedin.com/company/")));

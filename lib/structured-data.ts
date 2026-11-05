@@ -11,7 +11,7 @@ import type { Story } from "../content/case-studies";
  * even while the site is a preview — which no crawler is let into.
  *
  * The founding year (2026) is the owner's, 2026-10-11; the address, Isa
- * Boletini, Gjilan 10000, his of 2026-11-04, as the footer has it. Left out until he has them: the
+ * Boletini, Gjilan 60000, his of 2026-11-04 (postcode 2026-11-05), as the footer has it. Left out until he has them: the
  * registered legal name and number, and the team.
  */
 
@@ -49,7 +49,7 @@ export function organization() {
     address: {
       "@type": "PostalAddress",
       streetAddress: "Isa Boletini",
-      postalCode: "10000",
+      postalCode: "60000",
       addressLocality: "Gjilan",
       addressCountry: "XK",
     },

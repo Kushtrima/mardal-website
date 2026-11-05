@@ -56,14 +56,15 @@ export type LegalPageContent = {
    name the company's address, so both carry the new date; Cookies does not,
    and keeps its own.
 
-   **Back to Gjilan, 2026-11-04** — owner, 2026-11-04: "change adrese everywhere to : Isa Boletini, Gjilan 10000".
+   **Back to Gjilan, 2026-11-04** — owner, 2026-11-04: "change adrese everywhere to : Isa Boletini, Gjilan 10000";
+   postcode corrected 2026-11-05, owner: "the adress needs to be like this: Isa Boletini, Gjilan 60000".
    Privacy and Terms carry that date for the same reason. */
 const company =
-  "Mardal, a company registered in Kosovo, Isa Boletini, Gjilan 10000, Kosovo";
+  "Mardal, a company registered in Kosovo, Isa Boletini, Gjilan 60000, Kosovo";
 
 const updated = "Last updated: 9 October 2026.";
-const privacyUpdated = "Last updated: 4 November 2026.";
-const termsUpdated = "Last updated: 4 November 2026.";
+const privacyUpdated = "Last updated: 5 November 2026.";
+const termsUpdated = "Last updated: 5 November 2026.";
 
 export const privacyPage = {
   title: "Privacy",
