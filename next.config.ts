@@ -30,6 +30,13 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd(),
   },
+
+  /**
+   * **No Next.js button on the page** — owner, 2026-10-21, of the round "N"
+   * over the text in the corner: "remove this button from view". Only
+   * `next dev` ever draws it, never mardal.co; errors still come up on screen.
+   */
+  devIndicators: false,
 };
 
 export default nextConfig;
