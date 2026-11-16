@@ -74,13 +74,16 @@ test("server-renders the Mardal homepage", async () => {
     ["HOUSE OF CREATIVITY", "&amp; TECHNOLOGY"],
   );
   assert.deepEqual(
-    [...hero.matchAll(/class="house-hero__support-line">([^<]*)</g)].map((m) => m[1]),
+    [...hero.replace(/<!-- -->/g, "").matchAll(/class="house-hero__support-line">([^<]*)</g)].map((m) => m[1].trim()),
     [
       "Good design and Development creates real value.",
       "We create for people, businesses and society.",
     ],
   );
   assert.match(hero, /<h1 class="house-hero__title" id="house-hero-title"/);
+  /* Read as text, the heading is words with spaces: no "CREATIVITY&" in a
+     search result (site check, 2026-11-06). */
+  assert.match(hero, /CREATIVITY<\/span> <span class="house-hero__title-line">&amp; TECHNOLOGY/);
   assert.match(hero, /<img class="house-hero__image" src="\/house-hero-1540-ff3300\.webp" alt="[^"]+" width="1540" height="1021"/);
   assert.doesNotMatch(html, /data-hero-line/);
 
@@ -118,7 +121,7 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(productCss, /\.product:hover \.product__name|\.product:has\(:focus-visible\) \.product__name/);
   /* The owner's heading (2026-10-10); its full stop is the red square, the
      character kept for a screen reader. */
-  assert.match(html, /Discover Mardal’s<\/span><\/span><span class="products__title-line"><span class="products__rise" data-products-line="true">Own Products<span class="products__stop" data-products-stop="true"><span class="visually-hidden">\.<\/span><\/span>/);
+  assert.match(html, /Discover Mardal’s<\/span><\/span><span class="products__title-line"> <span class="products__rise" data-products-line="true">Own Products<span class="products__stop" data-products-stop="true"><span class="visually-hidden">\.<\/span><\/span>/);
   assert.doesNotMatch(html, /\[Year\]/);
   /* No field under the name (owner, 2026-10-07: "delete under name the
      section like Mental Health and Evends"). */
@@ -206,8 +209,9 @@ test("server-renders the Mardal homepage", async () => {
      same word open and shut; the mark folds to a minus. Sentence case and the
      plus split into four strokes since 2026-10-05, from his screenshot. */
   /* The word rolls under the pointer, as VIEW ALL's does (owner, 2026-10-05):
-     written twice, the copy hidden, so the button is still named "Menu". */
-  assert.match(bar, /class="mobile-menu-toggle__label"><span class="roll"><span class="roll__face">Menu<\/span><span class="roll__face roll__face--next" aria-hidden="true">Menu<\/span>/);
+     the copy drawn by the stylesheet and hidden, so the button is still named
+     "Menu" and the page's text says it once. */
+  assert.match(bar, /class="mobile-menu-toggle__label"><span class="roll"><span class="roll__face">Menu<\/span><span class="roll__face roll__face--next" aria-hidden="true" data-label="Menu"><\/span>/);
   assert.match(bar, /aria-controls="mobile-navigation" data-roll="true"/);
   assert.match(bar, /class="mobile-menu-toggle__plus" aria-hidden="true"/);
   assert.doesNotMatch(bar, /mobile-menu-toggle__bars|CLOSE/);
@@ -372,8 +376,8 @@ test("server-renders the Mardal homepage", async () => {
   assert.match(html, /<h2 class="site-footer__group-title" id="footer-group-pages">Menu<\/h2>/);
   assert.match(html, /<h2 class="site-footer__group-title">Contact<\/h2>/);
   assert.doesNotMatch(footerPart, /footer-group-(services|products)|site-footer__stack/);
-  /* Menu is the bar's words in the bar's order, then Blog, the footer's
-     alone; no Home, as the bar has none (owner, 2026-10-08). */
+  /* Menu is the bar's words in the bar's order; no Home, as the bar has
+     none (owner, 2026-10-08), and no Blog (owner, 2026-11-06). */
   const menuList = footerPart.slice(
     footerPart.indexOf('id="footer-group-pages"'),
     footerPart.indexOf("</nav>", footerPart.indexOf('id="footer-group-pages"')),
@@ -385,7 +389,6 @@ test("server-renders the Mardal homepage", async () => {
       ["Clients", "/case-studies"],
       ["About", "/about"],
       ["Contact", "/contact"],
-      ["Blog", "/blog"],
     ],
   );
   assert.doesNotMatch(footerPart, /<a class="site-footer__link" href="\/">/);
@@ -396,10 +399,10 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(footerPart, /site-footer__(title|cta|mark|lead|label|sign|bars|wordmark|email|body)\b/);
   assert.doesNotMatch(html, /Let’s build|Tell us what you want to improve|practical digital solution/);
 
-  // 5 pages (Products hidden for now, 2026-10-21), the email, and the 3 legal
-  // links. The address is not a link, and the social marks are links of their
-  // own (site-footer__social-link).
-  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 9);
+  // 4 pages (Products hidden for now, 2026-10-21; no Blog since 2026-11-06),
+  // the email, and the 3 legal links. The address is not a link, and the
+  // social marks are links of their own (site-footer__social-link).
+  assert.equal((html.match(/class="site-footer__link"/g) ?? []).length, 8);
   assert.doesNotMatch(html, /href="\/careers/);
   // **Team is gone from every menu, not just this one.**
   assert.doesNotMatch(html, />Team</);
@@ -527,48 +530,6 @@ test("server-renders the Mardal homepage", async () => {
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 });
 
-/* The block that closes a piece. It is the one part of the blog with logic in
-   it rather than copy — which piece sits on which side — and that logic is only
-   wrong at the ends of the run, where nobody looks. */
-test("a piece ends with the piece behind on the left and the piece ahead on the right", async () => {
-  const html = await (await render("/blog/what-phase-one-does-not-include")).text();
-
-  /* Second of three, so both neighbours are the real ones rather than a wrap. */
-  assert.match(
-    html,
-    /class="blog-more__side blog-more__side--back" href="\/blog\/between-systems"/,
-  );
-  assert.match(
-    html,
-    /class="blog-more__side blog-more__side--on" href="\/blog\/migration-is-the-project"/,
-  );
-
-  /* Two long arrows, no words on the page and no "All writing" between them
-     (owner, 2026-10-08: "remove the text leave it only arrows … also remove
-     that All writing"); the titles are kept for a screen reader. */
-  const rowStart = html.indexOf('<div class="blog-more__row">');
-  const row = html.slice(rowStart, html.indexOf("</nav>", rowStart));
-  assert.equal((row.match(/<svg class="blog-more__arrow"/g) ?? []).length, 2);
-  assert.match(row, /<span class="visually-hidden">Most failures happen between systems<\/span>/);
-  assert.match(row, /<span class="visually-hidden">Migration is the project<\/span>/);
-  assert.doesNotMatch(row, /blog-more__all|blog-more__name|All writing/);
-  /* The piece never offers itself — on the page, that is: the head names its
-     own address as the canonical (SEO-PLAN.md, step 1.3). */
-  const pageBody = html.slice(html.indexOf("<body"));
-  assert.doesNotMatch(pageBody, /<a [^>]*href="\/blog\/what-phase-one-does-not-include"/);
-  assert.match(html, /<link rel="canonical" href="[^"]*\/blog\/what-phase-one-does-not-include"/);
-  /* The arrows are the last thing before the footer: no "Let’s build what
-     your business needs next." (owner, 2026-10-08: "remove this section"),
-     and no "Operating from Kosova" in the bar over the opening. */
-  assert.doesNotMatch(html, /class="service-cta"|Let’s build/);
-  assert.match(html, /<header class="blog-article__head" data-article-hero="true">/);
-  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.match(
-    CSS,
-    /:root:has\(\[data-article-hero\]\) \.site-nav__place,\s*:root:has\(\[data-contact-hero\]\) \.site-nav__place \{\s*visibility: hidden;/,
-  );
-});
-
 /* Owner, 2026-10-08: "also from contact page delete this: Operating from
    Kosova" — the bar's line, hidden while Contact's opening is on the page. */
 test("Contact says no Operating from Kosova", async () => {
@@ -576,22 +537,6 @@ test("Contact says no Operating from Kosova", async () => {
   assert.match(html, /<section class="contact" aria-labelledby="contact-title" data-service-hero="true" data-contact-hero="true">/);
   const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
   assert.match(CSS, /:root:has\(\[data-contact-hero\]\) \.site-nav__place \{\s*visibility: hidden;/);
-});
-
-test("the ends of the run wrap rather than offering nothing", async () => {
-  /* First piece: the piece behind it is the last one. */
-  const first = await (await render("/blog/between-systems")).text();
-  assert.match(
-    first,
-    /class="blog-more__side blog-more__side--back" href="\/blog\/migration-is-the-project"/,
-  );
-
-  /* Last piece: the piece ahead of it is the first one. */
-  const last = await (await render("/blog/migration-is-the-project")).text();
-  assert.match(
-    last,
-    /class="blog-more__side blog-more__side--on" href="\/blog\/between-systems"/,
-  );
 });
 
 /* The Clients page. Still served at /case-studies: the route was left alone
@@ -616,7 +561,7 @@ test("server-renders the Clients hero", async () => {
   assert.match(opening, /aria-labelledby="clients-hero-title" data-services-hero="true"/);
   assert.match(opening, /<p class="services-hero__label" data-services-hero-first="true"><span class="services-hero__mark" aria-hidden="true"><\/span>Clients<\/p>/);
   assert.deepEqual(
-    [...opening.replace(/<!-- -->/g, "").matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "")),
+    [...opening.replace(/<!-- -->/g, "").matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "").trim()),
     ["Every project here started", "with a real problem. Every one of them", "ended with a measurable result."],
   );
   assert.match(opening, /<h1 class="services-hero__title" id="clients-hero-title" data-services-hero-title="true">/);
@@ -1019,6 +964,22 @@ test("a story page has its opening, its record, its account and its pages", asyn
    1.2): "Solvei" was invented, its pictures stock and its slots brackets.
    Its page and its line in the sitemap are gone; any other slug is a wrong
    address rather than an unwritten page. */
+/* **No blog** — owner, 2026-11-06: "we donnt have bloog … if it is somewhere
+   delete it". Its pages, its footer link and its sitemap lines went; this
+   keeps any of them from coming back unnoticed. */
+test("the site has no blog", async () => {
+  for (const path of ["/blog", "/blog/between-systems", "/blog/migration-is-the-project"]) {
+    assert.equal((await render(path)).status, 404, `${path} still answers`);
+  }
+  const sitemap = await (await render("/sitemap.xml")).text();
+  assert.doesNotMatch(sitemap, /\/blog/);
+  for (const path of ["/", "/about", "/contact"]) {
+    const html = await (await render(path)).text();
+    assert.doesNotMatch(html, /href="\/blog/, `${path} links to the blog`);
+  }
+  assert.ok(!existsSync(new URL("../app/blog", import.meta.url)), "app/blog is back");
+});
+
 test("the sample story is not published", async () => {
   assert.equal((await render("/case-studies/healthcare-office-website")).status, 404);
   assert.equal((await render("/case-studies/not-a-story")).status, 404);
@@ -1831,7 +1792,6 @@ test("the fusion reveal draws the rules and the mark, and raises the lines", () 
     "components/home/ProductsReveal.tsx",
     "components/home/SelectedWorkReveal.tsx",
     "components/layout/FooterReveal.tsx",
-    "components/blog/BlogEntriesReveal.tsx",
   ]) {
     const source = readFileSync(new URL(`../${file}`, import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
     assert.match(source, /import \{ playOnArrival \} from "\.\.\/\.\.\/lib\/play-on-arrival";/, `${file} does not use the arrival helper`);
@@ -1897,7 +1857,7 @@ test("Selected Work stands under Fusion, as the owner's comp draws it", async ()
      screen reader so the link is named once. */
   assert.match(viewAll, /data-roll="true"/);
   assert.match(viewAll, /<span class="roll__face">VIEW ALL<\/span>/);
-  assert.match(viewAll, /class="roll__face roll__face--next" aria-hidden="true">VIEW ALL<\/span>/);
+  assert.match(viewAll, /class="roll__face roll__face--next" aria-hidden="true" data-label="VIEW ALL"><\/span>/);
   /* The comp's pair — tall, then wide — and since 2026-10-05 two more "in
      differen format", "near each other": two squares side by side on the
      page's second and third columns, their lines under them. */
@@ -2007,7 +1967,7 @@ test("Our expertise stands under about, and each word opens its services", async
 
   /* His label and words, and Creative's four as his second comp lists them.
      Development's are the menu's Development half — the same four services. */
-  assert.match(section, /<span class="expertise__label-line">Our<\/span><span class="expertise__label-line">expertise<\/span>/);
+  assert.match(section, /<span class="expertise__label-line">Our<\/span><span class="expertise__label-line"> (?:<!-- -->)?expertise<\/span>/);
   /* Each word rolls under the pointer (RollingLabel), so it is written twice;
      the first face is the one read. */
   const words = [...section.matchAll(/data-expertise-word="true"><span class="roll"><span class="roll__face">([\s\S]*?)<\/span><span class="roll__face roll__face--next"/g)].map((m) =>
@@ -2056,7 +2016,7 @@ test("every word-and-arrow button rolls its word and keeps its arrow still", asy
     const tag = html.slice(html.lastIndexOf("<", at), html.indexOf(">", at) + 1);
     assert.match(tag, /data-roll="true"/, `${host} does not roll`);
     const body = html.slice(html.indexOf(">", at) + 1, html.indexOf("pixel-arrow", at));
-    assert.match(body, /<span class="roll"><span class="roll__face">[^<]+<\/span><span class="roll__face roll__face--next" aria-hidden="true">/, `${host}'s word is not doubled`);
+    assert.match(body, /<span class="roll"><span class="roll__face">[^<]+<\/span><span class="roll__face roll__face--next" aria-hidden="true" data-label="[^"]+"><\/span>/, `${host}'s word is not doubled`);
   };
   const home = await (await render("/")).text();
   for (const host of ["product__cta"]) rolling(home, host);
@@ -2198,7 +2158,7 @@ test("the services' page turns its services on a wheel, each one's content besid
   assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);
   assert.match(opening, /<p class="services-hero__label" data-services-hero-first="true"><span class="services-hero__mark" aria-hidden="true"><\/span>Service<\/p>/);
   assert.deepEqual(
-    [...opening.matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/span><\/h1>|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "")),
+    [...opening.matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/span><\/h1>|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "").trim()),
     /* The owner's own words since 2026-10-10 (the comp's four lines before). */
     ["Mardal, a house of design,", "engineering &amp; AI solution."],
   );
@@ -2207,7 +2167,7 @@ test("the services' page turns its services on a wheel, each one's content besid
   assert.match(opening, /data-services-hero-title="true"/);
   /* The words are written one by one, so React may set its empty comments
      between them. */
-  assert.match(opening.replace(/<!-- -->/g, ""), /<span class="services-hero__title-line">engineering &amp; AI solution<span class="services-hero__stop">\.<\/span><\/span>/);
+  assert.match(opening.replace(/<!-- -->/g, ""), /<span class="services-hero__title-line"> engineering &amp; AI solution<span class="services-hero__stop">\.<\/span><\/span>/);
   assert.match(opening, /<h1 class="services-hero__title" id="services-hero-title" data-services-hero-title="true">/);
   assert.match(opening, /We don’t measure success in deliverables\. We measure it in revenue grown, leads doubled, and brands that became impossible to ignore\./);
   assert.equal((opening.match(/class="services-hero__mark/g) ?? []).length, 4);
@@ -2300,7 +2260,7 @@ test("the products' page opens as the services' does, in its own words", { skip:
   assert.match(opening, /aria-labelledby="products-hero-title" data-services-hero="true"/);
   assert.match(opening, /<p class="services-hero__label" data-services-hero-first="true"><span class="services-hero__mark" aria-hidden="true"><\/span>Products<\/p>/);
   assert.deepEqual(
-    [...opening.replace(/<!-- -->/g, "").matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "")),
+    [...opening.replace(/<!-- -->/g, "").matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "").trim()),
     /* The owner's own words since 2026-10-10. */
     ["Our own digital products,", "continuously developed and improved", "by the Mardal team."],
   );
@@ -2425,50 +2385,6 @@ test("the cookie panel asks once, keeps one name, and says no as easily as yes",
   assert.match(rule, /z-index: 50;/);
 });
 
-/* **The Blog opens as the other pages do, and lists each piece as one wide
-   entry** — owner, 2026-10-08: "change the hero as others, then i want to
-   have also new aproach on apearing the blogs cards". */
-test("the Blog opens as the others and lists its pieces on the lines", async () => {
-  const response = await render("/blog");
-  assert.equal(response.status, 200);
-  const html = await response.text();
-  const main = html.slice(html.indexOf("<main"), html.indexOf("</main>"));
-
-  const opening = main.slice(main.indexOf('class="services-hero services-hero--blog"'), main.indexOf("</section>"));
-  assert.ok(opening.length > 0, "the Blog does not open on the services' hero");
-  assert.match(opening, /<span class="services-hero__mark" aria-hidden="true"><\/span>Blog<\/p>/);
-  assert.deepEqual(
-    [...opening.replace(/<!-- -->/g, "").matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "")),
-    ["Notes on the things", "we’re exploring."],
-  );
-  assert.equal((main.match(/<span class="services-rules__line"><\/span>/g) ?? []).length, 5);
-
-  /* **Three to a row, the picture only under the pointer** — owner,
-     2026-10-08: "i would like in 3 blog post in on row and maybe only image
-     on hover". "Writing" on the first line; each card its reading time and
-     date, a field holding its thesis and the picture, the title. */
-  assert.match(main, /<h2 class="blog-row__label" id="blog-index-title">Writing<\/h2>/);
-  const cards = [...main.matchAll(/<li class="blog-card" data-blog-entry="true"><a class="blog-card__link" href="\/blog\/([a-z0-9-]+)">/g)];
-  assert.equal(cards.length, 3);
-  /* The picture, not the thesis — "i want image to be visible not text". */
-  assert.doesNotMatch(main, /blog-card__thesis/);
-  assert.equal((main.match(/<h3 class="blog-card__title" data-blog-entry-title="true">/g) ?? []).length, 3);
-  assert.match(main, /min read/);
-  assert.doesNotMatch(main, /blog-entry__|blog-grid|service-hero__aside/);
-
-  /* ⚠ The pictures are stock stand-ins and must not ship: delete this with
-     the commit that puts the pieces' own pictures in. */
-  assert.equal((main.match(/ src="https:\/\/picsum\.photos\/seed\/mardal-blog-/g) ?? []).length, 3);
-
-  /* Under the pointer the picture is revealed again: the red sweeps over it
-     and lifts off, the picture settling. */
-  const CSSB = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.match(CSSB, /\.blog-card__link:hover \.blog-card__field::after,[^{]*\{\s*animation: blog-curtain/);
-  assert.match(CSSB, /@keyframes blog-curtain/);
-  assert.doesNotMatch(CSSB, /\.blog-card__image \{[^}]*clip-path: inset\(100%/);
-  assert.match(CSSB, /\.blog-cards \{[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
-});
-
 /* Owner, 2026-10-08: "i see often this outline" (round Menu), and "move the
    menu to the right to the edge of the vertical line". */
 test("Menu draws no ring after a click unless Tab is pressed, and ends on the last line", () => {
@@ -2558,12 +2474,6 @@ test("a wrong address has a page of the site's own, light, with a way home", asy
   assert.doesNotMatch(html, /This page could not be found/);
 });
 
-test("the Contents list's other headings are readable, the one being read in ink", () => {
-  const CSS = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
-  assert.match(CSS, /\.article-contents__link \{[^}]*color: var\(--ink-muted\);/);
-  assert.match(CSS, /--ink-muted: #5e5a69;/);
-});
-
 test("the keyboard's first stop on every page skips the bar", async () => {
   const html = await (await render("/about")).text();
   const body = html.slice(html.indexOf("<body"));
@@ -2606,7 +2516,7 @@ test("search engines are let in since launch, and have a sitemap of every page",
   assert.match(layout, /metadataBase: siteIsLive \? new URL\(siteUrl\) : undefined,/);
 
   /* Every page names its own canonical, and a case study its own preview. */
-  for (const path of ["/", "/services", "/case-studies", "/case-studies/en-nur", "/blog/between-systems", "/contact"]) {
+  for (const path of ["/", "/services", "/case-studies", "/case-studies/en-nur", "/contact"]) {
     const html = await (await render(path)).text();
     assert.match(html, new RegExp(`<link rel="canonical" href="(https?://[^"/]+)?${path}"`), `${path} has no canonical of its own`);
   }
@@ -2616,17 +2526,15 @@ test("search engines are let in since launch, and have a sitemap of every page",
     assert.ok(existsSync(new URL(`../public/og-${name}.jpg`, import.meta.url)), `og-${name}.jpg is missing`);
   }
   const sitemap = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8");
-  for (const path of ['"/services"', '"/products"', '"/case-studies"', '"/about"', '"/blog"', '"/contact"', '"/privacy"', '"/terms"', '"/cookies"']) {
+  for (const path of ['"/services"', '"/products"', '"/case-studies"', '"/about"', '"/contact"', '"/privacy"', '"/terms"', '"/cookies"']) {
     assert.ok(sitemap.includes(path), `${path} is not in the sitemap`);
   }
-  assert.match(sitemap, /blog\.posts\.map/);
 });
 
 /* **What search engines and AI answers read** — SEO-PLAN.md, step 1.5:
    schema.org JSON-LD in each page's HTML, built only from what the page
    says. The company and the site on the homepage; a breadcrumb on every
-   inner page; an article about each real client; each post with its author
-   and date; the services by name. The founding year and the postcode are
+   inner page; an article about each real client; the services by name. The founding year and the postcode are
    the owner's (2026-10-11). */
 test("every page tells search engines what it is", async () => {
   const nodes = async (path) => {
@@ -2658,11 +2566,6 @@ test("every page tells search engines what it is", async () => {
   assert.deepEqual(article.about, { "@type": "Organization", name: "En-Nur", url: "https://xhamia-en-nur.ch/" });
   assert.equal(article.url, "https://mardal.co/case-studies/en-nur");
 
-  const post = byType(await nodes("/blog/between-systems"), "BlogPosting");
-  assert.equal(post.author.name, "Kushtrim Arifi");
-  assert.equal(post.author.url, "https://kushtrimarifi.com/");
-  assert.match(post.datePublished, /^\d{4}-\d{2}-\d{2}$/);
-
   const services = byType(await nodes("/services"), "ItemList");
   assert.equal(services.itemListElement.length, 19);
   assert.ok(services.itemListElement.every((entry) => entry.item["@type"] === "Service" && entry.item.provider.name === "Mardal"));
@@ -2670,13 +2573,13 @@ test("every page tells search engines what it is", async () => {
   for (const [path, type] of [["/about", "AboutPage"], ["/contact", "ContactPage"]]) {
     assert.ok(byType(await nodes(path), type), `${path} is not a ${type}`);
   }
-  for (const path of ["/case-studies", "/products", "/blog"].filter((path) => !hiddenPages.includes(path))) {
+  for (const path of ["/case-studies", "/products"].filter((path) => !hiddenPages.includes(path))) {
     assert.ok(byType(await nodes(path), "BreadcrumbList"), `${path} has no breadcrumb`);
   }
 });
 
 test("every page has a link preview of its own, with the picture", async () => {
-  for (const [path, title] of [["/services", "Services: Websites, Software, Apps &amp; AI Automation — Mardal"], ["/blog/between-systems", "Most failures happen between systems — Mardal"]]) {
+  for (const [path, title] of [["/services", "Services: Websites, Software, Apps &amp; AI Automation — Mardal"]]) {
     const html = await (await render(path)).text();
     assert.match(html, new RegExp(`<meta property="og:title" content="${title}"`), `${path} has no preview title`);
     assert.match(html, /<meta property="og:image" content="[^"]*\/og-image\.png"/, `${path} has no preview picture`);
@@ -2687,4 +2590,48 @@ test("every page has a link preview of its own, with the picture", async () => {
   const layout = readFileSync(new URL("../app/layout.tsx", import.meta.url), "utf8");
   assert.match(layout, /metadataBase: siteIsLive \? new URL\(siteUrl\) : undefined,/);
   assert.match(layout, /twitter: \{ card: "summary_large_image" \}/);
+});
+
+/* **No glued lines** — site check, 2026-11-16: text set in lines (one block
+   per line) read as one word to a search engine wherever only tags stood
+   between two lines: "SELECTEDWORK", "HumanCreativity", "people,ideas" in
+   mardal.co's headings. On every page in the sitemap, each line after the
+   first of its kind starts with a space, or follows one. */
+test("text set in lines reads with a space between the lines", async () => {
+  const sitemap = await (await render("/sitemap.xml")).text();
+  const paths = [...sitemap.matchAll(/<loc>https?:\/\/[^/<]+(\/[^<]*)?<\/loc>/g)].map((match) => match[1] ?? "/");
+  assert.ok(paths.length > 5, "the sitemap lists the pages");
+  const text = (html) => html.replace(/<!--[\s\S]*?-->/g, "").replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ");
+  for (const path of paths) {
+    const html = await (await render(path)).text();
+    const lines = [...html.matchAll(/<span class="([^"]*(?:-line|__line))"/g)];
+    const last = new Map();
+    for (const line of lines) {
+      const before = last.get(line[1]);
+      last.set(line[1], line.index);
+      if (before === undefined) continue;
+      /* Lines of one group meet with nothing but spans between them; any
+         other tag (a caption's end, the next figure) starts a new group. */
+      if (/<(?!\/?span\b|!--)/.test(html.slice(before + 1, line.index))) continue;
+      // A drawn line (a rule) has no words to glue.
+      if (!text(html.slice(before, line.index)).trim()) continue;
+      const joined = /\s$/.test(text(html.slice(before, line.index))) || /^\s/.test(text(html.slice(line.index)));
+      assert.ok(joined, `${path}: "${text(html.slice(line.index, line.index + 200)).slice(0, 30)}" is glued to the line before it (${line[1]})`);
+    }
+  }
+});
+
+/* **Made in Kosovo, for clients mostly in Switzerland** — owner, 2026-11-16:
+   "all those project was creates in Kosova not in switzerland the clients are
+   mostly from switzelrnad". The Clients line for search results had said
+   "built in Switzerland and Kosovo". */
+test("the work is said to be made in Kosovo, never in Switzerland", async () => {
+  const clients = await (await render("/case-studies")).text();
+  assert.match(clients, /<meta name="description" content="Case studies of websites and software Mardal built in Kosovo for clients in Switzerland and Kosovo: /);
+  const sitemap = await (await render("/sitemap.xml")).text();
+  const paths = [...sitemap.matchAll(/<loc>https?:\/\/[^/<]+(\/[^<]*)?<\/loc>/g)].map((match) => match[1] ?? "/");
+  for (const path of paths) {
+    const html = await (await render(path)).text();
+    assert.doesNotMatch(html, /(built|made|created|developed) in Switzerland/i, `${path} says the work was made in Switzerland`);
+  }
 });

@@ -152,6 +152,11 @@
      opening's photograph was recoloured with it (house-hero-1540-ff3300.webp),
      so the square and every red on the page are one red. */
   --tint-red: #ff3300;
+  /* The same red, darker, for the contact letter's prompts — owner,
+     2026-11-06, after the site check found #ff3300 at 3.2:1 on the blanks'
+     grey: "ok go with your suggestion" (a darker red only there). 4.7:1 on
+     --surface, AA for text; the hue is #ff3300's. */
+  --letter-prompt: #cc2900;
   /* What stands on a tint. Named once, for the redaction bar the menu draws
      behind a word. */
   --ink-on-tint: #08080a;
@@ -1487,7 +1492,6 @@ video {
 :root:has([data-house-hero]) .site-nav__place,
 :root:has([data-services-hero]) .site-nav__place,
 :root:has([data-project-hero]) .site-nav__place,
-:root:has([data-article-hero]) .site-nav__place,
 :root:has([data-contact-hero]) .site-nav__place {
   visibility: hidden;
 }
@@ -1520,6 +1524,12 @@ video {
 
 .roll__face--next {
   transform: rotateX(-90deg);
+}
+
+/* The second face's word, from the label's own (RollingLabel): drawn here so
+   it is not in the page's text for search engines to read twice. */
+.roll__face--next::before {
+  content: attr(data-label);
 }
 
 @media (hover: hover) {
@@ -2560,8 +2570,6 @@ main:has(> .services-rules) {
    phone's journey bar — keep theirs. */
 main:has(> .services-rules) :is(
   .service-hero,
-  .blog-index,
-  .blog-article,
   .contact
 ),
 main:has(> .services-rules) > .pin-spacer {
@@ -6654,61 +6662,6 @@ main:has(> .services-rules) > .pin-spacer {
   }
 }
 
-/* --------------------------------- Blog ---------------------------------- */
-
-.blog-index {
-  padding-block: var(--section-space-lg);
-  color: var(--service-ink);
-  background: var(--service-surface);
-}
-
-/* ------------------------------ Blog: empty ------------------------------- */
-
-/* The state this page is in before anything is published, so it is a designed
-   screen rather than an absence. */
-.blog-empty {
-  position: relative;
-  padding-block: clamp(3rem, 9vh, 6rem);
-  border-top: 1px solid var(--line-soft);
-}
-
-.blog-empty__lines {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  width: min(52%, 30rem);
-  aspect-ratio: 716 / 336;
-  opacity: 0.18;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-.blog-empty__bars {
-  width: 100%;
-  height: 100%;
-  fill: var(--accent);
-}
-
-.blog-empty__title {
-  position: relative;
-  max-width: 20ch;
-  margin: 0;
-  font-family: var(--type-display);
-  font-size: clamp(1.5rem, 2.4vw, 2.25rem);
-  font-weight: var(--weight-heading);
-  letter-spacing: var(--tracking-heading);
-  line-height: 1.08;
-}
-
-.blog-empty__copy {
-  position: relative;
-  max-width: 46ch;
-  margin: clamp(0.75rem, 2vh, 1.25rem) 0 0;
-  font-size: var(--text-copy);
-  line-height: 1.6;
-  opacity: 0.72;
-}
-
 /* The row acknowledging the pointer, which is the site's own answer to a hover
    — the content responds, rather than a decoration chasing the cursor. The rule
    is the row's only drawn part, so it is the part that answers. */
@@ -7040,12 +6993,11 @@ main:has(> .services-rules) > .pin-spacer {
    already written.
 
    In our red on the light grey — owner, 2026-10-08 ("textholder in our
-   red"; it was white on the red bar, his 2026-09-13 call). It measures about
-   3:1 on the grey, under AA for small text; `tests/contact.test.mjs` prints
-   the number on every run rather than failing on it — his call, and not one
-   to be forgotten. */
+   red"; it was white on the red bar, his 2026-09-13 call). Since 2026-11-06
+   a darker shade of it (--letter-prompt), so the prompts pass AA for text;
+   `tests/contact.test.mjs` fails if they drop under 4.5:1 again. */
 .letter__blank::placeholder {
-  color: var(--accent);
+  color: var(--letter-prompt);
   font-style: italic;
   opacity: 1;
 }
@@ -7093,14 +7045,14 @@ main:has(> .services-rules) > .pin-spacer {
    prompt — so "a project" is not the one blank in the letter that looks filled
    in before anyone has touched it. */
 .letter__blank--choice:has(option[value=""]:checked) {
-  color: var(--accent);
+  color: var(--letter-prompt);
   font-style: italic;
   background: var(--surface);
 }
 
 /* The chevron follows the words: red while nothing is chosen. */
 .letter__choice:has(option[value=""]:checked) {
-  color: var(--accent);
+  color: var(--letter-prompt);
 }
 
 /* The open list is the browser's own, and on some systems it takes the
@@ -8890,562 +8842,6 @@ a.project-live:focus-visible {
   .consent__knob {
     animation: none;
     transition: none;
-  }
-}
-
-/* --------------------------- Blog: the index ----------------------------- */
-
-/* The Blog's heading sized to the columns, as the other openings' are:
-   "Notes on the things" is 8.62 of its size wide (measured), so its first
-   line, set in to the second rule, ends on the last. */
-.services-hero--blog {
-  --hero-fit: 8.72;
-
-  margin-bottom: var(--section-space);
-}
-
-/* **Three to a row, the picture only under the pointer** — owner,
-   2026-10-08: "i would like in 3 blog post in on row and maybe only image on
-   hover", from a reference card (a line of facts, a picture, the title) "in
-   our style". On the page's four columns: "Writing" on the first line, the
-   pieces from the second, third and fourth, each stopping short of the next
-   line by the gap. A card: its reading time and date on one line; its
-   picture; the title. Then "i want image to be visible not text, then when
-   hover like to be hover with efefct as revealing again": under the pointer
-   the picture is revealed again — the site's red sweeps up over it and lifts
-   off the top, the picture settling from a little larger as it is
-   uncovered — and the title turns red. Each hover plays it anew. */
-.blog-row {
-  --blog-gap: clamp(1.5rem, 3vw, 2.75rem);
-
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  align-items: start;
-}
-
-.blog-row__label {
-  grid-column: 1;
-  margin: 0;
-  padding-right: var(--blog-gap);
-  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
-  font-weight: var(--weight-medium);
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-}
-
-.blog-cards {
-  display: grid;
-  grid-column: 2 / -1;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  row-gap: clamp(3rem, 7vh, 5rem);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* Every card stops the gap short of the next line, the last too, so the
-   three are one size. */
-.blog-card {
-  padding-right: var(--blog-gap);
-}
-
-.blog-card__link {
-  display: grid;
-  color: var(--ink);
-  text-decoration: none;
-}
-
-.blog-card__meta {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin: 0 0 0.85rem;
-  font-size: var(--text-body);
-  line-height: 1.3;
-}
-
-.blog-card__field {
-  position: relative;
-  display: block;
-  aspect-ratio: 5 / 4;
-  overflow: hidden;
-  background: var(--surface);
-}
-
-.blog-card__image {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.blog-card__title {
-  margin: 1rem 0 0;
-  font-family: var(--type-display);
-  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
-  font-weight: var(--weight-medium);
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-  transition: color var(--duration-base) var(--ease-standard);
-}
-
-/* The red that sweeps over the picture, waiting flat at the field's foot. */
-.blog-card__field::after {
-  position: absolute;
-  inset: 0;
-  background: var(--accent);
-  content: "";
-  transform: scaleY(0);
-  transform-origin: 50% 100%;
-  pointer-events: none;
-}
-
-/* With a pointer: the picture revealed again on every hover. */
-@media (hover: hover) {
-  .blog-card__link:hover .blog-card__field::after,
-  .blog-card__link:focus-visible .blog-card__field::after {
-    animation: blog-curtain 1.1s var(--ease-handover) both;
-  }
-
-  .blog-card__link:hover .blog-card__image,
-  .blog-card__link:focus-visible .blog-card__image {
-    animation: blog-uncover 1.1s var(--ease-handover) both;
-  }
-
-  .blog-card__link:hover .blog-card__title {
-    color: var(--accent);
-  }
-}
-
-/* Up over the picture from its foot, then off through its top. */
-@keyframes blog-curtain {
-  0% {
-    transform: scaleY(0);
-    transform-origin: 50% 100%;
-  }
-
-  45% {
-    transform: scaleY(1);
-    transform-origin: 50% 100%;
-  }
-
-  55% {
-    transform: scaleY(1);
-    transform-origin: 50% 0%;
-  }
-
-  100% {
-    transform: scaleY(0);
-    transform-origin: 50% 0%;
-  }
-}
-
-/* Larger while it is covered, settling as it is uncovered. */
-@keyframes blog-uncover {
-  0%,
-  50% {
-    transform: scale(1.1);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
-.blog-card__link:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 0.5rem;
-}
-
-/* Where the entrance starts (BlogEntriesReveal): the title faint and
-   blurred until its words are split, the facts and the field not yet up. Only with script,
-   and not for a reader who asked for less motion. */
-@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-  .blog-card__title {
-    /* The first frame of its focus (lib/focus-words.ts FROM), not nothing:
-       text at no opacity does not count as painted, so the page's main
-       content would be timed from when the script runs (SEO-PLAN.md,
-       step 1.7). */
-    opacity: 0.1;
-    filter: blur(12px);
-  }
-
-  [data-blog-entry-after] {
-    opacity: 0;
-    transform: translateY(0.75rem);
-  }
-}
-
-/* A tablet: "Writing" over the pieces, two to a row, on the page's lines. */
-@media (max-width: 64rem) {
-  .blog-row__label {
-    grid-column: 1 / -1;
-    margin-bottom: 1.5rem;
-  }
-
-  .blog-cards {
-    grid-column: 1 / -1;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-}
-
-/* A phone: one under the next. */
-@media (max-width: 40rem) {
-  .blog-cards {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .blog-card {
-    padding-right: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .blog-card__link:hover .blog-card__field::after,
-  .blog-card__link:hover .blog-card__image,
-  .blog-card__link:focus-visible .blog-card__field::after,
-  .blog-card__link:focus-visible .blog-card__image {
-    animation: none;
-  }
-
-  .blog-card__title {
-    transition: none;
-  }
-}
-
-/* ----------------------------- Blog: one piece ---------------------------- */
-
-/* **A professional piece — owner, 2026-10-08**: "change the structure font
-   remove that design inside the blog when open because there needs to be
-   image right and make as a professional blog so on the right to be title
-   online offline when scrollin in the middle to be text". On the page's four
-   columns, in the site's one face: the date and reading time, the title at
-   the big header size across three columns, the thesis and the author under
-   it; the piece's picture the whole width (it was the drawing); then the
-   text in the middle two columns, the second line to the fourth, and its
-   headings down the right from the fourth (ArticleContents), the one being
-   read in ink with the red mark, the rest in grey. Narrower than 64rem the
-   list goes and the text takes the width. */
-.blog-article {
-  padding-block: clamp(2.5rem, 7vh, 4.5rem) var(--section-space-lg);
-  color: var(--ink);
-}
-
-.container.blog-article__inner {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  align-items: start;
-}
-
-.blog-article__head {
-  grid-column: 1 / span 3;
-  grid-row: 1;
-  padding-right: clamp(1.5rem, 3vw, 2.75rem);
-}
-
-.blog-article__meta {
-  display: flex;
-  gap: 0.6em;
-  margin: 0 0 clamp(1rem, 2.5vh, 1.5rem);
-  font-size: var(--text-body);
-}
-
-.blog-article__title {
-  margin: 0;
-  font-family: var(--type-display);
-  font-size: var(--text-heading-xl);
-  font-weight: var(--weight-body);
-  letter-spacing: -0.02em;
-  line-height: 1.05;
-  text-wrap: balance;
-}
-
-.blog-article__standfirst {
-  max-width: 34em;
-  margin: clamp(1.25rem, 3vh, 1.75rem) 0 0;
-  font-size: max(var(--text-copy), calc(var(--text-house) * 0.21));
-  line-height: 1.4;
-  letter-spacing: -0.01em;
-  text-wrap: pretty;
-}
-
-.blog-article__byline {
-  margin: clamp(1rem, 2.5vh, 1.5rem) 0 0;
-  font-size: var(--text-body);
-  font-weight: var(--weight-medium);
-}
-
-.blog-article__cover {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  aspect-ratio: 2 / 1;
-  margin: clamp(2.5rem, 6vh, 4rem) 0 clamp(3rem, 8vh, 5.5rem);
-  overflow: hidden;
-  background: var(--surface);
-}
-
-.blog-article__cover-image {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.blog-article__body {
-  grid-column: 2 / span 2;
-  grid-row: 3;
-  padding-right: clamp(1.5rem, 3vw, 2.75rem);
-  font-size: var(--text-body);
-  line-height: 1.65;
-}
-
-.blog-article__body > :first-child {
-  margin-top: 0;
-}
-
-.blog-article__copy {
-  margin: 0 0 1.35em;
-  text-wrap: pretty;
-}
-
-.blog-article__heading {
-  margin: 2.6em 0 0.75em;
-  font-family: var(--type-display);
-  font-size: var(--text-heading);
-  font-weight: var(--weight-body);
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  scroll-margin-top: 120px;
-}
-
-.blog-article__quote {
-  margin: 2em 0;
-  padding-left: 1.25rem;
-  border-left: 2px solid var(--accent);
-  font-family: var(--type-display);
-  font-size: var(--text-heading);
-  font-weight: var(--weight-body);
-  letter-spacing: -0.02em;
-  line-height: 1.25;
-  text-wrap: pretty;
-}
-
-.blog-article__list {
-  margin: 0 0 1.35em;
-  padding: 0;
-  list-style: none;
-}
-
-.blog-article__item {
-  position: relative;
-  margin-bottom: 0.85em;
-  padding-left: 1.6em;
-  text-wrap: pretty;
-}
-
-.blog-article__item:last-child {
-  margin-bottom: 0;
-}
-
-.blog-article__item::before {
-  position: absolute;
-  left: 0;
-  color: var(--accent);
-  content: counter(list-item);
-  font-variant-numeric: tabular-nums;
-}
-
-.blog-article__list--plain {
-  counter-reset: none;
-}
-
-.blog-article__list--plain .blog-article__item::before {
-  content: "—";
-}
-
-/* The headings down the right: the one being read in ink with the red
-   square before it, the rest in grey. */
-.blog-article__aside {
-  grid-column: 4;
-  grid-row: 3;
-}
-
-.article-contents__label {
-  margin: 0 0 1rem;
-  font-size: var(--text-body);
-  font-weight: var(--weight-medium);
-}
-
-.article-contents__list {
-  display: grid;
-  gap: 0.75rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.article-contents__link {
-  position: relative;
-  display: block;
-  padding-left: 1.1em;
-  /* The site's quieter ink, not the lines' grey — that read at 3.36:1 on
-     white, under the 4.5 a line of text needs (site check, 2026-10-09).
-     The one being read still turns full ink, with its red mark. */
-  color: var(--ink-muted);
-  font-size: var(--text-body);
-  line-height: 1.35;
-  text-decoration: none;
-  transition: color var(--duration-base) var(--ease-standard);
-}
-
-.article-contents__link::before {
-  position: absolute;
-  top: 0.45em;
-  left: 0;
-  width: 0.45em;
-  height: 0.45em;
-  background: var(--accent);
-  content: "";
-  transform: scale(0);
-  transition: transform var(--duration-base) var(--ease-standard);
-}
-
-.article-contents__link[aria-current="true"] {
-  color: var(--ink);
-}
-
-.article-contents__link[aria-current="true"]::before {
-  transform: none;
-}
-
-@media (hover: hover) {
-  .article-contents__link:hover {
-    color: var(--ink);
-  }
-}
-
-.article-contents__link:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 0.25em;
-}
-
-/* No column for the headings: the text takes the width, from the first
-   line. */
-@media (max-width: 64rem) {
-  .blog-article__head,
-  .blog-article__body {
-    grid-column: 1 / -1;
-    padding-right: 0;
-  }
-
-  .blog-article__aside {
-    display: none;
-  }
-}
-
-@media (max-width: 40rem) {
-  .blog-article__cover {
-    aspect-ratio: 4 / 3;
-  }
-}
-
-/* --------------------------- Blog: end of piece --------------------------- */
-
-/* One row across the whole content column: the piece behind on the left, the
-   piece ahead on the right, the way out of the run in the middle.
-
-   This replaced a stacked list carrying each piece's drawing, thesis, date and
-   length — a second index printed under every article, when a reader who has
-   finished a piece wants a direction rather than a catalogue. The owner asked
-   for left, right and middle, and for the headline only.
-
-   Full width, not the 52rem the plate uses: the two offers have to reach the
-   edges of the page for the row to read as two directions. --container-default
-   is where every other section on this site ends, so it lines up with the
-   footer beneath it rather than floating inside its own margin. */
-/* No line over it — owner, 2026-10-08: "remove that horisontal grey line". */
-.blog-more {
-  grid-column: 1 / -1;
-  grid-row: 4;
-  width: 100%;
-  margin-top: clamp(3.5rem, 9vh, 6rem);
-}
-
-/* Three cells, and the middle one is sized by its words so it sits on the
-   centre of the page rather than on the centre of whatever is left over.
-   1fr either side keeps it there whatever length the two titles run to.
-
-   The empty span rendered when there is nothing behind is doing real work: it
-   holds the left cell open so the middle stays in the middle on the first
-   piece of a two-piece run. */
-/* Two long arrows on the page's columns: the piece behind from the second
-   line, the piece ahead ending on the fourth — as the project page ends.
-   Room above and below each for the pointer, taken back so nothing moves. */
-.blog-more__row {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  align-items: center;
-}
-
-.blog-more__side {
-  display: inline-flex;
-  align-items: center;
-  margin: -0.6em 0;
-  padding: 0.6em 0;
-  color: var(--ink);
-  transition: color var(--duration-fast) var(--ease-standard);
-}
-
-.blog-more__side--back {
-  grid-column: 2;
-  justify-self: start;
-}
-
-.blog-more__side--on {
-  grid-column: 3;
-  justify-self: end;
-}
-
-/* The long thin arrow, in ink, red under the pointer. */
-.blog-more__arrow {
-  flex: 0 0 auto;
-  width: 4em;
-  height: 0.75em;
-  fill: none;
-  stroke: currentcolor;
-  stroke-width: 1.25px;
-}
-
-.blog-more__arrow path {
-  vector-effect: non-scaling-stroke;
-}
-
-@media (hover: hover) {
-  .blog-more__side:hover {
-    color: var(--accent);
-  }
-}
-
-.blog-more__side:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 0.35em;
-}
-
-/* A phone has two columns: the arrows at its two edges. */
-@media (max-width: 40rem) {
-  .blog-more__row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .blog-more__side--back {
-    grid-column: 1;
-  }
-
-  .blog-more__side--on {
-    grid-column: 2;
   }
 }
 

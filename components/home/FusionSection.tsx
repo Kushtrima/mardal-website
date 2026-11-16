@@ -47,8 +47,10 @@ export function FusionSection() {
       <Container className="fusion-container">
         <h2 className="fusion-title" id="fusion-title" aria-label={fusion.spoken}>
           <span className="fusion-title__half" data-fusion-half="left">
-            {fusion.left.map((line) => (
+            {fusion.left.map((line, index) => (
               <span className="fusion-title__line" key={line}>
+                {/* A space before every line but the first, never drawn (each line is a block): without it a search engine reads the lines as one glued word — site check, 2026-11-16. */}
+                {index > 0 ? " " : null}
                 {/* What rises: the line is the mask it rises out of. */}
                 <span className="fusion-title__rise" data-fusion-line>
                   {line}
@@ -74,6 +76,7 @@ export function FusionSection() {
           <span className="fusion-title__half" data-fusion-half="right">
             {fusion.right.map((line) => (
               <span className="fusion-title__line" key={line}>
+                {" "}
                 {/* What rises: the line is the mask it rises out of. */}
                 <span className="fusion-title__rise" data-fusion-line>
                   {line}

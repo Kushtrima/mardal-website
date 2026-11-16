@@ -58,10 +58,13 @@ export const caseStudies = {
 
   /* What the tab says: the word that was clicked to get here first — the
      menu entry is "Clients" — then what is here, as people search for it
-     (SEO-PLAN.md, step 1.4). The line for search results names the real projects. */
+     (SEO-PLAN.md, step 1.4). The line for search results names the real projects.
+     Built in Kosovo, for clients mostly in Switzerland — owner, 2026-11-16: "all
+     those project was creates in Kosova not in switzerland the clients are mostly
+     from switzelrnad". */
   title: "Clients: Case Studies in Websites and Software",
   lede:
-    "Case studies of websites and software Mardal built for clients in Switzerland and Kosovo: Spitex Schwab AG in Bern, En-Nur and Jetonikeramika.",
+    "Case studies of websites and software Mardal built in Kosovo for clients in Switzerland and Kosovo: Doratec GmbH, Spitex Schwab AG, En-Nur and Jetonikeramika.",
 
   /* What a card's two lines are called.
      They were three — Replaced, Does now, Client owns — set to answer the hero's
@@ -617,7 +620,7 @@ export const ennurStory = {
   title: "En-Nur — Laravel Membership & Donations App",
   name: "En-Nur",
   industry: "Religious, Community",
-  lede: "A Laravel membership and donations app for En-Nur, a mosque community in Switzerland.",
+  lede: "A Laravel membership and donations app for En-Nur, a mosque community in Switzerland: monthly fees and donations paid by TWINT, Stripe or cash.",
   /* His picture for the opening — owner, 2026-10-11: "use this image for
      hero banner and for the cover image in galler[y]" (mosque.jpg from his
      Desktop, 2376×1584, as WebP at 1200 and at its full width). */
@@ -720,7 +723,7 @@ export const jetonikeramikaStory = {
   title: "Jetonikeramika — Tile Showroom Website",
   name: "Jetonikeramika",
   industry: "Ceramics & Tiles",
-  lede: "A website for Jetonikeramika, a ceramics and tiles showroom in Kosovo.",
+  lede: "A website for Jetonikeramika, a 2,500 m² ceramics and tiles showroom in Kosovo serving private clients and contractors. Research, design and build by Mardal.",
   /* His picture for the opening — owner, 2026-10-16: "use this image for
      cover in jetonikeramika" (jetonicover64.avif from his Desktop,
      1920×1280): his AVIF unchanged at its full width, and an AVIF at 1200
@@ -819,7 +822,7 @@ export const spitexSchwabStory = {
   title: "Spitex Schwab AG — Home Care Website, Bern",
   name: "Spitex Schwab AG",
   industry: "Home Care",
-  lede: "A website for Spitex Schwab AG, an independent home-care provider in Bern.",
+  lede: "A website for Spitex Schwab AG, an independent home-care provider in Bern, explaining its care in everyday words. Research, design and development by Mardal.",
   /* His picture for the opening — owner, 2026-10-11: "here you have image for
      cover and herobanner" (eldery-cover.jpg from his Desktop, 2000×1333, as
      WebP at 1200 and at its full width). */
@@ -1228,7 +1231,7 @@ export const doratecStory = {
   title: "Doratec GmbH — Windows and Doors Website, Oftringen",
   name: "Doratec GmbH",
   industry: "Windows and Doors",
-  lede: "A website for Doratec GmbH, a family business in Oftringen that sells and installs windows and doors.",
+  lede: "A website for Doratec GmbH, a family business in Oftringen, Aargau, that sells and installs windows and doors. UX/UI design and development by Mardal.",
   /* His picture for the opening and the card — owner, 2026-10-21: "i have
      not asked to put any images … use this for cover first" (cover2.jpg from
      his Desktop, 1920×1280, as AVIF at 1200 and at its full width). */

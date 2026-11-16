@@ -42,6 +42,21 @@ export function focusWords(
 
   document.fonts.ready.then(() => {
     if (gone) return;
+
+    /* **One word: the heading itself comes into focus, unsplit** — site
+       check, 2026-11-06: split, "En-Nur" became one new box the size of the
+       whole heading, drawn when the script ran, and the page counted that
+       box as its main content — 3.3 s on a slow phone against 1.1 s for
+       the story pages whose names have two words. One word moves the same
+       whole or split, so the heading moves itself and stays the box the
+       first frame painted. */
+    if ((heading.textContent ?? "").trim().split(/\s+/).length === 1) {
+      gsap.set(heading, { ...FROM });
+      timeline = gsap.timeline({ delay: 0.1 }).to(heading, { ...TO, stagger: 0 }, 0);
+      then?.(timeline);
+      return;
+    }
+
     split = SplitText.create(heading, { type: "words" });
     gsap.set(split.words, FROM);
     gsap.set(heading, { opacity: 1, filter: "none" });
@@ -56,6 +71,6 @@ export function focusWords(
     gone = true;
     timeline?.kill();
     split?.revert();
-    gsap.set(heading, { clearProps: "opacity,filter" });
+    gsap.set(heading, { clearProps: "opacity,filter,transform" });
   };
 }

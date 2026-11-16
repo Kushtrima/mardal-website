@@ -28,13 +28,13 @@ async function render(path) {
 test("no link on the site points at an anchor its page has not got", async () => {
   /* The state the placeholder pages existed to reach. Before them, `#privacy` and
      `#careers` resolved nowhere at all, and `#products`, `#company` and the
-     three product anchors resolved only on the homepage — read from the Blog or
+     three product anchors resolved only on the homepage — read from Privacy or
      another page they were dead too, which is the failure this catches and a
      count of links never would.
 
      Checked on a page from each family, since the header and the footer are the
      same on all of them and a dead anchor in either would show up on any. */
-  for (const path of ["/", "/privacy", "/blog", "/case-studies", "/services"]) {
+  for (const path of ["/", "/privacy", "/case-studies", "/services"]) {
     const html = await (await render(path)).text();
     const ids = new Set([...html.matchAll(/id="([^"]+)"/g)].map((match) => match[1]));
     const dead = [...new Set([...html.matchAll(/href="#([^"]+)"/g)].map((m) => m[1]))]

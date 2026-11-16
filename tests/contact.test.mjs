@@ -191,7 +191,7 @@ test("under it, a letter, and the blanks are where you write", async () => {
      the copy hidden, and VIEW ALL's thin arrow straight after it, still —
      the site's button since 2026-10-08 ("chnage the button SEND to our
      button"; it carried the pixel arrow). */
-  assert.match(form, /<span class="roll__face">Send<\/span><span class="roll__face roll__face--next" aria-hidden="true">Send<\/span><\/span><svg class="letter__send-arrow"/);
+  assert.match(form, /<span class="roll__face">Send<\/span><span class="roll__face roll__face--next" aria-hidden="true" data-label="Send"><\/span><\/span><svg class="letter__send-arrow"/);
   assert.doesNotMatch(form, /pixel-arrow/);
 
   /* Five bars draw in: four blanks in the sentences and the message. */
@@ -323,27 +323,26 @@ test("the question on the left, the letter under it on the right, one column whe
   assert.doesNotMatch(CSS, /\.contact__details?\b/);
 });
 
-test("the prompts in the blanks are red, and their contrast is said out loud", () => {
+test("the prompts in the blanks are red, dark enough to read", () => {
   /* Owner, 2026-10-08: "textholder in our red" — the four prompts, and the
      drop-down's "a project" with its chevron while nothing is chosen (they
      were white on the red bars, his 2026-09-13 call). */
-  assert.match(rule(".letter__blank::placeholder"), /color:\s*var\(--accent\)/);
+  assert.match(rule(".letter__blank::placeholder"), /color:\s*var\(--letter-prompt\)/);
   assert.match(
     CSS,
-    /\.letter__blank--choice:has\(option\[value=""\]:checked\)\s*\{[^}]*color:\s*var\(--accent\)/,
+    /\.letter__blank--choice:has\(option\[value=""\]:checked\)\s*\{[^}]*color:\s*var\(--letter-prompt\)/,
   );
-  assert.match(CSS, /\.letter__choice:has\(option\[value=""\]:checked\)\s*\{[^}]*color:\s*var\(--accent\)/);
+  assert.match(CSS, /\.letter__choice:has\(option\[value=""\]:checked\)\s*\{[^}]*color:\s*var\(--letter-prompt\)/);
 
   /* And the open list stays readable: some systems colour its options with the
      select's own colour, which would be white on a white menu. */
   assert.match(CSS, /\.letter__blank--choice option\s*\{[^}]*color:\s*var\(--ink\)/);
 
-  /* ⚠ Not a failure — a record, as theme.test.mjs keeps the footer's. Our red
-     on the light grey is about 3:1, under AA for small text; the owner asked
-     for it, and what is not acceptable is it being forgotten. So the number is
-     computed from the two values in the stylesheet and printed on every run. */
+  /* AA for text, 4.5:1 — owner, 2026-11-06: #ff3300 measured 3.2:1 on the
+     grey, and he took the darker shade of it for the letter alone. Computed
+     from the two values in the stylesheet, so a lighter red fails here. */
   const bar = CSS.match(/--surface:\s*(#[0-9a-f]{6})/i)?.[1];
-  const red = CSS.match(/--tint-red:\s*(#[0-9a-f]{6})/i)?.[1];
+  const red = CSS.match(/--letter-prompt:\s*(#[0-9a-f]{6})/i)?.[1];
   assert.ok(bar && red, "the blank's or the prompt's colour is not a hex this can read");
   const channel = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
   const luminance = (hex) => {
@@ -352,11 +351,7 @@ test("the prompts in the blanks are red, and their contrast is said out loud", (
   };
   const [hi, lo] = [luminance(bar), luminance(red)].sort((x, y) => y - x);
   const contrast = (hi + 0.05) / (lo + 0.05);
-  console.log(
-    `    contact blanks: red prompt ${red} on ${bar} is ${contrast.toFixed(2)}:1` +
-      (contrast >= 4.5 ? "" : " — under AA for small text, kept on the owner's word"),
-  );
-  assert.ok(contrast > 1.5, "the red prompt has disappeared into its blank");
+  assert.ok(contrast >= 4.5, `the red prompt ${red} on ${bar} is ${contrast.toFixed(2)}:1, under AA for text`);
 });
 
 test("the page states the facts it was given and invents none", async () => {

@@ -239,8 +239,8 @@ export const menu = ([
   /* **About is one page, and Contact a word of its own** — owner,
      2026-10-08, of the menu's About (a parent holding About, Blog, Careers
      and Contact): "i want to remain only one page about", and "add contact".
-     So both are plain links, as Clients is. Blog stays in the footer;
-     Careers was deleted the same day. (This entry was Company, a panel of
+     So both are plain links, as Clients is. Careers was deleted the same
+     day, and the Blog on 2026-11-06. (This entry was Company, a panel of
      those four.) */
   {
     key: "about",
@@ -670,12 +670,12 @@ export const footer = {
    *  over the site's pages. Since 2026-10-08 (owner: "based on what we have
    *  on menu what you suggest to change on footer", then "yes") the bar's
    *  own words in the bar's order, read from `menu` so the two cannot say
-   *  different things, then Blog, which is the footer's alone. No Home: the
-   *  bar has none either, and the wordmark is the way home. */
+   *  different things. No Blog since 2026-11-06 (owner: "we donnt have
+   *  bloog … delete it"). No Home: the bar has none either, and the
+   *  wordmark is the way home. */
   pagesTitle: "Menu",
   pages: [
     ...menu.map(({ label, href }) => ({ label, href })),
-    { label: "Blog", href: "/blog" },
   ],
   /* The accounts' addresses — owner, 2026-10-09. LinkedIn's without the
      `?viewAsMember=true` he copied it with: that is a page admin's view of

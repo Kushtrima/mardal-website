@@ -296,7 +296,7 @@ I build these from your existing service texts, and you approve the additions.
 
 **2.5 (cancelled: owner, 2026-10-11, did not want a nearshoring page) Me:** build the nearshoring page in English, citing only official sources: the Swiss foreign ministry (EDA), the STIKK IT Barometer and the ministry/GIZ ICT study.
 
-**2.6 You and me:** one post a month drawn from a real project (you give the facts, I draft, you approve).
+**2.6 (cancelled: owner, 2026-11-06, "we donnt have bloog … delete it"; the Blog and its three pieces were removed)** one post a month drawn from a real project.
 
 ### Phase 3: German (weeks 4–10)
 **3.1 Me:** add language routing: `/de/`, then `/sq/`.

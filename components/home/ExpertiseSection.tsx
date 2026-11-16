@@ -36,8 +36,10 @@ export function ExpertiseSection() {
 
       <Container className="expertise__layout">
         <h2 className="expertise__label" id="expertise-title" data-expertise-label>
-          {expertise.labelLines.map((line) => (
+          {expertise.labelLines.map((line, index) => (
             <span className="expertise__label-line" key={line}>
+              {/* A space before every line but the first, never drawn (each line is a block): without it a search engine reads the lines as one glued word — site check, 2026-11-16. */}
+              {index > 0 ? " " : null}
               {line}
             </span>
           ))}

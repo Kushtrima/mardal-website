@@ -56,7 +56,6 @@ const ALL_ROUTES = [
   "/case-studies",
   "/about",
   "/contact",
-  "/blog",
   "/privacy",
 ];
 

@@ -135,7 +135,7 @@ test("the heading is the owner's sentence, broken where he broke it", async () =
      the marker is React's business and the words are the assertion. */
   const opening = html.slice(html.indexOf('class="services-hero services-hero--about"'), html.indexOf("</section>"));
   assert.deepEqual(
-    [...opening.replace(/<!-- -->/g, "").matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "")),
+    [...opening.replace(/<!-- -->/g, "").matchAll(/<span class="services-hero__title-line">(.*?)<\/span>(?=<span class="services-hero__title-line">|<\/h1>)/g)].map((m) => m[1].replace(/<[^>]+>/g, "").trim()),
     TITLE_LINES,
   );
   assert.match(opening, /<span class="services-hero__stop">\.<\/span>/);

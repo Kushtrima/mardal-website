@@ -63,8 +63,11 @@ function Piece({
           />
         </div>
         <figcaption className="selected-work__meta" data-selected-work-meta>
-          <span className="selected-work__meta-line">{work.name}</span>
-          <span className="selected-work__meta-line">{service}</span>
+          {/* Spaces between the lines, never drawn (each line is a block):
+              without them a search engine read "WebsiteOftringen" — site
+              check, 2026-11-16. */}
+          <span className="selected-work__meta-line">{work.name}</span>{" "}
+          <span className="selected-work__meta-line">{service}</span>{" "}
           <span className="selected-work__meta-line">{work.location}</span>
         </figcaption>
       </figure>
@@ -104,8 +107,10 @@ export function SelectedWorkSection() {
       <Container>
         <div className="selected-work__head">
           <h2 className="selected-work__title" id="selected-work-title">
-            {selectedWork.titleLines.map((line) => (
+            {selectedWork.titleLines.map((line, index) => (
               <span className="selected-work__title-line" key={line}>
+                {/* A space before every line but the first, never drawn (each line is a block): without it a search engine reads the lines as one glued word — site check, 2026-11-16. */}
+                {index > 0 ? " " : null}
                 {/* What rises: the line is the mask it rises out of. */}
                 <span className="selected-work__rise" data-selected-work-line>
                   {line}

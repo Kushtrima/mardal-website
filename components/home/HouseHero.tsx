@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { brandPlace, houseHero } from "../../content/home";
 import { Container } from "../layout/Container";
 import { HouseHeroMotion } from "./HouseHeroMotion";
@@ -33,10 +34,14 @@ export function HouseHero() {
           id="house-hero-title"
           data-house-title
         >
-          {houseHero.titleLines.map((line) => (
-            <span className="house-hero__title-line" key={line}>
-              {line}
-            </span>
+          {/* A space between the lines, which the page never shows (each
+              line is a block) — site check, 2026-11-06: without it Google
+              read "CREATIVITY& TECHNOLOGY" as one word in its results. */}
+          {houseHero.titleLines.map((line, index) => (
+            <Fragment key={line}>
+              {index > 0 && " "}
+              <span className="house-hero__title-line">{line}</span>
+            </Fragment>
           ))}
         </h1>
 
@@ -72,8 +77,9 @@ export function HouseHero() {
         </div>
 
         <p className="house-hero__support" data-house-support>
-          {houseHero.supportLines.map((line) => (
+          {houseHero.supportLines.map((line, index) => (
             <span className="house-hero__support-line" key={line}>
+              {index > 0 ? " " : null}
               {line}
             </span>
           ))}

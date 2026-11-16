@@ -16,9 +16,10 @@ export function RollingLabel({ children }: { children: string }) {
   return (
     <span className="roll">
       <span className="roll__face">{children}</span>
-      <span className="roll__face roll__face--next" aria-hidden="true">
-        {children}
-      </span>
+      {/* The copy is drawn by the stylesheet from `data-label`, not written
+          out — site check, 2026-11-06: Google read both and showed "Start a
+          projectStart a project" under mardal.co in its results. */}
+      <span className="roll__face roll__face--next" aria-hidden="true" data-label={children} />
     </span>
   );
 }

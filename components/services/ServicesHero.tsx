@@ -33,7 +33,7 @@ export function ServicesHero({
   name,
 }: {
   hero: PageHeroContent;
-  name: "services" | "products" | "clients" | "about" | "blog";
+  name: "services" | "products" | "clients" | "about";
 }) {
   return (
     <section
@@ -62,6 +62,8 @@ export function ServicesHero({
         >
           {hero.titleLines.map((line, index) => (
             <span className="services-hero__title-line" key={line}>
+              {/* A space before every line but the first, never drawn (each line is a block): without it a search engine reads the lines as one glued word — site check, 2026-11-16. */}
+              {index > 0 ? " " : null}
               {/* A hyphenated word kept whole where a phone wraps the line. */}
               {line.split(" ").map((word, wordIndex) => (
                 <Fragment key={`${word}-${wordIndex}`}>

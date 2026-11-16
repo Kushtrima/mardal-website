@@ -125,39 +125,6 @@ export function caseStudyArticle(story: Story) {
   };
 }
 
-/** Where an author is to be found: a real person's own page, so the writing
- *  is tied to someone who can be looked up (SEO-PLAN.md, Google's trust
- *  guidance). */
-const AUTHOR_PAGES: Readonly<Record<string, string>> = {
-  "Kushtrim Arifi": "https://kushtrimarifi.com/",
-};
-
-/** A piece of writing: its headline, its author and its date. */
-export function blogPosting(post: {
-  slug: string;
-  title: string;
-  thesis: string;
-  date: string;
-  author: string;
-}) {
-  const url = absolute(`/blog/${post.slug}`);
-  return {
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.thesis,
-    url,
-    mainEntityOfPage: url,
-    inLanguage: "en",
-    datePublished: post.date,
-    author: {
-      "@type": "Person",
-      name: post.author,
-      ...(AUTHOR_PAGES[post.author] ? { url: AUTHOR_PAGES[post.author] } : {}),
-    },
-    publisher: organizationRef,
-  };
-}
-
 /** A page that is about Mardal, or for reaching it. */
 export function pageAbout(type: "AboutPage" | "ContactPage", path: string, name: string) {
   return {

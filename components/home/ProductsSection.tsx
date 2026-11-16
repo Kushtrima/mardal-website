@@ -67,8 +67,10 @@ export function ProductsSection({ page = false }: { page?: boolean }) {
 
       <Container className="products__layout">
         <p className="products__label" data-products-label>
-          {intro.labelLines.map((line) => (
+          {intro.labelLines.map((line, index) => (
             <span className="products__label-line" key={line}>
+              {/* A space before every line but the first, never drawn (each line is a block): without it a search engine reads the lines as one glued word — site check, 2026-11-16. */}
+              {index > 0 ? " " : null}
               {line}
             </span>
           ))}
@@ -78,6 +80,7 @@ export function ProductsSection({ page = false }: { page?: boolean }) {
           {intro.titleLines.map((line, index) => (
             /* What rises: the line is the mask it rises out of. */
             <span className="products__title-line" key={line}>
+              {index > 0 ? " " : null}
               <span className="products__rise" data-products-line>
                 {line}
                 {index === intro.titleLines.length - 1 ? (

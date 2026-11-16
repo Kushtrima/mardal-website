@@ -1,5 +1,4 @@
 import type { MetadataRoute } from "next";
-import { blog } from "../content/blog";
 import { stories } from "../content/case-studies";
 import { siteUrl } from "../content/home";
 import { hiddenPages } from "../lib/launch";
@@ -21,7 +20,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/case-studies",
     ...stories.map((story) => `/case-studies/${story.slug}`),
     "/about",
-    "/blog",
     "/contact",
     "/privacy",
     "/terms",
@@ -31,10 +29,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     .filter((path) => !hiddenPages.includes(path))
     .map((path) => ({ url: `${siteUrl}${path === "/" ? "" : path}` }));
 
-  const pieces = blog.posts.map((post) => ({
-    url: `${siteUrl}/blog/${post.slug}`,
-    lastModified: post.date,
-  }));
-
-  return [...pages, ...pieces];
+  return pages;
 }
